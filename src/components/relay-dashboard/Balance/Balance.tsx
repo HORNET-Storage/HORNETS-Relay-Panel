@@ -11,6 +11,7 @@ import { BaseCol } from '@app/components/common/BaseCol/BaseCol';
 import useBalanceData from '@app/hooks/useBalanceData';
 import { formatBalance } from '@app/utils/balanceFormatter';
 import { BaseSwitch } from '@app/components/common/BaseSwitch/BaseSwitch'; // Import BaseSwitch
+import SendButton from './components/SendButton/SendButton';
 
 export const Balance: React.FC = () => {
   const { balanceData, transactions, isLoading } = useBalanceData();
@@ -65,10 +66,14 @@ export const Balance: React.FC = () => {
                 </BaseCol>
               </BaseRow>
             </BaseCol>
-
-            <BaseCol span={24}>
-              <TopUpBalanceButton />
-            </BaseCol>
+            <S.BalanceButtonsContainers gutter={[0,20]}>
+              <BaseCol span={24}>
+                <SendButton />
+              </BaseCol>
+              <BaseCol span={24}>
+                <TopUpBalanceButton />
+              </BaseCol>
+            </S.BalanceButtonsContainers>
           </BaseRow>
         </NFTCard>
       </BaseCol>
