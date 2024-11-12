@@ -15,7 +15,13 @@ export type Settings = {
   isGitNestrActive: boolean;
   isAudioActive: boolean;
   isFileStorageActive: boolean;
-};
+  subscription_tiers: SubscriptionTier[];
+}
+
+export type SubscriptionTier = {
+  data_limit: string;
+  price: string;
+}
 
 export type Category = 'kinds' | 'photos' | 'videos' | 'gitNestr' | 'audio' | 'dynamicKinds' | 'appBuckets' | 'dynamicAppBuckets';  
 export const noteOptions = [

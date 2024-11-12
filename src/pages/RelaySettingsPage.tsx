@@ -18,6 +18,8 @@ import useRelaySettings from '@app/hooks/useRelaySettings';
 import * as S from '@app/pages/uiComponentsPages/UIComponentsPage.styles';
 import { themeObject } from '@app/styles/themes/themeVariables';
 import { categories, noteOptions, appBuckets as defaultAppBuckets, Settings, Category } from '@app/constants/relaySettings';
+import SubscriptionTiersManager from '@app/components/SubscriptionTiersManager';
+import { SubscriptionTier } from '@app/constants/relaySettings';
 const { Panel } = Collapse;
 const StyledPanel = styled(Panel)``;
 const { Option } = Select;
@@ -70,7 +72,12 @@ const RelaySettingsPage: React.FC = () => {
     isGitNestrActive: true,
     isAudioActive: true,
     isFileStorageActive: false,
+    subscription_tiers: [],
   });
+
+  const handleTiersChange = (newTiers: SubscriptionTier[]) => {
+    updateSettings('subscription_tiers', newTiers);
+  };
 
   const groupedNoteOptions = categories.map((category) => ({
     ...category,
@@ -352,6 +359,7 @@ const RelaySettingsPage: React.FC = () => {
       updateSettings('isFileStorageActive', settings.isFileStorageActive),
       updateSettings('appBuckets', settings.appBuckets),
       updateSettings('dynamicAppBuckets', settings.dynamicAppBuckets),
+      updateSettings('subscription_tiers', settings.subscription_tiers),
     ]);
 
     await saveSettings();
@@ -547,6 +555,16 @@ const RelaySettingsPage: React.FC = () => {
                       </BaseCheckbox.Group>
                     </S.NewBucketContainer>
                   </div>
+                </S.Card>
+              </StyledPanel>
+            </Collapse>
+            <Collapse style={{ padding: '1rem 0 1rem 0' }} bordered={false}>
+              <StyledPanel header={'Subscription Tiers'} key="subscriptionTiers" className="centered-header">
+                <S.Card>
+                  <SubscriptionTiersManager
+                    tiers={settings.subscription_tiers || []}
+                    onChange={handleTiersChange}
+                  />
                 </S.Card>
               </StyledPanel>
             </Collapse>
@@ -955,6 +973,17 @@ const RelaySettingsPage: React.FC = () => {
                   </BaseCheckbox.Group>
                 </S.NewBucketContainer>
               </div>
+            </S.Card>
+          </StyledPanel>
+        </Collapse>
+
+        <Collapse style={{ padding: '1rem 0 1rem 0' }} bordered={false}>
+          <StyledPanel header={'Subscription Tiers'} key="subscriptionTiers" className="centered-header">
+            <S.Card>
+              <SubscriptionTiersManager
+                tiers={settings.subscription_tiers || []}
+                onChange={handleTiersChange}
+              />
             </S.Card>
           </StyledPanel>
         </Collapse>
