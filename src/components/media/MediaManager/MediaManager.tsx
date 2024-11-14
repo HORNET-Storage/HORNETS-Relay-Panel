@@ -32,27 +32,28 @@ const MediaManager: React.FC = () => {
     path.length <= 0 ? ['/'] : path.split('/')
   );
 
-  // Use our media hook
+  // Use our updated media hook
   const {
     mediaItems,
     loading,
     error,
     hasMore,
     fetchMore,
+    reset
   } = useMedia({
     pageSize: 20,
     mediaType: 'all',
   });
 
-  // Convert mediaItems to MediaFile format
+  // Convert the new API response format to MediaFile format
   const files: MediaFile[] = mediaItems.map(item => ({
-    id: item.hash,
-    path: `/api/media/content/${item.hash}`, // Use the /api/media/content/:hash route for fetching content
+    id: item.hash, // Using pub_key as hash from the API
+    path: `/api/files/${item.hash}`, // Updated path to match new API
     name: item.name,
     size: parseInt(item.metadata?.size || '0'),
     type: item.type,
     createdAt: new Date(parseInt(item.metadata?.timestamp || Date.now().toString())),
-    thumbnail: `/api/media/content/${item.hash}`, // Assuming content is used as the thumbnail
+    thumbnail: `/api/files/${item.hash}/thumbnail` // Assuming there's a thumbnail endpoint
   }));
 
   useEffect(() => {
@@ -60,6 +61,13 @@ const MediaManager: React.FC = () => {
       console.error('Error loading media:', error);
     }
   }, [error]);
+
+  // Reset selection when media items change
+  useEffect(() => {
+    setSelectedFiles([]);
+    setSelectionModeActive(false);
+    setIsAllSelected(false);
+  }, [path]);
 
   const handleSelect = (file: MediaFile) => {
     if (!selectionModeActive) {
@@ -70,17 +78,17 @@ const MediaManager: React.FC = () => {
 
     if (selectedFiles.some((selectedFile) => selectedFile.id === file.id)) {
       setSelectedFiles(selectedFiles.filter((selectedFile) => selectedFile.id !== file.id));
-      return;
+    } else {
+      setSelectedFiles([...selectedFiles, file]);
     }
-    setSelectedFiles([...selectedFiles, file]);
   };
 
   const handleSelectAll = () => {
     if (selectedFiles.length === files.length) {
       setSelectedFiles([]);
-      return;
+    } else {
+      setSelectedFiles([...files]);
     }
-    setSelectedFiles(files);
   };
 
   const isSelected = (file: MediaFile) => {
@@ -89,14 +97,13 @@ const MediaManager: React.FC = () => {
 
   const handleSelectButton = () => {
     setSelectionModeActive(!selectionModeActive);
+    if (!selectionModeActive) {
+      setSelectedFiles([]);
+    }
   };
 
   useEffect(() => {
-    if (selectedFiles.length === files.length) {
-      setIsAllSelected(true);
-      return;
-    }
-    setIsAllSelected(false);
+    setIsAllSelected(selectedFiles.length === files.length && files.length > 0);
   }, [selectedFiles, files]);
 
   useEffect(() => {
@@ -108,6 +115,12 @@ const MediaManager: React.FC = () => {
     setSelectedFileForViewer(null);
   };
 
+  const handleDelete = async () => {
+    // Implement delete functionality here
+    // You'll need to call your API to delete the selected files
+    // After successful deletion, call reset() to refresh the list
+  };
+
   const getMediaItemColumnSize = () => {
     if (isTablet) {
       if (isDesktop) return 4;
@@ -117,10 +130,12 @@ const MediaManager: React.FC = () => {
     }
   };
 
-  // Scroll handler for infinite loading
+  // Enhanced scroll handler for infinite loading
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const { scrollTop, clientHeight, scrollHeight } = e.currentTarget;
-    if (scrollHeight - scrollTop <= clientHeight * 1.5) {
+    const scrollThreshold = 100; // pixels before bottom
+    
+    if (scrollHeight - scrollTop - clientHeight <= scrollThreshold) {
       if (hasMore && !loading) {
         fetchMore();
       }
@@ -146,6 +161,7 @@ const MediaManager: React.FC = () => {
                 $is4kScreen={is4k} 
                 size={is4k ? 'large' : 'middle'}
                 disabled={selectedFiles.length === 0}
+                onClick={handleDelete}
               >
                 Delete
               </S.ToolBarButton>

@@ -1,51 +1,57 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import config from '@app/config/config';
-import { readToken } from '@app/services/localStorage.service';
-import { useHandleLogout } from './authUtils';
+import { message } from 'antd';
 
-interface MediaItemResponse {
-  hash: string;
+interface FileData {
   name: string;
-  type: string;
-  contentHash?: string;
-  metadata?: {
-    size?: string;
-    timestamp?: string;
-    [key: string]: string | undefined;
-  };
+  content: string; // Base64 encoded
+  pub_key: string;
+  mime_type: string;
+  size: number;
 }
 
-interface MediaResponse {
-  items: MediaItemResponse[];
-  totalCount: number;
-  nextCursor?: string;
+interface FileResponse {
+  files: FileData[];
+  total_count: number;
+  current_page: number;
+  page_size: number;
+  has_more: boolean;
 }
 
 interface UseMediaOptions {
   pageSize?: number;
   mediaType?: string;
-  app?: string;
+}
+
+interface MediaItem {
+  hash: string;         // We'll use pub_key as hash
+  name: string;
+  type: string;         // We'll use mime_type
+  metadata?: {
+    size?: string;
+    timestamp?: string;
+  };
 }
 
 const useMedia = (options: UseMediaOptions = {}) => {
-  const [mediaItems, setMediaItems] = useState<MediaItemResponse[]>([]);
+  const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
-  const [nextCursor, setNextCursor] = useState<string | undefined>(undefined);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const isMounted = useRef(true);
   const hasInitialized = useRef(false);
 
-  const handleLogout = useHandleLogout();
-  const token = readToken();
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      isMounted.current = false;
-    };
-  }, []);
+  // Convert FileData to MediaItem format
+  const convertFileDataToMediaItem = (file: FileData): MediaItem => ({
+    hash: file.pub_key,
+    name: file.name,
+    type: file.mime_type,
+    metadata: {
+      size: file.size.toString(),
+      timestamp: Date.now().toString(), // You might want to add a timestamp field in your API
+    },
+  });
 
   const fetchMedia = useCallback(async (reset: boolean = false) => {
     if (loading || (!hasMore && !reset) || !isMounted.current) {
@@ -56,17 +62,15 @@ const useMedia = (options: UseMediaOptions = {}) => {
       setLoading(true);
       setError(null);
 
+      const page = reset ? 1 : currentPage;
       const queryParams = new URLSearchParams({
-        pageSize: options.pageSize?.toString() || '20',
+        page: page.toString(),
+        page_size: options.pageSize?.toString() || '20',
         ...(options.mediaType && { type: options.mediaType }),
-        ...(options.app && { app: options.app }),
-        ...(nextCursor && !reset && { cursor: nextCursor }),
       });
 
-      const url = `${config.baseURL}/api/media?${queryParams}`;
-      const response = await fetch(url, {
+      const response = await fetch(`/api/files?${queryParams}`, {
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
       });
@@ -75,32 +79,37 @@ const useMedia = (options: UseMediaOptions = {}) => {
         return;
       }
 
-      if (response.status === 401) {
-        handleLogout();
-        return;
-      }
-
       if (!response.ok) {
         throw new Error(`Failed to fetch media: ${response.statusText}`);
       }
 
-      const data: MediaResponse = await response.json();
+      const data: FileResponse = await response.json();
 
       if (isMounted.current) {
-        setMediaItems((prev) => (reset ? data.items : [...prev, ...data.items]));
-        setNextCursor(data.nextCursor);
-        setHasMore(!!data.nextCursor);
+        const newItems = data.files.map(convertFileDataToMediaItem);
+        setMediaItems((prev) => (reset ? newItems : [...prev, ...newItems]));
+        setHasMore(data.has_more);
+        setCurrentPage(data.current_page + 1);
       }
     } catch (err) {
       if (isMounted.current) {
-        setError(err instanceof Error ? err.message : 'An error occurred while fetching media');
+        const errorMessage = err instanceof Error ? err.message : 'An error occurred while fetching media';
+        setError(errorMessage);
+        message.error(errorMessage);
       }
     } finally {
       if (isMounted.current) {
         setLoading(false);
       }
     }
-  }, [options, nextCursor, loading, hasMore, token, handleLogout]);
+  }, [options, currentPage, loading, hasMore]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
 
   // Initial fetch
   useEffect(() => {
@@ -110,12 +119,20 @@ const useMedia = (options: UseMediaOptions = {}) => {
     }
   }, [fetchMedia]);
 
+  const reset = useCallback(() => {
+    setMediaItems([]);
+    setCurrentPage(1);
+    setHasMore(true);
+    fetchMedia(true);
+  }, [fetchMedia]);
+
   return {
     mediaItems,
     loading,
     error,
     hasMore,
     fetchMore: () => fetchMedia(false),
+    reset,
   };
 };
 

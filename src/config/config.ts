@@ -1,16 +1,10 @@
-// suppress the findDOMNode error until the issue - https://github.com/ant-design/ant-design/issues/26136 - resolved
-
+// config.ts
 const config = {
-  // prettier-ignore
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  /*@ts-ignore*/
-  baseURL: process.env.NODE_ENV === 'production' ? window.location.origin || 'http://localhost:9002' : process.env.REACT_APP_BASE_URL || 'http://localhost:9002', // Fallback in case the environment variable is not set
-
-  // Add this line to enable demo mode
+  baseURL: process.env.NODE_ENV === 'production' 
+    ? window.location.origin || 'http://localhost:9002' 
+    : process.env.REACT_APP_BASE_URL || 'http://localhost:9002',
   isDemoMode: process.env.REACT_APP_DEMO_MODE === 'true',
-
-  // Add this line for wallet base URL
-  walletBaseURL: process.env.REACT_APP_WALLET_BASE_URL || 'http://localhost:9003', // Fallback in case the environment variable is not set
+  walletBaseURL: process.env.REACT_APP_WALLET_BASE_URL?.trim() || 'http://localhost:9003',
 };
 
 export default config;
