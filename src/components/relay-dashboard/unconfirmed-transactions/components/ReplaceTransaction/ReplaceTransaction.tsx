@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import * as S from './ReplaceTransaction.styles';
 import { useResponsive } from '@app/hooks/useResponsive';
-import TieredFees from '@app/components/nft-dashboard/Balance/components/SendForm/components/TieredFees/TieredFees';
+import TieredFees from '@app/components/relay-dashboard/Balance/components/SendForm/components/TieredFees/TieredFees';
 import { PendingTransaction } from '@app/hooks/usePendingTransactions';
 import { BaseSpin } from '@app/components/common/BaseSpin/BaseSpin';
-import ResultScreen from '@app/components/nft-dashboard/Balance/components/SendForm/components/ResultScreen/ResultScreen';
+import ResultScreen from '@app/components/relay-dashboard/Balance/components/SendForm/components/ResultScreen/ResultScreen';
 import config from '@app/config/config';
 import useBalanceData from '@app/hooks/useBalanceData';
 import useWalletAuth from '@app/hooks/useWalletAuth'; // Import authentication hook
