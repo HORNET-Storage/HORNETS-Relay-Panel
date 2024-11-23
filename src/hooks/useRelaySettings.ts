@@ -1,241 +1,250 @@
 import { useState, useEffect, useCallback } from 'react';
+import { CheckboxValueType } from 'antd/es/checkbox/Group';
 import config from '@app/config/config';
+import { readToken } from '@app/services/localStorage.service';
+import { useHandleLogout } from './authUtils';
+import { Settings, noteOptions, mimeTypeOptions, SubscriptionTier } from '@app/constants/relaySettings';
 
-interface RelaySettings {
+interface BackendSubscriptionTier {
+  DataLimit: string;
+  Price: string;
+}
+
+interface BackendRelaySettings {
   mode: string;
-  protocol: string[];
-  chunked: string[];
+  protocol: CheckboxValueType[];
+  chunked: CheckboxValueType[];
   chunksize: string;
   maxFileSize: number;
   maxFileSizeUnit: string;
-  kinds: string[];
-  dynamicKinds: string[];
-  photos: string[];
-  videos: string[];
-  gitNestr: string[];
-  audio: string[];
-  appBuckets: string[];
-  dynamicAppBuckets: string[];
-  isKindsActive: boolean;
-  isPhotosActive: boolean;
-  isVideosActive: boolean;
-  isGitNestrActive: boolean;
-  isAudioActive: boolean;
+  subscription_tiers: BackendSubscriptionTier[];
+  MimeTypeGroups: {
+    images: string[];
+    videos: string[];
+    audio: string[];
+    documents: string[];
+  };
+  MimeTypeWhitelist: string[];
+  KindWhitelist: string[];
 }
 
-const getInitialSettings = (): RelaySettings => {
-  const savedSettings = localStorage.getItem('relaySettings');
-  return savedSettings
-    ? JSON.parse(savedSettings)
-    : {
-        mode: 'smart',
-        protocol: ['WebSocket'],
-        chunked: ['unchunked'],
-        chunksize: '2',
-        maxFileSize: 100,
-        maxFileSizeUnit: 'MB',
-        dynamicKinds: [],
+const defaultTiers: SubscriptionTier[] = [
+  { data_limit: '1 GB per month', price: '8000' },
+  { data_limit: '5 GB per month', price: '10000' },
+  { data_limit: '10 GB per month', price: '15000' }
+];
+
+const getInitialSettings = (): Settings => ({
+  mode: 'smart',
+  protocol: ['WebSocket'],
+  kinds: [],
+  dynamicKinds: [],
+  photos: [],
+  videos: [],
+  gitNestr: [],
+  audio: [],
+  appBuckets: [],
+  dynamicAppBuckets: [],
+  isKindsActive: true,
+  isPhotosActive: true,
+  isVideosActive: true,
+  isGitNestrActive: true,
+  isAudioActive: true,
+  isFileStorageActive: false,
+  subscription_tiers: defaultTiers
+});
+
+const useRelaySettings = () => {
+  const [relaySettings, setRelaySettings] = useState<Settings>(getInitialSettings());
+  // Add state to store previous smart mode settings
+  const [previousSmartSettings, setPreviousSmartSettings] = useState<{
+    kinds: string[];
+    photos: string[];
+    videos: string[];
+    audio: string[];
+  } | null>(null);
+  
+  const handleLogout = useHandleLogout();
+  const token = readToken();
+
+  // Effect to handle mode changes
+  useEffect(() => {
+    if (relaySettings.mode === 'unlimited') {
+      // Store current settings before clearing
+      setPreviousSmartSettings({
+        kinds: relaySettings.kinds,
+        photos: relaySettings.photos,
+        videos: relaySettings.videos,
+        audio: relaySettings.audio,
+      });
+      
+      setRelaySettings(prev => ({
+        ...prev,
         kinds: [],
         photos: [],
         videos: [],
-        gitNestr: [],
         audio: [],
-        appBuckets: [],
-        dynamicAppBuckets: [],
-        isKindsActive: true,
-        isPhotosActive: true,
-        isVideosActive: true,
-        isGitNestrActive: true,
-        isAudioActive: true,
-      };
-};
+      }));
+    } else if (relaySettings.mode === 'smart' && previousSmartSettings) {
+      // Restore previous smart mode settings
+      setRelaySettings(prev => ({
+        ...prev,
+        kinds: previousSmartSettings.kinds,
+        photos: previousSmartSettings.photos,
+        videos: previousSmartSettings.videos,
+        audio: previousSmartSettings.audio,
+      }));
+    }
+  }, [relaySettings.mode]);
 
-const useRelaySettings = () => {
-  const [relaySettings, setRelaySettings] = useState<RelaySettings>(getInitialSettings());
+  const transformToBackendSettings = (settings: Settings): BackendRelaySettings => {
+    const mimeGroups = {
+      images: settings.photos,
+      videos: settings.videos,
+      audio: settings.audio,
+      documents: [] as string[]
+    };
 
-  useEffect(() => {
-    localStorage.setItem('relaySettings', JSON.stringify(relaySettings));
-  }, [relaySettings]);
+    const selectedMimeTypes = [
+      ...mimeGroups.images,
+      ...mimeGroups.videos,
+      ...mimeGroups.audio
+    ];
+
+    return {
+      mode: settings.mode,
+      protocol: settings.protocol as CheckboxValueType[],
+      chunked: [],
+      chunksize: '2',
+      maxFileSize: 10,
+      maxFileSizeUnit: 'MB',
+      subscription_tiers: settings.subscription_tiers.map(tier => ({
+        DataLimit: tier.data_limit,
+        Price: tier.price
+      })),
+      MimeTypeGroups: mimeGroups,
+      MimeTypeWhitelist: settings.mode === 'smart'
+        ? selectedMimeTypes
+        : mimeTypeOptions
+            .map(m => m.value)
+            .filter(mimeType => !selectedMimeTypes.includes(mimeType)),
+      KindWhitelist: settings.mode === 'smart'
+        ? settings.kinds
+        : noteOptions
+            .map(note => note.kindString)
+            .filter(kind => !settings.kinds.includes(kind))
+    };
+  };
+
+  const transformFromBackendSettings = (backendSettings: BackendRelaySettings): Settings => {
+    const settings = getInitialSettings();
+    settings.mode = backendSettings.mode;
+    settings.protocol = backendSettings.protocol as string[];
+    
+    // Handle subscription tiers
+    settings.subscription_tiers = backendSettings.subscription_tiers.map(tier => ({
+      data_limit: tier.DataLimit || defaultTiers[0].data_limit,
+      price: tier.Price || defaultTiers[0].price
+    }));
+
+    if (!settings.subscription_tiers.length || 
+        settings.subscription_tiers.every(tier => !tier.data_limit)) {
+      settings.subscription_tiers = defaultTiers;
+    }
+
+    if (backendSettings.mode === 'unlimited') {
+      // In unlimited mode, start with empty selections
+      settings.photos = [];
+      settings.videos = [];
+      settings.audio = [];
+      settings.kinds = [];
+    } else {
+      // In smart mode, use the MimeTypeGroups directly
+      settings.photos = backendSettings.MimeTypeGroups?.images || [];
+      settings.videos = backendSettings.MimeTypeGroups?.videos || [];
+      settings.audio = backendSettings.MimeTypeGroups?.audio || [];
+      settings.kinds = backendSettings.KindWhitelist || [];
+      
+      // Store these as the previous smart settings
+      setPreviousSmartSettings({
+        kinds: settings.kinds,
+        photos: settings.photos,
+        videos: settings.videos,
+        audio: settings.audio,
+      });
+    }
+
+    // Set active states
+    settings.isKindsActive = true;
+    settings.isPhotosActive = true;
+    settings.isVideosActive = true;
+    settings.isAudioActive = true;
+    
+    return settings;
+  };
+
 
   const fetchSettings = useCallback(async () => {
     try {
-      const response = await fetch(`${config.baseURL}/relay-settings`, {
-        method: 'GET',
+      const response = await fetch(`${config.baseURL}/api/relay-settings`, {
         headers: {
-          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
       });
-      if (!response.ok) {
-        throw new Error(`Network response was not ok (status: ${response.status})`);
+
+      if (response.status === 401) {
+        handleLogout();
+        return;
       }
 
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      
       const data = await response.json();
-
-      const storedAppBuckets = JSON.parse(localStorage.getItem('appBuckets') || '[]');
-      const storedDynamicKinds = JSON.parse(localStorage.getItem('dynamicKinds') || '[]');
-      console.log(data)
-      const newAppBuckets =
-        data.relay_settings.dynamicAppBuckets == undefined
-          ? []
-          : data.relay_settings.dynamicAppBuckets.filter((bucket: string) => !storedAppBuckets.includes(bucket));
-      const newDynamicKinds =
-        data.relay_settings.dynamicKinds == undefined
-          ? []
-          : data.relay_settings.dynamicKinds.filter((kind: string) => !storedDynamicKinds.includes(kind));
-
-      if (newAppBuckets.length > 0) {
-        localStorage.setItem('appBuckets', JSON.stringify([...storedAppBuckets, ...newAppBuckets]));
-      }
-      if (newDynamicKinds.length > 0) {
-        localStorage.setItem('dynamicKinds', JSON.stringify([...storedDynamicKinds, ...newDynamicKinds]));
-      }
-      setRelaySettings({
-        ...data.relay_settings,
-        protocol: Array.isArray(data.relay_settings.protocol)
-          ? data.relay_settings.protocol
-          : [data.relay_settings.protocol],
-        chunked: Array.isArray(data.relay_settings.chunked)
-          ? data.relay_settings.chunked
-          : [data.relay_settings.chunked],
-      });
-      localStorage.setItem('relaySettings', JSON.stringify(data.relay_settings));
+      const settings = transformFromBackendSettings(data.relay_settings);
+      setRelaySettings(settings);
+      
     } catch (error) {
       console.error('Error fetching settings:', error);
     }
-  }, []);
-
-  const updateSettings = useCallback((category: keyof RelaySettings, value: string | string[] | boolean | number) => {
-    setRelaySettings((prevSettings) => ({
-      ...prevSettings,
-      [category]: value,
-    }));
-  }, []);
+  }, [token, handleLogout]);
 
   const saveSettings = useCallback(async () => {
     try {
-      const response = await fetch(`${config.baseURL}/relay-settings`, {
+      const backendSettings = transformToBackendSettings(relaySettings);
+      const response = await fetch(`${config.baseURL}/api/relay-settings`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ relay_settings: relaySettings }),
+        body: JSON.stringify({ relay_settings: backendSettings }),
       });
-      if (!response.ok) {
-        throw new Error(`Network response was not ok (status: ${response.status})`);
+
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      
+      // Update previous smart settings after successful save
+      if (relaySettings.mode === 'smart') {
+        setPreviousSmartSettings({
+          kinds: relaySettings.kinds,
+          photos: relaySettings.photos,
+          videos: relaySettings.videos,
+          audio: relaySettings.audio,
+        });
       }
-      localStorage.setItem('settingsCache', JSON.stringify(relaySettings));
-      console.log('Settings saved successfully!');
     } catch (error) {
       console.error('Error saving settings:', error);
+      throw error;
     }
-  }, [relaySettings]);
+  }, [relaySettings, token]);
+
+  const updateSettings = useCallback((category: keyof Settings, value: any) => {
+    setRelaySettings(prev => ({
+      ...prev,
+      [category]: value
+    }));
+  }, []);
 
   return { relaySettings, fetchSettings, updateSettings, saveSettings };
 };
 
 export default useRelaySettings;
-
-// import { useState, useEffect, useCallback } from 'react';
-// import config from '@app/config/config';
-
-// interface RelaySettings {
-//   mode: string;
-//   protocol: string[];
-//   chunked: string[];
-//   chunksize: string;
-//   kinds: string[];
-//   dynamicKinds: string[];
-//   photos: string[];
-//   videos: string[];
-//   gitNestr: string[];
-//   isKindsActive: boolean;
-//   isPhotosActive: boolean;
-//   isVideosActive: boolean;
-//   isGitNestrActive: boolean;
-// }
-
-// const getInitialSettings = (): RelaySettings => {
-//   const savedSettings = localStorage.getItem('relaySettings');
-//   return savedSettings
-//     ? JSON.parse(savedSettings)
-//     : {
-//         mode: 'smart',
-//         protocol: ['WebSocket'],
-//         chunked: ['unchunked'],
-//         chunksize: '2',
-//         dynamicKinds: [],
-//         kinds: [],
-//         photos: [],
-//         videos: [],
-//         gitNestr: [],
-//         isKindsActive: true,
-//         isPhotosActive: true,
-//         isVideosActive: true,
-//         isGitNestrActive: true,
-//       };
-// };
-
-// const useRelaySettings = () => {
-//   const [relaySettings, setRelaySettings] = useState<RelaySettings>(getInitialSettings());
-
-//   useEffect(() => {
-//     localStorage.setItem('relaySettings', JSON.stringify(relaySettings));
-//   }, [relaySettings]);
-
-//   const fetchSettings = useCallback(async () => {
-//     try {
-//       const response = await fetch(`${config.baseURL}/relay-settings`, {
-//         method: 'GET',
-//         headers: {
-//           'Content-Type': 'application/json',
-//         },
-//       });
-//       if (!response.ok) {
-//         throw new Error(`Network response was not ok (status: ${response.status})`);
-//       }
-//       const data = await response.json();
-//       console.log('Fetched settings:', data.relay_settings);
-//       setRelaySettings({
-//         ...data.relay_settings,
-//         protocol: Array.isArray(data.relay_settings.protocol)
-//           ? data.relay_settings.protocol
-//           : [data.relay_settings.protocol],
-//         chunked: Array.isArray(data.relay_settings.chunked)
-//           ? data.relay_settings.chunked
-//           : [data.relay_settings.chunked],
-//       });
-//       localStorage.setItem('relaySettings', JSON.stringify(data.relay_settings));
-//     } catch (error) {
-//       console.error('Error fetching settings:', error);
-//     }
-//   }, []);
-
-//   const updateSettings = useCallback((category: keyof RelaySettings, value: string | string[] | boolean) => {
-//     setRelaySettings((prevSettings) => ({
-//       ...prevSettings,
-//       [category]: value,
-//     }));
-//   }, []);
-
-//   const saveSettings = useCallback(async () => {
-//     try {
-//       const response = await fetch(`${config.baseURL}/relay-settings`, {
-//         method: 'POST',
-//         headers: {
-//           'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify({ relay_settings: relaySettings }),
-//       });
-//       if (!response.ok) {
-//         throw new Error(`Network response was not ok (status: ${response.status})`);
-//       }
-//       console.log('Settings saved successfully!');
-//     } catch (error) {
-//       console.error('Error saving settings:', error);
-//     }
-//   }, [relaySettings]);
-
-//   return { relaySettings, fetchSettings, updateSettings, saveSettings };
-// };
-
-// export default useRelaySettings;

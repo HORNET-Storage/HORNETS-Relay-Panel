@@ -20,9 +20,6 @@ export const TotalEarningChart: React.FC<TotalEarningChartProps> = ({ xAxisData,
   const theme = useAppSelector((state) => state.theme.theme);
   const { t } = useTranslation();
 
-  console.log('xAxisData:', xAxisData);
-  console.log('earningData:', earningData);
-
   const minYValue = Math.min(...earningData.data);
   const maxYValue = Math.max(...earningData.data);
 

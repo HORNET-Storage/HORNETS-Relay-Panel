@@ -11,7 +11,6 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
   const location = useLocation();
   const token = readToken();
 
-  console.log('Current token from AuthGuard:', token);
   console.log('Demo mode:', config.isDemoMode);
 
   if (config.isDemoMode) {
