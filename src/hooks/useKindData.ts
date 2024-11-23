@@ -48,6 +48,7 @@ const useKindData = () => {
         }
 
         const data = await response.json();
+        console.log("Received kind data: ", data)
         const enrichedData = data.map((item: any) => {
           const mapping = kindMapping[item.kindNumber] || { description: 'Unknown', nip: 'Unknown' };
           return {

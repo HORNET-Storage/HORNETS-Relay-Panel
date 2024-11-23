@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Input } from 'antd';
 import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
+import { PlusOutlined } from '@ant-design/icons';
 import * as S from '@app/pages/uiComponentsPages/UIComponentsPage.styles';
 import type { SubscriptionTier } from '@app/constants/relaySettings';
-import { PlusOutlined } from '@ant-design/icons';
 
 interface SubscriptionTiersManagerProps {
   tiers?: SubscriptionTier[];
@@ -11,30 +11,46 @@ interface SubscriptionTiersManagerProps {
 }
 
 const SubscriptionTiersManager: React.FC<SubscriptionTiersManagerProps> = ({ tiers = [], onChange }) => {
-  // Default values for the subscription tiers
   const defaultTiers: SubscriptionTier[] = [
     { data_limit: '1 GB per month', price: '8000' },
     { data_limit: '5 GB per month', price: '10000' },
     { data_limit: '10 GB per month', price: '15000' }
   ];
 
-  // Initialize state with default values if no tiers are provided
-  const [currentTiers, setCurrentTiers] = useState<SubscriptionTier[]>(tiers.length > 0 ? tiers : defaultTiers);
+  // Initialize with properly formatted tiers from props or default
+  const [currentTiers, setCurrentTiers] = useState<SubscriptionTier[]>(() => {
+    const formattedTiers = tiers.length > 0 ? tiers.map(tier => ({
+      data_limit: tier.data_limit.includes('per month') ? tier.data_limit : `${tier.data_limit} per month`,
+      price: tier.price
+    })) : defaultTiers;
+    return formattedTiers;
+  });
 
+  // Update current tiers when props change
   useEffect(() => {
-    // Ensure external changes to tiers are reflected in the internal state
-    if (tiers.length !== currentTiers.length) {
-      setCurrentTiers(tiers);
+    if (tiers.length > 0 && JSON.stringify(tiers) !== JSON.stringify(currentTiers)) {
+      const formattedTiers = tiers.map(tier => ({
+        data_limit: tier.data_limit.includes('per month') ? tier.data_limit : `${tier.data_limit} per month`,
+        price: tier.price
+      }));
+      setCurrentTiers(formattedTiers);
     }
   }, [tiers]);
 
   const handleUpdateTier = (index: number, field: keyof SubscriptionTier, value: string) => {
     const newTiers = currentTiers.map((tier, i) => {
       if (i === index) {
+        if (field === 'data_limit') {
+          // Ensure data_limit has "per month" suffix
+          const formattedValue = value.includes('per month') ? value : `${value} per month`;
+          return { ...tier, [field]: formattedValue };
+        }
         return { ...tier, [field]: value };
       }
       return tier;
     });
+    
+    console.log('Updated tiers:', newTiers);
     setCurrentTiers(newTiers);
     onChange(newTiers);
   };
@@ -67,7 +83,14 @@ const SubscriptionTiersManager: React.FC<SubscriptionTiersManagerProps> = ({ tie
               value={tier.data_limit}
               onChange={(e) => handleUpdateTier(index, 'data_limit', e.target.value)}
               placeholder="e.g., 1 GB per month"
-              style={{ width: '100%', backgroundColor: '#1b1b38', borderColor: '#313131', color: 'white', height: '48px', borderRadius: '8px' }}
+              style={{ 
+                width: '100%', 
+                backgroundColor: '#1b1b38', 
+                borderColor: '#313131', 
+                color: 'white', 
+                height: '48px', 
+                borderRadius: '8px' 
+              }}
             />
           </div>
           <div style={{ flex: 1, minWidth: '150px' }}>
@@ -77,12 +100,26 @@ const SubscriptionTiersManager: React.FC<SubscriptionTiersManagerProps> = ({ tie
               value={tier.price}
               onChange={(e) => handleUpdateTier(index, 'price', e.target.value)}
               placeholder="Price in sats"
-              style={{ width: '100%', backgroundColor: '#1b1b38', borderColor: '#313131', color: 'white', height: '48px', borderRadius: '8px' }}
+              style={{ 
+                width: '100%', 
+                backgroundColor: '#1b1b38', 
+                borderColor: '#313131', 
+                color: 'white', 
+                height: '48px', 
+                borderRadius: '8px' 
+              }}
             />
           </div>
           <BaseButton
             onClick={() => removeTier(index)}
-            style={{ width: 'auto', backgroundColor: '#1b1b38', borderColor: '#313131', color: 'white', height: '48px', borderRadius: '8px' }}
+            style={{ 
+              width: 'auto', 
+              backgroundColor: '#1b1b38', 
+              borderColor: '#313131', 
+              color: 'white', 
+              height: '48px', 
+              borderRadius: '8px' 
+            }}
           >
             Remove Tier
           </BaseButton>
@@ -92,20 +129,18 @@ const SubscriptionTiersManager: React.FC<SubscriptionTiersManagerProps> = ({ tie
       <BaseButton
         onClick={addTier}
         className="flex items-center justify-center gap-2 w-32 h-12 bg-[#1b1b38] hover:bg-[#232343] border border-[#313131] text-white rounded-lg"
-        disabled={currentTiers.length >= 3} // Disable button when 3 tiers exist
+        disabled={currentTiers.length >= 3}
       >
         <PlusOutlined />
         Add Tier
       </BaseButton>
 
-      <div>
-        <S.InfoCard>
-          <S.InfoCircleOutlinedIcon />
-          <small className="text-gray-400">
-            Configure subscription tiers to define data limits and pricing for your relay service.
-          </small>
-        </S.InfoCard>
-      </div>
+      <S.InfoCard>
+        <S.InfoCircleOutlinedIcon />
+        <small className="text-gray-400">
+          Configure subscription tiers to define data limits and pricing for your relay service.
+        </small>
+      </S.InfoCard>
     </div>
   );
 };

@@ -104,39 +104,6 @@ const RelaySettingsPage: React.FC = () => {
     });
   };
 
-  const photoFormatOptions = [
-    'jpeg',
-    'jpg',
-    'png',
-    'gif',
-    'bmp',
-    'tiff',
-    'raw',
-    'svg',
-    'eps',
-    'psd',
-    'ai',
-    'pdf',
-    'webp',
-  ].map((format) => ({
-    label: (
-      <S.CheckboxLabel
-        style={{
-          color:
-            settings.mode !== 'smart'
-              ? themeObject[theme].textMain
-              : relaySettings.isPhotosActive
-                ? themeObject[theme].textMain
-                : themeObject[theme].textLight,
-        }}
-        isActive={settings.mode !== 'smart' || '' ? true : settings.isPhotosActive}
-      >
-        {t(`checkboxes.${format}`)}
-      </S.CheckboxLabel>
-    ),
-    value: format,
-  }));
-
   useEffect(() => {
     if (relaySettings) {
       setSettings({
@@ -147,25 +114,6 @@ const RelaySettingsPage: React.FC = () => {
     }
   }, [relaySettings]);
 
-
-  const videoFormatOptions = ['avi', 'mp4', 'mov', 'wmv', 'mkv', 'flv', 'mpeg', '3gp', 'webm', 'ogg'].map((format) => ({
-    label: (
-      <S.CheckboxLabel
-        style={{
-          color:
-            settings.mode !== 'smart'
-              ? themeObject[theme].textMain
-              : relaySettings.isVideosActive
-                ? themeObject[theme].textMain
-                : themeObject[theme].textLight,
-        }}
-        isActive={settings.mode !== 'smart' ? true : settings.isVideosActive}
-      >
-        {t(`checkboxes.${format}`)}
-      </S.CheckboxLabel>
-    ),
-    value: format,
-  }));
 
   const appBucketOptions = [
     ...defaultAppBuckets.map(bucket => ({ id: bucket.id, label: bucket.label })),
@@ -187,39 +135,6 @@ const RelaySettingsPage: React.FC = () => {
       </S.CheckboxLabel>
     ),
     value: bucket.id,
-  }));
-
-  const audioFormatOptions = [
-    'mp3',
-    'wav',
-    'ogg',
-    'flac',
-    'aac',
-    'wma',
-    'm4a',
-    'opus',
-    'm4b',
-    'midi',
-    'mp4',
-    'webm',
-    '3gp',
-  ].map((format) => ({
-    label: (
-      <S.CheckboxLabel
-        style={{
-          color:
-            settings.mode !== 'smart'
-              ? themeObject[theme].textMain
-              : relaySettings.isAudioActive
-                ? themeObject[theme].textMain
-                : themeObject[theme].textLight,
-        }}
-        isActive={settings.mode !== 'smart' ? true : settings.isAudioActive}
-      >
-        {t(`checkboxes.${format}`)}
-      </S.CheckboxLabel>
-    ),
-    value: format,
   }));
 
   const gitNestrHkindOptions = [
@@ -252,18 +167,17 @@ const RelaySettingsPage: React.FC = () => {
 
   const handleModeChange = (checked: boolean) => {
     const newMode = checked ? 'smart' : 'unlimited';
+    setSettings(prev => ({
+      ...prev,
+      mode: newMode,
+      // Clear selections when switching to unlimited mode
+      kinds: newMode === 'unlimited' ? [] : prev.kinds,
+      photos: newMode === 'unlimited' ? [] : prev.photos,
+      videos: newMode === 'unlimited' ? [] : prev.videos,
+      audio: newMode === 'unlimited' ? [] : prev.audio,
+    }));
     updateSettings('mode', newMode);
     dispatch(setMode(newMode));
-    console.log("changing mode")
-    if (newMode === 'unlimited') {
-      setBlacklist({
-        kinds: [],
-        photos: [],
-        videos: [],
-        gitNestr: [],
-        audio: [],
-      });
-    }
   };
 
   const handleProtocolChange = (checkedValues: string[]) => {
@@ -303,6 +217,11 @@ const RelaySettingsPage: React.FC = () => {
 
   const handleSettingsChange = (category: Category, checkedValues: string[]) => {
     console.log("changing settings", category, checkedValues);
+    // Update both settings and relay settings
+    setSettings(prev => ({
+      ...prev,
+      [category]: checkedValues
+    }));
     updateSettings(category, checkedValues);
   };
 
@@ -417,12 +336,136 @@ const RelaySettingsPage: React.FC = () => {
     });
   }, [settings.mode]);
 
-  // useEffect(() => {
-  //   localStorage.setItem('appBuckets', JSON.stringify(storedAppBuckets));
-  // }, [storedAppBuckets]);
-  // useEffect(() => {
-  //   localStorage.setItem('dynamicKinds', JSON.stringify(storedDynamicKinds));
-  // }, [storedDynamicKinds]);
+  // Media format mappings
+  const imageFormatOptions = [
+    { ext: 'jpeg', mime: 'image/jpeg' },
+    { ext: 'png', mime: 'image/png' },
+    { ext: 'gif', mime: 'image/gif' },
+    { ext: 'bmp', mime: 'image/bmp' },
+    { ext: 'tiff', mime: 'image/tiff' },
+    { ext: 'raw', mime: 'image/raw' },
+    { ext: 'svg', mime: 'image/svg+xml' },
+    { ext: 'webp', mime: 'image/webp' },
+    { ext: 'pdf', mime: 'application/pdf' },
+    { ext: 'eps', mime: 'image/eps' },
+    { ext: 'psd', mime: 'image/vnd.adobe.photoshop' },
+    { ext: 'ai', mime: 'application/postscript' }
+  ].map((format) => ({
+    label: (
+      <S.CheckboxLabel
+        style={{
+          color: themeObject[theme].textMain
+        }}
+        isActive={true}
+      >
+        {format.ext.toUpperCase()}
+      </S.CheckboxLabel>
+    ),
+    value: format.mime
+  }));
+
+  const videoFormatOptions = [
+    { ext: 'avi', mime: 'video/avi' },
+    { ext: 'mp4', mime: 'video/mp4' },
+    { ext: 'mov', mime: 'video/mov' },
+    { ext: 'wmv', mime: 'video/wmv' },
+    { ext: 'mkv', mime: 'video/mkv' },
+    { ext: 'flv', mime: 'video/flv' },
+    { ext: 'mpeg', mime: 'video/mpeg' },
+    { ext: '3gp', mime: 'video/3gpp' },
+    { ext: 'webm', mime: 'video/webm' },
+    { ext: 'ogg', mime: 'video/ogg' }
+  ].map((format) => ({
+    label: (
+      <S.CheckboxLabel
+        style={{
+          color: themeObject[theme].textMain
+        }}
+        isActive={true}
+      >
+        {format.ext.toUpperCase()}
+      </S.CheckboxLabel>
+    ),
+    value: format.mime
+  }));
+
+  const audioFormatOptions = [
+    { ext: 'mp3', mime: 'audio/mpeg' },
+    { ext: 'wav', mime: 'audio/wav' },
+    { ext: 'ogg', mime: 'audio/ogg' },
+    { ext: 'flac', mime: 'audio/flac' },
+    { ext: 'aac', mime: 'audio/aac' },
+    { ext: 'wma', mime: 'audio/x-ms-wma' },
+    { ext: 'm4a', mime: 'audio/mp4' },
+    { ext: 'opus', mime: 'audio/opus' },
+    { ext: 'm4b', mime: 'audio/m4b' },
+    { ext: 'midi', mime: 'audio/midi' }
+  ].map((format) => ({
+    label: (
+      <S.CheckboxLabel
+        style={{
+          color: themeObject[theme].textMain
+        }}
+        isActive={true}
+      >
+        {format.ext.toUpperCase()}
+      </S.CheckboxLabel>
+    ),
+    value: format.mime
+  }));
+
+  const documentFormatOptions = [
+    { ext: 'pdf', mime: 'application/pdf' },
+    { ext: 'doc', mime: 'application/msword' },
+    { ext: 'docx', mime: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' },
+    { ext: 'txt', mime: 'text/plain' }
+  ].map((format) => ({
+    label: (
+      <S.CheckboxLabel
+        style={{
+          color: themeObject[theme].textMain
+        }}
+        isActive={true}
+      >
+        {format.ext.toUpperCase()}
+      </S.CheckboxLabel>
+    ),
+    value: format.mime
+  }));
+
+  // Checkbox Groups for each type
+  const ImageCheckboxGroup = () => (
+    <BaseCheckbox.Group
+      className={`custom-checkbox-group grid-checkbox-group ${settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''
+        }`}
+      options={imageFormatOptions}
+      value={settings.photos}
+      onChange={(checkedValues) => handleSettingsChange('photos', checkedValues as string[])}
+      disabled={settings.mode !== 'smart' ? false : !settings.isPhotosActive}
+    />
+  );
+
+  const VideoCheckboxGroup = () => (
+    <BaseCheckbox.Group
+      className={`custom-checkbox-group grid-checkbox-group ${settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''
+        }`}
+      options={videoFormatOptions}
+      value={settings.videos}
+      onChange={(checkedValues) => handleSettingsChange('videos', checkedValues as string[])}
+      disabled={settings.mode !== 'smart' ? false : !settings.isVideosActive}
+    />
+  );
+
+  const AudioCheckboxGroup = () => (
+    <BaseCheckbox.Group
+      className={`custom-checkbox-group grid-checkbox-group ${settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''
+        }`}
+      options={audioFormatOptions}
+      value={settings.audio}
+      onChange={(checkedValues) => handleSettingsChange('audio', checkedValues as string[])}
+      disabled={settings.mode !== 'smart' ? false : !settings.isAudioActive}
+    />
+  );
 
   useEffect(() => {
     const updateDynamicKinds = async () => {
@@ -610,9 +653,12 @@ const RelaySettingsPage: React.FC = () => {
                     </div>
                   )}
                   <BaseCheckbox.Group
-                    className="large-label "
-                    value={settings.mode == 'unlimited' ? blacklist.kinds : settings.kinds}
-                    onChange={(checkedValues) => handleSettingsChange('kinds', checkedValues as string[])}
+                    className="large-label"
+                    value={settings.kinds} // Always use settings.kinds regardless of mode
+                    onChange={(checkedValues) => {
+                      console.log('Checkbox values changed:', checkedValues);
+                      handleSettingsChange('kinds', checkedValues as string[]);
+                    }}
                     disabled={settings.mode !== 'smart' ? false : !settings.isKindsActive}
                   >
                     {groupedNoteOptions.map((group) => (
@@ -626,21 +672,15 @@ const RelaySettingsPage: React.FC = () => {
                                 className={settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''}
                                 disabled={settings.mode !== 'smart' ? false : !settings.isKindsActive}
                               />
-
                               <S.CheckboxLabel
                                 isActive={settings.mode !== 'smart' ? true : settings.isKindsActive}
                                 style={{
                                   paddingRight: '.8rem',
                                   paddingLeft: '.8rem',
-                                  color:
-                                    settings.mode !== 'smart'
-                                      ? themeObject[theme].textMain
-                                      : relaySettings.isKindsActive
-                                        ? themeObject[theme].textMain
-                                        : themeObject[theme].textLight,
+                                  color: themeObject[theme].textMain
                                 }}
                               >
-                                {t(`kind${note.kind}`)} -{' '}
+                                {t(`kind${note.kind}`)} - {' '}
                                 <span style={{ fontWeight: 'normal' }}>{note.description}</span>
                               </S.CheckboxLabel>
                             </div>
@@ -736,14 +776,7 @@ const RelaySettingsPage: React.FC = () => {
                   </div>
                 )}
 
-                <BaseCheckbox.Group
-                  className={`custom-checkbox-group grid-checkbox-group ${settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''
-                    }`}
-                  options={photoFormatOptions}
-                  value={settings.mode == 'unlimited' ? blacklist.photos : settings.photos}
-                  onChange={(checkedValues) => handleSettingsChange('photos', checkedValues as string[])}
-                  disabled={settings.mode !== 'smart' ? false : !settings.isPhotosActive}
-                />
+                <ImageCheckboxGroup />
               </S.Card>
             </StyledPanel>
           </Collapse>
@@ -764,45 +797,10 @@ const RelaySettingsPage: React.FC = () => {
                   </div>
                 )}
 
-                <BaseCheckbox.Group
-                  className={`custom-checkbox-group grid-checkbox-group ${settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''
-                    }`}
-                  options={videoFormatOptions}
-                  value={settings.mode == 'unlimited' ? blacklist.videos : settings.videos}
-                  onChange={(checkedValues) => handleSettingsChange('videos', checkedValues as string[])}
-                  disabled={settings.mode !== 'smart' ? false : !settings.isVideosActive}
-                />
+                <VideoCheckboxGroup />
               </S.Card>
             </StyledPanel>
           </Collapse>
-          {/*   <Collapse bordered={false} style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }}>
-            <StyledPanel
-              header={
-                settings.mode === 'unlimited' ? `Blacklisted ${t('checkboxes.gitNestr')}` : t('checkboxes.gitNestr')
-              }
-              key="4"
-            >
-              <S.Card>
-                <div>
-                  <BaseSwitch
-                    checkedChildren="ON"
-                    unCheckedChildren="OFF"
-                    checked={settings.isGitNestrActive}
-                    onChange={() => handleSwitchChange('isGitNestrActive', !settings.isGitNestrActive)}
-                  />
-                </div>
-                <BaseCheckbox.Group
-                  className={`custom-checkbox-group grid-checkbox-group large-label ${
-                    settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''
-                  }`}
-                  options={gitNestrHkindOptions}
-                  value={settings.mode == 'unlimited' ? blacklist.gitNestr : settings.gitNestr}
-                  onChange={(checkedValues) => handleSettingsChange('gitNestr', checkedValues as string[])}
-                  disabled={!settings.isGitNestrActive}
-                />
-              </S.Card>
-            </StyledPanel>
-          </Collapse> */}
           <Collapse bordered={false} style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }}>
             <StyledPanel
               header={settings.mode !== 'smart' ? `Blacklisted Audio Extensions` : 'Audio Extensions'}
@@ -819,14 +817,7 @@ const RelaySettingsPage: React.FC = () => {
                     />
                   </div>
                 )}
-                <BaseCheckbox.Group
-                  className={`custom-checkbox-group grid-checkbox-group ${settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''
-                    }`}
-                  options={audioFormatOptions}
-                  value={settings.mode == 'unlimited' ? blacklist.audio : settings.audio}
-                  onChange={(checkedValues) => handleSettingsChange('audio', checkedValues as string[])}
-                  disabled={settings.mode !== 'smart' ? false : !settings.isAudioActive}
-                />
+                <AudioCheckboxGroup />
               </S.Card>
             </StyledPanel>
           </Collapse>
@@ -1139,7 +1130,7 @@ const RelaySettingsPage: React.FC = () => {
                 style={{ paddingLeft: '1rem' }}
                 className={`custom-checkbox-group grid-mobile-checkbox-group ${settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''
                   }`}
-                options={photoFormatOptions}
+                options={imageFormatOptions}
                 value={settings.mode == 'unlimited' ? blacklist.photos : settings.photos}
                 onChange={(checkedValues) => handleSettingsChange('photos', checkedValues as string[])}
                 disabled={settings.mode !== 'smart' ? false : !settings.isPhotosActive}

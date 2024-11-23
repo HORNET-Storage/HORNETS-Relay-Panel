@@ -1,5 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { message } from 'antd';
+import config from '@app/config/config';
+import { readToken } from '@app/services/localStorage.service';
+import { useHandleLogout } from './authUtils';
 
 interface FileInfoWithContent {
   Hash: string;
@@ -7,7 +10,7 @@ interface FileInfoWithContent {
   MimeType: string;
   Content: string;
   Size: number;
-  Timestamp: string;
+  Timestamp: Date;
 }
 
 interface PaginationMeta {
@@ -27,17 +30,18 @@ interface UseMediaOptions {
   mediaType?: string;
 }
 
-interface MediaItem {
+export interface MediaItem {
   hash: string;
   name: string;
   type: string;
+  content: string;
   metadata?: {
     size?: string;
     timestamp?: string;
   };
 }
 
-const useMedia = (options: UseMediaOptions = {}) => {
+const useMedia = () => {
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -46,11 +50,13 @@ const useMedia = (options: UseMediaOptions = {}) => {
   const [totalPages, setTotalPages] = useState(1);
 
   const isMounted = useRef(true);
+  const handleLogout = useHandleLogout();
 
   const convertFileToMediaItem = (file: FileInfoWithContent): MediaItem => ({
     hash: file.Hash,
     name: file.FileName,
     type: file.MimeType,
+    content: file.Content,
     metadata: {
       size: file.Size.toString(),
       timestamp: new Date(file.Timestamp).getTime().toString(),
@@ -62,31 +68,58 @@ const useMedia = (options: UseMediaOptions = {}) => {
 
     try {
       setLoading(true);
-      const page = reset ? 1 : currentPage;
-      const response = await fetch(`/api/files?page=${page}&limit=${options.pageSize || 20}`);
+      const token = readToken();
+      if (!token) throw new Error('No authentication token found');
 
-      if (!response.ok) throw new Error(response.statusText);
+      const page = reset ? 1 : currentPage;
+      const queryParams = new URLSearchParams({
+        page: page.toString(),
+        limit: '20',
+        type: 'image/*' // Required parameter
+      });
+
+      const response = await fetch(`${config.baseURL}/api/files?${queryParams}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          handleLogout();
+          throw new Error('Authentication failed');
+        }
+        throw new Error(`Request failed: ${response.status}`);
+      }
 
       const data: FilesResponse = await response.json();
       const newItems = data.data.map(convertFileToMediaItem);
 
-      setMediaItems(prev => reset ? newItems : [...prev, ...newItems]);
-      setCurrentPage(data.meta.page + 1);
-      setTotalPages(data.meta.total_pages);
-      setHasMore(data.meta.page < data.meta.total_pages);
+      if (isMounted.current) {
+        setMediaItems(prev => reset ? newItems : [...prev, ...newItems]);
+        setCurrentPage(data.meta.page + 1);
+        setTotalPages(data.meta.total_pages);
+        setHasMore(data.meta.page < data.meta.total_pages);
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch media');
-      message.error('Failed to fetch media');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch media';
+      setError(errorMessage);
+      message.error(errorMessage);
     } finally {
-      setLoading(false);
+      if (isMounted.current) {
+        setLoading(false);
+      }
     }
-  }, [options.pageSize, currentPage, loading, hasMore]);
+  }, [currentPage, loading, hasMore, handleLogout]);
 
-  useEffect(() => () => { isMounted.current = false; }, []);
+  useEffect(() => {
+    return () => { isMounted.current = false; };
+  }, []);
 
   useEffect(() => {
     fetchMedia(true);
-  }, []);
+  }, [fetchMedia]);
 
   return {
     mediaItems,
@@ -95,11 +128,114 @@ const useMedia = (options: UseMediaOptions = {}) => {
     hasMore,
     fetchMore: () => fetchMedia(false),
     reset: () => fetchMedia(true),
-    totalItems: totalPages * (options.pageSize || 20)
+    totalItems: totalPages * 20
   };
 };
 
 export default useMedia;
+
+// import { useState, useEffect, useCallback, useRef } from 'react';
+// import { message } from 'antd';
+
+// interface FileInfoWithContent {
+//   Hash: string;
+//   FileName: string;
+//   MimeType: string;
+//   Content: string;
+//   Size: number;
+//   Timestamp: string;
+// }
+
+// interface PaginationMeta {
+//   page: number;
+//   limit: number;
+//   total: number;
+//   total_pages: number;
+// }
+
+// interface FilesResponse {
+//   data: FileInfoWithContent[];
+//   meta: PaginationMeta;
+// }
+
+// interface UseMediaOptions {
+//   pageSize?: number;
+//   mediaType?: string;
+// }
+
+// interface MediaItem {
+//   hash: string;
+//   name: string;
+//   type: string;
+//   metadata?: {
+//     size?: string;
+//     timestamp?: string;
+//   };
+// }
+
+// const useMedia = (options: UseMediaOptions = {}) => {
+//   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
+//   const [loading, setLoading] = useState(false);
+//   const [error, setError] = useState<string | null>(null);
+//   const [hasMore, setHasMore] = useState(true);
+//   const [currentPage, setCurrentPage] = useState(1);
+//   const [totalPages, setTotalPages] = useState(1);
+
+//   const isMounted = useRef(true);
+
+//   const convertFileToMediaItem = (file: FileInfoWithContent): MediaItem => ({
+//     hash: file.Hash,
+//     name: file.FileName,
+//     type: file.MimeType,
+//     metadata: {
+//       size: file.Size.toString(),
+//       timestamp: new Date(file.Timestamp).getTime().toString(),
+//     },
+//   });
+
+//   const fetchMedia = useCallback(async (reset: boolean = false) => {
+//     if (loading || (!hasMore && !reset)) return;
+
+//     try {
+//       setLoading(true);
+//       const page = reset ? 1 : currentPage;
+//       const response = await fetch(`/api/files?page=${page}&limit=${options.pageSize || 20}`);
+
+//       if (!response.ok) throw new Error(response.statusText);
+
+//       const data: FilesResponse = await response.json();
+//       const newItems = data.data.map(convertFileToMediaItem);
+
+//       setMediaItems(prev => reset ? newItems : [...prev, ...newItems]);
+//       setCurrentPage(data.meta.page + 1);
+//       setTotalPages(data.meta.total_pages);
+//       setHasMore(data.meta.page < data.meta.total_pages);
+//     } catch (err) {
+//       setError(err instanceof Error ? err.message : 'Failed to fetch media');
+//       message.error('Failed to fetch media');
+//     } finally {
+//       setLoading(false);
+//     }
+//   }, [options.pageSize, currentPage, loading, hasMore]);
+
+//   useEffect(() => () => { isMounted.current = false; }, []);
+
+//   useEffect(() => {
+//     fetchMedia(true);
+//   }, []);
+
+//   return {
+//     mediaItems,
+//     loading,
+//     error,
+//     hasMore,
+//     fetchMore: () => fetchMedia(false),
+//     reset: () => fetchMedia(true),
+//     totalItems: totalPages * (options.pageSize || 20)
+//   };
+// };
+
+// export default useMedia;
 
 
 

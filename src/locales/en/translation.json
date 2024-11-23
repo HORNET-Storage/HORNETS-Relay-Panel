@@ -631,6 +631,14 @@
     "rememberMe": "Remember me",
     "signupLink": "here"
   },
+  "mimeGroups": {
+    "images": "Images",
+    "videos": "Videos",
+    "audio": "Audio",
+    "documents": "Documents",
+    "compressed": "Compressed Files",
+    "others": "Other Files"
+  },
   "modals": {
     "basic": "Basic modal",
     "error": "Error",

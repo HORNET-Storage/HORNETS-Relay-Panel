@@ -16,58 +16,34 @@ export type MediaFile = {
   size: number;
   type: string;
   createdAt: Date;
+  content: string;
   thumbnail: string;
 };
 
 const MediaManager: React.FC = () => {
   const { isTablet, isDesktop, is4k } = useResponsive();
+  const { mediaItems, loading, error, hasMore, fetchMore, reset } = useMedia();
+
   const [selectedFiles, setSelectedFiles] = useState<MediaFile[]>([]);
   const [selectedFileForViewer, setSelectedFileForViewer] = useState<MediaFile | null>(null);
   const [viewerVisible, setViewerVisible] = useState(false);
   const [selectionModeActive, setSelectionModeActive] = useState<boolean>(false);
   const [isAllSelected, setIsAllSelected] = useState<boolean>(false);
 
-  const [path, setPath] = useState<string>('/media/images');
-  const [breadcrumbItems, setBreadcrumbItems] = useState<string[]>(
-    path.length <= 0 ? ['/'] : path.split('/')
-  );
-
-  // Use our updated media hook
-  const {
-    mediaItems,
-    loading,
-    error,
-    hasMore,
-    fetchMore,
-    reset
-  } = useMedia({
-    pageSize: 20,
-    mediaType: 'all',
-  });
-
-  // Convert the new API response format to MediaFile format
   const files: MediaFile[] = mediaItems.map(item => ({
-    id: item.hash, // Using pub_key as hash from the API
-    path: `/api/files/${item.hash}`, // Updated path to match new API
+    id: item.hash,
+    path: `/api/files/${item.hash}`,
     name: item.name,
     size: parseInt(item.metadata?.size || '0'),
     type: item.type,
+    content: item.content || '',
     createdAt: new Date(parseInt(item.metadata?.timestamp || Date.now().toString())),
-    thumbnail: `/api/files/${item.hash}/thumbnail` // Assuming there's a thumbnail endpoint
+    thumbnail: `data:${item.type};base64,${item.content}`
   }));
 
   useEffect(() => {
-    if (error) {
-      console.error('Error loading media:', error);
-    }
+    if (error) console.error('Error loading media:', error);
   }, [error]);
-
-  // Reset selection when media items change
-  useEffect(() => {
-    setSelectedFiles([]);
-    setSelectionModeActive(false);
-    setIsAllSelected(false);
-  }, [path]);
 
   const handleSelect = (file: MediaFile) => {
     if (!selectionModeActive) {
@@ -75,72 +51,34 @@ const MediaManager: React.FC = () => {
       setViewerVisible(true);
       return;
     }
-
-    if (selectedFiles.some((selectedFile) => selectedFile.id === file.id)) {
-      setSelectedFiles(selectedFiles.filter((selectedFile) => selectedFile.id !== file.id));
-    } else {
-      setSelectedFiles([...selectedFiles, file]);
-    }
+    setSelectedFiles(prev => 
+      prev.some(f => f.id === file.id) 
+        ? prev.filter(f => f.id !== file.id)
+        : [...prev, file]
+    );
   };
 
   const handleSelectAll = () => {
-    if (selectedFiles.length === files.length) {
-      setSelectedFiles([]);
-    } else {
-      setSelectedFiles([...files]);
-    }
-  };
-
-  const isSelected = (file: MediaFile) => {
-    return selectedFiles.some((selectedFile) => selectedFile.id === file.id);
+    setSelectedFiles(selectedFiles.length === files.length ? [] : [...files]);
   };
 
   const handleSelectButton = () => {
     setSelectionModeActive(!selectionModeActive);
-    if (!selectionModeActive) {
-      setSelectedFiles([]);
-    }
+    setSelectedFiles([]);
   };
 
   useEffect(() => {
     setIsAllSelected(selectedFiles.length === files.length && files.length > 0);
   }, [selectedFiles, files]);
 
-  useEffect(() => {
-    setBreadcrumbItems(path.length <= 0 ? ['/'] : path.split('/'));
-  }, [path]);
-
-  const handleCloseViewer = () => {
-    setViewerVisible(false);
-    setSelectedFileForViewer(null);
-  };
-
-  const handleDelete = async () => {
-    // Implement delete functionality here
-    // You'll need to call your API to delete the selected files
-    // After successful deletion, call reset() to refresh the list
-  };
-
-  const getMediaItemColumnSize = () => {
-    if (isTablet) {
-      if (isDesktop) return 4;
-      return 6;
-    } else {
-      return 12;
-    }
-  };
-
-  // Enhanced scroll handler for infinite loading
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const { scrollTop, clientHeight, scrollHeight } = e.currentTarget;
-    const scrollThreshold = 100; // pixels before bottom
-    
-    if (scrollHeight - scrollTop - clientHeight <= scrollThreshold) {
-      if (hasMore && !loading) {
-        fetchMore();
-      }
+    if (scrollHeight - scrollTop - clientHeight <= 100 && hasMore && !loading) {
+      fetchMore();
     }
   };
+
+  const getMediaItemColumnSize = () => isTablet ? (isDesktop ? 4 : 6) : 12;
 
   return (
     <S.MediaManagerContainer>
@@ -148,9 +86,7 @@ const MediaManager: React.FC = () => {
         <BaseCol span={isTablet ? 10 : 24}>
           <S.BreadcrumbWrapper isTablet={isTablet}>
             <S.Breadcrumb $is4kScreen={is4k}>
-              {breadcrumbItems.map((item, index) => (
-                <BreadcrumbItem key={index}>{item}</BreadcrumbItem>
-              ))}
+              <BreadcrumbItem>Media</BreadcrumbItem>
             </S.Breadcrumb>
           </S.BreadcrumbWrapper>
         </BaseCol>
@@ -161,7 +97,6 @@ const MediaManager: React.FC = () => {
                 $is4kScreen={is4k} 
                 size={is4k ? 'large' : 'middle'}
                 disabled={selectedFiles.length === 0}
-                onClick={handleDelete}
               >
                 Delete
               </S.ToolBarButton>
@@ -192,7 +127,7 @@ const MediaManager: React.FC = () => {
             <BaseCol key={item.id} span={getMediaItemColumnSize()}>
               <MediaItem 
                 file={item} 
-                selected={isSelected(item)} 
+                selected={selectedFiles.some(f => f.id === item.id)} 
                 onClick={() => handleSelect(item)} 
               />
             </BaseCol>
@@ -216,7 +151,10 @@ const MediaManager: React.FC = () => {
       </S.ScrollContainer>
       <MediaViewer 
         visible={viewerVisible} 
-        onClose={handleCloseViewer} 
+        onClose={() => {
+          setViewerVisible(false);
+          setSelectedFileForViewer(null);
+        }} 
         file={selectedFileForViewer} 
         files={files}
       />
@@ -225,6 +163,235 @@ const MediaManager: React.FC = () => {
 };
 
 export default MediaManager;
+
+
+// import React, { useState, useEffect } from 'react';
+// import * as S from './MediaManager.styles';
+// import MediaItem from './MediaItem/MediaItem';
+// import { BaseRow } from '@app/components/common/BaseRow/BaseRow';
+// import { BaseCol } from '@app/components/common/BaseCol/BaseCol';
+// import { useResponsive } from '@app/hooks/useResponsive';
+// import BreadcrumbItem from 'antd/lib/breadcrumb/BreadcrumbItem';
+// import MediaViewer from './MediaViewer/MediaViewer';
+// import useMedia from '@app/hooks/useMedia';
+// import { Spin } from 'antd';
+
+// export type MediaFile = {
+//   id: string;
+//   path: string;
+//   name: string;
+//   size: number;
+//   type: string;
+//   createdAt: Date;
+//   thumbnail: string;
+// };
+
+// const MediaManager: React.FC = () => {
+//   const { isTablet, isDesktop, is4k } = useResponsive();
+//   const [selectedFiles, setSelectedFiles] = useState<MediaFile[]>([]);
+//   const [selectedFileForViewer, setSelectedFileForViewer] = useState<MediaFile | null>(null);
+//   const [viewerVisible, setViewerVisible] = useState(false);
+//   const [selectionModeActive, setSelectionModeActive] = useState<boolean>(false);
+//   const [isAllSelected, setIsAllSelected] = useState<boolean>(false);
+
+//   const [path, setPath] = useState<string>('/media/images');
+//   const [breadcrumbItems, setBreadcrumbItems] = useState<string[]>(
+//     path.length <= 0 ? ['/'] : path.split('/')
+//   );
+
+//   // Use our updated media hook
+//   const {
+//     mediaItems,
+//     loading,
+//     error,
+//     hasMore,
+//     fetchMore,
+//     reset
+//   } = useMedia({
+//     pageSize: 20,
+//     mediaType: 'all',
+//   });
+
+//   // Convert the new API response format to MediaFile format
+//   const files: MediaFile[] = mediaItems.map(item => ({
+//     id: item.hash, // Using pub_key as hash from the API
+//     path: `/api/files/${item.hash}`, // Updated path to match new API
+//     name: item.name,
+//     size: parseInt(item.metadata?.size || '0'),
+//     type: item.type,
+//     createdAt: new Date(parseInt(item.metadata?.timestamp || Date.now().toString())),
+//     thumbnail: `/api/files/${item.hash}/thumbnail` // Assuming there's a thumbnail endpoint
+//   }));
+
+//   useEffect(() => {
+//     if (error) {
+//       console.error('Error loading media:', error);
+//     }
+//   }, [error]);
+
+//   // Reset selection when media items change
+//   useEffect(() => {
+//     setSelectedFiles([]);
+//     setSelectionModeActive(false);
+//     setIsAllSelected(false);
+//   }, [path]);
+
+//   const handleSelect = (file: MediaFile) => {
+//     if (!selectionModeActive) {
+//       setSelectedFileForViewer(file);
+//       setViewerVisible(true);
+//       return;
+//     }
+
+//     if (selectedFiles.some((selectedFile) => selectedFile.id === file.id)) {
+//       setSelectedFiles(selectedFiles.filter((selectedFile) => selectedFile.id !== file.id));
+//     } else {
+//       setSelectedFiles([...selectedFiles, file]);
+//     }
+//   };
+
+//   const handleSelectAll = () => {
+//     if (selectedFiles.length === files.length) {
+//       setSelectedFiles([]);
+//     } else {
+//       setSelectedFiles([...files]);
+//     }
+//   };
+
+//   const isSelected = (file: MediaFile) => {
+//     return selectedFiles.some((selectedFile) => selectedFile.id === file.id);
+//   };
+
+//   const handleSelectButton = () => {
+//     setSelectionModeActive(!selectionModeActive);
+//     if (!selectionModeActive) {
+//       setSelectedFiles([]);
+//     }
+//   };
+
+//   useEffect(() => {
+//     setIsAllSelected(selectedFiles.length === files.length && files.length > 0);
+//   }, [selectedFiles, files]);
+
+//   useEffect(() => {
+//     setBreadcrumbItems(path.length <= 0 ? ['/'] : path.split('/'));
+//   }, [path]);
+
+//   const handleCloseViewer = () => {
+//     setViewerVisible(false);
+//     setSelectedFileForViewer(null);
+//   };
+
+//   const handleDelete = async () => {
+//     // Implement delete functionality here
+//     // You'll need to call your API to delete the selected files
+//     // After successful deletion, call reset() to refresh the list
+//   };
+
+//   const getMediaItemColumnSize = () => {
+//     if (isTablet) {
+//       if (isDesktop) return 4;
+//       return 6;
+//     } else {
+//       return 12;
+//     }
+//   };
+
+//   // Enhanced scroll handler for infinite loading
+//   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+//     const { scrollTop, clientHeight, scrollHeight } = e.currentTarget;
+//     const scrollThreshold = 100; // pixels before bottom
+    
+//     if (scrollHeight - scrollTop - clientHeight <= scrollThreshold) {
+//       if (hasMore && !loading) {
+//         fetchMore();
+//       }
+//     }
+//   };
+
+//   return (
+//     <S.MediaManagerContainer>
+//       <BaseRow>
+//         <BaseCol span={isTablet ? 10 : 24}>
+//           <S.BreadcrumbWrapper isTablet={isTablet}>
+//             <S.Breadcrumb $is4kScreen={is4k}>
+//               {breadcrumbItems.map((item, index) => (
+//                 <BreadcrumbItem key={index}>{item}</BreadcrumbItem>
+//               ))}
+//             </S.Breadcrumb>
+//           </S.BreadcrumbWrapper>
+//         </BaseCol>
+//         <BaseCol span={isTablet ? 14 : 24}>
+//           <BaseRow>
+//             <S.ButtonsContainer>
+//               <S.ToolBarButton 
+//                 $is4kScreen={is4k} 
+//                 size={is4k ? 'large' : 'middle'}
+//                 disabled={selectedFiles.length === 0}
+//                 onClick={handleDelete}
+//               >
+//                 Delete
+//               </S.ToolBarButton>
+//               <S.ToolBarButton
+//                 $isActive={selectionModeActive}
+//                 onClick={handleSelectButton}
+//                 $is4kScreen={is4k}
+//                 size={is4k ? 'large' : 'middle'}
+//               >
+//                 {`Select (${selectedFiles.length})`}
+//               </S.ToolBarButton>
+//               <S.ToolBarButton
+//                 $isActive={isAllSelected}
+//                 $is4kScreen={is4k}
+//                 size={is4k ? 'large' : 'middle'}
+//                 onClick={handleSelectAll}
+//                 disabled={files.length === 0}
+//               >
+//                 Select All
+//               </S.ToolBarButton>
+//             </S.ButtonsContainer>
+//           </BaseRow>
+//         </BaseCol>
+//       </BaseRow>
+//       <S.ScrollContainer onScroll={handleScroll}>
+//         <BaseRow gutter={[32, 24]}>
+//           {files.map((item) => (
+//             <BaseCol key={item.id} span={getMediaItemColumnSize()}>
+//               <MediaItem 
+//                 file={item} 
+//                 selected={isSelected(item)} 
+//                 onClick={() => handleSelect(item)} 
+//               />
+//             </BaseCol>
+//           ))}
+//         </BaseRow>
+//         {loading && (
+//           <S.SpinnerWrapper>
+//             <Spin size="large" />
+//           </S.SpinnerWrapper>
+//         )}
+//         {!loading && !hasMore && files.length > 0 && (
+//           <S.MessageWrapper>
+//             No more items to load
+//           </S.MessageWrapper>
+//         )}
+//         {!loading && files.length === 0 && (
+//           <S.MessageWrapper>
+//             No media files found
+//           </S.MessageWrapper>
+//         )}
+//       </S.ScrollContainer>
+//       <MediaViewer 
+//         visible={viewerVisible} 
+//         onClose={handleCloseViewer} 
+//         file={selectedFileForViewer} 
+//         files={files}
+//       />
+//     </S.MediaManagerContainer>
+//   );
+// };
+
+// export default MediaManager;
 
 
 

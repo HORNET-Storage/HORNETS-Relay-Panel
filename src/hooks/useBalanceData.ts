@@ -72,7 +72,6 @@ const useBalanceData = () => {
         }
         const transactionsData: Transaction[] = await transactionsResponse.json();
         setTransactions(transactionsData);
-        console.log('Transactions data:', transactionsData);
 
       } catch (error) {
         console.error('Error fetching data:', error);
