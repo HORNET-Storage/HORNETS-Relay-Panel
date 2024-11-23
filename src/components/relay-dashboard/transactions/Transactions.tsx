@@ -22,6 +22,8 @@ import {
   Filler,
 } from 'chart.js';
 import { TransactionCard } from './TransactionItem/TransactionItem.styles';
+import ButtonTrigger from '../unconfirmed-transactions/components/ButtonTrigger/ButtonTrigger';
+import { useHandleLogout } from '@app/hooks/authUtils';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
 
@@ -36,15 +38,21 @@ export const ActivityStory: React.FC = () => {
   const [story, setStory] = useState<WalletTransaction[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const handleLogout = useHandleLogout();
 
   const { t } = useTranslation();
 
   useEffect(() => {
-    getUserActivities().then((res) => {
-      setStory(res);
-      setIsLoading(false);
-    });
-  }, []);
+    getUserActivities(handleLogout)
+      .then((res) => {
+        setStory(res);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.error('Failed to load user activities:', error);
+        setIsLoading(false);
+      });
+  }, [handleLogout]);
 
   const activityContent =
     story.length > 0 ? (
@@ -82,29 +90,23 @@ export const ActivityStory: React.FC = () => {
     );
   };
   const prepareChartData = () => {
-    const sortedStory = [...story]
-      .filter((item) => {
-        const amount = parseFloat(item.value);
-        console.log(`Parsed amount: ${amount} for transaction ID: ${item.id}`);
-        return amount > 0; // Filter only positive values
-      })
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    const sortedStory = [...story].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    
+    // Filter out negative values and their corresponding labels
+    const positiveStory = sortedStory.filter((item) => parseFloat(item.value) > 0);
   
-    const labels = sortedStory.map((item) => new Date(item.date).toLocaleDateString());
-    const amounts = sortedStory.map((item) => {
+    const labels = positiveStory.map((item) => new Date(item.date).toLocaleDateString());
+    const amounts = positiveStory.map((item) => {
       const amount = parseFloat(item.value);
       return isNaN(amount) ? 0 : amount;
     });
-  
-    // Additional log to verify amounts array
-    console.log('Chart Data Amounts:', amounts);
   
     return {
       labels,
       datasets: [
         {
           label: 'Transaction Amount',
-          data: amounts, // Ensure this is correctly linked
+          data: amounts,
           fill: true,
           backgroundColor: (context: any) => {
             const ctx = context.chart.ctx;
@@ -124,6 +126,7 @@ export const ActivityStory: React.FC = () => {
     };
   };
   
+
   const chartOptions: ChartOptions<'line'> = {
     responsive: true,
     maintainAspectRatio: false,
@@ -181,12 +184,7 @@ export const ActivityStory: React.FC = () => {
         },
       },
       tooltip: {
-        callbacks: {
-          label: function (tooltipItem) {
-            // Customize tooltip display
-            return `Amount: ${tooltipItem.raw}`;  // Assuming that `tooltipItem.raw` holds the amount value
-          },
-        },
+        // ... (keep the existing tooltip configuration)
       },
     },
     animation: {
@@ -198,7 +196,6 @@ export const ActivityStory: React.FC = () => {
       intersect: true,
     },
   };
-  
 
   return (
     <S.Wrapper>
@@ -208,14 +205,14 @@ export const ActivityStory: React.FC = () => {
           {t('nft.viewTransactions')}
         </ViewTransactions>
       </TitleContainer>
-
+      <ButtonTrigger amount={0}/>
       <Modal title="Your Transactions" open={isModalVisible} onCancel={handleCancel} footer={null} width={800}>
         <div style={{ height: '400px', marginBottom: '20px' }}>
           <Line data={prepareChartData()} options={chartOptions} />
         </div>
-         {isLoading ? <TransactionSkeletons/> : <S.ActivityRow gutter={[26, 26]}>{activityContent}</S.ActivityRow>}
+        {isLoading ? <TransactionSkeletons /> : <S.ActivityRow gutter={[26, 26]}>{activityContent}</S.ActivityRow>}
       </Modal>
-      {isLoading ? <TransactionSkeletons/> : <S.ActivityRow gutter={[26, 26]}>{activityContent}</S.ActivityRow>}
+      {isLoading ? <TransactionSkeletons /> : <S.ActivityRow gutter={[26, 26]}>{activityContent}</S.ActivityRow>}
     </S.Wrapper>
   );
 };
