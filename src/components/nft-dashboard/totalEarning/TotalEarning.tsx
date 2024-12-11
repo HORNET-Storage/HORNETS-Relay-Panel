@@ -26,8 +26,6 @@ export const TotalEarning: React.FC = () => {
     };
     const daysData = rates.map((item: Earning) => {
       const date = new Date(item.date);
-      console.log("Date: ", date)
-      console.log("Date 2: ", item.date)
       return Dates.getDate(date.getTime()).format('L LTS');
     });
 

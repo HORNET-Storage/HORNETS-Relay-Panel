@@ -90,17 +90,20 @@ export const ActivityStory: React.FC = () => {
     );
   };
   const prepareChartData = () => {
-    const sortedStory = [...story].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+    const sortedStory = [...story].sort((a, b) => a.date - b.date);
     
-    // Filter out negative values and their corresponding labels
-    const positiveStory = sortedStory.filter((item) => parseFloat(item.value) > 0);
-  
-    const labels = positiveStory.map((item) => new Date(item.date).toLocaleDateString());
-    const amounts = positiveStory.map((item) => {
+    // Filter out negative values and ensure value is properly parsed
+    const positiveStory = sortedStory.filter((item) => {
       const amount = parseFloat(item.value);
-      return isNaN(amount) ? 0 : amount;
+      return !isNaN(amount) && amount > 0;
     });
-  
+
+    const labels = positiveStory.map((item) => new Date(item.date).toLocaleDateString());
+    const amounts = positiveStory.map((item) => parseFloat(item.value));
+
+    console.log('Chart data:', { labels, amounts });
+
     return {
       labels,
       datasets: [
@@ -125,7 +128,7 @@ export const ActivityStory: React.FC = () => {
       ],
     };
   };
-  
+
 
   const chartOptions: ChartOptions<'line'> = {
     responsive: true,
@@ -205,7 +208,7 @@ export const ActivityStory: React.FC = () => {
           {t('nft.viewTransactions')}
         </ViewTransactions>
       </TitleContainer>
-      <ButtonTrigger amount={0}/>
+      <ButtonTrigger amount={0} />
       <Modal title="Your Transactions" open={isModalVisible} onCancel={handleCancel} footer={null} width={800}>
         <div style={{ height: '400px', marginBottom: '20px' }}>
           <Line data={prepareChartData()} options={chartOptions} />

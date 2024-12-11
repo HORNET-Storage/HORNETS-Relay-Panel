@@ -110,3 +110,9 @@ export const mimeTypeOptions: FormatOption[] = [
   { value: 'audio/m4b', label: 'M4B Audiobooks' },
   { value: 'audio/midi', label: 'MIDI Audio' },
 ];
+
+export const defaultTiers: SubscriptionTier[] = [
+  { data_limit: '1 GB per month', price: '8000' },
+  { data_limit: '5 GB per month', price: '10000' },
+  { data_limit: '10 GB per month', price: '15000' }
+];

@@ -28,12 +28,16 @@ const SubscriptionTiersManager: React.FC<SubscriptionTiersManagerProps> = ({ tie
 
   // Update current tiers when props change
   useEffect(() => {
-    if (tiers.length > 0 && JSON.stringify(tiers) !== JSON.stringify(currentTiers)) {
+    if (tiers.length > 0) {
       const formattedTiers = tiers.map(tier => ({
         data_limit: tier.data_limit.includes('per month') ? tier.data_limit : `${tier.data_limit} per month`,
         price: tier.price
       }));
-      setCurrentTiers(formattedTiers);
+      
+      // Only update if the formatted tiers are different from props
+      if (JSON.stringify(tiers) !== JSON.stringify(formattedTiers)) {
+        setCurrentTiers(formattedTiers);
+      }
     }
   }, [tiers]);
 

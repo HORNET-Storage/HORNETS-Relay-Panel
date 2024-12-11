@@ -20,6 +20,7 @@ import { themeObject } from '@app/styles/themes/themeVariables';
 import { categories, noteOptions, appBuckets as defaultAppBuckets, Settings, Category } from '@app/constants/relaySettings';
 import SubscriptionTiersManager from '@app/components/SubscriptionTiersManager';
 import { SubscriptionTier } from '@app/constants/relaySettings';
+import { defaultTiers } from '@app/constants/relaySettings';
 const { Panel } = Collapse;
 const StyledPanel = styled(Panel)``;
 const { Option } = Select;
@@ -72,7 +73,7 @@ const RelaySettingsPage: React.FC = () => {
     isGitNestrActive: true,
     isAudioActive: true,
     isFileStorageActive: false,
-    subscription_tiers: [],
+    subscription_tiers: defaultTiers,
   });
 
   const handleTiersChange = (newTiers: SubscriptionTier[]) => {
@@ -320,6 +321,7 @@ const RelaySettingsPage: React.FC = () => {
       setSettings({
         ...relaySettings,
         protocol: Array.isArray(relaySettings.protocol) ? relaySettings.protocol : [relaySettings.protocol],
+        subscription_tiers: relaySettings.subscription_tiers || defaultTiers // Add this line
       });
     }
   }, [relaySettings]);

@@ -45,7 +45,6 @@ export const useBitcoinRates = () => {
         }
 
         const data = await response.json();
-        console.log("bitcoinrate data: ", data)
         setRates(
           data.map((item: { Rate: number; TimestampHornets: string }) => ({
             date: new Date(item.TimestampHornets).getTime(),

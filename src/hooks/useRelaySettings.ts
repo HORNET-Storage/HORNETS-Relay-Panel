@@ -6,8 +6,8 @@ import { useHandleLogout } from './authUtils';
 import { Settings, noteOptions, mimeTypeOptions, SubscriptionTier } from '@app/constants/relaySettings';
 
 interface BackendSubscriptionTier {
-  DataLimit: string;
-  Price: string;
+  datalimit: string;
+  price: string;
 }
 
 interface BackendRelaySettings {
@@ -26,6 +26,7 @@ interface BackendRelaySettings {
   };
   MimeTypeWhitelist: string[];
   KindWhitelist: string[];
+  isFileStorageActive?: boolean;
 }
 
 const defaultTiers: SubscriptionTier[] = [
@@ -63,7 +64,7 @@ const useRelaySettings = () => {
     videos: string[];
     audio: string[];
   } | null>(null);
-  
+
   const handleLogout = useHandleLogout();
   const token = readToken();
 
@@ -77,7 +78,7 @@ const useRelaySettings = () => {
         videos: relaySettings.videos,
         audio: relaySettings.audio,
       });
-      
+
       setRelaySettings(prev => ({
         ...prev,
         kinds: [],
@@ -119,36 +120,44 @@ const useRelaySettings = () => {
       maxFileSize: 10,
       maxFileSizeUnit: 'MB',
       subscription_tiers: settings.subscription_tiers.map(tier => ({
-        DataLimit: tier.data_limit,
-        Price: tier.price
+        datalimit: tier.data_limit,
+        price: tier.price
       })),
       MimeTypeGroups: mimeGroups,
+      isFileStorageActive: settings.isFileStorageActive,
       MimeTypeWhitelist: settings.mode === 'smart'
         ? selectedMimeTypes
         : mimeTypeOptions
-            .map(m => m.value)
-            .filter(mimeType => !selectedMimeTypes.includes(mimeType)),
+          .map(m => m.value)
+          .filter(mimeType => !selectedMimeTypes.includes(mimeType)),
       KindWhitelist: settings.mode === 'smart'
         ? settings.kinds
         : noteOptions
-            .map(note => note.kindString)
-            .filter(kind => !settings.kinds.includes(kind))
+          .map(note => note.kindString)
+          .filter(kind => !settings.kinds.includes(kind))
     };
   };
 
   const transformFromBackendSettings = (backendSettings: BackendRelaySettings): Settings => {
+    console.log('Raw backend settings:', backendSettings);
     const settings = getInitialSettings();
     settings.mode = backendSettings.mode;
     settings.protocol = backendSettings.protocol as string[];
-    
-    // Handle subscription tiers
-    settings.subscription_tiers = backendSettings.subscription_tiers.map(tier => ({
-      data_limit: tier.DataLimit || defaultTiers[0].data_limit,
-      price: tier.Price || defaultTiers[0].price
-    }));
 
-    if (!settings.subscription_tiers.length || 
-        settings.subscription_tiers.every(tier => !tier.data_limit)) {
+    // Handle subscription tiers
+    if (Array.isArray(backendSettings.subscription_tiers)) {
+      settings.subscription_tiers = backendSettings.subscription_tiers.map(tier => ({
+        data_limit: tier.datalimit,
+        price: tier.price
+      }));  
+      console.log('Transformed tiers:', settings.subscription_tiers);
+    } else {
+      console.log('No backend tiers, using defaults');
+      settings.subscription_tiers = defaultTiers;
+    }
+
+    if (!settings.subscription_tiers.length ||
+      settings.subscription_tiers.every(tier => !tier.data_limit)) {
       settings.subscription_tiers = defaultTiers;
     }
 
@@ -164,7 +173,7 @@ const useRelaySettings = () => {
       settings.videos = backendSettings.MimeTypeGroups?.videos || [];
       settings.audio = backendSettings.MimeTypeGroups?.audio || [];
       settings.kinds = backendSettings.KindWhitelist || [];
-      
+
       // Store these as the previous smart settings
       setPreviousSmartSettings({
         kinds: settings.kinds,
@@ -179,7 +188,8 @@ const useRelaySettings = () => {
     settings.isPhotosActive = true;
     settings.isVideosActive = true;
     settings.isAudioActive = true;
-    
+    settings.isFileStorageActive = backendSettings.isFileStorageActive ?? false;
+
     return settings;
   };
 
@@ -198,11 +208,11 @@ const useRelaySettings = () => {
       }
 
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      
+
       const data = await response.json();
       const settings = transformFromBackendSettings(data.relay_settings);
       setRelaySettings(settings);
-      
+
     } catch (error) {
       console.error('Error fetching settings:', error);
     }
@@ -221,7 +231,7 @@ const useRelaySettings = () => {
       });
 
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      
+
       // Update previous smart settings after successful save
       if (relaySettings.mode === 'smart') {
         setPreviousSmartSettings({
