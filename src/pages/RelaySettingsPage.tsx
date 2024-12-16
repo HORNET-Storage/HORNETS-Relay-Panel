@@ -1,61 +1,29 @@
+// src/pages/RelaySettingsPage.tsx
+
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Collapse, Select, Input, Checkbox, Typography } from 'antd';
-import styled from 'styled-components';
-import { BaseSwitch } from '@app/components/common/BaseSwitch/BaseSwitch';
-import { BaseCheckbox } from '@app/components/common/BaseCheckbox/BaseCheckbox';
-import { useAppDispatch, useAppSelector } from '@app/hooks/reduxHooks';
-import { setMode } from '@app/store/slices/modeSlice';
 import { PageTitle } from '@app/components/common/PageTitle/PageTitle';
-import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
-import { BaseRow } from '@app/components/common/BaseRow/BaseRow';
-import { BaseCol } from '@app/components/common/BaseCol/BaseCol';
-import { Balance } from '@app/components/nft-dashboard/Balance/Balance';
-import { TotalEarning } from '@app/components/nft-dashboard/totalEarning/TotalEarning';
-import { ActivityStory } from '@app/components/nft-dashboard/activityStory/ActivityStory';
+import { useDispatch } from 'react-redux';
+import { useAppSelector } from '@app/hooks/reduxHooks';
+import { setMode } from '@app/store/slices/modeSlice';
 import { useResponsive } from '@app/hooks/useResponsive';
 import useRelaySettings from '@app/hooks/useRelaySettings';
-import * as S from '@app/pages/uiComponentsPages/UIComponentsPage.styles';
-import { themeObject } from '@app/styles/themes/themeVariables';
-import { categories, noteOptions, appBuckets as defaultAppBuckets, Settings, Category } from '@app/constants/relaySettings';
-import SubscriptionTiersManager from '@app/components/SubscriptionTiersManager';
-import { SubscriptionTier } from '@app/constants/relaySettings';
-import { defaultTiers } from '@app/constants/relaySettings';
-const { Panel } = Collapse;
-const StyledPanel = styled(Panel)``;
-const { Option } = Select;
+import { DesktopLayout } from '@app/components/relay-settings/layouts/DesktopLayout';
+import { MobileLayout } from '@app/components/relay-settings/layouts/MobileLayout';
+import { Settings, Category, defaultTiers, SubscriptionTier } from '@app/constants/relaySettings';
 
 const RelaySettingsPage: React.FC = () => {
-  const theme = useAppSelector((state) => state.theme.theme);
-  const { relaySettings, fetchSettings, updateSettings, saveSettings } = useRelaySettings();
-  const { isDesktop } = useResponsive();
   const { t } = useTranslation();
-  const dispatch = useAppDispatch();
+  const dispatch = useDispatch();
+  const { isDesktop } = useResponsive();
+  const theme = useAppSelector((state) => state.theme.theme);
   const relaymode = useAppSelector((state) => state.mode.relayMode);
+  const { relaySettings, fetchSettings, updateSettings, saveSettings } = useRelaySettings();
 
-  const [storedDynamicKinds, setStoredDynamicKinds] = useState<string[]>(
-    JSON.parse(localStorage.getItem('dynamicKinds') || '[]'),
-  );
-
-  const [storedAppBuckets, setStoredAppBuckets] = useState<string[]>(
-    JSON.parse(localStorage.getItem('appBuckets') || '[]'),
-  );
-
-  const [dynamicAppBuckets, setDynamicAppBuckets] = useState<string[]>(
-    JSON.parse(localStorage.getItem('dynamicAppBuckets') || '[]'),
-  );
-
+  // Loading state
   const [loadings, setLoadings] = useState<boolean[]>([]);
-  const [newKind, setNewKind] = useState('');
-  const [newBucket, setNewBucket] = useState('');
-  const [blacklist, setBlacklist] = useState({
-    kinds: [],
-    photos: [],
-    videos: [],
-    gitNestr: [],
-    audio: [],
-  });
 
+  // Local state for settings
   const [settings, setSettings] = useState<Settings>({
     mode: JSON.parse(localStorage.getItem('relaySettings') || '{}').mode || relaymode || 'unlimited',
     protocol: ['WebSocket'],
@@ -73,262 +41,56 @@ const RelaySettingsPage: React.FC = () => {
     isGitNestrActive: true,
     isAudioActive: true,
     isFileStorageActive: false,
-    subscription_tiers: defaultTiers,
+    subscription_tiers: [],
   });
 
-  const handleTiersChange = (newTiers: SubscriptionTier[]) => {
-    updateSettings('subscription_tiers', newTiers);
-  };
+  // Initialize stored dynamic items
+  const [storedDynamicKinds, setStoredDynamicKinds] = useState<string[]>(
+    JSON.parse(localStorage.getItem('dynamicKinds') || '[]'),
+  );
 
-  const groupedNoteOptions = categories.map((category) => ({
-    ...category,
-    notes: noteOptions.filter((note) => note.category === category.id),
-  }));
+  const [dynamicAppBuckets, setDynamicAppBuckets] = useState<string[]>(
+    JSON.parse(localStorage.getItem('dynamicAppBuckets') || '[]'),
+  );
 
+  // Blacklist state
+  const [blacklist, setBlacklist] = useState({
+    kinds: [],
+    photos: [],
+    videos: [],
+    gitNestr: [],
+    audio: [],
+  });
+
+  // Fetch initial settings
   useEffect(() => {
-    console.log(settings);
-    console.log(blacklist)
-  }, [settings, blacklist]);
-  const enterLoading = (index: number) => {
-    setLoadings((loadings) => {
-      const newLoadings = [...loadings];
-      newLoadings[index] = true;
-      return newLoadings;
-    });
-  };
+    fetchSettings();
+  }, [fetchSettings]);
 
-  const exitLoading = (index: number) => {
-    setLoadings((loadings) => {
-      const newLoadings = [...loadings];
-      newLoadings[index] = false;
-      return newLoadings;
-    });
-  };
-
+  // Sync settings with relay settings
   useEffect(() => {
     if (relaySettings) {
-      setSettings({
+      console.log('Raw relay settings:', relaySettings); // For debugging
+      
+      // Only set defaults if there are no tiers or if they are invalid
+      const tiers = Array.isArray(relaySettings.subscription_tiers) && 
+                   relaySettings.subscription_tiers.length > 0 &&
+                   relaySettings.subscription_tiers.every(tier => tier.data_limit && tier.price)
+                   ? relaySettings.subscription_tiers
+                   : defaultTiers;
+  
+      setSettings(prev => ({
         ...relaySettings,
         protocol: Array.isArray(relaySettings.protocol) ? relaySettings.protocol : [relaySettings.protocol],
-      });
+        subscription_tiers: tiers
+      }));
       setDynamicAppBuckets(relaySettings.dynamicAppBuckets);
     }
   }, [relaySettings]);
 
-
-  const appBucketOptions = [
-    ...defaultAppBuckets.map(bucket => ({ id: bucket.id, label: bucket.label })),
-    ...dynamicAppBuckets.map(bucket => ({ id: bucket, label: bucket }))
-  ].map((bucket) => ({
-    label: (
-      <S.CheckboxLabel
-        style={{
-          color:
-            settings.mode !== 'smart'
-              ? themeObject[theme].textMain
-              : relaySettings.isKindsActive
-                ? themeObject[theme].textMain
-                : themeObject[theme].textLight,
-        }}
-        isActive={settings.mode !== 'smart' ? true : settings.isKindsActive}
-      >
-        {bucket.label}
-      </S.CheckboxLabel>
-    ),
-    value: bucket.id,
-  }));
-
-  const gitNestrHkindOptions = [
-    { value: 'Nostr/file_attachment' },
-    { value: 'GitNestr/bundle_chain', description: 'Codebase Without Git Tree' },
-    { value: 'GitNestr/archive_repo' },
-    { value: 'GitNestr/encrypted_data' },
-  ].map(({ value, description }) => ({
-    label: (
-      <S.CheckboxLabel
-        style={{
-          color:
-            settings.mode !== 'smart'
-              ? themeObject[theme].textMain
-              : relaySettings.isGitNestrActive
-                ? themeObject[theme].textMain
-                : themeObject[theme].textLight,
-        }}
-        isActive={settings.mode !== 'smart' ? true : settings.isGitNestrActive}
-      >
-        {t(`checkboxes.${value}`)}
-        {description && ` - ${description}`}
-      </S.CheckboxLabel>
-    ),
-    value,
-  }));
-
-  const chunkSizeOptions = ['2', '4', '6', '8', '10', '12'];
-  const maxFileSizeUnitOptions = ['MB', 'GB', 'TB'];
-
-  const handleModeChange = (checked: boolean) => {
-    const newMode = checked ? 'smart' : 'unlimited';
-    setSettings(prev => ({
-      ...prev,
-      mode: newMode,
-      // Clear selections when switching to unlimited mode
-      kinds: newMode === 'unlimited' ? [] : prev.kinds,
-      photos: newMode === 'unlimited' ? [] : prev.photos,
-      videos: newMode === 'unlimited' ? [] : prev.videos,
-      audio: newMode === 'unlimited' ? [] : prev.audio,
-    }));
-    updateSettings('mode', newMode);
-    dispatch(setMode(newMode));
-  };
-
-  const handleProtocolChange = (checkedValues: string[]) => {
-    setSettings((prevSettings) => ({
-      ...prevSettings,
-      protocol: checkedValues,
-    }));
-    updateSettings('protocol', checkedValues);
-  };
-
-  const handleBlacklistChange = (category: Category, checkedValues: string[]) => {
-    console.log("changing blacklist")
-    debugger
-    const isDynamicKind = category === 'dynamicKinds' || category === 'appBuckets';
-    if (isDynamicKind) {
-      console.log("changing dynamic kind")
-      setSettings((prevSettings) => {
-        const updatedSettings = { ...prevSettings, [category]: checkedValues };
-        updateSettings(category, checkedValues);
-        return updatedSettings;
-      });
-      return;
-    }
-    setBlacklist((prevBlacklist) => ({
-      ...prevBlacklist,
-      [category]: checkedValues,
-    }));
-  };
-
-  // const handleChunkedChange = (checkedValues: string[]) => {
-  //   setSettings((prevSettings) => ({
-  //     ...prevSettings,
-  //     chunked: checkedValues,
-  //   }));
-  //   updateSettings('chunked', checkedValues);
-  // };
-
-  const handleSettingsChange = (category: Category, checkedValues: string[]) => {
-    console.log("changing settings", category, checkedValues);
-    // Update both settings and relay settings
-    setSettings(prev => ({
-      ...prev,
-      [category]: checkedValues
-    }));
-    updateSettings(category, checkedValues);
-  };
-
-  const handleSwitchChange = (category: keyof Settings, value: boolean) => {
-    setSettings((prevSettings) => ({
-      ...prevSettings,
-      [category]: value,
-    }));
-    updateSettings(category, value);
-  };
-
-  const handleNewBucket = (bucket: string) => {
-    if (!bucket) return;
-    if (dynamicAppBuckets.includes(bucket)) return;
-
-    const updatedDynamicAppBuckets = [...dynamicAppBuckets, bucket];
-    setDynamicAppBuckets(updatedDynamicAppBuckets);
-    updateSettings('dynamicAppBuckets', updatedDynamicAppBuckets);
-    localStorage.setItem('dynamicAppBuckets', JSON.stringify(updatedDynamicAppBuckets));
-  };
-
-  const handleRemovedBucket = (bucket: string) => {
-    const updatedDynamicAppBuckets = dynamicAppBuckets.filter((b) => b !== bucket);
-    setDynamicAppBuckets(updatedDynamicAppBuckets);
-    updateSettings('dynamicAppBuckets', updatedDynamicAppBuckets);
-    localStorage.setItem('dynamicAppBuckets', JSON.stringify(updatedDynamicAppBuckets));
-  };
-
-  const handleNewDynamicKind = (kind: string) => {
-    const currentKinds = settings.dynamicKinds.concat(storedDynamicKinds);
-    if (currentKinds.includes(kind)) {
-      return;
-    }
-    setStoredDynamicKinds((prevKinds) => [...prevKinds, kind]);
-    handleSettingsChange('dynamicKinds', [...settings.dynamicKinds, kind]);
-  };
-  const removeDynamicKind = (kind: string) => {
-    setStoredDynamicKinds((prevKinds) => prevKinds.filter((k) => k !== kind));
-    handleSettingsChange(
-      'dynamicKinds',
-      settings.dynamicKinds.filter((k) => k !== kind),
-    );
-  };
-
-  const performSaveSettings = async () => {
-    await Promise.all([
-      updateSettings('kinds', settings.isKindsActive ? settings.kinds : []),
-      updateSettings('dynamicKinds', settings.dynamicKinds),
-      updateSettings('photos', settings.isPhotosActive ? settings.photos : []),
-      updateSettings('videos', settings.isVideosActive ? settings.videos : []),
-      updateSettings('gitNestr', settings.isGitNestrActive ? settings.gitNestr : []),
-      updateSettings('audio', settings.isAudioActive ? settings.audio : []),
-      updateSettings('protocol', settings.protocol),
-      updateSettings('isFileStorageActive', settings.isFileStorageActive),
-      updateSettings('appBuckets', settings.appBuckets),
-      updateSettings('dynamicAppBuckets', settings.dynamicAppBuckets),
-      updateSettings('subscription_tiers', settings.subscription_tiers),
-    ]);
-
-    await saveSettings();
-  };
-
-  const onSaveClick = async () => {
-    enterLoading(0);
-
-    if (!settings.isKindsActive) {
-      handleSettingsChange('kinds', []);
-    }
-    if (!settings.isPhotosActive) {
-      handleSettingsChange('photos', []);
-    }
-    if (!settings.isVideosActive) {
-      handleSettingsChange('videos', []);
-    }
-    if (!settings.isGitNestrActive) {
-      handleSettingsChange('gitNestr', []);
-    }
-    if (!settings.isAudioActive) {
-      handleSettingsChange('audio', []);
-    }
-
-    await performSaveSettings();
-    exitLoading(0);
-  };
-
+  // Reset blacklist when mode changes
   useEffect(() => {
-    fetchSettings();
-  }, [fetchSettings]);
-
-  useEffect(() => {
-    fetchSettings();
-  }, [fetchSettings]);
-
-  useEffect(() => {
-    if (relaySettings) {
-      setSettings({
-        ...relaySettings,
-        protocol: Array.isArray(relaySettings.protocol) ? relaySettings.protocol : [relaySettings.protocol],
-        subscription_tiers: relaySettings.subscription_tiers || defaultTiers // Add this line
-      });
-    }
-  }, [relaySettings]);
-
-  useEffect(() => {
-    if (settings.mode === 'unlimited') return
-    console.log("resetting blacklist changing")
+    if (settings.mode === 'unlimited') return;
     setBlacklist({
       kinds: [],
       photos: [],
@@ -338,902 +100,1437 @@ const RelaySettingsPage: React.FC = () => {
     });
   }, [settings.mode]);
 
-  // Media format mappings
-  const imageFormatOptions = [
-    { ext: 'jpeg', mime: 'image/jpeg' },
-    { ext: 'png', mime: 'image/png' },
-    { ext: 'gif', mime: 'image/gif' },
-    { ext: 'bmp', mime: 'image/bmp' },
-    { ext: 'tiff', mime: 'image/tiff' },
-    { ext: 'raw', mime: 'image/raw' },
-    { ext: 'svg', mime: 'image/svg+xml' },
-    { ext: 'webp', mime: 'image/webp' },
-    { ext: 'pdf', mime: 'application/pdf' },
-    { ext: 'eps', mime: 'image/eps' },
-    { ext: 'psd', mime: 'image/vnd.adobe.photoshop' },
-    { ext: 'ai', mime: 'application/postscript' }
-  ].map((format) => ({
-    label: (
-      <S.CheckboxLabel
-        style={{
-          color: themeObject[theme].textMain
-        }}
-        isActive={true}
-      >
-        {format.ext.toUpperCase()}
-      </S.CheckboxLabel>
-    ),
-    value: format.mime
-  }));
+  const handleModeChange = (checked: boolean) => {
+    const newMode = checked ? 'smart' : 'unlimited';
+    setSettings(prev => ({
+      ...prev,
+      mode: newMode,
+      kinds: newMode === 'unlimited' ? [] : prev.kinds,
+      photos: newMode === 'unlimited' ? [] : prev.photos,
+      videos: newMode === 'unlimited' ? [] : prev.videos,
+      audio: newMode === 'unlimited' ? [] : prev.audio,
+    }));
+    updateSettings('mode', newMode);
+    dispatch(setMode(newMode));
+  };
 
-  const videoFormatOptions = [
-    { ext: 'avi', mime: 'video/avi' },
-    { ext: 'mp4', mime: 'video/mp4' },
-    { ext: 'mov', mime: 'video/mov' },
-    { ext: 'wmv', mime: 'video/wmv' },
-    { ext: 'mkv', mime: 'video/mkv' },
-    { ext: 'flv', mime: 'video/flv' },
-    { ext: 'mpeg', mime: 'video/mpeg' },
-    { ext: '3gp', mime: 'video/3gpp' },
-    { ext: 'webm', mime: 'video/webm' },
-    { ext: 'ogg', mime: 'video/ogg' }
-  ].map((format) => ({
-    label: (
-      <S.CheckboxLabel
-        style={{
-          color: themeObject[theme].textMain
-        }}
-        isActive={true}
-      >
-        {format.ext.toUpperCase()}
-      </S.CheckboxLabel>
-    ),
-    value: format.mime
-  }));
+  const handleSaveClick = async () => {
+    setLoadings(prev => {
+      const newLoadings = [...prev];
+      newLoadings[0] = true;
+      return newLoadings;
+    });
 
-  const audioFormatOptions = [
-    { ext: 'mp3', mime: 'audio/mpeg' },
-    { ext: 'wav', mime: 'audio/wav' },
-    { ext: 'ogg', mime: 'audio/ogg' },
-    { ext: 'flac', mime: 'audio/flac' },
-    { ext: 'aac', mime: 'audio/aac' },
-    { ext: 'wma', mime: 'audio/x-ms-wma' },
-    { ext: 'm4a', mime: 'audio/mp4' },
-    { ext: 'opus', mime: 'audio/opus' },
-    { ext: 'm4b', mime: 'audio/m4b' },
-    { ext: 'midi', mime: 'audio/midi' }
-  ].map((format) => ({
-    label: (
-      <S.CheckboxLabel
-        style={{
-          color: themeObject[theme].textMain
-        }}
-        isActive={true}
-      >
-        {format.ext.toUpperCase()}
-      </S.CheckboxLabel>
-    ),
-    value: format.mime
-  }));
+    try {
+      await Promise.all([
+        updateSettings('kinds', settings.isKindsActive ? settings.kinds : []),
+        updateSettings('dynamicKinds', settings.dynamicKinds),
+        updateSettings('photos', settings.isPhotosActive ? settings.photos : []),
+        updateSettings('videos', settings.isVideosActive ? settings.videos : []),
+        updateSettings('gitNestr', settings.isGitNestrActive ? settings.gitNestr : []),
+        updateSettings('audio', settings.isAudioActive ? settings.audio : []),
+        updateSettings('protocol', settings.protocol),
+        updateSettings('isFileStorageActive', settings.isFileStorageActive),
+        updateSettings('appBuckets', settings.appBuckets),
+        updateSettings('dynamicAppBuckets', settings.dynamicAppBuckets),
+        updateSettings('subscription_tiers', settings.subscription_tiers),
+      ]);
 
-  const documentFormatOptions = [
-    { ext: 'pdf', mime: 'application/pdf' },
-    { ext: 'doc', mime: 'application/msword' },
-    { ext: 'docx', mime: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' },
-    { ext: 'txt', mime: 'text/plain' }
-  ].map((format) => ({
-    label: (
-      <S.CheckboxLabel
-        style={{
-          color: themeObject[theme].textMain
-        }}
-        isActive={true}
-      >
-        {format.ext.toUpperCase()}
-      </S.CheckboxLabel>
-    ),
-    value: format.mime
-  }));
-
-  // Checkbox Groups for each type
-  const ImageCheckboxGroup = () => (
-    <BaseCheckbox.Group
-      className={`custom-checkbox-group grid-checkbox-group ${settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''
-        }`}
-      options={imageFormatOptions}
-      value={settings.photos}
-      onChange={(checkedValues) => handleSettingsChange('photos', checkedValues as string[])}
-      disabled={settings.mode !== 'smart' ? false : !settings.isPhotosActive}
-    />
-  );
-
-  const VideoCheckboxGroup = () => (
-    <BaseCheckbox.Group
-      className={`custom-checkbox-group grid-checkbox-group ${settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''
-        }`}
-      options={videoFormatOptions}
-      value={settings.videos}
-      onChange={(checkedValues) => handleSettingsChange('videos', checkedValues as string[])}
-      disabled={settings.mode !== 'smart' ? false : !settings.isVideosActive}
-    />
-  );
-
-  const AudioCheckboxGroup = () => (
-    <BaseCheckbox.Group
-      className={`custom-checkbox-group grid-checkbox-group ${settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''
-        }`}
-      options={audioFormatOptions}
-      value={settings.audio}
-      onChange={(checkedValues) => handleSettingsChange('audio', checkedValues as string[])}
-      disabled={settings.mode !== 'smart' ? false : !settings.isAudioActive}
-    />
-  );
-
-  useEffect(() => {
-    const updateDynamicKinds = async () => {
-      await performSaveSettings();
-    };
-
-    if (settings.dynamicKinds && settings.dynamicKinds.length > 0) {
-      updateDynamicKinds();
+      await saveSettings();
+    } finally {
+      setLoadings(prev => {
+        const newLoadings = [...prev];
+        newLoadings[0] = false;
+        return newLoadings;
+      });
     }
-  }, [settings.dynamicKinds]);
+  };
 
-  const desktopLayout = (
-    <BaseRow>
-      <S.LeftSideCol xl={16} xxl={17} id="desktop-content">
-        <BaseRow gutter={[60, 60]}>
-          <BaseCol xs={24}>
-            <S.HeadingContainer>
-              <S.LabelSpan>{'Options'}</S.LabelSpan>
-            </S.HeadingContainer>
-            <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
-              <StyledPanel header={'Network Rules'} key="protocol" className="centered-header">
-                <S.Card>
-                  <BaseCol span={24}>
-                    <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '1rem' }}>
-                      <S.LabelSpan style={{ marginBottom: '1rem' }}>{t('common.transportSetting')}</S.LabelSpan>
-                      <Checkbox.Group
-                        options={[
-                          { label: 'WebSocket', value: 'WebSocket', style: { fontSize: '.85rem' } },
-                          { label: 'Libp2p QUIC', value: 'QUIC', style: { fontSize: '.85rem' } },
-                        ]}
-                        value={settings.protocol}
-                        className="custom-checkbox-group"
-                        onChange={(checkedValues) => handleProtocolChange(checkedValues as string[])}
-                        style={{
-                          display: 'grid',
-                          gridTemplateColumns: '10rem auto',
-                        }}
-                      />
-                    </div>
-                    <div style={{ borderTop: '1px solid #ccc', margin: '1rem 0' }}></div>
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                      <S.LabelSpan style={{ marginBottom: '1rem' }}>{t('File Storage')}</S.LabelSpan>{' '}
-                      <BaseCheckbox
-                        checked={settings.isFileStorageActive}
-                        onChange={(e) => handleSwitchChange('isFileStorageActive', e.target.checked)}
-                        style={{ fontSize: '.85rem' }}
-                      >
-                        Enable/Disable
-                      </BaseCheckbox>
-                    </div>
-                  </BaseCol>
-                </S.Card>
-              </StyledPanel>
-            </Collapse>
-            <Collapse style={{ padding: '1rem 0 1rem 0' }} bordered={false}>
-              <StyledPanel header={'App Buckets'} key="appBuckets" className="centered-header">
-                <S.Card>
-                  <div className="flex-col w-full">
-                    <BaseCheckbox.Group
-                      style={{ paddingTop: '1rem', paddingLeft: '1rem', paddingBottom: '1rem' }}
-                      className={`custom-checkbox-group grid-checkbox-group`}
-                      value={settings.appBuckets}
-                      onChange={(checkedValues) => handleSettingsChange('appBuckets', checkedValues as string[])}
-                      options={appBucketOptions.filter(option => defaultAppBuckets.some(bucket => bucket.id === option.value))}
-                    />
+  // Network section handlers
+  const handleProtocolChange = (protocols: string[]) => {
+    setSettings(prev => ({ ...prev, protocol: protocols }));
+    updateSettings('protocol', protocols);
+  };
 
-                    <S.InfoCard>
-                      <S.InfoCircleOutlinedIcon />
-                      <small style={{ color: themeObject[theme].textLight }}>
-                        {
-                          'Enabling buckets will organize data stored within the relay to quicken retrieval times for users. Disabling buckets will not turn off data storage.'
-                        }
-                      </small>
-                    </S.InfoCard>
-                    <S.NewBucketContainer>
-                      <h3>{'Add an App Bucket'}</h3>
-                      <div
-                        style={{ display: 'flex' }}
-                        className="custom-checkbox-group grid-checkbox-group large-label"
-                      >
-                        <Input
-                          value={newBucket}
-                          onChange={(e) => {
-                            setNewBucket(e.target.value);
-                          }}
-                          placeholder="Enter new app bucket"
-                        />
-                        <BaseButton
-                          onClick={() => {
-                            if (newBucket) {
-                              handleNewBucket(newBucket);
-                              setNewBucket('');
-                            }
-                          }}
-                        >
-                          Add bucket
-                        </BaseButton>
-                      </div>
-                      <BaseCheckbox.Group
-                        style={{ paddingLeft: '1rem' }}
-                        className={`custom-checkbox-group grid-checkbox-group large-label ${dynamicAppBuckets.length ? 'dynamic-group' : ''
-                          } `}
-                        value={settings.dynamicAppBuckets}
-                        onChange={(checkedValues) =>
-                          handleSettingsChange('dynamicAppBuckets', checkedValues as string[])
-                        }
-                      >
-                        {dynamicAppBuckets.map((bucket) => (
-                          <div
-                            style={{ display: 'flex', flexDirection: 'row', gap: '.5rem', alignItems: 'center' }}
-                            key={bucket}
-                          >
-                            <div className="checkbox-container">
-                              <BaseCheckbox value={bucket} />
-                              <S.CheckboxLabel
-                                isActive={true}
-                                style={{ fontSize: '1rem', paddingRight: '.8rem', paddingLeft: '.8rem' }}
-                              >
-                                {bucket}
-                              </S.CheckboxLabel>
-                            </div>
-                            <BaseButton
-                              style={{ height: '2rem', width: '5rem', marginRight: '1rem' }}
-                              onClick={() => handleRemovedBucket(bucket)}
-                            >
-                              Remove
-                            </BaseButton>
-                          </div>
-                        ))}
-                      </BaseCheckbox.Group>
-                    </S.NewBucketContainer>
-                  </div>
-                </S.Card>
-              </StyledPanel>
-            </Collapse>
-            <Collapse style={{ padding: '1rem 0 1rem 0' }} bordered={false}>
-              <StyledPanel header={'Subscription Tiers'} key="subscriptionTiers" className="centered-header">
-                <S.Card>
-                  <SubscriptionTiersManager
-                    tiers={settings.subscription_tiers || []}
-                    onChange={handleTiersChange}
-                  />
-                </S.Card>
-              </StyledPanel>
-            </Collapse>
-          </BaseCol>
-        </BaseRow>
+  const handleFileStorageChange = (active: boolean) => {
+    setSettings(prev => ({ ...prev, isFileStorageActive: active }));
+    updateSettings('isFileStorageActive', active);
+  };
 
-        <BaseCol xs={24}>
-          <S.SwitchContainer
-            style={{
-              width: '11rem',
-              display: 'grid',
-              paddingTop: '3rem',
-              gap: '.5rem',
-              gridTemplateColumns: '1fr 3fr',
-              marginBottom: '1.5rem',
-            }}
-          >
-            <S.LabelSpan>{t('common.serverSetting')}</S.LabelSpan>
-            <S.LargeSwitch
-              className="modeSwitch"
-              checkedChildren="Strict"
-              unCheckedChildren="Unlimited"
-              checked={settings.mode === 'smart'}
-              onChange={(e) => handleModeChange(e)}
-            />
-          </S.SwitchContainer>
-          <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
-            <StyledPanel
-              header={settings.mode !== 'smart' ? `Blacklisted Kind Numbers` : 'Kind Numbers'}
-              key="notes"
-              className="centered-header"
-            >
-              <S.Card>
-                <div className="flex-col w-full">
-                  {settings.mode !== 'unlimited' && settings.mode !== '' && (
-                    <div className="switch-container">
-                      <BaseSwitch
-                        checkedChildren="ON"
-                        unCheckedChildren="OFF"
-                        checked={settings.isKindsActive}
-                        onChange={() => handleSwitchChange('isKindsActive', !settings.isKindsActive)}
-                      />
-                    </div>
-                  )}
-                  <BaseCheckbox.Group
-                    className="large-label"
-                    value={settings.kinds} // Always use settings.kinds regardless of mode
-                    onChange={(checkedValues) => {
-                      console.log('Checkbox values changed:', checkedValues);
-                      handleSettingsChange('kinds', checkedValues as string[]);
-                    }}
-                    disabled={settings.mode !== 'smart' ? false : !settings.isKindsActive}
-                  >
-                    {groupedNoteOptions.map((group) => (
-                      <div key={group.id} style={{ paddingBottom: '2rem' }}>
-                        <h3 className="checkboxHeader w-full">{group.name}</h3>
-                        <div className="custom-checkbox-group grid-checkbox-group large-label">
-                          {group.notes.map((note) => (
-                            <div className="checkbox-container" style={{ paddingLeft: '1rem' }} key={note.kindString}>
-                              <BaseCheckbox
-                                value={note.kindString}
-                                className={settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''}
-                                disabled={settings.mode !== 'smart' ? false : !settings.isKindsActive}
-                              />
-                              <S.CheckboxLabel
-                                isActive={settings.mode !== 'smart' ? true : settings.isKindsActive}
-                                style={{
-                                  paddingRight: '.8rem',
-                                  paddingLeft: '.8rem',
-                                  color: themeObject[theme].textMain
-                                }}
-                              >
-                                {t(`kind${note.kind}`)} - {' '}
-                                <span style={{ fontWeight: 'normal' }}>{note.description}</span>
-                              </S.CheckboxLabel>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </BaseCheckbox.Group>
-                  {settings.mode !== 'smart' && (
-                    <div
-                      style={{
-                        padding: '1.5rem 0rem 0rem 0rem',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '.5rem',
-                      }}
-                    >
-                      <h3>{'Add to Blacklist'}</h3>
-                      <div
-                        style={{ display: 'flex' }}
-                        className="custom-checkbox-group grid-checkbox-group large-label"
-                      >
-                        <Input
-                          value={newKind}
-                          onChange={(e) => setNewKind(e.target.value)}
-                          placeholder="Enter new kind"
-                        />
-                        <BaseButton
-                          onClick={() => {
-                            if (newKind) {
-                              handleNewDynamicKind(newKind);
-                              setNewKind('');
-                            }
-                          }}
-                        >
-                          Add Kind
-                        </BaseButton>
-                      </div>
-                      <BaseCheckbox.Group
-                        style={{ paddingLeft: '1rem' }}
-                        className={`custom-checkbox-group grid-checkbox-group large-label ${storedDynamicKinds?.length ? 'dynamic-group ' : ''
-                          }${settings.mode === 'unlimited' ? 'blacklist-mode-active ' : ''}`}
-                        value={settings.dynamicKinds || []}
-                        onChange={(checkedValues) => handleSettingsChange('dynamicKinds', checkedValues as string[])}
-                      >
-                        {(storedDynamicKinds || []).map((kind) => (
-                          <div
-                            style={{ display: 'flex', flexDirection: 'row', gap: '.5rem', alignItems: 'center' }}
-                            key={kind}
-                          >
-                            <div className="checkbox-container">
-                              <BaseCheckbox
-                                className={settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''}
-                                value={kind}
-                              />
-                              <S.CheckboxLabel
-                                isActive={true}
-                                style={{ fontSize: '1rem', paddingRight: '.8rem', paddingLeft: '.8rem' }}
-                              >
-                                {`kind` + kind}
-                              </S.CheckboxLabel>
-                            </div>
-                            <BaseButton
-                              style={{ height: '2rem', width: '5rem', marginRight: '1rem' }}
-                              onClick={() => removeDynamicKind(kind)}
-                            >
-                              Remove
-                            </BaseButton>
-                          </div>
-                        ))}
-                      </BaseCheckbox.Group>
-                    </div>
-                  )}
-                </div>
-              </S.Card>
-            </StyledPanel>
-          </Collapse>
+  // App buckets handlers
+  const handleAppBucketsChange = (values: string[]) => {
+    setSettings(prev => ({ ...prev, appBuckets: values }));
+    updateSettings('appBuckets', values);
+  };
 
-          <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
-            <StyledPanel
-              header={settings.mode !== 'smart' ? `Blacklisted Photo Extension` : 'Photo Extensions'}
-              key="2"
-            >
-              <S.Card>
-                {settings.mode !== 'unlimited' && settings.mode !== '' && (
-                  <div className="switch-container">
-                    <BaseSwitch
-                      checkedChildren="ON"
-                      unCheckedChildren="OFF"
-                      checked={settings.isPhotosActive}
-                      onChange={() => handleSwitchChange('isPhotosActive', !settings.isPhotosActive)}
-                    />
-                  </div>
-                )}
+  const handleDynamicAppBucketsChange = (values: string[]) => {
+    setSettings(prev => ({ ...prev, dynamicAppBuckets: values }));
+    updateSettings('dynamicAppBuckets', values);
+  };
 
-                <ImageCheckboxGroup />
-              </S.Card>
-            </StyledPanel>
-          </Collapse>
-          <Collapse bordered={false} style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }}>
-            <StyledPanel
-              header={settings.mode !== 'smart' ? `Blacklisted Video Extensions` : 'Video Extensions'}
-              key="3"
-            >
-              <S.Card>
-                {settings.mode !== 'unlimited' && settings.mode !== '' && (
-                  <div className="switch-container">
-                    <BaseSwitch
-                      checkedChildren="ON"
-                      unCheckedChildren="OFF"
-                      checked={settings.isVideosActive}
-                      onChange={() => handleSwitchChange('isVideosActive', !settings.isVideosActive)}
-                    />
-                  </div>
-                )}
+  const handleAddBucket = (bucket: string) => {
+    if (!bucket || dynamicAppBuckets.includes(bucket)) return;
 
-                <VideoCheckboxGroup />
-              </S.Card>
-            </StyledPanel>
-          </Collapse>
-          <Collapse bordered={false} style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }}>
-            <StyledPanel
-              header={settings.mode !== 'smart' ? `Blacklisted Audio Extensions` : 'Audio Extensions'}
-              key="5"
-            >
-              <S.Card>
-                {settings.mode !== 'unlimited' && settings.mode !== '' && (
-                  <div className="switch-container">
-                    <BaseSwitch
-                      checkedChildren="ON"
-                      unCheckedChildren="OFF"
-                      checked={settings.isAudioActive}
-                      onChange={() => handleSwitchChange('isAudioActive', !settings.isAudioActive)}
-                    />
-                  </div>
-                )}
-                <AudioCheckboxGroup />
-              </S.Card>
-            </StyledPanel>
-          </Collapse>
-          <BaseButton
-            style={{ marginTop: '2rem', paddingBottom: '1rem' }}
-            type="primary"
-            loading={loadings[0]}
-            onClick={onSaveClick}
-          >
-            {t('buttons.saveSettings')}
-          </BaseButton>
-        </BaseCol>
-      </S.LeftSideCol>
-      <S.RightSideCol xl={8} xxl={7}>
-        <div id="balance">
-          <Balance />
-        </div>
-        <S.Space />
-        <div id="total-earning">
-          <TotalEarning />
-        </div>
-        <S.Space />
-        <div id="activity-story">
-          <ActivityStory />
-        </div>
-      </S.RightSideCol>
-    </BaseRow>
-  );
+    const updatedBuckets = [...dynamicAppBuckets, bucket];
+    setDynamicAppBuckets(updatedBuckets);
+    setSettings(prev => ({ ...prev, dynamicAppBuckets: updatedBuckets }));
+    updateSettings('dynamicAppBuckets', updatedBuckets);
+    localStorage.setItem('dynamicAppBuckets', JSON.stringify(updatedBuckets));
+  };
 
-  const mobileAndTabletLayout = (
-    <BaseRow gutter={[20, 24]}>
-      <BaseCol span={24}>
-        <S.HeadingContainer>
-          <S.LabelSpan>{'Options'}</S.LabelSpan>
-        </S.HeadingContainer>
-        <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
-          <StyledPanel header={'Network Rules'} key="protocol" className="centered-header">
-            <S.Card>
-              <BaseCol span={24}>
-                <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '1rem' }}>
-                  <S.LabelSpan style={{ marginBottom: '0.5rem' }}>{t('common.transportSetting')}</S.LabelSpan>
-                  <Checkbox.Group
-                    className="custom-checkbox-group"
-                    options={[
-                      { label: 'WebSocket', value: 'WebSocket', style: { fontSize: '.8rem' } },
-                      { label: 'Libp2p QUIC', value: 'QUIC', style: { fontSize: '.8rem' } },
-                    ]}
-                    value={settings.protocol}
-                    onChange={(checkedValues) => handleProtocolChange(checkedValues as string[])}
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns: '9rem auto',
-                      paddingRight: '0',
-                      justifyContent: 'start',
-                      fontSize: 'small',
-                    }}
-                  />
-                </div>
-                <div style={{ borderTop: '1px solid #ccc', margin: '1rem 0' }}></div>
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <S.LabelSpan style={{ marginBottom: '0.5rem' }}>{t('File Storage')}</S.LabelSpan>
-                  <BaseCheckbox
-                    checked={settings.isFileStorageActive}
-                    onChange={(e) => handleSwitchChange('isFileStorageActive', e.target.checked)}
-                    style={{ fontSize: '.8rem' }}
-                  >
-                    Enable/Disable
-                  </BaseCheckbox>
-                </div>
-              </BaseCol>
-            </S.Card>
-          </StyledPanel>
-        </Collapse>
-        <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
-          <StyledPanel header={'App Buckets'} key="appBuckets" className="centered-header">
-            <S.Card>
-              <div className="flex-col w-full">
-                <BaseCheckbox.Group
-                  style={{ padding: '1rem 0rem 1rem 1rem' }}
-                  className={`custom-checkbox-group grid-mobile-checkbox-group `}
-                  value={settings.appBuckets || []}
-                  onChange={(checkedValues) => handleSettingsChange('appBuckets', checkedValues as string[])}
-                  //disabled={settings.mode !== 'smart' ? false : !settings.isKindsActive}
-                  options={appBucketOptions}
-                />
-                <S.InfoCard>
-                  <S.InfoCircleOutlinedIcon />
-                  <small style={{ color: themeObject[theme].textLight }}>
-                    {
-                      'Enabling buckets will organize data stored within the relay to quicken retrieval times for users. Disabling buckets will not turn off data storage.'
-                    }
-                  </small>
-                </S.InfoCard>
-                <S.NewBucketContainer>
-                  <h3>{'Add an App Bucket'}</h3>
-                  <div style={{ display: 'flex' }} className="large-label">
-                    <Input
-                      value={newKind}
-                      onChange={(e) => {
-                        setNewBucket(e.target.value);
-                      }}
-                      placeholder="Enter new app bucket"
-                    />
-                    <BaseButton
-                      onClick={() => {
-                        if (newBucket) {
-                          handleNewBucket(newBucket);
-                          setNewKind('');
-                        }
-                      }}
-                    >
-                      Add bucket
-                    </BaseButton>
-                  </div>
-                  <BaseCheckbox.Group
-                    style={{ paddingLeft: '1rem' }}
-                    className={`custom-checkbox-group grid-checkbox-group large-label ${storedAppBuckets?.length ? 'dynamic-group' : ''
-                      }`}
-                    value={settings.dynamicAppBuckets || []}
-                    onChange={(checkedValues) => handleSettingsChange('dynamicAppBuckets', checkedValues as string[])}
-                  >
-                    {(storedAppBuckets || []).map((bucket) => (
-                      <div
-                        style={{ display: 'flex', flexDirection: 'row', gap: '.5rem', alignItems: 'center' }}
-                        key={bucket}
-                      >
-                        <div className="checkbox-container">
-                          <BaseCheckbox value={bucket} />
-                          <S.CheckboxLabel
-                            isActive={true}
-                            style={{ fontSize: '1rem', paddingRight: '.8rem', paddingLeft: '.8rem' }}
-                          >
-                            {bucket}
-                          </S.CheckboxLabel>
-                        </div>
-                        <BaseButton
-                          style={{ height: '2rem', width: '5rem', marginRight: '1rem' }}
-                          onClick={() => handleRemovedBucket(bucket)}
-                        >
-                          Remove
-                        </BaseButton>
-                      </div>
-                    ))}
-                  </BaseCheckbox.Group>
-                </S.NewBucketContainer>
-              </div>
-            </S.Card>
-          </StyledPanel>
-        </Collapse>
+  const handleRemoveBucket = (bucket: string) => {
+    const updatedBuckets = dynamicAppBuckets.filter(b => b !== bucket);
+    setDynamicAppBuckets(updatedBuckets);
+    setSettings(prev => ({ ...prev, dynamicAppBuckets: updatedBuckets }));
+    updateSettings('dynamicAppBuckets', updatedBuckets);
+    localStorage.setItem('dynamicAppBuckets', JSON.stringify(updatedBuckets));
+  };
 
-        <Collapse style={{ padding: '1rem 0 1rem 0' }} bordered={false}>
-          <StyledPanel header={'Subscription Tiers'} key="subscriptionTiers" className="centered-header">
-            <S.Card>
-              <SubscriptionTiersManager
-                tiers={settings.subscription_tiers || []}
-                onChange={handleTiersChange}
-              />
-            </S.Card>
-          </StyledPanel>
-        </Collapse>
-        <S.SwitchContainer
-          style={{
-            display: 'grid',
-            paddingTop: '2rem',
-            gridTemplateColumns: '5rem 6.5rem',
-            marginBottom: '1.5rem',
-            marginTop: '1rem',
-          }}
-        >
-          <S.LabelSpan>{t('common.serverSetting')}</S.LabelSpan>
-          <S.LargeSwitch
-            className="modeSwitch"
-            checkedChildren="Strict"
-            unCheckedChildren="Unlimited"
-            checked={settings.mode === 'smart'}
-            onChange={(e) => handleModeChange(e)}
-          />
-        </S.SwitchContainer>
-        <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
-          <StyledPanel
-            header={settings.mode !== 'smart' ? `Blacklisted Kind Numbers` : 'Kind Numbers'}
-            key="notes"
-            className="centered-header"
-          >
-            <S.Card>
-              <div className="flex-col w-full">
-                {settings.mode !== 'unlimited' && settings.mode !== '' && (
-                  <div className="switch-container">
-                    <BaseSwitch
-                      checkedChildren="ON"
-                      unCheckedChildren="OFF"
-                      checked={settings.isKindsActive}
-                      onChange={() => handleSwitchChange('isKindsActive', !settings.isKindsActive)}
-                    />
-                  </div>
-                )}
-                <BaseCheckbox.Group
-                  className="large-label"
-                  value={settings.mode == 'unlimited' ? blacklist.kinds : settings.kinds}
-                  onChange={(checkedValues) => handleSettingsChange('kinds', checkedValues as string[])}
-                  disabled={settings.mode !== 'smart' ? false : !settings.isKindsActive}
-                >
-                  {groupedNoteOptions.map((group) => (
-                    <div key={group.id} style={{ paddingBottom: '2rem' }}>
-                      <h3 className="checkboxHeader w-full">{group.name}</h3>
-                      <div className="custom-checkbox-group grid-checkbox-group large-label">
-                        {group.notes.map((note) => (
-                          <div className="checkbox-container" style={{ paddingLeft: '.6rem' }} key={note.kindString}>
-                            <BaseCheckbox
-                              value={note.kindString}
-                              className={settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''}
-                              disabled={settings.mode !== 'smart' ? false : !settings.isKindsActive}
-                            />
-                            <S.CheckboxLabel
-                              isActive={settings.mode !== 'smart' ? true : settings.isKindsActive}
-                              style={{
-                                paddingRight: '.8rem',
-                                paddingLeft: '.8rem',
-                                color:
-                                  settings.mode !== 'smart'
-                                    ? themeObject[theme].textMain
-                                    : relaySettings.isKindsActive
-                                      ? themeObject[theme].textMain
-                                      : themeObject[theme].textLight,
-                              }}
-                            >
-                              {t(`kind${note.kind}`)} - <span style={{ fontWeight: 'normal' }}>{note.description}</span>
-                            </S.CheckboxLabel>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </BaseCheckbox.Group>
-              </div>
-              {settings.mode === 'unlimited' && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '.5rem' }}>
-                  <h3>{'Add to Blacklist'}</h3>
-                  <div style={{ display: 'flex', gap: '.5rem' }}>
-                    <Input value={newKind} onChange={(e) => setNewKind(e.target.value)} placeholder="Enter new kind" />
-                    <BaseButton
-                      onClick={() => {
-                        if (newKind) {
-                          handleNewDynamicKind(newKind);
-                          setNewKind('');
-                        }
-                      }}
-                    >
-                      Add Kind
-                    </BaseButton>
-                  </div>
-                  <BaseCheckbox.Group
-                    style={{ paddingLeft: '.6rem' }}
-                    className={`custom-checkbox-group grid-checkbox-group large-label ${settings.mode === 'unlimited' ? 'blacklist-mode-active ' : ''
-                      }${storedDynamicKinds?.length ? 'dynamic-group' : ''}`}
-                    value={settings.dynamicKinds || []}
-                    onChange={(checkedValues) => handleSettingsChange('dynamicKinds', checkedValues as string[])}
-                  >
-                    {(storedDynamicKinds || []).map((kind) => (
-                      <div
-                        style={{
-                          display: 'flex',
-                          flexDirection: 'row',
-                          gap: '.5rem',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                        }}
-                        key={kind}
-                      >
-                        <div className="checkbox-container">
-                          <BaseCheckbox
-                            style={{ paddingLeft: '0rem' }}
-                            className={settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''}
-                            value={kind}
-                          />
-                          <S.CheckboxLabel
-                            isActive={true}
-                            style={{ fontSize: '1.2rem', paddingRight: '.8rem', paddingLeft: '.8rem' }}
-                          >
-                            {`kind` + kind}
-                          </S.CheckboxLabel>
-                        </div>
-                        <BaseButton style={{ height: '2rem', width: '5rem' }} onClick={() => removeDynamicKind(kind)}>
-                          Remove
-                        </BaseButton>
-                      </div>
-                    ))}
-                  </BaseCheckbox.Group>
-                </div>
-              )}
-            </S.Card>
-          </StyledPanel>
-        </Collapse>
+  // Kinds section handlers
+  const handleKindsActiveChange = (active: boolean) => {
+    setSettings(prev => ({ ...prev, isKindsActive: active }));
+    updateSettings('isKindsActive', active);
+  };
 
-        <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
-          <StyledPanel header={settings.mode !== 'smart' ? `Blacklisted Photo Extensions` : 'Photo Extensions'} key="2">
-            <S.Card style={{ flexDirection: 'column' }}>
-              {settings.mode !== 'unlimited' && settings.mode !== '' && (
-                <div className="switch-container">
-                  <BaseSwitch
-                    checkedChildren="ON"
-                    unCheckedChildren="OFF"
-                    checked={settings.isPhotosActive}
-                    onChange={() => handleSwitchChange('isPhotosActive', !settings.isPhotosActive)}
-                  />
-                </div>
-              )}
+  const handleKindsChange = (values: string[]) => {
+    setSettings(prev => ({ ...prev, kinds: values }));
+    updateSettings('kinds', values);
+  };
 
-              <BaseCheckbox.Group
-                style={{ paddingLeft: '1rem' }}
-                className={`custom-checkbox-group grid-mobile-checkbox-group ${settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''
-                  }`}
-                options={imageFormatOptions}
-                value={settings.mode == 'unlimited' ? blacklist.photos : settings.photos}
-                onChange={(checkedValues) => handleSettingsChange('photos', checkedValues as string[])}
-                disabled={settings.mode !== 'smart' ? false : !settings.isPhotosActive}
-              />
-            </S.Card>
-          </StyledPanel>
-        </Collapse>
-        <Collapse bordered={false} style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }}>
-          <StyledPanel header={settings.mode !== 'smart' ? `Blacklisted Video Extensions` : 'Video Extensions'} key="3">
-            <S.Card style={{ flexDirection: 'column' }}>
-              {settings.mode !== 'unlimited' && settings.mode !== '' && (
-                <div className="switch-container">
-                  <BaseSwitch
-                    checkedChildren="ON"
-                    unCheckedChildren="OFF"
-                    checked={settings.isVideosActive}
-                    onChange={() => handleSwitchChange('isVideosActive', !settings.isVideosActive)}
-                  />
-                </div>
-              )}
+  const handleDynamicKindsChange = (values: string[]) => {
+    setSettings(prev => ({ ...prev, dynamicKinds: values }));
+    updateSettings('dynamicKinds', values);
+  };
 
-              <BaseCheckbox.Group
-                style={{ paddingLeft: '1rem' }}
-                className={`custom-checkbox-group grid-mobile-checkbox-group ${settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''
-                  }`}
-                options={videoFormatOptions}
-                value={settings.mode == 'unlimited' ? blacklist.videos : settings.videos}
-                onChange={(checkedValues) => handleSettingsChange('videos', checkedValues as string[])}
-                disabled={settings.mode !== 'smart' ? false : !settings.isVideosActive}
-              />
-            </S.Card>
-          </StyledPanel>
-        </Collapse>
-        {/* <Collapse bordered={false} style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }}>
-          <StyledPanel
-            header={
-              settings.mode === 'unlimited' ? `Blacklisted ${t('checkboxes.gitNestr')}` : t('checkboxes.gitNestr')
-            }
-            key="4"
-          >
-            <S.Card>
-              <div>
-                <BaseSwitch
-                  checkedChildren="ON"
-                  unCheckedChildren="OFF"
-                  checked={settings.isGitNestrActive}
-                  onChange={() => handleSwitchChange('isGitNestrActive', !settings.isGitNestrActive)}
-                />
-              </div>
-              <BaseCheckbox.Group
-                style={{ paddingLeft: '1rem' }}
-                className={`custom-checkbox-group grid-checkbox-group large-label ${
-                  settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''
-                }`}
-                options={gitNestrHkindOptions}
-                value={settings.mode == 'unlimited' ? blacklist.gitNestr : settings.gitNestr}
-                onChange={(checkedValues) => handleSettingsChange('gitNestr', checkedValues as string[])}
-                disabled={!settings.isGitNestrActive}
-              />
-            </S.Card>
-          </StyledPanel>
-        </Collapse> */}
-        <Collapse bordered={false} style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }}>
-          <StyledPanel header={settings.mode !== 'smart' ? `Blacklisted Audio Extensions` : 'Audio Extensions'} key="5">
-            <S.Card>
-              {settings.mode !== 'unlimited' && settings.mode !== '' && (
-                <div className="switch-container">
-                  <BaseSwitch
-                    checkedChildren="ON"
-                    unCheckedChildren="OFF"
-                    checked={settings.isAudioActive}
-                    onChange={() => handleSwitchChange('isAudioActive', !settings.isAudioActive)}
-                  />
-                </div>
-              )}
-              <BaseCheckbox.Group
-                style={{ paddingLeft: '1rem' }}
-                className={`custom-checkbox-group grid-mobile-checkbox-group ${settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''
-                  }`}
-                options={audioFormatOptions}
-                value={settings.mode == 'unlimited' ? blacklist.audio : settings.audio}
-                onChange={(checkedValues) => handleSettingsChange('audio', checkedValues as string[])}
-                disabled={settings.mode !== 'smart' ? false : !settings.isAudioActive}
-              />
-            </S.Card>
-          </StyledPanel>
-        </Collapse>
+  const handleAddKind = (kind: string) => {
+    if (!kind) return;
+    const updatedKinds = [...storedDynamicKinds, kind];
+    setStoredDynamicKinds(updatedKinds);
+    localStorage.setItem('dynamicKinds', JSON.stringify(updatedKinds));
+    handleDynamicKindsChange([...settings.dynamicKinds, kind]);
+  };
 
-        <BaseButton style={{ marginTop: '2rem' }} type="primary" loading={loadings[0]} onClick={onSaveClick}>
-          {t('buttons.saveSettings')}
-        </BaseButton>
-      </BaseCol>
-    </BaseRow>
-  );
+  const handleRemoveKind = (kind: string) => {
+    const updatedKinds = storedDynamicKinds.filter(k => k !== kind);
+    setStoredDynamicKinds(updatedKinds);
+    localStorage.setItem('dynamicKinds', JSON.stringify(updatedKinds));
+    handleDynamicKindsChange(settings.dynamicKinds.filter(k => k !== kind));
+  };
+
+  // Media section handlers
+  const handleMediaChange = (type: 'photos' | 'videos' | 'audio', values: string[]) => {
+    setSettings(prev => ({ ...prev, [type]: values }));
+    updateSettings(type, values);
+  };
+
+  const handleMediaToggle = (type: keyof Settings, checked: boolean) => {
+    setSettings(prev => ({ ...prev, [type]: checked }));
+    updateSettings(type, checked);
+  };
+
+  const layoutProps = {
+    mode: settings.mode,
+    onModeChange: handleModeChange,
+    onSaveClick: handleSaveClick,
+    loadings,
+    // Network props
+    protocols: settings.protocol,
+    isFileStorageActive: settings.isFileStorageActive,
+    onProtocolsChange: handleProtocolChange,
+    onFileStorageChange: handleFileStorageChange,
+    // App buckets props
+    appBuckets: settings.appBuckets,
+    dynamicAppBuckets: settings.dynamicAppBuckets,
+    onAppBucketsChange: handleAppBucketsChange,
+    onDynamicAppBucketsChange: handleDynamicAppBucketsChange,
+    onAddBucket: handleAddBucket,
+    onRemoveBucket: handleRemoveBucket,
+    // Subscription props
+    subscriptionTiers: settings.subscription_tiers || defaultTiers, // Add fallback here too
+    onSubscriptionChange: (tiers: SubscriptionTier[]) => {
+      setSettings(prev => ({
+        ...prev,
+        subscription_tiers: tiers
+      }));
+      updateSettings('subscription_tiers', tiers);
+    },
+    // Kinds props
+    isKindsActive: settings.isKindsActive,
+    selectedKinds: settings.kinds,
+    dynamicKinds: storedDynamicKinds,
+    selectedDynamicKinds: settings.dynamicKinds,
+    onKindsActiveChange: handleKindsActiveChange,
+    onKindsChange: handleKindsChange,
+    onDynamicKindsChange: handleDynamicKindsChange,
+    onAddKind: handleAddKind,
+    onRemoveKind: handleRemoveKind,
+    // Media props
+    photos: {
+      selected: settings.photos,
+      isActive: settings.isPhotosActive,
+      onChange: (values: string[]) => handleMediaChange('photos', values),
+      onToggle: (checked: boolean) => handleMediaToggle('isPhotosActive', checked),
+    },
+    videos: {
+      selected: settings.videos,
+      isActive: settings.isVideosActive,
+      onChange: (values: string[]) => handleMediaChange('videos', values),
+      onToggle: (checked: boolean) => handleMediaToggle('isVideosActive', checked),
+    },
+    audio: {
+      selected: settings.audio,
+      isActive: settings.isAudioActive,
+      onChange: (values: string[]) => handleMediaChange('audio', values),
+      onToggle: (checked: boolean) => handleMediaToggle('isAudioActive', checked),
+    },
+  };
 
   return (
     <>
       <PageTitle>{t('common.customizeRelaySettings')}</PageTitle>
-      {isDesktop ? desktopLayout : mobileAndTabletLayout}
+      {isDesktop ? <DesktopLayout {...layoutProps} /> : <MobileLayout {...layoutProps} />}
     </>
   );
 };
 
 export default RelaySettingsPage;
+
+// import React, { useState, useEffect } from 'react';
+// import { useTranslation } from 'react-i18next';
+// import { Collapse, Select, Input, Checkbox, Typography } from 'antd';
+// import styled from 'styled-components';
+// import { BaseSwitch } from '@app/components/common/BaseSwitch/BaseSwitch';
+// import { BaseCheckbox } from '@app/components/common/BaseCheckbox/BaseCheckbox';
+// import { useAppDispatch, useAppSelector } from '@app/hooks/reduxHooks';
+// import { setMode } from '@app/store/slices/modeSlice';
+// import { PageTitle } from '@app/components/common/PageTitle/PageTitle';
+// import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
+// import { BaseRow } from '@app/components/common/BaseRow/BaseRow';
+// import { BaseCol } from '@app/components/common/BaseCol/BaseCol';
+// import { Balance } from '@app/components/nft-dashboard/Balance/Balance';
+// import { TotalEarning } from '@app/components/nft-dashboard/totalEarning/TotalEarning';
+// import { ActivityStory } from '@app/components/nft-dashboard/activityStory/ActivityStory';
+// import { useResponsive } from '@app/hooks/useResponsive';
+// import useRelaySettings from '@app/hooks/useRelaySettings';
+// import * as S from '@app/pages/uiComponentsPages/UIComponentsPage.styles';
+// import { themeObject } from '@app/styles/themes/themeVariables';
+// import { categories, noteOptions, appBuckets as defaultAppBuckets, Settings, Category } from '@app/constants/relaySettings';
+// import SubscriptionTiersManager from '@app/components/SubscriptionTiersManager';
+// import { SubscriptionTier } from '@app/constants/relaySettings';
+// import { defaultTiers } from '@app/constants/relaySettings';
+// const { Panel } = Collapse;
+// const StyledPanel = styled(Panel)``;
+// const { Option } = Select;
+
+// const RelaySettingsPage: React.FC = () => {
+//   const theme = useAppSelector((state) => state.theme.theme);
+//   const { relaySettings, fetchSettings, updateSettings, saveSettings } = useRelaySettings();
+//   const { isDesktop } = useResponsive();
+//   const { t } = useTranslation();
+//   const dispatch = useAppDispatch();
+//   const relaymode = useAppSelector((state) => state.mode.relayMode);
+
+//   const [storedDynamicKinds, setStoredDynamicKinds] = useState<string[]>(
+//     JSON.parse(localStorage.getItem('dynamicKinds') || '[]'),
+//   );
+
+//   const [storedAppBuckets, setStoredAppBuckets] = useState<string[]>(
+//     JSON.parse(localStorage.getItem('appBuckets') || '[]'),
+//   );
+
+//   const [dynamicAppBuckets, setDynamicAppBuckets] = useState<string[]>(
+//     JSON.parse(localStorage.getItem('dynamicAppBuckets') || '[]'),
+//   );
+
+//   const [loadings, setLoadings] = useState<boolean[]>([]);
+//   const [newKind, setNewKind] = useState('');
+//   const [newBucket, setNewBucket] = useState('');
+//   const [blacklist, setBlacklist] = useState({
+//     kinds: [],
+//     photos: [],
+//     videos: [],
+//     gitNestr: [],
+//     audio: [],
+//   });
+
+//   const [settings, setSettings] = useState<Settings>({
+//     mode: JSON.parse(localStorage.getItem('relaySettings') || '{}').mode || relaymode || 'unlimited',
+//     protocol: ['WebSocket'],
+//     kinds: [],
+//     dynamicKinds: [],
+//     photos: [],
+//     videos: [],
+//     gitNestr: [],
+//     audio: [],
+//     appBuckets: [],
+//     dynamicAppBuckets: [],
+//     isKindsActive: true,
+//     isPhotosActive: true,
+//     isVideosActive: true,
+//     isGitNestrActive: true,
+//     isAudioActive: true,
+//     isFileStorageActive: false,
+//     subscription_tiers: defaultTiers,
+//   });
+
+//   const handleTiersChange = (newTiers: SubscriptionTier[]) => {
+//     updateSettings('subscription_tiers', newTiers);
+//   };
+
+//   const groupedNoteOptions = categories.map((category) => ({
+//     ...category,
+//     notes: noteOptions.filter((note) => note.category === category.id),
+//   }));
+
+//   useEffect(() => {
+//     console.log(settings);
+//     console.log(blacklist)
+//   }, [settings, blacklist]);
+//   const enterLoading = (index: number) => {
+//     setLoadings((loadings) => {
+//       const newLoadings = [...loadings];
+//       newLoadings[index] = true;
+//       return newLoadings;
+//     });
+//   };
+
+//   const exitLoading = (index: number) => {
+//     setLoadings((loadings) => {
+//       const newLoadings = [...loadings];
+//       newLoadings[index] = false;
+//       return newLoadings;
+//     });
+//   };
+
+//   useEffect(() => {
+//     if (relaySettings) {
+//       setSettings({
+//         ...relaySettings,
+//         protocol: Array.isArray(relaySettings.protocol) ? relaySettings.protocol : [relaySettings.protocol],
+//       });
+//       setDynamicAppBuckets(relaySettings.dynamicAppBuckets);
+//     }
+//   }, [relaySettings]);
+
+
+//   const appBucketOptions = [
+//     ...defaultAppBuckets.map(bucket => ({ id: bucket.id, label: bucket.label })),
+//     ...dynamicAppBuckets.map(bucket => ({ id: bucket, label: bucket }))
+//   ].map((bucket) => ({
+//     label: (
+//       <S.CheckboxLabel
+//         style={{
+//           color:
+//             settings.mode !== 'smart'
+//               ? themeObject[theme].textMain
+//               : relaySettings.isKindsActive
+//                 ? themeObject[theme].textMain
+//                 : themeObject[theme].textLight,
+//         }}
+//         isActive={settings.mode !== 'smart' ? true : settings.isKindsActive}
+//       >
+//         {bucket.label}
+//       </S.CheckboxLabel>
+//     ),
+//     value: bucket.id,
+//   }));
+
+//   const gitNestrHkindOptions = [
+//     { value: 'Nostr/file_attachment' },
+//     { value: 'GitNestr/bundle_chain', description: 'Codebase Without Git Tree' },
+//     { value: 'GitNestr/archive_repo' },
+//     { value: 'GitNestr/encrypted_data' },
+//   ].map(({ value, description }) => ({
+//     label: (
+//       <S.CheckboxLabel
+//         style={{
+//           color:
+//             settings.mode !== 'smart'
+//               ? themeObject[theme].textMain
+//               : relaySettings.isGitNestrActive
+//                 ? themeObject[theme].textMain
+//                 : themeObject[theme].textLight,
+//         }}
+//         isActive={settings.mode !== 'smart' ? true : settings.isGitNestrActive}
+//       >
+//         {t(`checkboxes.${value}`)}
+//         {description && ` - ${description}`}
+//       </S.CheckboxLabel>
+//     ),
+//     value,
+//   }));
+
+//   const chunkSizeOptions = ['2', '4', '6', '8', '10', '12'];
+//   const maxFileSizeUnitOptions = ['MB', 'GB', 'TB'];
+
+//   const handleModeChange = (checked: boolean) => {
+//     const newMode = checked ? 'smart' : 'unlimited';
+//     setSettings(prev => ({
+//       ...prev,
+//       mode: newMode,
+//       // Clear selections when switching to unlimited mode
+//       kinds: newMode === 'unlimited' ? [] : prev.kinds,
+//       photos: newMode === 'unlimited' ? [] : prev.photos,
+//       videos: newMode === 'unlimited' ? [] : prev.videos,
+//       audio: newMode === 'unlimited' ? [] : prev.audio,
+//     }));
+//     updateSettings('mode', newMode);
+//     dispatch(setMode(newMode));
+//   };
+
+//   const handleProtocolChange = (checkedValues: string[]) => {
+//     setSettings((prevSettings) => ({
+//       ...prevSettings,
+//       protocol: checkedValues,
+//     }));
+//     updateSettings('protocol', checkedValues);
+//   };
+
+//   const handleBlacklistChange = (category: Category, checkedValues: string[]) => {
+//     console.log("changing blacklist")
+//     debugger
+//     const isDynamicKind = category === 'dynamicKinds' || category === 'appBuckets';
+//     if (isDynamicKind) {
+//       console.log("changing dynamic kind")
+//       setSettings((prevSettings) => {
+//         const updatedSettings = { ...prevSettings, [category]: checkedValues };
+//         updateSettings(category, checkedValues);
+//         return updatedSettings;
+//       });
+//       return;
+//     }
+//     setBlacklist((prevBlacklist) => ({
+//       ...prevBlacklist,
+//       [category]: checkedValues,
+//     }));
+//   };
+
+//   // const handleChunkedChange = (checkedValues: string[]) => {
+//   //   setSettings((prevSettings) => ({
+//   //     ...prevSettings,
+//   //     chunked: checkedValues,
+//   //   }));
+//   //   updateSettings('chunked', checkedValues);
+//   // };
+
+//   const handleSettingsChange = (category: Category, checkedValues: string[]) => {
+//     console.log("changing settings", category, checkedValues);
+//     // Update both settings and relay settings
+//     setSettings(prev => ({
+//       ...prev,
+//       [category]: checkedValues
+//     }));
+//     updateSettings(category, checkedValues);
+//   };
+
+//   const handleSwitchChange = (category: keyof Settings, value: boolean) => {
+//     setSettings((prevSettings) => ({
+//       ...prevSettings,
+//       [category]: value,
+//     }));
+//     updateSettings(category, value);
+//   };
+
+//   const handleNewBucket = (bucket: string) => {
+//     if (!bucket) return;
+//     if (dynamicAppBuckets.includes(bucket)) return;
+
+//     const updatedDynamicAppBuckets = [...dynamicAppBuckets, bucket];
+//     setDynamicAppBuckets(updatedDynamicAppBuckets);
+//     updateSettings('dynamicAppBuckets', updatedDynamicAppBuckets);
+//     localStorage.setItem('dynamicAppBuckets', JSON.stringify(updatedDynamicAppBuckets));
+//   };
+
+//   const handleRemovedBucket = (bucket: string) => {
+//     const updatedDynamicAppBuckets = dynamicAppBuckets.filter((b) => b !== bucket);
+//     setDynamicAppBuckets(updatedDynamicAppBuckets);
+//     updateSettings('dynamicAppBuckets', updatedDynamicAppBuckets);
+//     localStorage.setItem('dynamicAppBuckets', JSON.stringify(updatedDynamicAppBuckets));
+//   };
+
+//   const handleNewDynamicKind = (kind: string) => {
+//     const currentKinds = settings.dynamicKinds.concat(storedDynamicKinds);
+//     if (currentKinds.includes(kind)) {
+//       return;
+//     }
+//     setStoredDynamicKinds((prevKinds) => [...prevKinds, kind]);
+//     handleSettingsChange('dynamicKinds', [...settings.dynamicKinds, kind]);
+//   };
+//   const removeDynamicKind = (kind: string) => {
+//     setStoredDynamicKinds((prevKinds) => prevKinds.filter((k) => k !== kind));
+//     handleSettingsChange(
+//       'dynamicKinds',
+//       settings.dynamicKinds.filter((k) => k !== kind),
+//     );
+//   };
+
+//   const performSaveSettings = async () => {
+//     await Promise.all([
+//       updateSettings('kinds', settings.isKindsActive ? settings.kinds : []),
+//       updateSettings('dynamicKinds', settings.dynamicKinds),
+//       updateSettings('photos', settings.isPhotosActive ? settings.photos : []),
+//       updateSettings('videos', settings.isVideosActive ? settings.videos : []),
+//       updateSettings('gitNestr', settings.isGitNestrActive ? settings.gitNestr : []),
+//       updateSettings('audio', settings.isAudioActive ? settings.audio : []),
+//       updateSettings('protocol', settings.protocol),
+//       updateSettings('isFileStorageActive', settings.isFileStorageActive),
+//       updateSettings('appBuckets', settings.appBuckets),
+//       updateSettings('dynamicAppBuckets', settings.dynamicAppBuckets),
+//       updateSettings('subscription_tiers', settings.subscription_tiers),
+//     ]);
+
+//     await saveSettings();
+//   };
+
+//   const onSaveClick = async () => {
+//     enterLoading(0);
+
+//     if (!settings.isKindsActive) {
+//       handleSettingsChange('kinds', []);
+//     }
+//     if (!settings.isPhotosActive) {
+//       handleSettingsChange('photos', []);
+//     }
+//     if (!settings.isVideosActive) {
+//       handleSettingsChange('videos', []);
+//     }
+//     if (!settings.isGitNestrActive) {
+//       handleSettingsChange('gitNestr', []);
+//     }
+//     if (!settings.isAudioActive) {
+//       handleSettingsChange('audio', []);
+//     }
+
+//     await performSaveSettings();
+//     exitLoading(0);
+//   };
+
+//   useEffect(() => {
+//     fetchSettings();
+//   }, [fetchSettings]);
+
+//   useEffect(() => {
+//     fetchSettings();
+//   }, [fetchSettings]);
+
+//   useEffect(() => {
+//     if (relaySettings) {
+//       setSettings({
+//         ...relaySettings,
+//         protocol: Array.isArray(relaySettings.protocol) ? relaySettings.protocol : [relaySettings.protocol],
+//         subscription_tiers: relaySettings.subscription_tiers || defaultTiers // Add this line
+//       });
+//     }
+//   }, [relaySettings]);
+
+//   useEffect(() => {
+//     if (settings.mode === 'unlimited') return
+//     console.log("resetting blacklist changing")
+//     setBlacklist({
+//       kinds: [],
+//       photos: [],
+//       videos: [],
+//       gitNestr: [],
+//       audio: [],
+//     });
+//   }, [settings.mode]);
+
+//   // Media format mappings
+//   const imageFormatOptions = [
+//     { ext: 'jpeg', mime: 'image/jpeg' },
+//     { ext: 'png', mime: 'image/png' },
+//     { ext: 'gif', mime: 'image/gif' },
+//     { ext: 'bmp', mime: 'image/bmp' },
+//     { ext: 'tiff', mime: 'image/tiff' },
+//     { ext: 'raw', mime: 'image/raw' },
+//     { ext: 'svg', mime: 'image/svg+xml' },
+//     { ext: 'webp', mime: 'image/webp' },
+//     { ext: 'pdf', mime: 'application/pdf' },
+//     { ext: 'eps', mime: 'image/eps' },
+//     { ext: 'psd', mime: 'image/vnd.adobe.photoshop' },
+//     { ext: 'ai', mime: 'application/postscript' }
+//   ].map((format) => ({
+//     label: (
+//       <S.CheckboxLabel
+//         style={{
+//           color: themeObject[theme].textMain
+//         }}
+//         isActive={true}
+//       >
+//         {format.ext.toUpperCase()}
+//       </S.CheckboxLabel>
+//     ),
+//     value: format.mime
+//   }));
+
+//   const videoFormatOptions = [
+//     { ext: 'avi', mime: 'video/avi' },
+//     { ext: 'mp4', mime: 'video/mp4' },
+//     { ext: 'mov', mime: 'video/mov' },
+//     { ext: 'wmv', mime: 'video/wmv' },
+//     { ext: 'mkv', mime: 'video/mkv' },
+//     { ext: 'flv', mime: 'video/flv' },
+//     { ext: 'mpeg', mime: 'video/mpeg' },
+//     { ext: '3gp', mime: 'video/3gpp' },
+//     { ext: 'webm', mime: 'video/webm' },
+//     { ext: 'ogg', mime: 'video/ogg' }
+//   ].map((format) => ({
+//     label: (
+//       <S.CheckboxLabel
+//         style={{
+//           color: themeObject[theme].textMain
+//         }}
+//         isActive={true}
+//       >
+//         {format.ext.toUpperCase()}
+//       </S.CheckboxLabel>
+//     ),
+//     value: format.mime
+//   }));
+
+//   const audioFormatOptions = [
+//     { ext: 'mp3', mime: 'audio/mpeg' },
+//     { ext: 'wav', mime: 'audio/wav' },
+//     { ext: 'ogg', mime: 'audio/ogg' },
+//     { ext: 'flac', mime: 'audio/flac' },
+//     { ext: 'aac', mime: 'audio/aac' },
+//     { ext: 'wma', mime: 'audio/x-ms-wma' },
+//     { ext: 'm4a', mime: 'audio/mp4' },
+//     { ext: 'opus', mime: 'audio/opus' },
+//     { ext: 'm4b', mime: 'audio/m4b' },
+//     { ext: 'midi', mime: 'audio/midi' }
+//   ].map((format) => ({
+//     label: (
+//       <S.CheckboxLabel
+//         style={{
+//           color: themeObject[theme].textMain
+//         }}
+//         isActive={true}
+//       >
+//         {format.ext.toUpperCase()}
+//       </S.CheckboxLabel>
+//     ),
+//     value: format.mime
+//   }));
+
+//   const documentFormatOptions = [
+//     { ext: 'pdf', mime: 'application/pdf' },
+//     { ext: 'doc', mime: 'application/msword' },
+//     { ext: 'docx', mime: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' },
+//     { ext: 'txt', mime: 'text/plain' }
+//   ].map((format) => ({
+//     label: (
+//       <S.CheckboxLabel
+//         style={{
+//           color: themeObject[theme].textMain
+//         }}
+//         isActive={true}
+//       >
+//         {format.ext.toUpperCase()}
+//       </S.CheckboxLabel>
+//     ),
+//     value: format.mime
+//   }));
+
+//   // Checkbox Groups for each type
+//   const ImageCheckboxGroup = () => (
+//     <BaseCheckbox.Group
+//       className={`custom-checkbox-group grid-checkbox-group ${settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''
+//         }`}
+//       options={imageFormatOptions}
+//       value={settings.photos}
+//       onChange={(checkedValues) => handleSettingsChange('photos', checkedValues as string[])}
+//       disabled={settings.mode !== 'smart' ? false : !settings.isPhotosActive}
+//     />
+//   );
+
+//   const VideoCheckboxGroup = () => (
+//     <BaseCheckbox.Group
+//       className={`custom-checkbox-group grid-checkbox-group ${settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''
+//         }`}
+//       options={videoFormatOptions}
+//       value={settings.videos}
+//       onChange={(checkedValues) => handleSettingsChange('videos', checkedValues as string[])}
+//       disabled={settings.mode !== 'smart' ? false : !settings.isVideosActive}
+//     />
+//   );
+
+//   const AudioCheckboxGroup = () => (
+//     <BaseCheckbox.Group
+//       className={`custom-checkbox-group grid-checkbox-group ${settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''
+//         }`}
+//       options={audioFormatOptions}
+//       value={settings.audio}
+//       onChange={(checkedValues) => handleSettingsChange('audio', checkedValues as string[])}
+//       disabled={settings.mode !== 'smart' ? false : !settings.isAudioActive}
+//     />
+//   );
+
+//   useEffect(() => {
+//     const updateDynamicKinds = async () => {
+//       await performSaveSettings();
+//     };
+
+//     if (settings.dynamicKinds && settings.dynamicKinds.length > 0) {
+//       updateDynamicKinds();
+//     }
+//   }, [settings.dynamicKinds]);
+
+//   const desktopLayout = (
+//     <BaseRow>
+//       <S.LeftSideCol xl={16} xxl={17} id="desktop-content">
+//         <BaseRow gutter={[60, 60]}>
+//           <BaseCol xs={24}>
+//             <S.HeadingContainer>
+//               <S.LabelSpan>{'Options'}</S.LabelSpan>
+//             </S.HeadingContainer>
+//             <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
+//               <StyledPanel header={'Network Rules'} key="protocol" className="centered-header">
+//                 <S.Card>
+//                   <BaseCol span={24}>
+//                     <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '1rem' }}>
+//                       <S.LabelSpan style={{ marginBottom: '1rem' }}>{t('common.transportSetting')}</S.LabelSpan>
+//                       <Checkbox.Group
+//                         options={[
+//                           { label: 'WebSocket', value: 'WebSocket', style: { fontSize: '.85rem' } },
+//                           { label: 'Libp2p QUIC', value: 'QUIC', style: { fontSize: '.85rem' } },
+//                         ]}
+//                         value={settings.protocol}
+//                         className="custom-checkbox-group"
+//                         onChange={(checkedValues) => handleProtocolChange(checkedValues as string[])}
+//                         style={{
+//                           display: 'grid',
+//                           gridTemplateColumns: '10rem auto',
+//                         }}
+//                       />
+//                     </div>
+//                     <div style={{ borderTop: '1px solid #ccc', margin: '1rem 0' }}></div>
+//                     <div style={{ display: 'flex', flexDirection: 'column' }}>
+//                       <S.LabelSpan style={{ marginBottom: '1rem' }}>{t('File Storage')}</S.LabelSpan>{' '}
+//                       <BaseCheckbox
+//                         checked={settings.isFileStorageActive}
+//                         onChange={(e) => handleSwitchChange('isFileStorageActive', e.target.checked)}
+//                         style={{ fontSize: '.85rem' }}
+//                       >
+//                         Enable/Disable
+//                       </BaseCheckbox>
+//                     </div>
+//                   </BaseCol>
+//                 </S.Card>
+//               </StyledPanel>
+//             </Collapse>
+//             <Collapse style={{ padding: '1rem 0 1rem 0' }} bordered={false}>
+//               <StyledPanel header={'App Buckets'} key="appBuckets" className="centered-header">
+//                 <S.Card>
+//                   <div className="flex-col w-full">
+//                     <BaseCheckbox.Group
+//                       style={{ paddingTop: '1rem', paddingLeft: '1rem', paddingBottom: '1rem' }}
+//                       className={`custom-checkbox-group grid-checkbox-group`}
+//                       value={settings.appBuckets}
+//                       onChange={(checkedValues) => handleSettingsChange('appBuckets', checkedValues as string[])}
+//                       options={appBucketOptions.filter(option => defaultAppBuckets.some(bucket => bucket.id === option.value))}
+//                     />
+
+//                     <S.InfoCard>
+//                       <S.InfoCircleOutlinedIcon />
+//                       <small style={{ color: themeObject[theme].textLight }}>
+//                         {
+//                           'Enabling buckets will organize data stored within the relay to quicken retrieval times for users. Disabling buckets will not turn off data storage.'
+//                         }
+//                       </small>
+//                     </S.InfoCard>
+//                     <S.NewBucketContainer>
+//                       <h3>{'Add an App Bucket'}</h3>
+//                       <div
+//                         style={{ display: 'flex' }}
+//                         className="custom-checkbox-group grid-checkbox-group large-label"
+//                       >
+//                         <Input
+//                           value={newBucket}
+//                           onChange={(e) => {
+//                             setNewBucket(e.target.value);
+//                           }}
+//                           placeholder="Enter new app bucket"
+//                         />
+//                         <BaseButton
+//                           onClick={() => {
+//                             if (newBucket) {
+//                               handleNewBucket(newBucket);
+//                               setNewBucket('');
+//                             }
+//                           }}
+//                         >
+//                           Add bucket
+//                         </BaseButton>
+//                       </div>
+//                       <BaseCheckbox.Group
+//                         style={{ paddingLeft: '1rem' }}
+//                         className={`custom-checkbox-group grid-checkbox-group large-label ${dynamicAppBuckets.length ? 'dynamic-group' : ''
+//                           } `}
+//                         value={settings.dynamicAppBuckets}
+//                         onChange={(checkedValues) =>
+//                           handleSettingsChange('dynamicAppBuckets', checkedValues as string[])
+//                         }
+//                       >
+//                         {dynamicAppBuckets.map((bucket) => (
+//                           <div
+//                             style={{ display: 'flex', flexDirection: 'row', gap: '.5rem', alignItems: 'center' }}
+//                             key={bucket}
+//                           >
+//                             <div className="checkbox-container">
+//                               <BaseCheckbox value={bucket} />
+//                               <S.CheckboxLabel
+//                                 isActive={true}
+//                                 style={{ fontSize: '1rem', paddingRight: '.8rem', paddingLeft: '.8rem' }}
+//                               >
+//                                 {bucket}
+//                               </S.CheckboxLabel>
+//                             </div>
+//                             <BaseButton
+//                               style={{ height: '2rem', width: '5rem', marginRight: '1rem' }}
+//                               onClick={() => handleRemovedBucket(bucket)}
+//                             >
+//                               Remove
+//                             </BaseButton>
+//                           </div>
+//                         ))}
+//                       </BaseCheckbox.Group>
+//                     </S.NewBucketContainer>
+//                   </div>
+//                 </S.Card>
+//               </StyledPanel>
+//             </Collapse>
+            // <Collapse style={{ padding: '1rem 0 1rem 0' }} bordered={false}>
+            //   <StyledPanel header={'Subscription Tiers'} key="subscriptionTiers" className="centered-header">
+            //     <S.Card>
+            //       <SubscriptionTiersManager
+            //         tiers={settings.subscription_tiers || []}
+            //         onChange={handleTiersChange}
+            //       />
+            //     </S.Card>
+            //   </StyledPanel>
+            // </Collapse>
+//           </BaseCol>
+//         </BaseRow>
+
+//         <BaseCol xs={24}>
+//           <S.SwitchContainer
+//             style={{
+//               width: '11rem',
+//               display: 'grid',
+//               paddingTop: '3rem',
+//               gap: '.5rem',
+//               gridTemplateColumns: '1fr 3fr',
+//               marginBottom: '1.5rem',
+//             }}
+//           >
+//             <S.LabelSpan>{t('common.serverSetting')}</S.LabelSpan>
+//             <S.LargeSwitch
+//               className="modeSwitch"
+//               checkedChildren="Strict"
+//               unCheckedChildren="Unlimited"
+//               checked={settings.mode === 'smart'}
+//               onChange={(e) => handleModeChange(e)}
+//             />
+//           </S.SwitchContainer>
+//           <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
+//             <StyledPanel
+//               header={settings.mode !== 'smart' ? `Blacklisted Kind Numbers` : 'Kind Numbers'}
+//               key="notes"
+//               className="centered-header"
+//             >
+//               <S.Card>
+//                 <div className="flex-col w-full">
+//                   {settings.mode !== 'unlimited' && settings.mode !== '' && (
+//                     <div className="switch-container">
+//                       <BaseSwitch
+//                         checkedChildren="ON"
+//                         unCheckedChildren="OFF"
+//                         checked={settings.isKindsActive}
+//                         onChange={() => handleSwitchChange('isKindsActive', !settings.isKindsActive)}
+//                       />
+//                     </div>
+//                   )}
+//                   <BaseCheckbox.Group
+//                     className="large-label"
+//                     value={settings.kinds} // Always use settings.kinds regardless of mode
+//                     onChange={(checkedValues) => {
+//                       console.log('Checkbox values changed:', checkedValues);
+//                       handleSettingsChange('kinds', checkedValues as string[]);
+//                     }}
+//                     disabled={settings.mode !== 'smart' ? false : !settings.isKindsActive}
+//                   >
+//                     {groupedNoteOptions.map((group) => (
+//                       <div key={group.id} style={{ paddingBottom: '2rem' }}>
+//                         <h3 className="checkboxHeader w-full">{group.name}</h3>
+//                         <div className="custom-checkbox-group grid-checkbox-group large-label">
+//                           {group.notes.map((note) => (
+//                             <div className="checkbox-container" style={{ paddingLeft: '1rem' }} key={note.kindString}>
+//                               <BaseCheckbox
+//                                 value={note.kindString}
+//                                 className={settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''}
+//                                 disabled={settings.mode !== 'smart' ? false : !settings.isKindsActive}
+//                               />
+//                               <S.CheckboxLabel
+//                                 isActive={settings.mode !== 'smart' ? true : settings.isKindsActive}
+//                                 style={{
+//                                   paddingRight: '.8rem',
+//                                   paddingLeft: '.8rem',
+//                                   color: themeObject[theme].textMain
+//                                 }}
+//                               >
+//                                 {t(`kind${note.kind}`)} - {' '}
+//                                 <span style={{ fontWeight: 'normal' }}>{note.description}</span>
+//                               </S.CheckboxLabel>
+//                             </div>
+//                           ))}
+//                         </div>
+//                       </div>
+//                     ))}
+//                   </BaseCheckbox.Group>
+//                   {settings.mode !== 'smart' && (
+//                     <div
+//                       style={{
+//                         padding: '1.5rem 0rem 0rem 0rem',
+//                         display: 'flex',
+//                         flexDirection: 'column',
+//                         gap: '.5rem',
+//                       }}
+//                     >
+//                       <h3>{'Add to Blacklist'}</h3>
+//                       <div
+//                         style={{ display: 'flex' }}
+//                         className="custom-checkbox-group grid-checkbox-group large-label"
+//                       >
+//                         <Input
+//                           value={newKind}
+//                           onChange={(e) => setNewKind(e.target.value)}
+//                           placeholder="Enter new kind"
+//                         />
+//                         <BaseButton
+//                           onClick={() => {
+//                             if (newKind) {
+//                               handleNewDynamicKind(newKind);
+//                               setNewKind('');
+//                             }
+//                           }}
+//                         >
+//                           Add Kind
+//                         </BaseButton>
+//                       </div>
+//                       <BaseCheckbox.Group
+//                         style={{ paddingLeft: '1rem' }}
+//                         className={`custom-checkbox-group grid-checkbox-group large-label ${storedDynamicKinds?.length ? 'dynamic-group ' : ''
+//                           }${settings.mode === 'unlimited' ? 'blacklist-mode-active ' : ''}`}
+//                         value={settings.dynamicKinds || []}
+//                         onChange={(checkedValues) => handleSettingsChange('dynamicKinds', checkedValues as string[])}
+//                       >
+//                         {(storedDynamicKinds || []).map((kind) => (
+//                           <div
+//                             style={{ display: 'flex', flexDirection: 'row', gap: '.5rem', alignItems: 'center' }}
+//                             key={kind}
+//                           >
+//                             <div className="checkbox-container">
+//                               <BaseCheckbox
+//                                 className={settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''}
+//                                 value={kind}
+//                               />
+//                               <S.CheckboxLabel
+//                                 isActive={true}
+//                                 style={{ fontSize: '1rem', paddingRight: '.8rem', paddingLeft: '.8rem' }}
+//                               >
+//                                 {`kind` + kind}
+//                               </S.CheckboxLabel>
+//                             </div>
+//                             <BaseButton
+//                               style={{ height: '2rem', width: '5rem', marginRight: '1rem' }}
+//                               onClick={() => removeDynamicKind(kind)}
+//                             >
+//                               Remove
+//                             </BaseButton>
+//                           </div>
+//                         ))}
+//                       </BaseCheckbox.Group>
+//                     </div>
+//                   )}
+//                 </div>
+//               </S.Card>
+//             </StyledPanel>
+//           </Collapse>
+
+//           <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
+//             <StyledPanel
+//               header={settings.mode !== 'smart' ? `Blacklisted Photo Extension` : 'Photo Extensions'}
+//               key="2"
+//             >
+//               <S.Card>
+//                 {settings.mode !== 'unlimited' && settings.mode !== '' && (
+//                   <div className="switch-container">
+//                     <BaseSwitch
+//                       checkedChildren="ON"
+//                       unCheckedChildren="OFF"
+//                       checked={settings.isPhotosActive}
+//                       onChange={() => handleSwitchChange('isPhotosActive', !settings.isPhotosActive)}
+//                     />
+//                   </div>
+//                 )}
+
+//                 <ImageCheckboxGroup />
+//               </S.Card>
+//             </StyledPanel>
+//           </Collapse>
+//           <Collapse bordered={false} style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }}>
+//             <StyledPanel
+//               header={settings.mode !== 'smart' ? `Blacklisted Video Extensions` : 'Video Extensions'}
+//               key="3"
+//             >
+//               <S.Card>
+//                 {settings.mode !== 'unlimited' && settings.mode !== '' && (
+//                   <div className="switch-container">
+//                     <BaseSwitch
+//                       checkedChildren="ON"
+//                       unCheckedChildren="OFF"
+//                       checked={settings.isVideosActive}
+//                       onChange={() => handleSwitchChange('isVideosActive', !settings.isVideosActive)}
+//                     />
+//                   </div>
+//                 )}
+
+//                 <VideoCheckboxGroup />
+//               </S.Card>
+//             </StyledPanel>
+//           </Collapse>
+//           <Collapse bordered={false} style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }}>
+//             <StyledPanel
+//               header={settings.mode !== 'smart' ? `Blacklisted Audio Extensions` : 'Audio Extensions'}
+//               key="5"
+//             >
+//               <S.Card>
+//                 {settings.mode !== 'unlimited' && settings.mode !== '' && (
+//                   <div className="switch-container">
+//                     <BaseSwitch
+//                       checkedChildren="ON"
+//                       unCheckedChildren="OFF"
+//                       checked={settings.isAudioActive}
+//                       onChange={() => handleSwitchChange('isAudioActive', !settings.isAudioActive)}
+//                     />
+//                   </div>
+//                 )}
+//                 <AudioCheckboxGroup />
+//               </S.Card>
+//             </StyledPanel>
+//           </Collapse>
+//           <BaseButton
+//             style={{ marginTop: '2rem', paddingBottom: '1rem' }}
+//             type="primary"
+//             loading={loadings[0]}
+//             onClick={onSaveClick}
+//           >
+//             {t('buttons.saveSettings')}
+//           </BaseButton>
+//         </BaseCol>
+//       </S.LeftSideCol>
+//       <S.RightSideCol xl={8} xxl={7}>
+//         <div id="balance">
+//           <Balance />
+//         </div>
+//         <S.Space />
+//         <div id="total-earning">
+//           <TotalEarning />
+//         </div>
+//         <S.Space />
+//         <div id="activity-story">
+//           <ActivityStory />
+//         </div>
+//       </S.RightSideCol>
+//     </BaseRow>
+//   );
+
+//   const mobileAndTabletLayout = (
+//     <BaseRow gutter={[20, 24]}>
+//       <BaseCol span={24}>
+//         <S.HeadingContainer>
+//           <S.LabelSpan>{'Options'}</S.LabelSpan>
+//         </S.HeadingContainer>
+//         <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
+//           <StyledPanel header={'Network Rules'} key="protocol" className="centered-header">
+//             <S.Card>
+//               <BaseCol span={24}>
+//                 <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '1rem' }}>
+//                   <S.LabelSpan style={{ marginBottom: '0.5rem' }}>{t('common.transportSetting')}</S.LabelSpan>
+//                   <Checkbox.Group
+//                     className="custom-checkbox-group"
+//                     options={[
+//                       { label: 'WebSocket', value: 'WebSocket', style: { fontSize: '.8rem' } },
+//                       { label: 'Libp2p QUIC', value: 'QUIC', style: { fontSize: '.8rem' } },
+//                     ]}
+//                     value={settings.protocol}
+//                     onChange={(checkedValues) => handleProtocolChange(checkedValues as string[])}
+//                     style={{
+//                       display: 'grid',
+//                       gridTemplateColumns: '9rem auto',
+//                       paddingRight: '0',
+//                       justifyContent: 'start',
+//                       fontSize: 'small',
+//                     }}
+//                   />
+//                 </div>
+//                 <div style={{ borderTop: '1px solid #ccc', margin: '1rem 0' }}></div>
+//                 <div style={{ display: 'flex', flexDirection: 'column' }}>
+//                   <S.LabelSpan style={{ marginBottom: '0.5rem' }}>{t('File Storage')}</S.LabelSpan>
+//                   <BaseCheckbox
+//                     checked={settings.isFileStorageActive}
+//                     onChange={(e) => handleSwitchChange('isFileStorageActive', e.target.checked)}
+//                     style={{ fontSize: '.8rem' }}
+//                   >
+//                     Enable/Disable
+//                   </BaseCheckbox>
+//                 </div>
+//               </BaseCol>
+//             </S.Card>
+//           </StyledPanel>
+//         </Collapse>
+//         <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
+//           <StyledPanel header={'App Buckets'} key="appBuckets" className="centered-header">
+//             <S.Card>
+//               <div className="flex-col w-full">
+//                 <BaseCheckbox.Group
+//                   style={{ padding: '1rem 0rem 1rem 1rem' }}
+//                   className={`custom-checkbox-group grid-mobile-checkbox-group `}
+//                   value={settings.appBuckets || []}
+//                   onChange={(checkedValues) => handleSettingsChange('appBuckets', checkedValues as string[])}
+//                   //disabled={settings.mode !== 'smart' ? false : !settings.isKindsActive}
+//                   options={appBucketOptions}
+//                 />
+//                 <S.InfoCard>
+//                   <S.InfoCircleOutlinedIcon />
+//                   <small style={{ color: themeObject[theme].textLight }}>
+//                     {
+//                       'Enabling buckets will organize data stored within the relay to quicken retrieval times for users. Disabling buckets will not turn off data storage.'
+//                     }
+//                   </small>
+//                 </S.InfoCard>
+//                 <S.NewBucketContainer>
+//                   <h3>{'Add an App Bucket'}</h3>
+//                   <div style={{ display: 'flex' }} className="large-label">
+//                     <Input
+//                       value={newKind}
+//                       onChange={(e) => {
+//                         setNewBucket(e.target.value);
+//                       }}
+//                       placeholder="Enter new app bucket"
+//                     />
+//                     <BaseButton
+//                       onClick={() => {
+//                         if (newBucket) {
+//                           handleNewBucket(newBucket);
+//                           setNewKind('');
+//                         }
+//                       }}
+//                     >
+//                       Add bucket
+//                     </BaseButton>
+//                   </div>
+//                   <BaseCheckbox.Group
+//                     style={{ paddingLeft: '1rem' }}
+//                     className={`custom-checkbox-group grid-checkbox-group large-label ${storedAppBuckets?.length ? 'dynamic-group' : ''
+//                       }`}
+//                     value={settings.dynamicAppBuckets || []}
+//                     onChange={(checkedValues) => handleSettingsChange('dynamicAppBuckets', checkedValues as string[])}
+//                   >
+//                     {(storedAppBuckets || []).map((bucket) => (
+//                       <div
+//                         style={{ display: 'flex', flexDirection: 'row', gap: '.5rem', alignItems: 'center' }}
+//                         key={bucket}
+//                       >
+//                         <div className="checkbox-container">
+//                           <BaseCheckbox value={bucket} />
+//                           <S.CheckboxLabel
+//                             isActive={true}
+//                             style={{ fontSize: '1rem', paddingRight: '.8rem', paddingLeft: '.8rem' }}
+//                           >
+//                             {bucket}
+//                           </S.CheckboxLabel>
+//                         </div>
+//                         <BaseButton
+//                           style={{ height: '2rem', width: '5rem', marginRight: '1rem' }}
+//                           onClick={() => handleRemovedBucket(bucket)}
+//                         >
+//                           Remove
+//                         </BaseButton>
+//                       </div>
+//                     ))}
+//                   </BaseCheckbox.Group>
+//                 </S.NewBucketContainer>
+//               </div>
+//             </S.Card>
+//           </StyledPanel>
+//         </Collapse>
+
+//         <Collapse style={{ padding: '1rem 0 1rem 0' }} bordered={false}>
+//           <StyledPanel header={'Subscription Tiers'} key="subscriptionTiers" className="centered-header">
+//             <S.Card>
+//               <SubscriptionTiersManager
+//                 tiers={settings.subscription_tiers || []}
+//                 onChange={handleTiersChange}
+//               />
+//             </S.Card>
+//           </StyledPanel>
+//         </Collapse>
+//         <S.SwitchContainer
+//           style={{
+//             display: 'grid',
+//             paddingTop: '2rem',
+//             gridTemplateColumns: '5rem 6.5rem',
+//             marginBottom: '1.5rem',
+//             marginTop: '1rem',
+//           }}
+//         >
+//           <S.LabelSpan>{t('common.serverSetting')}</S.LabelSpan>
+//           <S.LargeSwitch
+//             className="modeSwitch"
+//             checkedChildren="Strict"
+//             unCheckedChildren="Unlimited"
+//             checked={settings.mode === 'smart'}
+//             onChange={(e) => handleModeChange(e)}
+//           />
+//         </S.SwitchContainer>
+//         <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
+//           <StyledPanel
+//             header={settings.mode !== 'smart' ? `Blacklisted Kind Numbers` : 'Kind Numbers'}
+//             key="notes"
+//             className="centered-header"
+//           >
+//             <S.Card>
+//               <div className="flex-col w-full">
+//                 {settings.mode !== 'unlimited' && settings.mode !== '' && (
+//                   <div className="switch-container">
+//                     <BaseSwitch
+//                       checkedChildren="ON"
+//                       unCheckedChildren="OFF"
+//                       checked={settings.isKindsActive}
+//                       onChange={() => handleSwitchChange('isKindsActive', !settings.isKindsActive)}
+//                     />
+//                   </div>
+//                 )}
+//                 <BaseCheckbox.Group
+//                   className="large-label"
+//                   value={settings.mode == 'unlimited' ? blacklist.kinds : settings.kinds}
+//                   onChange={(checkedValues) => handleSettingsChange('kinds', checkedValues as string[])}
+//                   disabled={settings.mode !== 'smart' ? false : !settings.isKindsActive}
+//                 >
+//                   {groupedNoteOptions.map((group) => (
+//                     <div key={group.id} style={{ paddingBottom: '2rem' }}>
+//                       <h3 className="checkboxHeader w-full">{group.name}</h3>
+//                       <div className="custom-checkbox-group grid-checkbox-group large-label">
+//                         {group.notes.map((note) => (
+//                           <div className="checkbox-container" style={{ paddingLeft: '.6rem' }} key={note.kindString}>
+//                             <BaseCheckbox
+//                               value={note.kindString}
+//                               className={settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''}
+//                               disabled={settings.mode !== 'smart' ? false : !settings.isKindsActive}
+//                             />
+//                             <S.CheckboxLabel
+//                               isActive={settings.mode !== 'smart' ? true : settings.isKindsActive}
+//                               style={{
+//                                 paddingRight: '.8rem',
+//                                 paddingLeft: '.8rem',
+//                                 color:
+//                                   settings.mode !== 'smart'
+//                                     ? themeObject[theme].textMain
+//                                     : relaySettings.isKindsActive
+//                                       ? themeObject[theme].textMain
+//                                       : themeObject[theme].textLight,
+//                               }}
+//                             >
+//                               {t(`kind${note.kind}`)} - <span style={{ fontWeight: 'normal' }}>{note.description}</span>
+//                             </S.CheckboxLabel>
+//                           </div>
+//                         ))}
+//                       </div>
+//                     </div>
+//                   ))}
+//                 </BaseCheckbox.Group>
+//               </div>
+//               {settings.mode === 'unlimited' && (
+//                 <div style={{ display: 'flex', flexDirection: 'column', gap: '.5rem' }}>
+//                   <h3>{'Add to Blacklist'}</h3>
+//                   <div style={{ display: 'flex', gap: '.5rem' }}>
+//                     <Input value={newKind} onChange={(e) => setNewKind(e.target.value)} placeholder="Enter new kind" />
+//                     <BaseButton
+//                       onClick={() => {
+//                         if (newKind) {
+//                           handleNewDynamicKind(newKind);
+//                           setNewKind('');
+//                         }
+//                       }}
+//                     >
+//                       Add Kind
+//                     </BaseButton>
+//                   </div>
+//                   <BaseCheckbox.Group
+//                     style={{ paddingLeft: '.6rem' }}
+//                     className={`custom-checkbox-group grid-checkbox-group large-label ${settings.mode === 'unlimited' ? 'blacklist-mode-active ' : ''
+//                       }${storedDynamicKinds?.length ? 'dynamic-group' : ''}`}
+//                     value={settings.dynamicKinds || []}
+//                     onChange={(checkedValues) => handleSettingsChange('dynamicKinds', checkedValues as string[])}
+//                   >
+//                     {(storedDynamicKinds || []).map((kind) => (
+//                       <div
+//                         style={{
+//                           display: 'flex',
+//                           flexDirection: 'row',
+//                           gap: '.5rem',
+//                           alignItems: 'center',
+//                           justifyContent: 'space-between',
+//                         }}
+//                         key={kind}
+//                       >
+//                         <div className="checkbox-container">
+//                           <BaseCheckbox
+//                             style={{ paddingLeft: '0rem' }}
+//                             className={settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''}
+//                             value={kind}
+//                           />
+//                           <S.CheckboxLabel
+//                             isActive={true}
+//                             style={{ fontSize: '1.2rem', paddingRight: '.8rem', paddingLeft: '.8rem' }}
+//                           >
+//                             {`kind` + kind}
+//                           </S.CheckboxLabel>
+//                         </div>
+//                         <BaseButton style={{ height: '2rem', width: '5rem' }} onClick={() => removeDynamicKind(kind)}>
+//                           Remove
+//                         </BaseButton>
+//                       </div>
+//                     ))}
+//                   </BaseCheckbox.Group>
+//                 </div>
+//               )}
+//             </S.Card>
+//           </StyledPanel>
+//         </Collapse>
+
+//         <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
+//           <StyledPanel header={settings.mode !== 'smart' ? `Blacklisted Photo Extensions` : 'Photo Extensions'} key="2">
+//             <S.Card style={{ flexDirection: 'column' }}>
+//               {settings.mode !== 'unlimited' && settings.mode !== '' && (
+//                 <div className="switch-container">
+//                   <BaseSwitch
+//                     checkedChildren="ON"
+//                     unCheckedChildren="OFF"
+//                     checked={settings.isPhotosActive}
+//                     onChange={() => handleSwitchChange('isPhotosActive', !settings.isPhotosActive)}
+//                   />
+//                 </div>
+//               )}
+
+//               <BaseCheckbox.Group
+//                 style={{ paddingLeft: '1rem' }}
+//                 className={`custom-checkbox-group grid-mobile-checkbox-group ${settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''
+//                   }`}
+//                 options={imageFormatOptions}
+//                 value={settings.mode == 'unlimited' ? blacklist.photos : settings.photos}
+//                 onChange={(checkedValues) => handleSettingsChange('photos', checkedValues as string[])}
+//                 disabled={settings.mode !== 'smart' ? false : !settings.isPhotosActive}
+//               />
+//             </S.Card>
+//           </StyledPanel>
+//         </Collapse>
+//         <Collapse bordered={false} style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }}>
+//           <StyledPanel header={settings.mode !== 'smart' ? `Blacklisted Video Extensions` : 'Video Extensions'} key="3">
+//             <S.Card style={{ flexDirection: 'column' }}>
+//               {settings.mode !== 'unlimited' && settings.mode !== '' && (
+//                 <div className="switch-container">
+//                   <BaseSwitch
+//                     checkedChildren="ON"
+//                     unCheckedChildren="OFF"
+//                     checked={settings.isVideosActive}
+//                     onChange={() => handleSwitchChange('isVideosActive', !settings.isVideosActive)}
+//                   />
+//                 </div>
+//               )}
+
+//               <BaseCheckbox.Group
+//                 style={{ paddingLeft: '1rem' }}
+//                 className={`custom-checkbox-group grid-mobile-checkbox-group ${settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''
+//                   }`}
+//                 options={videoFormatOptions}
+//                 value={settings.mode == 'unlimited' ? blacklist.videos : settings.videos}
+//                 onChange={(checkedValues) => handleSettingsChange('videos', checkedValues as string[])}
+//                 disabled={settings.mode !== 'smart' ? false : !settings.isVideosActive}
+//               />
+//             </S.Card>
+//           </StyledPanel>
+//         </Collapse>
+//         {/* <Collapse bordered={false} style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }}>
+//           <StyledPanel
+//             header={
+//               settings.mode === 'unlimited' ? `Blacklisted ${t('checkboxes.gitNestr')}` : t('checkboxes.gitNestr')
+//             }
+//             key="4"
+//           >
+//             <S.Card>
+//               <div>
+//                 <BaseSwitch
+//                   checkedChildren="ON"
+//                   unCheckedChildren="OFF"
+//                   checked={settings.isGitNestrActive}
+//                   onChange={() => handleSwitchChange('isGitNestrActive', !settings.isGitNestrActive)}
+//                 />
+//               </div>
+//               <BaseCheckbox.Group
+//                 style={{ paddingLeft: '1rem' }}
+//                 className={`custom-checkbox-group grid-checkbox-group large-label ${
+//                   settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''
+//                 }`}
+//                 options={gitNestrHkindOptions}
+//                 value={settings.mode == 'unlimited' ? blacklist.gitNestr : settings.gitNestr}
+//                 onChange={(checkedValues) => handleSettingsChange('gitNestr', checkedValues as string[])}
+//                 disabled={!settings.isGitNestrActive}
+//               />
+//             </S.Card>
+//           </StyledPanel>
+//         </Collapse> */}
+//         <Collapse bordered={false} style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }}>
+//           <StyledPanel header={settings.mode !== 'smart' ? `Blacklisted Audio Extensions` : 'Audio Extensions'} key="5">
+//             <S.Card>
+//               {settings.mode !== 'unlimited' && settings.mode !== '' && (
+//                 <div className="switch-container">
+//                   <BaseSwitch
+//                     checkedChildren="ON"
+//                     unCheckedChildren="OFF"
+//                     checked={settings.isAudioActive}
+//                     onChange={() => handleSwitchChange('isAudioActive', !settings.isAudioActive)}
+//                   />
+//                 </div>
+//               )}
+//               <BaseCheckbox.Group
+//                 style={{ paddingLeft: '1rem' }}
+//                 className={`custom-checkbox-group grid-mobile-checkbox-group ${settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''
+//                   }`}
+//                 options={audioFormatOptions}
+//                 value={settings.mode == 'unlimited' ? blacklist.audio : settings.audio}
+//                 onChange={(checkedValues) => handleSettingsChange('audio', checkedValues as string[])}
+//                 disabled={settings.mode !== 'smart' ? false : !settings.isAudioActive}
+//               />
+//             </S.Card>
+//           </StyledPanel>
+//         </Collapse>
+
+//         <BaseButton style={{ marginTop: '2rem' }} type="primary" loading={loadings[0]} onClick={onSaveClick}>
+//           {t('buttons.saveSettings')}
+//         </BaseButton>
+//       </BaseCol>
+//     </BaseRow>
+//   );
+
+//   return (
+//     <>
+//       <PageTitle>{t('common.customizeRelaySettings')}</PageTitle>
+//       {isDesktop ? desktopLayout : mobileAndTabletLayout}
+//     </>
+//   );
+// };
+
+// export default RelaySettingsPage;
