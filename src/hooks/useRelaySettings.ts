@@ -18,6 +18,8 @@ interface BackendRelaySettings {
   maxFileSize: number;
   maxFileSizeUnit: string;
   subscription_tiers: BackendSubscriptionTier[];
+  freeTierEnabled: boolean;  // New field
+  freeTierLimit: string;     // New field - e.g. "100 MB per month"
   MimeTypeGroups: {
     images: string[];
     videos: string[];
@@ -52,7 +54,9 @@ const getInitialSettings = (): Settings => ({
   isGitNestrActive: true,
   isAudioActive: true,
   isFileStorageActive: false,
-  subscription_tiers: defaultTiers
+  subscription_tiers: defaultTiers,
+  freeTierEnabled: false,
+  freeTierLimit: '100 MB per month'
 });
 
 const useRelaySettings = () => {
@@ -123,6 +127,8 @@ const useRelaySettings = () => {
         datalimit: tier.data_limit,
         price: tier.price
       })),
+      freeTierEnabled: settings.freeTierEnabled,
+      freeTierLimit: settings.freeTierLimit,
       MimeTypeGroups: mimeGroups,
       isFileStorageActive: settings.isFileStorageActive,
       MimeTypeWhitelist: settings.mode === 'smart'
@@ -143,13 +149,15 @@ const useRelaySettings = () => {
     const settings = getInitialSettings();
     settings.mode = backendSettings.mode;
     settings.protocol = backendSettings.protocol as string[];
+    settings.freeTierEnabled = backendSettings.freeTierEnabled ?? false;
+    settings.freeTierLimit = backendSettings.freeTierLimit ?? '100 MB per month';
 
     // Handle subscription tiers
     if (Array.isArray(backendSettings.subscription_tiers)) {
       settings.subscription_tiers = backendSettings.subscription_tiers.map(tier => ({
         data_limit: tier.datalimit,
         price: tier.price
-      }));  
+      }));
       console.log('Transformed tiers:', settings.subscription_tiers);
     } else {
       console.log('No backend tiers, using defaults');

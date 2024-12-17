@@ -16,6 +16,8 @@ export type Settings = {
   isAudioActive: boolean;
   isFileStorageActive: boolean;
   subscription_tiers: SubscriptionTier[];
+  freeTierEnabled: boolean;  // New field
+  freeTierLimit: string;     // New field - e.g. "100 MB per month
 }
 
 export type SubscriptionTier = {

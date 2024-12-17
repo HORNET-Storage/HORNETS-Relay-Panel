@@ -12,11 +12,17 @@ const StyledPanel = styled(Collapse.Panel)``;
 interface SubscriptionSectionProps {
   tiers: SubscriptionTier[];
   onChange: (tiers: SubscriptionTier[]) => void;
+  freeTierEnabled: boolean;
+  freeTierLimit: string;
+  onFreeTierChange: (enabled: boolean, limit: string) => void;
 }
 
 export const SubscriptionSection: React.FC<SubscriptionSectionProps> = ({
   tiers,
   onChange,
+  freeTierEnabled,
+  freeTierLimit,
+  onFreeTierChange,
 }) => {
   return (
     <Collapse style={{ padding: '1rem 0 1rem 0' }} bordered={false}>
@@ -25,6 +31,9 @@ export const SubscriptionSection: React.FC<SubscriptionSectionProps> = ({
           <SubscriptionTiersManager
             tiers={tiers || []}
             onChange={onChange}
+            freeTierEnabled={freeTierEnabled}
+            freeTierLimit={freeTierLimit}
+            onFreeTierChange={onFreeTierChange}
           />
         </S.Card>
       </StyledPanel>

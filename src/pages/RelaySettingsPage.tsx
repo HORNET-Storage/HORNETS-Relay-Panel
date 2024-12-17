@@ -42,6 +42,8 @@ const RelaySettingsPage: React.FC = () => {
     isAudioActive: true,
     isFileStorageActive: false,
     subscription_tiers: [],
+    freeTierEnabled: false,  // Add this
+    freeTierLimit: '100 MB per month'  // Add this
   });
 
   // Initialize stored dynamic items
@@ -71,14 +73,14 @@ const RelaySettingsPage: React.FC = () => {
   useEffect(() => {
     if (relaySettings) {
       console.log('Raw relay settings:', relaySettings); // For debugging
-      
+
       // Only set defaults if there are no tiers or if they are invalid
-      const tiers = Array.isArray(relaySettings.subscription_tiers) && 
-                   relaySettings.subscription_tiers.length > 0 &&
-                   relaySettings.subscription_tiers.every(tier => tier.data_limit && tier.price)
-                   ? relaySettings.subscription_tiers
-                   : defaultTiers;
-  
+      const tiers = Array.isArray(relaySettings.subscription_tiers) &&
+        relaySettings.subscription_tiers.length > 0 &&
+        relaySettings.subscription_tiers.every(tier => tier.data_limit && tier.price)
+        ? relaySettings.subscription_tiers
+        : defaultTiers;
+
       setSettings(prev => ({
         ...relaySettings,
         protocol: Array.isArray(relaySettings.protocol) ? relaySettings.protocol : [relaySettings.protocol],
@@ -133,6 +135,8 @@ const RelaySettingsPage: React.FC = () => {
         updateSettings('isFileStorageActive', settings.isFileStorageActive),
         updateSettings('appBuckets', settings.appBuckets),
         updateSettings('dynamicAppBuckets', settings.dynamicAppBuckets),
+        updateSettings('freeTierEnabled', settings.freeTierEnabled),
+        updateSettings('freeTierLimit', settings.freeTierLimit),
         updateSettings('subscription_tiers', settings.subscription_tiers),
       ]);
 
@@ -246,7 +250,9 @@ const RelaySettingsPage: React.FC = () => {
     onAddBucket: handleAddBucket,
     onRemoveBucket: handleRemoveBucket,
     // Subscription props
-    subscriptionTiers: settings.subscription_tiers || defaultTiers, // Add fallback here too
+    subscriptionTiers: settings.subscription_tiers || defaultTiers,
+    freeTierEnabled: settings.freeTierEnabled,
+    freeTierLimit: settings.freeTierLimit,
     onSubscriptionChange: (tiers: SubscriptionTier[]) => {
       setSettings(prev => ({
         ...prev,
@@ -254,6 +260,16 @@ const RelaySettingsPage: React.FC = () => {
       }));
       updateSettings('subscription_tiers', tiers);
     },
+    onFreeTierChange: (enabled: boolean, limit: string) => {  // Combined function
+      setSettings(prev => ({
+        ...prev,
+        freeTierEnabled: enabled,
+        freeTierLimit: limit
+      }));
+      updateSettings('freeTierEnabled', enabled);
+      updateSettings('freeTierLimit', limit);
+    },
+
     // Kinds props
     isKindsActive: settings.isKindsActive,
     selectedKinds: settings.kinds,
