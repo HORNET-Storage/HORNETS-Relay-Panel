@@ -16,6 +16,8 @@ export type Settings = {
   isAudioActive: boolean;
   isFileStorageActive: boolean;
   subscription_tiers: SubscriptionTier[];
+  freeTierEnabled: boolean;  // New field
+  freeTierLimit: string;     // New field - e.g. "100 MB per month
 }
 
 export type SubscriptionTier = {
@@ -109,4 +111,10 @@ export const mimeTypeOptions: FormatOption[] = [
   { value: 'audio/opus', label: 'Opus Audio' },
   { value: 'audio/m4b', label: 'M4B Audiobooks' },
   { value: 'audio/midi', label: 'MIDI Audio' },
+];
+
+export const defaultTiers: SubscriptionTier[] = [
+  { data_limit: '1 GB per month', price: '8000' },
+  { data_limit: '5 GB per month', price: '10000' },
+  { data_limit: '10 GB per month', price: '15000' }
 ];
