@@ -9,12 +9,14 @@ import { themeObject } from '@app/styles/themes/themeVariables';
 import { useAppSelector } from '@app/hooks/reduxHooks';
 
 interface BucketsListProps {
+  mobileGrid?: boolean; 
   selectedBuckets: string[];
   onBucketsChange: (values: string[]) => void;
 }
 
 export const BucketsList: React.FC<BucketsListProps> = ({
   selectedBuckets,
+  mobileGrid = false,
   onBucketsChange,
 }) => {
   const theme = useAppSelector((state) => state.theme.theme);
@@ -38,7 +40,7 @@ export const BucketsList: React.FC<BucketsListProps> = ({
   return (
     <BaseCheckbox.Group
       style={{ paddingTop: '1rem', paddingLeft: '1rem', paddingBottom: '1rem' }}
-      className="custom-checkbox-group grid-checkbox-group"
+      className={`custom-checkbox-group ${mobileGrid ? 'grid-mobile-checkbox-group' : 'grid-checkbox-group'}`}
       value={selectedBuckets}
       onChange={handleChange}
       options={bucketOptions}

@@ -271,10 +271,12 @@ export default createGlobalStyle`
   .grid-mobile-checkbox-group{
   display: grid;
   width:100%;
-  grid-template-columns: repeat(auto-fill, minmax(7.3rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
   gap: 1.2rem;
 
   }
+
+
   .checkbox-container{
     display: flex;
     align-items: center;  
@@ -290,7 +292,7 @@ export default createGlobalStyle`
     grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
   }
   .switch-container{
-    padding-bottom: 1rem;
+    padding-bottom: 1.5rem;
   }
 
   .w-full{

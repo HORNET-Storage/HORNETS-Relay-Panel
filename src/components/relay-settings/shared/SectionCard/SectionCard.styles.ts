@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { BORDER_RADIUS, FONT_SIZE } from '@app/styles/themes/constants';
 
 export const CardWrapper = styled.div`
-  padding: 1.25rem;
+  padding: 1rem .5rem;
   background: var(--background-color);
   border-radius: ${BORDER_RADIUS};
   margin-bottom: 1rem;
@@ -38,8 +38,9 @@ export const Title = styled.h6`
 `;
 
 export const ContentWrapper = styled.div`
+
   &.with-padding {
-    padding: 1rem 0;
+    padding: 1rem 1.25rem;
   }
 
   &.with-border {

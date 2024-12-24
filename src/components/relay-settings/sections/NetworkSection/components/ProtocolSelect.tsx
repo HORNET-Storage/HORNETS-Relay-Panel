@@ -31,7 +31,7 @@ export const ProtocolSelect: React.FC<ProtocolSelectProps> = ({
         onChange={(checkedValues) => onChange(checkedValues as string[])}
         style={{
           display: 'grid',
-          gridTemplateColumns: '10rem auto',
+          gridTemplateColumns: '8rem auto',
         }}
       />
     </div>

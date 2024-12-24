@@ -6,6 +6,7 @@ import * as S from '@app/pages/uiComponentsPages/UIComponentsPage.styles';
 import { CollapsibleSection } from '../../shared/CollapsibleSection/CollapsibleSection';
 import { ProtocolSelect } from './components/ProtocolSelect';
 import { FileStorageToggle } from './components/FileStorageToggle';
+import { SectionCard } from '../../shared/SectionCard';
 
 export interface NetworkSectionProps {
   protocols: string[];
@@ -22,7 +23,7 @@ export const NetworkSection: React.FC<NetworkSectionProps> = ({
 }) => {
   return (
     <CollapsibleSection header="Network Rules">
-      <S.Card>
+      <SectionCard padding={true}>
         <BaseCol span={24}>
           <ProtocolSelect 
             selectedProtocols={protocols}
@@ -36,7 +37,7 @@ export const NetworkSection: React.FC<NetworkSectionProps> = ({
             onChange={onFileStorageChange}
           />
         </BaseCol>
-      </S.Card>
+      </SectionCard>
     </CollapsibleSection>
   );
 };

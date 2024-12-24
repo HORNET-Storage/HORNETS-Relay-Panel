@@ -5,9 +5,12 @@ import * as S from '@app/pages/uiComponentsPages/UIComponentsPage.styles';
 import { CollapsibleSection } from '../../shared/CollapsibleSection/CollapsibleSection';
 import { MediaTypeList } from './components/MediaTypeList';
 import { MediaToggle } from './components/MediaToggle';
+import { SectionCard } from '../../shared/SectionCard';
+import * as T from './MediaSecion.styles';
 
 export interface MediaSectionProps {
   mode: string;
+  mobile?: boolean;
   photos: {
     selected: string[];
     isActive: boolean;
@@ -40,7 +43,7 @@ const imageFormats = [
   { ext: 'pdf', mime: 'application/pdf' },
   { ext: 'eps', mime: 'image/eps' },
   { ext: 'psd', mime: 'image/vnd.adobe.photoshop' },
-  { ext: 'ai', mime: 'application/postscript' }
+  { ext: 'ai', mime: 'application/postscript' },
 ];
 
 const videoFormats = [
@@ -53,7 +56,7 @@ const videoFormats = [
   { ext: 'mpeg', mime: 'video/mpeg' },
   { ext: '3gp', mime: 'video/3gpp' },
   { ext: 'webm', mime: 'video/webm' },
-  { ext: 'ogg', mime: 'video/ogg' }
+  { ext: 'ogg', mime: 'video/ogg' },
 ];
 
 const audioFormats = [
@@ -66,69 +69,61 @@ const audioFormats = [
   { ext: 'm4a', mime: 'audio/mp4' },
   { ext: 'opus', mime: 'audio/opus' },
   { ext: 'm4b', mime: 'audio/m4b' },
-  { ext: 'midi', mime: 'audio/midi' }
+  { ext: 'midi', mime: 'audio/midi' },
 ];
 
-export const MediaSection: React.FC<MediaSectionProps> = ({
-  mode,
-  photos,
-  videos,
-  audio,
-}) => {
-  const getHeader = (type: string) => 
-    mode !== 'smart' ? `Blacklisted ${type} Extensions` : `${type} Extensions`;
+export const MediaSection: React.FC<MediaSectionProps> = ({ mode, mobile = false, photos, videos, audio }) => {
+  const getHeader = (type: string) => (mode !== 'smart' ? `Blacklisted ${type} Extensions` : `${type} Extensions`);
 
   return (
     <>
       <CollapsibleSection header={getHeader('Photo')}>
-        <S.Card>
-          <MediaToggle
-            isActive={photos.isActive}
-            onChange={photos.onToggle}
-            mode={mode}
-          />
-          <MediaTypeList
-            formats={imageFormats}
-            selectedFormats={photos.selected}
-            onChange={photos.onChange}
-            isActive={photos.isActive}
-            mode={mode}
-          />
-        </S.Card>
+        <SectionCard padding={true}>
+          <T.MediaSectionWrapper $isMobile={mobile}> 
+            <MediaToggle isActive={photos.isActive} onChange={photos.onToggle} mode={mode} />
+            <MediaTypeList
+              formats={imageFormats}
+              selectedFormats={photos.selected}
+              onChange={photos.onChange}
+              isActive={photos.isActive}
+              mode={mode}
+              mobileGrid={mobile}
+            />
+          </T.MediaSectionWrapper>
+        </SectionCard>
       </CollapsibleSection>
 
       <CollapsibleSection header={getHeader('Video')}>
-        <S.Card>
-          <MediaToggle
-            isActive={videos.isActive}
-            onChange={videos.onToggle}
-            mode={mode}
-          />
+        <SectionCard padding={true}>
+        <T.MediaSectionWrapper $isMobile={mobile}> 
+          <MediaToggle isActive={videos.isActive} onChange={videos.onToggle} mode={mode} />
           <MediaTypeList
             formats={videoFormats}
             selectedFormats={videos.selected}
             onChange={videos.onChange}
             isActive={videos.isActive}
             mode={mode}
+            mobileGrid={mobile}
           />
-        </S.Card>
+        </T.MediaSectionWrapper>
+        </SectionCard>
       </CollapsibleSection>
 
       <CollapsibleSection header={getHeader('Audio')}>
-        <S.Card>
-          <MediaToggle
-            isActive={audio.isActive}
-            onChange={audio.onToggle}
-            mode={mode}
-          />
+        <SectionCard padding={true}>
+        <T.MediaSectionWrapper $isMobile={mobile}> 
+          <MediaToggle isActive={audio.isActive} onChange={audio.onToggle} mode={mode} />
           <MediaTypeList
             formats={audioFormats}
             selectedFormats={audio.selected}
             onChange={audio.onChange}
             isActive={audio.isActive}
             mode={mode}
+            mobileGrid={mobile}
           />
-        </S.Card>
+        </T.MediaSectionWrapper>
+        </SectionCard>
+        
       </CollapsibleSection>
     </>
   );

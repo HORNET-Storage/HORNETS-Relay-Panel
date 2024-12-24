@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import * as S from '@app/pages/uiComponentsPages/UIComponentsPage.styles';
 import SubscriptionTiersManager from '@app/components/SubscriptionTiersManager';
 import { SubscriptionTier } from '@app/constants/relaySettings';
-
+import { CollapsibleSection } from '../../shared/CollapsibleSection';
 const StyledPanel = styled(Collapse.Panel)``;
 
 interface SubscriptionSectionProps {
@@ -25,8 +25,7 @@ export const SubscriptionSection: React.FC<SubscriptionSectionProps> = ({
   onFreeTierChange,
 }) => {
   return (
-    <Collapse style={{ padding: '1rem 0 1rem 0' }} bordered={false}>
-      <StyledPanel header="Subscription Tiers" key="subscriptionTiers" className="centered-header">
+    <CollapsibleSection header="Subscription Tiers">
         <S.Card>
           <SubscriptionTiersManager
             tiers={tiers || []}
@@ -36,8 +35,7 @@ export const SubscriptionSection: React.FC<SubscriptionSectionProps> = ({
             onFreeTierChange={onFreeTierChange}
           />
         </S.Card>
-      </StyledPanel>
-    </Collapse>
+    </CollapsibleSection>
   );
 };
 

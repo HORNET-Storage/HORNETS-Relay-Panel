@@ -20,17 +20,14 @@ export const AddBucketForm: React.FC<AddBucketFormProps> = ({ onAddBucket }) => 
   };
 
   return (
-    <div className="custom-checkbox-group grid-checkbox-group large-label">
+    <div
+      style={{ display: 'flex', flexDirection: 'column', gap:'1rem' }}
+      className="custom-checkbox-group grid-checkbox-group large-label"
+    >
       <h3>{'Add an App Bucket'}</h3>
       <div style={{ display: 'flex' }}>
-        <Input
-          value={newBucket}
-          onChange={(e) => setNewBucket(e.target.value)}
-          placeholder="Enter new app bucket"
-        />
-        <BaseButton onClick={handleAddBucket}>
-          Add bucket
-        </BaseButton>
+        <Input value={newBucket} onChange={(e) => setNewBucket(e.target.value)} placeholder="Enter new app bucket" />
+        <BaseButton onClick={handleAddBucket}>Add bucket</BaseButton>
       </div>
     </div>
   );

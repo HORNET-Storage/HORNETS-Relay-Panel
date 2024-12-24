@@ -7,6 +7,7 @@ import { CollapsibleSection } from '../../shared/CollapsibleSection/CollapsibleS
 import { KindsList } from './components/KindsList';
 import { AddKindForm } from './components/AddKindForm';
 import { DynamicKindsList } from './components/DynamicKindsList';
+import { SectionCard } from '../../shared/SectionCard';
 
 export interface KindsSectionProps {
   mode: string;
@@ -37,7 +38,7 @@ export const KindsSection: React.FC<KindsSectionProps> = ({
 
   return (
     <CollapsibleSection header={header}>
-      <S.Card>
+      <SectionCard padding={true}>
         <div className="flex-col w-full">
           {mode !== 'unlimited' && mode !== '' && (
             <div className="switch-container">
@@ -70,7 +71,7 @@ export const KindsSection: React.FC<KindsSectionProps> = ({
             onRemoveKind={onRemoveKind}
           />
         </div>
-      </S.Card>
+      </SectionCard>
     </CollapsibleSection>
   );
 };

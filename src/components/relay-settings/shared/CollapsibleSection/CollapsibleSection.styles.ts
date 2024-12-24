@@ -8,7 +8,9 @@ export const StyledCollapse = styled(Collapse)`
   padding: 1rem 0;
   margin: 0 0 1rem 0;
   background: transparent;
+  border-radius: 1rem;
   border: none;
+  box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.8);
 
   .ant-collapse-item {
     border-bottom: none;
@@ -24,10 +26,11 @@ export const StyledCollapse = styled(Collapse)`
   .ant-collapse-content {
     border-top: none;
     background: transparent;
+    margin: 0 1rem;
   }
 
   .ant-collapse-content-box {
-    padding: 1rem 0 0 0;
+    padding: .5rem .5rem;
   }
 
   &.centered-header {
