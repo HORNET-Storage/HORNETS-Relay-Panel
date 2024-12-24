@@ -13,12 +13,12 @@ interface SubscriptionTiersManagerProps {
   onFreeTierChange: (enabled: boolean, limit: string) => void;
 }
 
-const SubscriptionTiersManager: React.FC<SubscriptionTiersManagerProps> = ({ 
-  tiers = [], 
+const SubscriptionTiersManager: React.FC<SubscriptionTiersManagerProps> = ({
+  tiers = [],
   onChange,
   freeTierEnabled,
   freeTierLimit,
-  onFreeTierChange
+  onFreeTierChange,
 }) => {
   const defaultTiers: SubscriptionTier[] = [
     { data_limit: '1 GB per month', price: '8000' },
@@ -28,20 +28,22 @@ const SubscriptionTiersManager: React.FC<SubscriptionTiersManagerProps> = ({
 
   // Initialize with properly formatted tiers from props or default
   const [currentTiers, setCurrentTiers] = useState<SubscriptionTier[]>(() => {
-    return tiers.length > 0 ? tiers.map(tier => ({
-      data_limit: tier.data_limit.includes('per month') ? tier.data_limit : `${tier.data_limit} per month`,
-      price: tier.price
-    })) : defaultTiers;
+    return tiers.length > 0
+      ? tiers.map((tier) => ({
+          data_limit: tier.data_limit.includes('per month') ? tier.data_limit : `${tier.data_limit} per month`,
+          price: tier.price,
+        }))
+      : defaultTiers;
   });
 
   // Update current tiers when props change
   useEffect(() => {
     if (tiers.length > 0) {
-      const formattedTiers = tiers.map(tier => ({
+      const formattedTiers = tiers.map((tier) => ({
         data_limit: tier.data_limit.includes('per month') ? tier.data_limit : `${tier.data_limit} per month`,
         price: tier.price,
       }));
-      
+
       // Only update if the formatted tiers are different from current
       if (JSON.stringify(currentTiers) !== JSON.stringify(formattedTiers)) {
         setCurrentTiers(formattedTiers);
@@ -93,10 +95,13 @@ const SubscriptionTiersManager: React.FC<SubscriptionTiersManagerProps> = ({
 
   return (
     <T.ContentContainer className="w-full">
+      <T.ActiveTiersWrapper>
+        <T.ActiveTierHeader>Tiers:</T.ActiveTierHeader>
+        <div>{tiers.length}/3</div>
+      </T.ActiveTiersWrapper>
       {currentTiers.map((tier, index) => (
         <T.TierWrapper key={index}>
           <T.FieldWrapper>
-            <label className="">Data Limit</label>
             <Input
               value={tier.data_limit}
               onChange={(e) => handleUpdateTier(index, 'data_limit', e.target.value)}
@@ -128,24 +133,20 @@ const SubscriptionTiersManager: React.FC<SubscriptionTiersManagerProps> = ({
               }}
             />
           </T.FieldWrapper>
-          <T.RemoveTierButton
-          icon={<CloseOutlined />}
-            onClick={() => removeTier(index)}
-          
-          >
+          <T.RemoveTierButton icon={<CloseOutlined />} onClick={() => removeTier(index)}>
             Remove Tier
           </T.RemoveTierButton>
         </T.TierWrapper>
       ))}
 
-      <T.AddTierButton onClick={addTier} className="text-white rounded-lg" disabled={currentTiers.length >= 3}>
+      <T.AddTierButton onClick={addTier} className="rounded-lg" disabled={currentTiers.length >= 3}>
         <PlusOutlined />
         Add Tier
       </T.AddTierButton>
 
       <S.InfoCard>
         <S.InfoCircleOutlinedIcon />
-        <T.InfoText className="text-gray-400">
+        <T.InfoText>
           Configure subscription tiers to define data limits and pricing for your relay service.
         </T.InfoText>
       </S.InfoCard>

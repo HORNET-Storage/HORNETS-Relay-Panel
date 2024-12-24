@@ -275,7 +275,9 @@ export default createGlobalStyle`
   gap: 1.2rem;
 
   }
-
+.text-white{
+  color: white;
+      }
 
   .checkbox-container{
     display: flex;
