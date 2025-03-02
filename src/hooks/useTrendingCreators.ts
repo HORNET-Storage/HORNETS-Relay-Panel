@@ -45,7 +45,7 @@ const dummyProfiles: CreatorProfile[] = [
   { pubkey: 'dummy-12', picture: profile11 },
 ];
 
-const useTrendingCreators = (pageSize: number = 20) => {
+const useTrendingCreators = (pageSize = 20) => {
   const [creators, setCreators] = useState<CreatorProfile[]>(dummyProfiles);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -56,7 +56,7 @@ const useTrendingCreators = (pageSize: number = 20) => {
   const isMounted = useRef(true);
   const handleLogout = useHandleLogout();
 
-  const fetchCreators = useCallback(async (reset: boolean = false) => {
+  const fetchCreators = useCallback(async (reset = false) => {
     try {
       setLoading(true);
       const token = readToken();

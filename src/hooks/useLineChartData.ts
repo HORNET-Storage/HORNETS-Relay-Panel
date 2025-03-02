@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import config from '@app/config/config';
 import { readToken } from '@app/services/localStorage.service'; // Assuming you have these services for token management
-import { useDispatch } from 'react-redux';
 import { message } from 'antd';
 import { useHandleLogout } from './authUtils';
 
@@ -16,7 +15,6 @@ interface TimeSeriesData {
 const useLineChartData = () => {
   const [data, setData] = useState<TimeSeriesData[] | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const dispatch = useDispatch();
 
   const handleLogout = useHandleLogout();
 
@@ -58,7 +56,7 @@ const useLineChartData = () => {
     };
 
     fetchData();
-  }, [dispatch]);
+  }, [handleLogout]);
 
   return { data, isLoading };
 };

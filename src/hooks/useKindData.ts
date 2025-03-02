@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import kindMapping from '../constants/kindMapping';
 import config from '@app/config/config';
 import { readToken } from '@app/services/localStorage.service'; // Assuming these services exist
-import { useDispatch } from 'react-redux';
 import { message } from 'antd';
 import { useHandleLogout } from './authUtils';
 
@@ -18,7 +17,6 @@ interface KindData {
 const useKindData = () => {
   const [kindData, setKindData] = useState<KindData[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const dispatch = useDispatch();
 
   const handleLogout = useHandleLogout();
 
@@ -68,7 +66,7 @@ const useKindData = () => {
     };
 
     fetchKindData();
-  }, [dispatch]);
+  }, [handleLogout]);
 
   return { kindData, isLoading };
 };

@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import config from '@app/config/config';
 import { readToken } from '@app/services/localStorage.service'; // Assuming these services exist
-import { useDispatch } from 'react-redux';
 import { useHandleLogout } from './authUtils';
 
 interface Earning {
@@ -13,7 +12,6 @@ export const useBitcoinRates = () => {
   const [rates, setRates] = useState<Earning[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const dispatch = useDispatch();
 
   const handleLogout = useHandleLogout();
 
@@ -59,7 +57,7 @@ export const useBitcoinRates = () => {
     };
 
     fetchBitcoinRates();
-  }, [dispatch]);
+  }, [handleLogout]);
 
   return { rates, isLoading, error };
 };

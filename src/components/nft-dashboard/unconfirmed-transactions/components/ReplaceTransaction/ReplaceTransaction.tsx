@@ -34,7 +34,13 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
   const [newFee, setNewFee] = useState<number>(0); // State to store the new fee
   const [totalCost, setTotalCost] = useState<number>(parseInt(transaction.amount)); // State to store total cost
   // const [enableRBF, setEnableRBF] = useState(false); // State to store RBF status
-  const memoizedLogin = useCallback(login, []);
+  const memoizedLogin = useCallback(async () => {
+    try {
+      await login();
+    } catch (error) {
+      console.error('Login failed:', error);
+    }
+  }, [login]);
   const [result, setResult] = useState<{ isSuccess: boolean; message: string; txid: string }>({
     isSuccess: false,
     message: '',
@@ -44,12 +50,12 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
   // Fetch the transaction size when the component mounts
   useEffect(() => {
     if (isLoadingSize) return;
+
     const fetchTransactionSize = async () => {
       setIsLoadingSize(true);
       try {
         if (!isAuthenticated) {
-          console.log("not auth")
-          await login(); // Ensure user is logged in
+          await memoizedLogin();
         }
         if (!token) {
           setIsLoadingSize(false);
@@ -60,11 +66,11 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`, // Include JWT token
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            recipient_address: transaction.recipient_address, // Use the original recipient address
-            spend_amount: parseInt(transaction.amount.toString()), // The original amount
+            recipient_address: transaction.recipient_address,
+            spend_amount: parseInt(transaction.amount.toString()),
             priority_rate: newFeeRate,
           }),
         });
@@ -73,23 +79,31 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
           const errorText = await response.text();
           if (errorText.includes('Token expired')) {
             notificationController.error({ message: 'Session expired. Please log in again.' });
-            deleteWalletToken(); // Clear the old token
-            await login(); // Re-initiate login
+            deleteWalletToken();
+            await memoizedLogin();
           }
           throw new Error(errorText);
         }
 
         const result = await response.json();
-        setTxSize(result.txSize); // Set the transaction size
+        setTxSize(result.txSize);
       } catch (error) {
         console.error('Error fetching transaction size:', error);
         setTxSize(null);
       }
-      setIsLoadingSize(false); // Stop loading
+      setIsLoadingSize(false);
     };
 
     fetchTransactionSize();
-  }, [transaction.txid, transaction.amount, isAuthenticated, memoizedLogin, token]);
+  }, [
+    isLoadingSize,
+    isAuthenticated,
+    memoizedLogin,
+    token,
+    transaction.recipient_address,
+    transaction.amount,
+    newFeeRate
+  ]);
 
   // Calculate the total transaction cost (Amount + Calculated Fee)
 
@@ -99,19 +113,19 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
   }, [txSize, newFee, transaction.amount]);
 
   useEffect(() => {
-    if (totalCost <= 0 || (balanceData && totalCost > balanceData.latest_balance)) {
-      setInvalidAmount(true);
-    } else {
-      setInvalidAmount(false);
+    if (balanceData) {
+      const isInvalid = totalCost <= 0 || totalCost > balanceData.latest_balance;
+      setInvalidAmount(isInvalid);
     }
-  }, [totalCost]);
+  }, [totalCost, balanceData]);
 
   useEffect(() => {
-    setNewFee(newFeeRate * (txSize || 0)); // Update the new fee based on the fee rate and transaction size
+    const calculatedFee = newFeeRate * (txSize || 0);
+    setNewFee(calculatedFee);
   }, [newFeeRate, txSize]);
 
   const handleFeeRateChange = useCallback((fee: number) => {
-    setNewFeeRate(fee); // Update the new fee when it changes
+    setNewFeeRate(fee);
   }, []);
 
   const handleReplace = async (e: React.MouseEvent) => {

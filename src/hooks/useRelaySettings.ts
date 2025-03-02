@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { CheckboxValueType } from 'antd/es/checkbox/Group';
 import config from '@app/config/config';
 import { readToken } from '@app/services/localStorage.service';
@@ -61,7 +61,6 @@ const getInitialSettings = (): Settings => ({
 
 const useRelaySettings = () => {
   const [relaySettings, setRelaySettings] = useState<Settings>(getInitialSettings());
-  // Add state to store previous smart mode settings
   const [previousSmartSettings, setPreviousSmartSettings] = useState<{
     kinds: string[];
     photos: string[];
@@ -71,9 +70,19 @@ const useRelaySettings = () => {
 
   const handleLogout = useHandleLogout();
   const token = readToken();
+  
+  // Keep track of the last mode to prevent unnecessary updates
+  const lastMode = useRef(relaySettings.mode);
 
+  /* eslint-disable react-hooks/exhaustive-deps */
   // Effect to handle mode changes
   useEffect(() => {
+    if (relaySettings.mode === lastMode.current) {
+      return;
+    }
+
+    lastMode.current = relaySettings.mode;
+
     if (relaySettings.mode === 'unlimited') {
       // Store current settings before clearing
       setPreviousSmartSettings({
@@ -100,7 +109,8 @@ const useRelaySettings = () => {
         audio: previousSmartSettings.audio,
       }));
     }
-  }, [relaySettings.mode]);
+  }, [relaySettings.mode, previousSmartSettings]);
+  /* eslint-enable react-hooks/exhaustive-deps */
 
   const transformToBackendSettings = (settings: Settings): BackendRelaySettings => {
     const mimeGroups = {

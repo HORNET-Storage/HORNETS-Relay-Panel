@@ -1,7 +1,6 @@
 // src/hooks/useChartData.ts
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useDispatch } from 'react-redux';
 import config from '@app/config/config';
 import { readToken } from '@app/services/localStorage.service';
 import { message } from 'antd';
@@ -16,7 +15,6 @@ const useChartData = () => {
   const [chartData, setChartData] = useState<ChartDataItem[] | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const { t } = useTranslation();
-  const dispatch = useDispatch();
 
   const handleLogout = useHandleLogout();
 
@@ -67,7 +65,7 @@ const useChartData = () => {
     };
 
     fetchData();
-  }, [t, dispatch]);
+  }, [t, handleLogout]);
 
   return { chartData, isLoading };
 };

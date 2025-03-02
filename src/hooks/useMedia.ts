@@ -63,7 +63,7 @@ const useMedia = () => {
     },
   });
 
-  const fetchMedia = useCallback(async (reset: boolean = false) => {
+  const fetchMedia = useCallback(async (reset = false) => {
     if (loading || (!hasMore && !reset)) return;
 
     try {

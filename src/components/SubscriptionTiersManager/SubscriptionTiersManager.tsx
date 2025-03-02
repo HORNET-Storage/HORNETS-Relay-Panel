@@ -43,11 +43,14 @@ const SubscriptionTiersManager: React.FC<SubscriptionTiersManagerProps> = ({
       }));
       
       // Only update if the formatted tiers are different from current
-      if (JSON.stringify(currentTiers) !== JSON.stringify(formattedTiers)) {
+      const currentTiersString = JSON.stringify(currentTiers);
+      const formattedTiersString = JSON.stringify(formattedTiers);
+      
+      if (currentTiersString !== formattedTiersString) {
         setCurrentTiers(formattedTiers);
       }
     }
-  }, [tiers]);
+  }, [tiers, currentTiers]);
 
   const handleUpdateTier = (index: number, field: keyof SubscriptionTier, value: string) => {
     const newTiers = currentTiers.map((tier, i) => {
