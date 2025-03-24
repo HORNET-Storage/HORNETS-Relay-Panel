@@ -58,7 +58,7 @@ export const SubscriberDetailModal: React.FC<SubscriberDetailModalProps> = ({
       onCancel={onClose}
       footer={null}
       centered
-      closeIcon={null}
+      closeIcon={<CloseOutlined />}
       width={500}
       title={null}
       bodyStyle={{ padding: 0 }}
