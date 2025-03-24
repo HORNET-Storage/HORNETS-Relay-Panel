@@ -58,7 +58,7 @@ export const SubscriberDetailModal: React.FC<SubscriberDetailModalProps> = ({
       onCancel={onClose}
       footer={null}
       centered
-      closeIcon={<CloseOutlined />}
+      closeIcon={null}
       width={500}
       title={null}
       bodyStyle={{ padding: 0 }}
@@ -66,7 +66,6 @@ export const SubscriberDetailModal: React.FC<SubscriberDetailModalProps> = ({
       {/* Header with title */}
       <S.HeaderSection>
         <S.ModalTitle level={4}>Subscriber Profile</S.ModalTitle>
-        <S.CloseButton onClick={onClose} icon={<CloseOutlined />} />
       </S.HeaderSection>
       
       {/* Avatar section with profile picture and name */}
