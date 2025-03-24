@@ -1,0 +1,1 @@
+export { SubscriberDetailModal } from './SubscriberDetailModal';
