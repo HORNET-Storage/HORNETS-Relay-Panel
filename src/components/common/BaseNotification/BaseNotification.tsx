@@ -8,10 +8,11 @@ interface Icons {
   success: React.ReactNode;
   warning: React.ReactNode;
   error: React.ReactNode;
+  moderation: React.ReactNode;
   mention: React.ReactNode;
 }
 
-export type NotificationType = 'info' | 'mention' | 'success' | 'warning' | 'error';
+export type NotificationType = 'info' | 'mention' | 'success' | 'warning' | 'error' | 'moderation';
 
 interface BaseNotificationProps {
   type: NotificationType;
@@ -26,6 +27,7 @@ export const BaseNotification: React.FC<BaseNotificationProps> = ({ type, mentio
     success: <CheckCircleFilled />,
     warning: <ExclamationCircleFilled />,
     error: <WarningFilled />,
+    moderation: <WarningFilled style={{ color: 'var(--error-color)' }} />,
     mention: mentionIconSrc,
   };
 

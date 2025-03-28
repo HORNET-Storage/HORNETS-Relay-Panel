@@ -34,6 +34,7 @@ const AdvancedFormsPage = React.lazy(() => import('@app/pages/AdvancedFormsPage'
 const PersonalInfoPage = React.lazy(() => import('@app/pages/PersonalInfoPage'));
 const SecuritySettingsPage = React.lazy(() => import('@app/pages/SecuritySettingsPage'));
 const NotificationsPage = React.lazy(() => import('@app/pages/NotificationsPage'));
+const ModerationNotificationsPage = React.lazy(() => import('@app/pages/ModerationNotificationsPage'));
 const PaymentsPage = React.lazy(() => import('@app/pages/PaymentsPage'));
 const ButtonsPage = React.lazy(() => import('@app/pages/uiComponentsPages/ButtonsPage'));
 const SpinnersPage = React.lazy(() => import('@app/pages/uiComponentsPages/SpinnersPage'));
@@ -125,6 +126,7 @@ const Error404 = withLoading(Error404Page);
 const PersonalInfo = withLoading(PersonalInfoPage);
 const SecuritySettings = withLoading(SecuritySettingsPage);
 const Notifications = withLoading(NotificationsPage);
+const ModerationNotifications = withLoading(ModerationNotificationsPage);
 const Payments = withLoading(PaymentsPage);
 
 const AuthLayoutFallback = withLoading(AuthLayout);
@@ -171,6 +173,7 @@ export const AppRouter: React.FC = () => {
             <Route path="notifications" element={<Notifications />} />
             <Route path="payments" element={<Payments />} />
           </Route>
+          <Route path="moderation-notifications" element={<ModerationNotifications />} />
           <Route path="ui-components">
             <Route path="button" element={<Buttons />} />
             <Route path="spinner" element={<Spinners />} />

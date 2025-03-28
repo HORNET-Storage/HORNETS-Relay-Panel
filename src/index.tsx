@@ -16,13 +16,15 @@ interface EventTarget {
 const container = document.getElementById('root') as HTMLElement;
 const root = createRoot(container);
 
+// Temporarily disable StrictMode to avoid findDOMNode deprecation warnings from Ant Design components
+// TODO: Re-enable StrictMode once Ant Design is updated or components are properly refactored
 root.render(
-  <React.StrictMode>
+  // <React.StrictMode>
     <Provider store={store}>
-      <PwaSupportChecker /> {/* Add the PwaSupportChecker component here */}
+      <PwaSupportChecker />
       <App />
     </Provider>
-  </React.StrictMode>,
+  // </React.StrictMode>
 );
 
 serviceWorkerRegistration.register({
