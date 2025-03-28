@@ -40,15 +40,43 @@ export const NotificationText = styled.div`
 
 export const NotificationMeta = styled.div`
   display: flex;
+  flex-wrap: wrap;
   gap: 1rem;
   font-size: ${FONT_SIZE.xs};
   color: var(--text-light-color);
+  margin-bottom: 0.75rem;
 `;
 
 export const MetaItem = styled.span`
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
+`;
+
+export const MetaLabel = styled.span`
+  font-weight: ${FONT_WEIGHT.semibold};
+  margin-right: 0.5rem;
+`;
+
+export const MetaValue = styled.span`
+  display: inline-flex;
+  align-items: center;
+`;
+
+export const CopyButton = styled(Button)`
+  margin-left: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: ${FONT_SIZE.xs};
+  padding: 2px 6px;
+  height: 20px;
+  border-radius: ${BORDER_RADIUS};
+  background-color: var(--background-color);
+  
+  &:hover {
+    background-color: var(--secondary-background-color);
+  }
 `;
 
 export const ContentContainer = styled.div`

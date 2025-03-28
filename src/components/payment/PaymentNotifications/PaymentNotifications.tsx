@@ -9,17 +9,16 @@ import { BaseCol } from '@app/components/common/BaseCol/BaseCol';
 import { BasePagination } from '@app/components/common/BasePagination/BasePagination';
 import { BaseNotification } from '@app/components/common/BaseNotification/BaseNotification';
 import { BaseInput } from '@app/components/common/inputs/BaseInput/BaseInput';
-import { EyeOutlined } from '@ant-design/icons';
-import { useModerationNotifications } from '@app/hooks/useModerationNotifications';
-import { ModerationNotification, ModerationNotificationParams } from '@app/hooks/useModerationNotifications';
+import { usePaymentNotifications } from '@app/hooks/usePaymentNotifications';
+import { PaymentNotification, PaymentNotificationParams } from '@app/api/paymentNotifications.api';
 import { notificationController } from '@app/controllers/notificationController';
-import * as S from './ModerationNotifications.styles';
+import * as S from './PaymentNotifications.styles';
 
-interface ModerationNotificationsProps {
+interface PaymentNotificationsProps {
   className?: string;
 }
 
-export const ModerationNotifications: React.FC<ModerationNotificationsProps> = ({ className }) => {
+export const PaymentNotifications: React.FC<PaymentNotificationsProps> = ({ className }) => {
   const { t } = useTranslation();
   const [filter, setFilter] = useState<'all' | 'unread' | 'user'>('unread');
   const [userPubkey, setUserPubkey] = useState<string>('');
@@ -31,7 +30,7 @@ export const ModerationNotifications: React.FC<ModerationNotificationsProps> = (
     fetchNotifications, 
     markAsRead, 
     markAllAsRead 
-  } = useModerationNotifications();
+  } = usePaymentNotifications();
   
   // Fetch unread notifications on component mount
   useEffect(() => {
@@ -58,7 +57,7 @@ export const ModerationNotifications: React.FC<ModerationNotificationsProps> = (
   };
 
   const handlePageChange = (page: number) => {
-    const params: ModerationNotificationParams = {
+    const params: PaymentNotificationParams = {
       page,
       limit: pagination?.pageSize || 10,
       filter
@@ -91,8 +90,40 @@ export const ModerationNotifications: React.FC<ModerationNotificationsProps> = (
     return date.toLocaleString();
   };
 
+  const formatAmount = (satoshis: number) => {
+    const btc = satoshis / 100000000;
+    return (
+      <S.AmountDisplay>
+        <S.SatAmount>{satoshis.toLocaleString()} sats</S.SatAmount>
+        <S.BtcAmount>({btc.toFixed(8)} BTC)</S.BtcAmount>
+      </S.AmountDisplay>
+    );
+  };
+
+  const formatExpirationDate = (dateString: string) => {
+    const expiration = new Date(dateString);
+    const now = new Date();
+    const daysUntilExpiration = Math.floor((expiration.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+    
+    let color: 'default' | 'warning' | 'error' = 'default';
+    if (daysUntilExpiration <= 3) {
+      color = 'error';
+    } else if (daysUntilExpiration <= 7) {
+      color = 'warning';
+    }
+    
+    return (
+      <S.ExpirationInfo color={color}>
+        {daysUntilExpiration <= 0 
+          ? t('payment.notifications.expired', 'Expired')
+          : t('payment.notifications.expiresInDays', 'Expires in {{days}} days', { days: daysUntilExpiration })}
+        {' - '}{formatDate(dateString)}
+      </S.ExpirationInfo>
+    );
+  };
+
   return (
-    <BaseCard className={className} title={t('moderation.notifications.title', 'Moderation Notifications')} padding="1.25rem">
+    <BaseCard className={className} title={t('payment.notifications.title', 'Payment Notifications')} padding="1.25rem">
       <S.FiltersWrapper>
         <BaseRow gutter={[16, 16]} align="middle">
           <BaseCol xs={24} md={8}>
@@ -100,9 +131,9 @@ export const ModerationNotifications: React.FC<ModerationNotificationsProps> = (
               value={filter}
               onChange={handleFilterChange}
               options={[
-                { value: 'all', label: t('moderation.notifications.filters.all', 'All Notifications') },
-                { value: 'unread', label: t('moderation.notifications.filters.unread', 'Unread') },
-                { value: 'user', label: t('moderation.notifications.filters.user', 'By User') }
+                { value: 'all', label: t('payment.notifications.filters.all', 'All Payments') },
+                { value: 'unread', label: t('payment.notifications.filters.unread', 'Unread') },
+                { value: 'user', label: t('payment.notifications.filters.user', 'By User') }
               ]}
             />
           </BaseCol>
@@ -111,14 +142,14 @@ export const ModerationNotifications: React.FC<ModerationNotificationsProps> = (
             <>
               <BaseCol xs={24} md={12}>
                 <S.UserInput 
-                  placeholder={t('moderation.notifications.userPlaceholder', 'Enter user pubkey')}
+                  placeholder={t('payment.notifications.userPlaceholder', 'Enter user pubkey')}
                   value={userPubkey}
                   onChange={handleUserPubkeyChange}
                 />
               </BaseCol>
               <BaseCol xs={24} md={4}>
                 <BaseButton type="primary" onClick={handleUserPubkeyFilter}>
-                  {t('moderation.notifications.filter', 'Filter')}
+                  {t('payment.notifications.filter', 'Filter')}
                 </BaseButton>
               </BaseCol>
             </>
@@ -137,15 +168,31 @@ export const ModerationNotifications: React.FC<ModerationNotificationsProps> = (
         <>
           <BaseSpace direction="vertical" size={10} split={<S.SplitDivider />}>
             {notifications.map((notification) => (
-              <S.NotificationItem key={notification.id} $isRead={notification.is_read}>
+              <S.NotificationItem 
+                key={notification.id} 
+                $isRead={notification.is_read}
+                $isNew={notification.is_new_subscriber}
+              >
                 <BaseNotification
-                  type="error"
+                  type="info"
                   title={
                     <BaseRow align="middle">
-                      <S.ContentTypeTag $type={notification.content_type}>
-                        {notification.content_type}
-                      </S.ContentTypeTag>
-                      {notification.reason}
+                      <S.TierTag $tier={notification.subscription_tier}>
+                        {notification.subscription_tier}
+                      </S.TierTag>
+                      {t(
+                        notification.is_new_subscriber 
+                          ? 'payment.notifications.newSubscription' 
+                          : 'payment.notifications.renewalSubscription', 
+                        notification.is_new_subscriber 
+                          ? 'New Subscription' 
+                          : 'Subscription Renewal'
+                      )}
+                      {notification.is_new_subscriber && (
+                        <S.NewSubscriberBadge>
+                          {t('payment.notifications.new', 'NEW')}
+                        </S.NewSubscriberBadge>
+                      )}
                     </BaseRow>
                   }
                   description={
@@ -174,99 +221,37 @@ export const ModerationNotifications: React.FC<ModerationNotificationsProps> = (
                         </S.MetaItem>
                         
                         <S.MetaItem>
-                          <S.MetaLabel>Event ID:</S.MetaLabel>
+                          <S.MetaLabel>TX ID:</S.MetaLabel>
                           <S.MetaValue>
-                            {notification.event_id.substring(0, 10)}...
+                            {notification.tx_id.substring(0, 10)}...
                             <S.CopyButton 
                               onClick={() => {
-                                navigator.clipboard.writeText(notification.event_id);
+                                navigator.clipboard.writeText(notification.tx_id);
                                 notificationController.success({
-                                  message: 'Event ID copied to clipboard'
+                                  message: 'Transaction ID copied to clipboard'
                                 });
                               }}
                             >
-                              Copy Event ID
+                              Copy TX ID
                             </S.CopyButton>
                           </S.MetaValue>
                         </S.MetaItem>
                       </S.NotificationMeta>
                       
-                      {notification.thumbnail_url || notification.media_url ? (
-                        <S.ContentContainer>
-                          <S.ModerationBanner>
-                            <EyeOutlined />
-                            {t('moderation.notifications.sensitiveContent', 'Sensitive content')}
-                          </S.ModerationBanner>
-                          
-                          {(() => {
-                            // Get the media URL
-                            const mediaUrl = notification.media_url || notification.thumbnail_url;
-                            
-                            if (!mediaUrl) {
-                              return (
-                                <S.MediaError>
-                                  {t('moderation.notifications.noMedia', 'No media available')}
-                                </S.MediaError>
-                              );
-                            }
-                            
-                            // Format the full URL
-                            const fullMediaUrl = mediaUrl.startsWith('http') 
-                              ? mediaUrl 
-                              : `${window.location.origin}${mediaUrl.startsWith('/') ? '' : '/'}${mediaUrl}`;
-                            
-                            // Mark notification as read when media is loaded
-                            const handleMediaLoad = () => {
-                              if (!notification.is_read) {
-                                markAsRead(notification.id);
-                              }
-                            };
-                            
-                            const handleMediaError = () => {
-                              console.error(`Failed to load media: ${fullMediaUrl}`);
-                            };
-                            
-                            // Render the appropriate media element based on content type
-                            return (
-                              <S.MediaWrapper>
-                                {notification.content_type.includes('image') ? (
-                                  <S.StyledImage 
-                                    src={fullMediaUrl} 
-                                    alt="Moderated content"
-                                    onLoad={handleMediaLoad}
-                                    onError={handleMediaError}
-                                  />
-                                ) : notification.content_type.includes('video') ? (
-                                  <S.StyledVideo 
-                                    controls 
-                                    src={fullMediaUrl}
-                                    onLoadedData={handleMediaLoad}
-                                    onError={handleMediaError}
-                                  />
-                                ) : notification.content_type.includes('audio') ? (
-                                  <S.StyledAudio 
-                                    controls 
-                                    src={fullMediaUrl}
-                                    onLoadedData={handleMediaLoad}
-                                    onError={handleMediaError}
-                                  />
-                                ) : (
-                                  <S.MediaError>
-                                    {t('moderation.notifications.unsupportedType', 'Unsupported content type')}: {notification.content_type}
-                                  </S.MediaError>
-                                )}
-                              </S.MediaWrapper>
-                            );
-                          })()}
-                        </S.ContentContainer>
-                      ) : null}
+                      <div>
+                        <strong>{t('payment.notifications.amount', 'Amount')}: </strong>
+                        {formatAmount(notification.amount)}
+                      </div>
+                      
+                      {formatExpirationDate(notification.expiration_date)}
                       
                       {!notification.is_read && (
                         <S.MarkReadButton 
                           onClick={() => markAsRead(notification.id)}
                           size="small"
+                          type="link"
                         >
-                          {t('moderation.notifications.markAsRead', 'Mark as read')}
+                          {t('payment.notifications.markAsRead', 'Mark as read')}
                         </S.MarkReadButton>
                       )}
                     </S.NotificationContent>
@@ -280,8 +265,8 @@ export const ModerationNotifications: React.FC<ModerationNotificationsProps> = (
             <BaseRow justify="space-between" align="middle">
               <BaseCol>
                 {notifications.some(n => !n.is_read) && (
-                  <BaseButton type="default" onClick={markAllAsRead}>
-                    {t('moderation.notifications.readAll', 'Mark all as read')}
+                  <BaseButton type="default" onClick={() => markAllAsRead()}>
+                    {t('payment.notifications.readAll', 'Mark all as read')}
                   </BaseButton>
                 )}
               </BaseCol>
@@ -301,12 +286,12 @@ export const ModerationNotifications: React.FC<ModerationNotificationsProps> = (
         </>
       ) : (
         <div style={{ textAlign: 'center', padding: '60px 0' }}>
-          <div style={{ fontSize: '32px', marginBottom: '16px' }}>🔍</div>
+          <div style={{ fontSize: '32px', marginBottom: '16px' }}>💰</div>
           <S.Text style={{ display: 'block', marginBottom: '12px', fontWeight: 500, fontSize: '18px' }}>
-            {t('moderation.notifications.noNotifications', 'No moderation notifications')}
+            {t('payment.notifications.noNotifications', 'No payment notifications')}
           </S.Text>
           <S.Text style={{ display: 'block', color: 'var(--text-light-color)', fontSize: '14px', maxWidth: '400px', margin: '0 auto' }}>
-            {t('moderation.notifications.emptyDescription', 'Moderation alerts will appear here when content is flagged by the system')}
+            {t('payment.notifications.emptyDescription', 'Payment notifications will appear here when users subscribe to your services')}
           </S.Text>
         </div>
       )}

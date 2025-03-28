@@ -7,6 +7,7 @@ import { BaseCol } from '@app/components/common/BaseCol/BaseCol';
 import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
 import { BaseNotification } from '@app/components/common/BaseNotification/BaseNotification';
 import { useModerationNotifications } from '@app/hooks/useModerationNotifications';
+import { notificationController } from '@app/controllers/notificationController';
 import * as S from '../NotificationsOverlay/NotificationsOverlay.styles';
 import { ContentTypeTag } from '@app/components/moderation/ModerationNotifications/ModerationNotifications.styles';
 
@@ -55,6 +56,20 @@ export const ModerationNotificationsOverlay: React.FC = () => {
                     <div style={{ fontSize: '0.85rem', marginTop: '0.25rem' }}>
                       <span style={{ color: 'var(--text-light-color)' }}>User: </span>
                       {notification.pubkey.substring(0, 10)}...
+                      <BaseButton 
+                        type="link" 
+                        size="small" 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigator.clipboard.writeText(notification.pubkey);
+                          notificationController.success({
+                            message: 'Pubkey copied to clipboard'
+                          });
+                        }}
+                        style={{ padding: '0 4px', height: 'auto' }}
+                      >
+                        📋
+                      </BaseButton>
                     </div>
                     {notification.thumbnail_url && (
                       <div style={{ marginTop: '0.5rem', maxWidth: '100px' }}>
