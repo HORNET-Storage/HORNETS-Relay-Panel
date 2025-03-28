@@ -3,58 +3,30 @@ import { notificationController } from '@app/controllers/notificationController'
 import config from '@app/config/config';
 import { readToken } from '@app/services/localStorage.service';
 import { useHandleLogout } from './authUtils';
+import { PaymentNotification, PaymentNotificationParams, PaginationData } from '@app/api/paymentNotifications.api';
 
 // Static variables outside the hook to ensure true singleton pattern
 let isInitialized = false;
 let activePollingInterval: NodeJS.Timeout | null = null;
-let globalNotifications: ModerationNotification[] = [];
+let globalNotifications: PaymentNotification[] = [];
 let globalPagination: PaginationData | null = null;
 let globalLastFetchTime = 0;
 let globalPreviousIds = new Set<number>();
 
-// Types moved from the API file to here
-export interface ModerationNotificationParams {
-  page?: number;
-  limit?: number;
-  filter?: 'all' | 'unread' | 'user';
-  pubkey?: string;
-}
-
-export interface ModerationNotification {
-  id: number;
-  pubkey: string;
-  event_id: string;
-  reason: string;
-  created_at: string;
-  is_read: boolean;
-  content_type: string;
-  media_url?: string;
-  thumbnail_url?: string;
-}
-
-export interface PaginationData {
-  currentPage: number;
-  pageSize: number;
-  totalItems: number;
-  totalPages: number;
-  hasNext: boolean;
-  hasPrevious: boolean;
-}
-
-interface UseModerationNotificationsResult {
-  notifications: ModerationNotification[];
+interface UsePaymentNotificationsResult {
+  notifications: PaymentNotification[];
   pagination: PaginationData | null;
   isLoading: boolean;
   error: string | null;
-  fetchNotifications: (params?: ModerationNotificationParams) => Promise<void>;
+  fetchNotifications: (params?: PaymentNotificationParams) => Promise<void>;
   markAsRead: (id: number) => Promise<void>;
-  markAllAsRead: () => Promise<void>;
+  markAllAsRead: (pubkey?: string) => Promise<void>;
 }
 
 /**
  * Shared fetchNotifications function to be used by all hook instances
  */
-const fetchModerationNotifications = async (params: ModerationNotificationParams = {}) => {
+const fetchPaymentNotifications = async (params: PaymentNotificationParams = {}) => {
   try {
     const token = readToken();
     // Construct query parameters
@@ -64,7 +36,7 @@ const fetchModerationNotifications = async (params: ModerationNotificationParams
     if (params.filter) queryParams.append('filter', params.filter);
     if (params.pubkey) queryParams.append('pubkey', params.pubkey);
     
-    const response = await fetch(`${config.baseURL}/api/moderation/notifications?${queryParams}`, {
+    const response = await fetch(`${config.baseURL}/api/payment/notifications?${queryParams}`, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
@@ -83,13 +55,13 @@ const fetchModerationNotifications = async (params: ModerationNotificationParams
     
     // Check if there are new notifications
     if (globalLastFetchTime > 0) {
-      const newNotifications = data.notifications.filter((n: ModerationNotification) => !globalPreviousIds.has(n.id));
+      const newNotifications = data.notifications.filter((n: PaymentNotification) => !globalPreviousIds.has(n.id));
       
       // Notify user if there are new notifications and this isn't the first fetch
       if (newNotifications.length > 0) {
         notificationController.info({
-          message: 'New moderation notifications',
-          description: `${newNotifications.length} new notification(s) received`
+          message: 'New payment notifications',
+          description: `${newNotifications.length} new payment notification(s) received`
         });
       }
     }
@@ -106,7 +78,7 @@ const fetchModerationNotifications = async (params: ModerationNotificationParams
     });
     
     // Merge server data with our local knowledge of read status
-    const mergedNotifications = data.notifications.map((notification: ModerationNotification) => {
+    const mergedNotifications = data.notifications.map((notification: PaymentNotification) => {
       // If we previously marked this as read manually, keep it marked as read
       if (manuallyMarkedAsRead.has(notification.id)) {
         return { ...notification, is_read: true };
@@ -118,7 +90,7 @@ const fetchModerationNotifications = async (params: ModerationNotificationParams
     globalNotifications = mergedNotifications;
     globalPagination = data.pagination;
     globalLastFetchTime = Date.now();
-    globalPreviousIds = new Set(data.notifications.map((n: ModerationNotification) => n.id));
+    globalPreviousIds = new Set(data.notifications.map((n: PaymentNotification) => n.id));
     
     return { notifications: data.notifications, pagination: data.pagination };
   } catch (error) {
@@ -129,7 +101,7 @@ const fetchModerationNotifications = async (params: ModerationNotificationParams
 /**
  * Initialize the singleton polling mechanism
  */
-const initializePolling = (initialParams?: ModerationNotificationParams) => {
+const initializePolling = (initialParams?: PaymentNotificationParams) => {
   if (isInitialized) return;
   
   isInitialized = true;
@@ -140,14 +112,14 @@ const initializePolling = (initialParams?: ModerationNotificationParams) => {
   }
   
   // Initial fetch
-  fetchModerationNotifications(initialParams).catch(error => 
-    console.error('Failed to fetch moderation notifications:', error)
+  fetchPaymentNotifications(initialParams).catch(error => 
+    console.error('Failed to fetch payment notifications:', error)
   );
   
   // Set up recurring polling
   activePollingInterval = setInterval(() => {
-    fetchModerationNotifications(initialParams).catch(error => 
-      console.error('Failed to fetch moderation notifications:', error)
+    fetchPaymentNotifications(initialParams).catch(error => 
+      console.error('Failed to fetch payment notifications:', error)
     );
   }, config.notifications.pollingInterval);
   
@@ -165,8 +137,8 @@ const initializePolling = (initialParams?: ModerationNotificationParams) => {
     
     // Set up new interval
     activePollingInterval = setInterval(() => {
-      fetchModerationNotifications(initialParams).catch(error => 
-        console.error('Failed to fetch moderation notifications:', error)
+      fetchPaymentNotifications(initialParams).catch(error => 
+        console.error('Failed to fetch payment notifications:', error)
       );
     }, interval);
   };
@@ -175,8 +147,8 @@ const initializePolling = (initialParams?: ModerationNotificationParams) => {
   document.addEventListener('visibilitychange', handleVisibilityChange);
 };
 
-export const useModerationNotifications = (initialParams?: ModerationNotificationParams): UseModerationNotificationsResult => {
-  const [notifications, setNotifications] = useState<ModerationNotification[]>(globalNotifications);
+export const usePaymentNotifications = (initialParams?: PaymentNotificationParams): UsePaymentNotificationsResult => {
+  const [notifications, setNotifications] = useState<PaymentNotification[]>(globalNotifications);
   const [pagination, setPagination] = useState<PaginationData | null>(globalPagination);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -200,18 +172,18 @@ export const useModerationNotifications = (initialParams?: ModerationNotificatio
     };
   }, [initialParams]);
   
-  const fetchNotifications = useCallback(async (params: ModerationNotificationParams = {}) => {
+  const fetchNotifications = useCallback(async (params: PaymentNotificationParams = {}) => {
     setIsLoading(true);
     setError(null);
     
     try {
-      const { notifications: newNotifications, pagination: newPagination } = await fetchModerationNotifications(params);
+      const { notifications: newNotifications, pagination: newPagination } = await fetchPaymentNotifications(params);
       
       // Local state update
       setNotifications(newNotifications);
       setPagination(newPagination);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch moderation notifications';
+      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch payment notifications';
       setError(errorMessage);
       notificationController.error({ message: errorMessage });
     } finally {
@@ -222,15 +194,15 @@ export const useModerationNotifications = (initialParams?: ModerationNotificatio
   // Mark a specific notification as read
   const markAsRead = useCallback(async (id: number) => {
     try {
-      console.log(`[useModerationNotifications] Marking notification ${id} as read`);
+      console.log(`[usePaymentNotifications] Marking notification ${id} as read`);
       
-      const response = await fetch(`${config.baseURL}/api/moderation/notifications/read`, {
+      const response = await fetch(`${config.baseURL}/api/payment/notifications/read`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ id: id }), // Changed from array to single value to match backend expectation
+        body: JSON.stringify({ id }),
       });
       
       if (!response.ok) {
@@ -241,7 +213,7 @@ export const useModerationNotifications = (initialParams?: ModerationNotificatio
         throw new Error(`Request failed: ${response.status}`);
       }
       
-      // Update local state
+      // Update both local state and global state
       setNotifications(prev => 
         prev.map(notification => 
           notification.id === id 
@@ -250,7 +222,7 @@ export const useModerationNotifications = (initialParams?: ModerationNotificatio
         )
       );
       
-      // Update global state as well to ensure all components see the change
+      // Update global notifications state
       globalNotifications = globalNotifications.map(notification => 
         notification.id === id 
           ? { ...notification, is_read: true } 
@@ -263,16 +235,17 @@ export const useModerationNotifications = (initialParams?: ModerationNotificatio
   }, [token, handleLogout]);
 
   // Mark all notifications as read
-  const markAllAsRead = useCallback(async () => {
+  const markAllAsRead = useCallback(async (pubkey?: string) => {
     try {
-      console.log(`[useModerationNotifications] Marking all notifications as read`);
+      console.log(`[usePaymentNotifications] Marking all notifications as read${pubkey ? ` for ${pubkey}` : ''}`);
       
-      const response = await fetch(`${config.baseURL}/api/moderation/notifications/read-all`, {
+      const response = await fetch(`${config.baseURL}/api/payment/notifications/read-all`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
+        body: pubkey ? JSON.stringify({ pubkey }) : undefined,
       });
       
       if (!response.ok) {
@@ -283,9 +256,14 @@ export const useModerationNotifications = (initialParams?: ModerationNotificatio
         throw new Error(`Request failed: ${response.status}`);
       }
       
-      // Update local state as well
+      // Update local state
       setNotifications(prev => 
         prev.map(notification => ({ ...notification, is_read: true }))
+      );
+      
+      // Update global state as well
+      globalNotifications = globalNotifications.map(notification => 
+        ({ ...notification, is_read: true })
       );
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to mark all notifications as read';

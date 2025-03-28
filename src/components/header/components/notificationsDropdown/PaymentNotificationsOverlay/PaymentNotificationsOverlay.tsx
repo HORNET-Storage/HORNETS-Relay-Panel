@@ -1,0 +1,170 @@
+import React, { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
+import { BaseNotification } from '@app/components/common/BaseNotification/BaseNotification';
+import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
+import { capitalize } from '@app/utils/utils';
+import { BaseSpace } from '@app/components/common/BaseSpace/BaseSpace';
+import { BaseRow } from '@app/components/common/BaseRow/BaseRow';
+import { BaseCol } from '@app/components/common/BaseCol/BaseCol';
+import { PaymentNotification } from '@app/api/paymentNotifications.api';
+import * as S from '../NotificationsOverlay/NotificationsOverlay.styles';
+
+interface PaymentNotificationsOverlayProps {
+  notifications: PaymentNotification[];
+  markAsRead: (id: number) => Promise<void>;
+  markAllAsRead: () => Promise<void>;
+  onRefresh: () => Promise<void>;
+}
+
+export const PaymentNotificationsOverlay: React.FC<PaymentNotificationsOverlayProps> = ({
+  notifications,
+  markAsRead,
+  markAllAsRead,
+  onRefresh,
+  ...props
+}) => {
+  const { t } = useTranslation();
+  
+  const formatDate = (dateString: string): string => {
+    const date = new Date(dateString);
+    return date.toLocaleString();
+  };
+
+  const formatAmount = (satoshis: number) => {
+    const btc = satoshis / 100000000;
+    return (
+      <div>
+        <div style={{ fontWeight: 'bold' }}>{satoshis.toLocaleString()} sats</div>
+        <div style={{ fontSize: '0.85rem', color: 'var(--text-light-color)' }}>
+          ({btc.toFixed(8)} BTC)
+        </div>
+      </div>
+    );
+  };
+
+  const handleMarkAllAsRead = useCallback(() => {
+    markAllAsRead();
+  }, [markAllAsRead]);
+
+  const noticesList = notifications.map((notification) => (
+    <BaseNotification
+      key={notification.id}
+      type="info"
+      title={
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span style={{ 
+            fontSize: '0.7rem', 
+            padding: '2px 6px', 
+            background: 'rgba(var(--primary-rgb-color), 0.1)', 
+            color: 'var(--primary-color)',
+            borderRadius: '10px',
+            textTransform: 'uppercase'
+          }}>
+            {notification.subscription_tier}
+          </span>
+          <span>
+            {t(
+              notification.is_new_subscriber 
+                ? 'payment.notifications.newSubscription' 
+                : 'payment.notifications.renewalSubscription', 
+              notification.is_new_subscriber 
+                ? 'New Subscription' 
+                : 'Subscription Renewal'
+            )}
+          </span>
+          {notification.is_new_subscriber && (
+            <span style={{ 
+              fontSize: '0.7rem', 
+              padding: '2px 6px', 
+              background: 'rgba(var(--success-rgb-color), 0.1)', 
+              color: 'var(--success-color)',
+              borderRadius: '10px',
+              textTransform: 'uppercase'
+            }}>
+              {t('payment.notifications.new', 'NEW')}
+            </span>
+          )}
+        </div>
+      }
+      description={
+        <div>
+          <div style={{ fontSize: '0.85rem', color: 'var(--text-light-color)', marginBottom: '4px' }}>
+            {formatDate(notification.created_at)}
+          </div>
+          
+          <div style={{ marginBottom: '8px' }}>
+            <strong>{t('payment.notifications.amount', 'Amount')}: </strong>
+            {formatAmount(notification.amount)}
+          </div>
+          
+          <div style={{ fontSize: '0.85rem', color: 'var(--text-light-color)', marginTop: '4px' }}>
+            {t('payment.notifications.expiration', 'Expires')}: {formatDate(notification.expiration_date)}
+          </div>
+          
+          {!notification.is_read && (
+            <BaseButton 
+              type="link" 
+              size="small" 
+              onClick={() => markAsRead(notification.id)}
+              style={{ padding: '4px 0', height: 'auto', marginTop: '4px' }}
+            >
+              {t('payment.notifications.markAsRead', 'Mark as read')}
+            </BaseButton>
+          )}
+          
+          <div style={{ marginTop: '4px' }}>
+            <Link to="/payment-notifications" style={{ fontSize: '0.85rem' }}>
+              {t('payment.notifications.viewDetails', 'View details')}
+            </Link>
+          </div>
+        </div>
+      }
+    />
+  ));
+
+  return (
+    <S.NoticesOverlayMenu {...props}>
+      <BaseRow gutter={[20, 20]}>
+        <BaseCol span={24}>
+          {notifications.length > 0 ? (
+            <BaseSpace direction="vertical" size={10} split={<S.SplitDivider />}>
+              {noticesList}
+            </BaseSpace>
+          ) : (
+            <div style={{ textAlign: 'center', padding: '20px 0' }}>
+              <div style={{ fontSize: '24px', marginBottom: '8px' }}>💰</div>
+              <S.Text style={{ display: 'block', marginBottom: '12px', fontWeight: 500 }}>
+                {t('payment.notifications.noNotifications', 'No payment notifications')}
+              </S.Text>
+              <S.Text style={{ display: 'block', color: 'var(--text-light-color)', fontSize: '0.85rem' }}>
+                {t('payment.notifications.emptyDescription', 'Payment notifications will appear here when users subscribe to your services')}
+              </S.Text>
+            </div>
+          )}
+        </BaseCol>
+        <BaseCol span={24}>
+          <BaseRow gutter={[10, 10]}>
+            {notifications.some(n => !n.is_read) && (
+              <BaseCol span={24}>
+                <S.Btn type="ghost" onClick={handleMarkAllAsRead}>
+                  {t('payment.notifications.readAll', 'Mark all as read')}
+                </S.Btn>
+              </BaseCol>
+            )}
+            <BaseCol span={24}>
+              <S.Btn type="ghost" onClick={onRefresh}>
+                {t('payment.notifications.refresh', 'Refresh')}
+              </S.Btn>
+            </BaseCol>
+            <BaseCol span={24}>
+              <S.Btn type="link">
+                <Link to="/payment-notifications">{t('payment.notifications.viewAll', 'View all')}</Link>
+              </S.Btn>
+            </BaseCol>
+          </BaseRow>
+        </BaseCol>
+      </BaseRow>
+    </S.NoticesOverlayMenu>
+  );
+};

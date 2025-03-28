@@ -3,11 +3,14 @@ import { BellOutlined } from '@ant-design/icons';
 import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
 import { BaseBadge } from '@app/components/common/BaseBadge/BaseBadge';
 import { NotificationsOverlay } from '@app/components/header/components/notificationsDropdown/NotificationsOverlay/NotificationsOverlay';
+import { PaymentNotificationsOverlay } from '@app/components/header/components/notificationsDropdown/PaymentNotificationsOverlay';
 import { notifications as fetchedNotifications, Notification, Message } from '@app/api/notifications.api';
 import { useModerationNotifications } from '@app/hooks/useModerationNotifications';
+import { usePaymentNotifications } from '@app/hooks/usePaymentNotifications';
 import { HeaderActionWrapper } from '@app/components/header/Header.styles';
 import { BasePopover } from '@app/components/common/BasePopover/BasePopover';
 import { useTranslation } from 'react-i18next';
+import { Tabs } from 'antd';
 
 // Create a map to transform moderation notifications into regular notifications
 const transformModerationToRegular = (modNotification: any): Message => ({
@@ -32,10 +35,23 @@ export const NotificationsDropdown: React.FC = () => {
   const [isOpened, setOpened] = useState(false);
   
   const { 
-    notifications: moderationNotifications, 
+    notifications: allModerationNotifications, 
     markAsRead: markModerationAsRead,
     fetchNotifications: refreshModerationNotifications
   } = useModerationNotifications();
+  
+  // Filter to only show unread moderation notifications in the dropdown
+  const moderationNotifications = allModerationNotifications.filter(notification => !notification.is_read);
+  
+  const {
+    notifications: allPaymentNotifications,
+    markAsRead: markPaymentAsRead,
+    markAllAsRead: markAllPaymentsAsRead,
+    fetchNotifications: refreshPaymentNotifications
+  } = usePaymentNotifications();
+  
+  // Filter to only show unread notifications in the dropdown
+  const paymentNotifications = allPaymentNotifications.filter(notification => !notification.is_read);
   
   // Use ref to track if we've processed these notifications before
   const processedModerationIdsRef = useRef<Set<number>>(new Set());
@@ -43,13 +59,15 @@ export const NotificationsDropdown: React.FC = () => {
   // When moderation notifications change, update the combined notifications list
   useEffect(() => {
     // Check if we have new notifications
-    const currentIds = new Set(moderationNotifications.map(n => n.id));
-    const hasChanges = moderationNotifications.some(n => !processedModerationIdsRef.current.has(n.id)) ||
+    const currentIds = new Set(allModerationNotifications.map(n => n.id));
+    const hasChanges = allModerationNotifications.some(n => !processedModerationIdsRef.current.has(n.id)) ||
       processedModerationIdsRef.current.size !== currentIds.size;
     
     // Only update if there are changes to avoid unnecessary rerenders
     if (hasChanges) {
-      const transformedModNotifications = moderationNotifications
+      // Only transform and show unread notifications
+      const transformedModNotifications = allModerationNotifications
+        .filter(notification => !notification.is_read)
         .map(transformModerationToRegular);
       
       setAllNotifications([
@@ -60,12 +78,19 @@ export const NotificationsDropdown: React.FC = () => {
       // Update processed IDs
       processedModerationIdsRef.current = currentIds;
     }
-  }, [moderationNotifications]);
+  }, [allModerationNotifications]);
   
-  // Refresh all notifications
+  // Initialize both notification types
+  useEffect(() => {
+    refreshModerationNotifications({ filter: 'unread' });
+    refreshPaymentNotifications({ filter: 'unread' });
+  }, [refreshModerationNotifications, refreshPaymentNotifications]);
+  
+  // Refresh all notifications, only showing unread ones
   const handleRefresh = useCallback(() => {
-    refreshModerationNotifications();
-  }, [refreshModerationNotifications]);
+    refreshModerationNotifications({ filter: 'unread' });
+    refreshPaymentNotifications({ filter: 'unread' });
+  }, [refreshModerationNotifications, refreshPaymentNotifications]);
   
   // Handle clearing all notifications, including moderation ones
   const handleClearAll = useCallback(() => {
@@ -81,30 +106,85 @@ export const NotificationsDropdown: React.FC = () => {
   }, [moderationNotifications, markModerationAsRead]);
   
   // Check specifically for unread notifications
-  const hasUnreadNotifications = allNotifications.some(notification => {
-    // Check if it's a moderation notification first 
-    if (notification.moderationData) {
-      return !notification.moderationData.is_read;
-    }
-    
-    // For non-moderation notifications - since we're only using moderation ones currently,
-    // we can safely return false, but keep this extendable for the future
-    return false;
-  });
+  const hasUnreadModerationNotifications = moderationNotifications.some(notification => !notification.is_read);
+  const hasUnreadPaymentNotifications = paymentNotifications.some(notification => !notification.is_read);
+  const hasUnreadNotifications = hasUnreadModerationNotifications || hasUnreadPaymentNotifications;
+  
+  // Count unread notifications
+  const unreadModerationCount = moderationNotifications.filter(notification => !notification.is_read).length;
+  const unreadPaymentCount = paymentNotifications.filter(notification => !notification.is_read).length;
+  const totalUnreadCount = unreadModerationCount + unreadPaymentCount;
+
+  // Handle clearing all payment notifications
+  const handleClearAllPayments = useCallback(() => {
+    return markAllPaymentsAsRead();
+  }, [markAllPaymentsAsRead]);
+
+  // Get translated tab names
+  const moderationLabel = t('moderation.notifications.title', 'Moderation');
+  const paymentsLabel = t('payment.notifications.title', 'Payments');
+
+  // Define the items for the tabs
+  const tabItems = [
+    {
+      key: '1',
+      label: (
+        <span>
+          {moderationLabel}
+          {unreadModerationCount > 0 && (
+            <BaseBadge count={unreadModerationCount} size="small" style={{ marginLeft: '5px' }} />
+          )}
+        </span>
+      ),
+      children: (
+        <NotificationsOverlay 
+          notifications={allNotifications} 
+          setNotifications={(arr) => {
+            // This function wrapper allows us to ignore the parameter and call handleClearAll instead
+            handleClearAll();
+            return Promise.resolve();
+          }}
+          markModerationAsRead={markModerationAsRead}
+          onRefresh={() => {
+            refreshModerationNotifications({ filter: 'unread' });
+            return Promise.resolve();
+          }}
+        />
+      ),
+    },
+    {
+      key: '2',
+      label: (
+        <span>
+          {paymentsLabel}
+          {unreadPaymentCount > 0 && (
+            <BaseBadge count={unreadPaymentCount} size="small" style={{ marginLeft: '5px' }} />
+          )}
+        </span>
+      ),
+      children: (
+        <PaymentNotificationsOverlay
+          notifications={paymentNotifications}
+          markAsRead={markPaymentAsRead}
+          markAllAsRead={handleClearAllPayments}
+          onRefresh={() => {
+            refreshPaymentNotifications({ filter: 'unread' });
+            return Promise.resolve();
+          }}
+        />
+      ),
+    },
+  ];
 
   return (
     <BasePopover
       trigger="click"
       content={
-        <div style={{ maxWidth: '360px', minWidth: '300px' }}>
-          <NotificationsOverlay 
-            notifications={allNotifications} 
-            setNotifications={(arr) => {
-              // This function wrapper allows us to ignore the parameter and call handleClearAll instead
-              handleClearAll();
-            }}
-            markModerationAsRead={markModerationAsRead}
-            onRefresh={handleRefresh}
+        <div style={{ maxWidth: '400px', minWidth: '320px' }}>
+          <Tabs 
+            defaultActiveKey="1" 
+            items={tabItems}
+            destroyInactiveTabPane={false}
           />
         </div>
       }
@@ -115,7 +195,7 @@ export const NotificationsDropdown: React.FC = () => {
         <BaseButton
           type={isOpened ? 'ghost' : 'text'}
           icon={
-            <BaseBadge dot={hasUnreadNotifications}>
+            <BaseBadge count={totalUnreadCount > 0 ? totalUnreadCount : 0} overflowCount={99} dot={false}>
               <BellOutlined />
             </BaseBadge>
           }
