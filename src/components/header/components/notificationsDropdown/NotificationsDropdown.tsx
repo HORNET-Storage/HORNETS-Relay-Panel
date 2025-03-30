@@ -124,6 +124,14 @@ export const NotificationsDropdown: React.FC = () => {
   const moderationLabel = t('moderation.notifications.title', 'Moderation');
   const paymentsLabel = t('payment.notifications.title', 'Payments');
 
+  // Custom tab style to ensure content overflow is handled correctly
+  const tabContentStyle = {
+    display: 'flex',
+    flexDirection: 'column' as const,
+    height: '100%',
+    overflow: 'hidden'
+  };
+
   // Define the items for the tabs
   const tabItems = [
     {
@@ -137,7 +145,8 @@ export const NotificationsDropdown: React.FC = () => {
         </span>
       ),
       children: (
-        <NotificationsOverlay 
+        <div style={tabContentStyle}>
+          <NotificationsOverlay 
           notifications={allNotifications} 
           setNotifications={(arr) => {
             // This function wrapper allows us to ignore the parameter and call handleClearAll instead
@@ -150,6 +159,7 @@ export const NotificationsDropdown: React.FC = () => {
             return Promise.resolve();
           }}
         />
+        </div>
       ),
     },
     {
@@ -163,7 +173,8 @@ export const NotificationsDropdown: React.FC = () => {
         </span>
       ),
       children: (
-        <PaymentNotificationsOverlay
+        <div style={tabContentStyle}>
+          <PaymentNotificationsOverlay
           notifications={paymentNotifications}
           markAsRead={markPaymentAsRead}
           markAllAsRead={handleClearAllPayments}
@@ -172,6 +183,7 @@ export const NotificationsDropdown: React.FC = () => {
             return Promise.resolve();
           }}
         />
+        </div>
       ),
     },
   ];
@@ -180,11 +192,12 @@ export const NotificationsDropdown: React.FC = () => {
     <BasePopover
       trigger="click"
       content={
-        <div style={{ maxWidth: '400px', minWidth: '320px' }}>
+        <div style={{ maxWidth: '400px', minWidth: '320px', maxHeight: '450px' }}>
           <Tabs 
             defaultActiveKey="1" 
             items={tabItems}
             destroyInactiveTabPane={false}
+            style={{ height: '100%' }}
           />
         </div>
       }

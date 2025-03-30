@@ -128,9 +128,11 @@ export const PaymentNotificationsOverlay: React.FC<PaymentNotificationsOverlayPr
       <BaseRow gutter={[20, 20]}>
         <BaseCol span={24}>
           {notifications.length > 0 ? (
-            <BaseSpace direction="vertical" size={10} split={<S.SplitDivider />}>
-              {noticesList}
-            </BaseSpace>
+            <S.NotificationsList>
+              <BaseSpace direction="vertical" size={10} split={<S.SplitDivider />}>
+                {noticesList}
+              </BaseSpace>
+            </S.NotificationsList>
           ) : (
             <div style={{ textAlign: 'center', padding: '20px 0' }}>
               <div style={{ fontSize: '24px', marginBottom: '8px' }}>💰</div>

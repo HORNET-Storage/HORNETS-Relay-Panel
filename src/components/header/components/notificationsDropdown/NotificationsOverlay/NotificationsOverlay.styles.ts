@@ -12,6 +12,27 @@ export const NoticesOverlayMenu = styled.div`
   }
 `;
 
+export const NotificationsList = styled.div`
+  max-height: 300px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  margin-bottom: 15px;
+  padding-right: 5px;
+  
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: var(--background-color);
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--primary-color);
+    border-radius: 3px;
+  }
+`;
+
 export const SplitDivider = styled(BaseDivider)`
   margin: 0 0.5rem;
 `;
