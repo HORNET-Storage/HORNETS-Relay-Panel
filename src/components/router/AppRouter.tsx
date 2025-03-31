@@ -28,6 +28,7 @@ const DataTablesPage = React.lazy(() => import('@app/pages/DataTablesPage'));
 const ChartsPage = React.lazy(() => import('@app/pages/ChartsPage'));
 const RelaySettingsPage = React.lazy(() => import('@app/pages/RelaySettingsPage'));
 const RelayStatsPage = React.lazy(() => import('@app/pages/RelayStatsPage'));
+const BlockedPubkeysPage = React.lazy(() => import('@app/pages/BlockedPubkeysPage'));
 const ServerErrorPage = React.lazy(() => import('@app/pages/ServerErrorPage'));
 const Error404Page = React.lazy(() => import('@app/pages/Error404Page'));
 const AdvancedFormsPage = React.lazy(() => import('@app/pages/AdvancedFormsPage'));
@@ -113,6 +114,7 @@ const DataTables = withLoading(DataTablesPage);
 const Charts = withLoading(ChartsPage);
 const RelayStats = withLoading(RelayStatsPage);
 const RelaySettings = withLoading(RelaySettingsPage);
+const BlockedPubkeys = withLoading(BlockedPubkeysPage);
 
 // Maps
 const Google = withLoading(GoogleMaps);
@@ -153,6 +155,7 @@ export const AppRouter: React.FC = () => {
           <Route path="media-manager" element={<MediaPage />} />
           <Route path="relay-stats" element={<RelayStats />} />
           <Route path={RELAY_SETTINGS_PATH} element={<RelaySettings />} />
+          <Route path="blocked-pubkeys" element={<BlockedPubkeys />} />
           <Route path="apps">
             <Route path="feed" element={<NewsFeed />} />
           </Route>
