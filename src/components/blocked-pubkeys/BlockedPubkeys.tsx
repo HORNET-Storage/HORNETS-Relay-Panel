@@ -34,9 +34,9 @@ export const BlockedPubkeys: React.FC = () => {
       <Space direction="vertical" size="large" style={{ width: '100%' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <Title level={4}>Pubkey Management</Title>
+            <Title level={4}>Access Control</Title>
             <Text type="secondary">
-              Block users from connecting to your relay and view flagged pubkeys
+              Control access to your relay and manage flagged pubkeys
             </Text>
           </div>
           <BaseButton 
@@ -57,13 +57,13 @@ export const BlockedPubkeys: React.FC = () => {
             active={activeView === 'blocked'} 
             onClick={() => setActiveView('blocked')}
           >
-            Blocked Pubkeys
+            Blocked Access
           </S.NavLink>
           <S.NavLink 
             active={activeView === 'flagged'} 
             onClick={() => setActiveView('flagged')}
           >
-            Flagged Pubkeys
+            Flagged Access
           </S.NavLink>
         </S.NavContainer>
         
