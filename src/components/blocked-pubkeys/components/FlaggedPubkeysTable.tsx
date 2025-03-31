@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Table, Input, Button, Space, Badge, Spin } from 'antd';
+import { Table, Input, Button, Space, Badge, Spin, Modal } from 'antd';
 import { StopOutlined, SearchOutlined, FlagOutlined } from '@ant-design/icons';
 import { useModerationStats, UserStat } from '@app/hooks/useModerationStats';
 import { BlockedPubkey } from '@app/api/blockedPubkeys.api';
+import * as S from '../BlockedPubkeys.styles';
 
 interface FlaggedPubkeysTableProps {
   blockedPubkeys: BlockedPubkey[]; // Already blocked pubkeys to filter out
@@ -16,6 +17,9 @@ export const FlaggedPubkeysTable: React.FC<FlaggedPubkeysTableProps> = ({
   disabled = false,
 }) => {
   const [searchText, setSearchText] = useState('');
+  const [blockModalVisible, setBlockModalVisible] = useState(false);
+  const [currentPubkey, setCurrentPubkey] = useState('');
+  const [blockReason, setBlockReason] = useState('');
   const { stats, loading: statsLoading } = useModerationStats();
   
   // Filter out already blocked pubkeys and return the rest
@@ -40,10 +44,17 @@ export const FlaggedPubkeysTable: React.FC<FlaggedPubkeysTableProps> = ({
     item => item.pubkey.toLowerCase().includes(searchText.toLowerCase())
   );
   
-  const handleBlock = (pubkey: string) => {
-    // Default reason
-    const reason = "Blocked due to high flag count";
-    onBlock(pubkey, reason);
+  // Show block modal with default reason
+  const showBlockModal = (pubkey: string, flagCount: number) => {
+    setCurrentPubkey(pubkey);
+    setBlockReason(`Blocked due to high flag count (${flagCount} flags)`);
+    setBlockModalVisible(true);
+  };
+  
+  // Handle block confirmation with custom reason
+  const handleConfirmBlock = async () => {
+    await onBlock(currentPubkey, blockReason);
+    setBlockModalVisible(false);
   };
   
   const columns = [
@@ -58,15 +69,13 @@ export const FlaggedPubkeysTable: React.FC<FlaggedPubkeysTableProps> = ({
       dataIndex: 'count',
       key: 'count',
       render: (count: number) => (
-        <Space>
-          <Badge 
-            count={count} 
-            showZero 
-            color={count > 10 ? 'red' : count > 5 ? 'orange' : 'blue'} 
-            style={{ marginRight: '5px' }}
-          />
-          <FlagOutlined style={{ color: count > 0 ? undefined : '#d9d9d9' }} />
-        </Space>
+        <S.FlagCountContainer>
+          <S.CircularBadge 
+            color={count > 10 ? 'var(--error-color)' : count > 5 ? 'var(--warning-color)' : 'var(--primary-color)'}
+          >
+            {count}
+          </S.CircularBadge>
+        </S.FlagCountContainer>
       ),
       sorter: (a: UserStat, b: UserStat) => a.count - b.count,
       defaultSortOrder: 'descend' as const,
@@ -79,7 +88,7 @@ export const FlaggedPubkeysTable: React.FC<FlaggedPubkeysTableProps> = ({
           type="primary"
           danger
           icon={<StopOutlined />}
-          onClick={() => handleBlock(record.pubkey)}
+          onClick={() => showBlockModal(record.pubkey, record.count)}
           disabled={disabled}
         >
           Block
@@ -112,6 +121,28 @@ export const FlaggedPubkeysTable: React.FC<FlaggedPubkeysTableProps> = ({
         }}
         locale={{ emptyText: statsLoading ? 'Loading...' : 'No flagged pubkeys found' }}
       />
+      
+      {/* Block Confirmation Modal */}
+      <Modal
+        title="Block Pubkey"
+        open={blockModalVisible}
+        onOk={handleConfirmBlock}
+        onCancel={() => setBlockModalVisible(false)}
+        okText="Block"
+        okButtonProps={{ danger: true }}
+      >
+        <p>Are you sure you want to block this pubkey?</p>
+        <p><strong>{formatPubkey(currentPubkey)}</strong></p>
+        <div style={{ marginTop: '16px' }}>
+          <p>Reason:</p>
+          <Input.TextArea
+            value={blockReason}
+            onChange={(e) => setBlockReason(e.target.value)}
+            placeholder="Enter reason for blocking"
+            rows={3}
+          />
+        </div>
+      </Modal>
     </>
   );
 };

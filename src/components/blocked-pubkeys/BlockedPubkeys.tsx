@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Card, Space, Typography, Tabs } from 'antd';
+import { Card, Space, Typography } from 'antd';
 import useBlockedPubkeys from '@app/hooks/useBlockedPubkeys';
 import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
 import { ReloadOutlined } from '@ant-design/icons';
@@ -10,10 +10,9 @@ import { useModerationStats } from '@app/hooks/useModerationStats';
 import * as S from './BlockedPubkeys.styles';
 
 const { Title, Text } = Typography;
-const { TabPane } = Tabs;
 
 export const BlockedPubkeys: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('1'); // Default to blocked pubkeys tab
+  const [activeView, setActiveView] = useState<'blocked' | 'flagged'>('blocked');
   const {
     blockedPubkeys,
     count,
@@ -49,26 +48,38 @@ export const BlockedPubkeys: React.FC = () => {
           </BaseButton>
         </div>
         
-        {activeTab === '1' && (
+        {activeView === 'blocked' && (
           <BlockPubkeyForm onSubmit={addBlockedPubkey} disabled={loading} />
         )}
         
-        <Tabs activeKey={activeTab} onChange={setActiveTab}>
-          <TabPane tab="Blocked Pubkeys" key="1">
-            <BlockedPubkeysTable 
-              blockedPubkeys={blockedPubkeys}
-              loading={loading}
-              onUnblock={removeBlockedPubkey}
-            />
-          </TabPane>
-          <TabPane tab="Flagged Pubkeys" key="2">
-            <FlaggedPubkeysTable 
-              blockedPubkeys={blockedPubkeys}
-              onBlock={addBlockedPubkey}
-              disabled={loading}
-            />
-          </TabPane>
-        </Tabs>
+        <S.NavContainer>
+          <S.NavLink 
+            active={activeView === 'blocked'} 
+            onClick={() => setActiveView('blocked')}
+          >
+            Blocked Pubkeys
+          </S.NavLink>
+          <S.NavLink 
+            active={activeView === 'flagged'} 
+            onClick={() => setActiveView('flagged')}
+          >
+            Flagged Pubkeys
+          </S.NavLink>
+        </S.NavContainer>
+        
+        {activeView === 'blocked' ? (
+          <BlockedPubkeysTable 
+            blockedPubkeys={blockedPubkeys}
+            loading={loading}
+            onUnblock={removeBlockedPubkey}
+          />
+        ) : (
+          <FlaggedPubkeysTable 
+            blockedPubkeys={blockedPubkeys}
+            onBlock={addBlockedPubkey}
+            disabled={loading}
+          />
+        )}
       </Space>
     </Card>
   );

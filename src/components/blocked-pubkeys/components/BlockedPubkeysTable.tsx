@@ -3,6 +3,7 @@ import { Table, Input, Button, Modal, Tooltip, Space, Badge, Spin } from 'antd';
 import { DeleteOutlined, CopyOutlined, SearchOutlined, FlagOutlined } from '@ant-design/icons';
 import { BlockedPubkey } from '@app/api/blockedPubkeys.api';
 import { useModerationStats } from '@app/hooks/useModerationStats';
+import * as S from '../BlockedPubkeys.styles';
 
 interface BlockedPubkeysTableProps {
   blockedPubkeys: BlockedPubkey[];
@@ -91,21 +92,17 @@ export const BlockedPubkeysTable: React.FC<BlockedPubkeysTableProps> = ({
       render: (_: any, record: BlockedPubkey) => {
         const count = pubkeyFlagCounts[record.pubkey] || 0;
         return (
-          <Space>
+          <S.FlagCountContainer>
             {statsLoading ? (
               <Spin size="small" />
             ) : (
-              <>
-                <Badge 
-                  count={count} 
-                  showZero 
-                  color={count > 10 ? 'red' : count > 5 ? 'orange' : 'blue'} 
-                  style={{ marginRight: '5px' }}
-                />
-                <FlagOutlined style={{ color: count > 0 ? undefined : '#d9d9d9' }} />
-              </>
+              <S.CircularBadge 
+                color={count > 10 ? 'var(--error-color)' : count > 5 ? 'var(--warning-color)' : 'var(--primary-color)'}
+              >
+                {count}
+              </S.CircularBadge>
             )}
-          </Space>
+          </S.FlagCountContainer>
         );
       },
       sorter: (a: BlockedPubkey, b: BlockedPubkey) => 
