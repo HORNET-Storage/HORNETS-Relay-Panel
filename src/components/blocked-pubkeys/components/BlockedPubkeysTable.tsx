@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Table, Input, Button, Modal, Tooltip, Space } from 'antd';
-import { DeleteOutlined, CopyOutlined, SearchOutlined } from '@ant-design/icons';
+import { Table, Input, Button, Modal, Tooltip, Space, Badge, Spin } from 'antd';
+import { DeleteOutlined, CopyOutlined, SearchOutlined, FlagOutlined } from '@ant-design/icons';
 import { BlockedPubkey } from '@app/api/blockedPubkeys.api';
+import { useModerationStats } from '@app/hooks/useModerationStats';
 
 interface BlockedPubkeysTableProps {
   blockedPubkeys: BlockedPubkey[];
@@ -17,6 +18,10 @@ export const BlockedPubkeysTable: React.FC<BlockedPubkeysTableProps> = ({
   const [searchText, setSearchText] = useState('');
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
   const [currentPubkey, setCurrentPubkey] = useState('');
+  const { getFlagCountsForPubkeys, loading: statsLoading } = useModerationStats();
+  
+  // Get flag counts for all pubkeys in the table
+  const pubkeyFlagCounts = getFlagCountsForPubkeys(blockedPubkeys.map(bp => bp.pubkey));
 
   // Handle pubkey copy
   const handleCopy = (pubkey: string) => {
@@ -79,6 +84,33 @@ export const BlockedPubkeysTable: React.FC<BlockedPubkeysTableProps> = ({
       dataIndex: 'blocked_at',
       key: 'blocked_at',
       render: (date: string) => new Date(date).toLocaleString(),
+    },
+    {
+      title: 'Flag Count',
+      key: 'flagCount',
+      render: (_: any, record: BlockedPubkey) => {
+        const count = pubkeyFlagCounts[record.pubkey] || 0;
+        return (
+          <Space>
+            {statsLoading ? (
+              <Spin size="small" />
+            ) : (
+              <>
+                <Badge 
+                  count={count} 
+                  showZero 
+                  color={count > 10 ? 'red' : count > 5 ? 'orange' : 'blue'} 
+                  style={{ marginRight: '5px' }}
+                />
+                <FlagOutlined style={{ color: count > 0 ? undefined : '#d9d9d9' }} />
+              </>
+            )}
+          </Space>
+        );
+      },
+      sorter: (a: BlockedPubkey, b: BlockedPubkey) => 
+        (pubkeyFlagCounts[a.pubkey] || 0) - (pubkeyFlagCounts[b.pubkey] || 0),
+      defaultSortOrder: 'descend' as const,
     },
     {
       title: 'Actions',
