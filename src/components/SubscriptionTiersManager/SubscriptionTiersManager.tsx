@@ -1,10 +1,32 @@
 import React, { useState, useEffect } from 'react';
-import { Input, Switch, Tooltip } from 'antd';
+import { Input, Switch, Tooltip, Select, InputNumber, Space } from 'antd';
 import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
-import { PlusOutlined, DollarOutlined, DatabaseOutlined, DeleteOutlined, ThunderboltOutlined } from '@ant-design/icons';
+import { PlusOutlined, DatabaseOutlined, DeleteOutlined, ThunderboltOutlined } from '@ant-design/icons';
 import * as S from '@app/pages/uiComponentsPages/UIComponentsPage.styles';
 import type { SubscriptionTier } from '@app/constants/relaySettings';
 import styled from 'styled-components';
+
+// Helper functions for data limit parsing and formatting
+interface DataLimit {
+  amount: number;
+  unit: 'MB' | 'GB';
+}
+
+const parseDataLimit = (dataLimitString: string): DataLimit => {
+  const match = dataLimitString.match(/^(\d+)\s*(MB|GB)/i);
+  if (match) {
+    return {
+      amount: parseInt(match[1], 10),
+      unit: match[2].toUpperCase() as 'MB' | 'GB'
+    };
+  }
+  // Default fallback
+  return { amount: 1, unit: 'GB' };
+};
+
+const formatDataLimit = (amount: number, unit: 'MB' | 'GB'): string => {
+  return `${amount} ${unit} per month`;
+};
 
 // Styled components for better UI
 const TierCard = styled.div`
@@ -128,6 +150,52 @@ const InputIcon = styled.div`
   }
 `;
 
+const DataLimitInputGroup = styled.div`
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+`;
+
+const StyledInputNumber = styled(InputNumber)`
+  flex: 1;
+  background-color: #1b1b38 !important;
+  border-color: #313131 !important;
+  color: white !important;
+  border-radius: 8px !important;
+  height: 48px !important;
+  
+  .ant-input-number-input {
+    color: white !important;
+  }
+  
+  &.ant-input-number-focused {
+    border-color: #4e4e8b !important;
+    box-shadow: 0 0 0 2px rgba(78, 78, 139, 0.2) !important;
+  }
+`;
+
+const StyledSelect = styled(Select)`
+  width: 120px !important;
+  
+  .ant-select-selector {
+    background-color: #1b1b38 !important;
+    border-color: #313131 !important;
+    height: 48px !important;
+    display: flex !important;
+    align-items: center !important;
+    border-radius: 8px !important;
+  }
+  
+  .ant-select-selection-item {
+    color: white !important;
+  }
+  
+  &.ant-select-focused .ant-select-selector {
+    border-color: #4e4e8b !important;
+    box-shadow: 0 0 0 2px rgba(78, 78, 139, 0.2) !important;
+  }
+`;
+
 interface SubscriptionTiersManagerProps {
   tiers?: SubscriptionTier[];
   onChange: (tiers: SubscriptionTier[]) => void;
@@ -149,73 +217,160 @@ const SubscriptionTiersManager: React.FC<SubscriptionTiersManagerProps> = ({
     { data_limit: '10 GB per month', price: '15000' }
   ];
 
-  // Initialize with properly formatted tiers from props or default
-  const [currentTiers, setCurrentTiers] = useState<SubscriptionTier[]>(() => {
-    return tiers.length > 0 ? tiers.map(tier => ({
-      data_limit: tier.data_limit.includes('per month') ? tier.data_limit : `${tier.data_limit} per month`,
-      price: tier.price
-    })) : defaultTiers;
+  // Initialize tiers with data_limit parsed into amount and unit
+  const [currentTiers, setCurrentTiers] = useState<(SubscriptionTier & { amount: number; unit: 'MB' | 'GB' })[]>(() => {
+    return tiers.length > 0 ? tiers.map(tier => {
+      const dataLimit = parseDataLimit(tier.data_limit);
+      return {
+        data_limit: tier.data_limit.includes('per month') ? tier.data_limit : `${tier.data_limit} per month`,
+        price: tier.price,
+        amount: dataLimit.amount,
+        unit: dataLimit.unit
+      };
+    }) : defaultTiers.map(tier => {
+      const dataLimit = parseDataLimit(tier.data_limit);
+      return {
+        data_limit: tier.data_limit,
+        price: tier.price,
+        amount: dataLimit.amount,
+        unit: dataLimit.unit
+      };
+    });
   });
+
+  // Parse free tier limit into amount and unit
+  const parsedFreeTierLimit = parseDataLimit(freeTierLimit);
+  const [freeTierAmount, setFreeTierAmount] = useState<number>(parsedFreeTierLimit.amount);
+  const [freeTierUnit, setFreeTierUnit] = useState<'MB' | 'GB'>(parsedFreeTierLimit.unit);
 
   // Update current tiers when props change
   useEffect(() => {
     if (tiers.length > 0) {
-      const formattedTiers = tiers.map(tier => ({
-        data_limit: tier.data_limit.includes('per month') ? tier.data_limit : `${tier.data_limit} per month`,
-        price: tier.price
-      }));
-      
-      // Only update if the formatted tiers are different from current
-      const currentTiersString = JSON.stringify(currentTiers);
-      const formattedTiersString = JSON.stringify(formattedTiers);
-      
-      if (currentTiersString !== formattedTiersString) {
-        setCurrentTiers(formattedTiers);
-      }
+      // Use functional update pattern to avoid dependency on currentTiers
+      setCurrentTiers(prevTiers => {
+        const formattedTiers = tiers.map(tier => {
+          const dataLimit = parseDataLimit(tier.data_limit);
+          return {
+            data_limit: tier.data_limit.includes('per month') ? tier.data_limit : `${tier.data_limit} per month`,
+            price: tier.price,
+            amount: dataLimit.amount,
+            unit: dataLimit.unit
+          };
+        });
+        
+        // Only update if the formatted tiers are different from current
+        const currentTierDataOnly = prevTiers.map(({ data_limit, price }) => ({ data_limit, price }));
+        const formattedTierDataOnly = formattedTiers.map(({ data_limit, price }) => ({ data_limit, price }));
+        
+        if (JSON.stringify(currentTierDataOnly) !== JSON.stringify(formattedTierDataOnly)) {
+          return formattedTiers;
+        }
+        return prevTiers;
+      });
     }
-  }, [tiers, currentTiers]);
+  }, [tiers]);
 
-  const handleUpdateTier = (index: number, field: keyof SubscriptionTier, value: string) => {
+  // Update free tier amount and unit when freeTierLimit prop changes
+  useEffect(() => {
+    const parsed = parseDataLimit(freeTierLimit);
+    setFreeTierAmount(parsed.amount);
+    setFreeTierUnit(parsed.unit);
+  }, [freeTierLimit]);
+
+  const handleUpdateTierPrice = (index: number, value: string) => {
     const newTiers = currentTiers.map((tier, i) => {
       if (i === index) {
-        if (field === 'data_limit') {
-          const formattedValue = value.includes('per month') ? value : `${value} per month`;
-          return { ...tier, [field]: formattedValue };
-        }
-        return { ...tier, [field]: value };
+        return { ...tier, price: value };
       }
       return tier;
     });
     
     setCurrentTiers(newTiers);
-    onChange(newTiers);
+    onChange(newTiers.map(({ data_limit, price }) => ({ data_limit, price })));
+  };
+  
+  // Fixed type signature for InputNumber's onChange
+  const handleUpdateTierAmount = (index: number, value: string | number | null) => {
+    if (value === null) return;
+    
+    const numValue = typeof value === 'string' ? parseInt(value, 10) : value;
+    
+    const newTiers = currentTiers.map((tier, i) => {
+      if (i === index) {
+        const newDataLimit = formatDataLimit(numValue, tier.unit);
+        return { 
+          ...tier, 
+          amount: numValue,
+          data_limit: newDataLimit
+        };
+      }
+      return tier;
+    });
+    
+    setCurrentTiers(newTiers);
+    onChange(newTiers.map(({ data_limit, price }) => ({ data_limit, price })));
+  };
+  
+  // Fixed type signature for Select's onChange
+  const handleUpdateTierUnit = (index: number, value: unknown) => {
+    const unit = value as 'MB' | 'GB';
+    
+    const newTiers = currentTiers.map((tier, i) => {
+      if (i === index) {
+        const newDataLimit = formatDataLimit(tier.amount, unit);
+        return { 
+          ...tier, 
+          unit,
+          data_limit: newDataLimit
+        };
+      }
+      return tier;
+    });
+    
+    setCurrentTiers(newTiers);
+    onChange(newTiers.map(({ data_limit, price }) => ({ data_limit, price })));
   };
 
   const addTier = () => {
     if (currentTiers.length < 3) {
-      const newTier: SubscriptionTier = {
+      const newTier = {
         data_limit: '1 GB per month',
-        price: '10000'
+        price: '10000',
+        amount: 1,
+        unit: 'GB' as 'MB' | 'GB'
       };
       const updatedTiers = [...currentTiers, newTier];
       setCurrentTiers(updatedTiers);
-      onChange(updatedTiers);
+      onChange(updatedTiers.map(({ data_limit, price }) => ({ data_limit, price })));
     }
   };
 
   const removeTier = (index: number) => {
-    const newTier = currentTiers.filter((_, i) => i !== index);
-    setCurrentTiers(newTier);
-    onChange(newTier);
+    const newTiers = currentTiers.filter((_, i) => i !== index);
+    setCurrentTiers(newTiers);
+    onChange(newTiers.map(({ data_limit, price }) => ({ data_limit, price })));
   };
 
   const toggleFreeTier = (checked: boolean) => {
     onFreeTierChange(checked, checked ? freeTierLimit : '100 MB per month');
   };
 
-  const updateFreeTierLimit = (value: string) => {
-    const formattedValue = value.includes('per month') ? value : `${value} per month`;
-    onFreeTierChange(freeTierEnabled, formattedValue);
+  // Fixed type signature for InputNumber's onChange
+  const updateFreeTierAmount = (value: string | number | null) => {
+    if (value === null) return;
+    
+    const numValue = typeof value === 'string' ? parseInt(value, 10) : value;
+    setFreeTierAmount(numValue);
+    const newLimit = formatDataLimit(numValue, freeTierUnit);
+    onFreeTierChange(freeTierEnabled, newLimit);
+  };
+  
+  // Fixed type signature for Select's onChange
+  const updateFreeTierUnit = (value: unknown) => {
+    const unit = value as 'MB' | 'GB';
+    setFreeTierUnit(unit);
+    const newLimit = formatDataLimit(freeTierAmount, unit);
+    onFreeTierChange(freeTierEnabled, newLimit);
   };
 
   return (
@@ -248,20 +403,22 @@ const SubscriptionTiersManager: React.FC<SubscriptionTiersManagerProps> = ({
                 <DatabaseOutlined />
                 <InputLabel>Data Limit</InputLabel>
               </InputIcon>
-              <Input
-                value={freeTierLimit}
-                onChange={(e) => updateFreeTierLimit(e.target.value)}
-                placeholder="e.g., 100 MB per month"
-                style={{ 
-                  width: '100%', 
-                  backgroundColor: '#1b1b38', 
-                  borderColor: '#313131', 
-                  color: 'white', 
-                  height: '48px', 
-                  borderRadius: '8px' 
-                }}
-                prefix={<DatabaseOutlined style={{ color: '#a9a9c8' }} />}
-              />
+              <DataLimitInputGroup>
+                <StyledInputNumber
+                  min={1}
+                  value={freeTierAmount}
+                  onChange={updateFreeTierAmount}
+                  prefix={<DatabaseOutlined style={{ color: '#a9a9c8' }} />}
+                />
+                <StyledSelect
+                  value={freeTierUnit}
+                  onChange={updateFreeTierUnit}
+                  options={[
+                    { value: 'MB', label: 'MB' },
+                    { value: 'GB', label: 'GB' }
+                  ]}
+                />
+              </DataLimitInputGroup>
             </InputGroup>
             
             <InputGroup style={{ flex: 1 }}>
@@ -311,20 +468,22 @@ const SubscriptionTiersManager: React.FC<SubscriptionTiersManagerProps> = ({
                   <DatabaseOutlined />
                   <InputLabel>Data Limit</InputLabel>
                 </InputIcon>
-                <Input
-                  value={tier.data_limit}
-                  onChange={(e) => handleUpdateTier(index, 'data_limit', e.target.value)}
-                  placeholder="e.g., 1 GB per month"
-                  style={{ 
-                    width: '100%', 
-                    backgroundColor: '#1b1b38', 
-                    borderColor: '#313131', 
-                    color: 'white', 
-                    height: '48px', 
-                    borderRadius: '8px' 
-                  }}
-                  prefix={<DatabaseOutlined style={{ color: '#a9a9c8' }} />}
-                />
+                <DataLimitInputGroup>
+                  <StyledInputNumber
+                    min={1}
+                    value={tier.amount}
+                    onChange={(value) => handleUpdateTierAmount(index, value)}
+                    prefix={<DatabaseOutlined style={{ color: '#a9a9c8' }} />}
+                  />
+                  <StyledSelect
+                    value={tier.unit}
+                    onChange={(value) => handleUpdateTierUnit(index, value)}
+                    options={[
+                      { value: 'MB', label: 'MB' },
+                      { value: 'GB', label: 'GB' }
+                    ]}
+                  />
+                </DataLimitInputGroup>
               </InputGroup>
               
               <InputGroup style={{ flex: 1 }}>
@@ -335,7 +494,7 @@ const SubscriptionTiersManager: React.FC<SubscriptionTiersManagerProps> = ({
                 <Input
                   type="number"
                   value={tier.price}
-                  onChange={(e) => handleUpdateTier(index, 'price', e.target.value)}
+                  onChange={(e) => handleUpdateTierPrice(index, e.target.value)}
                   placeholder="Price in sats"
                   style={{ 
                     width: '100%', 
