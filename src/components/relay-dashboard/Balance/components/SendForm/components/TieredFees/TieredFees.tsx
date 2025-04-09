@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import * as S from "./TieredFees.styles";
 import { useResponsive } from "@app/hooks/useResponsive";
 
@@ -45,8 +45,8 @@ const TieredFees: React.FC<TieredFeesProps> = ({
   const [loadingRecommendation, setLoadingRecommendation] = useState(false);
   const [fetchedRecommendation, setFetchedRecommendation] = useState(false);
 
-  // Adjust fees for replacement transactions if originalFeeRate > 0
-  const adjustFees = (fetchedFees: Fees) => {
+  // Memoize the adjustFees function
+  const adjustFees = useCallback((fetchedFees: Fees) => {
     if (originalFeeRate > 0) {
       const adjustedFees = { ...fetchedFees };
       adjustedFees.low = Math.max(originalFeeRate + 1, fetchedFees.low);
@@ -55,10 +55,12 @@ const TieredFees: React.FC<TieredFeesProps> = ({
       return adjustedFees;
     }
     return fetchedFees;
-  };
+  }, [originalFeeRate]);
 
+  // Fetch fees from API
   useEffect(() => {
     if (loadingRecommendation || fetchedRecommendation) return;
+
     const fetchFees = async () => {
       setLoadingRecommendation(true);
       try {
@@ -78,8 +80,9 @@ const TieredFees: React.FC<TieredFeesProps> = ({
       }
       setLoadingRecommendation(false);
     };
+
     fetchFees();
-  }, [originalFeeRate]);
+  }, [adjustFees, loadingRecommendation, fetchedRecommendation]);
 
   // Update estimated fees whenever the fees or transaction size change
   useEffect(() => {
@@ -92,9 +95,9 @@ const TieredFees: React.FC<TieredFeesProps> = ({
     }
   }, [fees, transactionSize]);
 
-  const handleTierChange = (tier: Tier) => {
+  const handleTierChange = useCallback((tier: Tier) => {
     setSelectedTier(tier);
-  };
+  }, []);
 
   useEffect(() => {
     handleFeeChange(fees[selectedTier]);

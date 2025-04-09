@@ -15,7 +15,15 @@ export type Settings = {
   isGitNestrActive: boolean;
   isAudioActive: boolean;
   isFileStorageActive: boolean;
-};
+  subscription_tiers: SubscriptionTier[];
+  freeTierEnabled: boolean;  // New field
+  freeTierLimit: string;     // New field - e.g. "100 MB per month
+}
+
+export type SubscriptionTier = {
+  data_limit: string;
+  price: string;
+}
 
 export type Category = 'kinds' | 'photos' | 'videos' | 'gitNestr' | 'audio' | 'dynamicKinds' | 'appBuckets' | 'dynamicAppBuckets';  
 export const noteOptions = [
@@ -58,4 +66,55 @@ export const categories = [
   { id: 1, name: 'Basic Nostr Features' },
   { id: 2, name: 'Extra Nostr Features' },
   { id: 3, name: 'GitNestr Features' },
+];
+
+interface FormatOption {
+  label: React.ReactNode;
+  value: string;
+}
+
+export const mimeTypeOptions: FormatOption[] = [
+  // Images
+  { value: 'image/jpeg', label: 'JPEG Images' },
+  { value: 'image/png', label: 'PNG Images' },
+  { value: 'image/gif', label: 'GIF Images' },
+  { value: 'image/bmp', label: 'BMP Images' },
+  { value: 'image/tiff', label: 'TIFF Images' },
+  { value: 'image/raw', label: 'RAW Images' },
+  { value: 'image/svg+xml', label: 'SVG Images' },
+  { value: 'image/webp', label: 'WebP Images' },
+  { value: 'application/pdf', label: 'PDF Documents' },
+  { value: 'image/eps', label: 'EPS Images' },
+  { value: 'image/vnd.adobe.photoshop', label: 'PSD Images' },
+  { value: 'application/postscript', label: 'AI/PS Images' },
+
+  // Videos
+  { value: 'video/avi', label: 'AVI Videos' },
+  { value: 'video/mp4', label: 'MP4 Videos' },
+  { value: 'video/mov', label: 'MOV Videos' },
+  { value: 'video/wmv', label: 'WMV Videos' },
+  { value: 'video/mkv', label: 'MKV Videos' },
+  { value: 'video/flv', label: 'FLV Videos' },
+  { value: 'video/mpeg', label: 'MPEG Videos' },
+  { value: 'video/3gpp', label: '3GP Videos' },
+  { value: 'video/webm', label: 'WebM Videos' },
+  { value: 'video/ogg', label: 'OGG Videos' },
+
+  // Audio
+  { value: 'audio/mpeg', label: 'MP3 Audio' },
+  { value: 'audio/wav', label: 'WAV Audio' },
+  { value: 'audio/ogg', label: 'OGG Audio' },
+  { value: 'audio/flac', label: 'FLAC Audio' },
+  { value: 'audio/aac', label: 'AAC Audio' },
+  { value: 'audio/x-ms-wma', label: 'WMA Audio' },
+  { value: 'audio/mp4', label: 'M4A Audio' },
+  { value: 'audio/opus', label: 'Opus Audio' },
+  { value: 'audio/m4b', label: 'M4B Audiobooks' },
+  { value: 'audio/midi', label: 'MIDI Audio' },
+];
+
+export const defaultTiers: SubscriptionTier[] = [
+  { data_limit: '1 GB per month', price: '8000' },
+  { data_limit: '5 GB per month', price: '10000' },
+  { data_limit: '10 GB per month', price: '15000' }
 ];

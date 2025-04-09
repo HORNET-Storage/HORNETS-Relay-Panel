@@ -23,8 +23,10 @@ export const TotalEarningChart: React.FC<TotalEarningChartProps> = ({ xAxisData,
   console.log('xAxisData:', xAxisData);
   console.log('earningData:', earningData);
 
-  const minYValue = Math.min(...earningData.data);
-  const maxYValue = Math.max(...earningData.data);
+  // Ensure all values are numbers and handle empty arrays
+  const numericData = earningData.data.map(val => Number(val)).filter(val => !isNaN(val));
+  const minYValue = numericData.length > 0 ? Math.min(...numericData) : 0;
+  const maxYValue = numericData.length > 0 ? Math.max(...numericData) : 1000;
 
   const roundDown = (value: number, interval: number) => Math.floor(value / interval) * interval;
   const roundUp = (value: number, interval: number) => Math.ceil(value / interval) * interval;

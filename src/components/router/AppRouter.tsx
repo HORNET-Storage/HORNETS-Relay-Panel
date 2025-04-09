@@ -20,6 +20,7 @@ import { withLoading } from '@app/hocs/withLoading.hoc';
 import NftDashboardPage from '@app/pages/DashboardPages/NftDashboardPage';
 import MedicalDashboardPage from '@app/pages/DashboardPages/MedicalDashboardPage';
 import BalancePage from '@app/pages/BalancePage';
+import MediaPage from '@app/pages/MediaPage';
 // import api from '@app/services/api';
 
 const NewsFeedPage = React.lazy(() => import('@app/pages/NewsFeedPage'));
@@ -27,12 +28,16 @@ const DataTablesPage = React.lazy(() => import('@app/pages/DataTablesPage'));
 const ChartsPage = React.lazy(() => import('@app/pages/ChartsPage'));
 const RelaySettingsPage = React.lazy(() => import('@app/pages/RelaySettingsPage'));
 const RelayStatsPage = React.lazy(() => import('@app/pages/RelayStatsPage'));
+const BlockedPubkeysPage = React.lazy(() => import('@app/pages/BlockedPubkeysPage'));
 const ServerErrorPage = React.lazy(() => import('@app/pages/ServerErrorPage'));
 const Error404Page = React.lazy(() => import('@app/pages/Error404Page'));
 const AdvancedFormsPage = React.lazy(() => import('@app/pages/AdvancedFormsPage'));
 const PersonalInfoPage = React.lazy(() => import('@app/pages/PersonalInfoPage'));
 const SecuritySettingsPage = React.lazy(() => import('@app/pages/SecuritySettingsPage'));
 const NotificationsPage = React.lazy(() => import('@app/pages/NotificationsPage'));
+const ModerationNotificationsPage = React.lazy(() => import('@app/pages/ModerationNotificationsPage'));
+const PaymentNotificationsPage = React.lazy(() => import('@app/pages/PaymentNotificationsPage'));
+const ReportNotificationsPage = React.lazy(() => import('@app/pages/ReportNotificationsPage'));
 const PaymentsPage = React.lazy(() => import('@app/pages/PaymentsPage'));
 const ButtonsPage = React.lazy(() => import('@app/pages/uiComponentsPages/ButtonsPage'));
 const SpinnersPage = React.lazy(() => import('@app/pages/uiComponentsPages/SpinnersPage'));
@@ -110,6 +115,7 @@ const DataTables = withLoading(DataTablesPage);
 const Charts = withLoading(ChartsPage);
 const RelayStats = withLoading(RelayStatsPage);
 const RelaySettings = withLoading(RelaySettingsPage);
+const BlockedPubkeys = withLoading(BlockedPubkeysPage);
 
 // Maps
 const Google = withLoading(GoogleMaps);
@@ -124,6 +130,9 @@ const Error404 = withLoading(Error404Page);
 const PersonalInfo = withLoading(PersonalInfoPage);
 const SecuritySettings = withLoading(SecuritySettingsPage);
 const Notifications = withLoading(NotificationsPage);
+const ModerationNotifications = withLoading(ModerationNotificationsPage);
+const PaymentNotifications = withLoading(PaymentNotificationsPage);
+const ReportNotifications = withLoading(ReportNotificationsPage);
 const Payments = withLoading(PaymentsPage);
 
 const AuthLayoutFallback = withLoading(AuthLayout);
@@ -145,8 +154,10 @@ export const AppRouter: React.FC = () => {
           <Route path={NFT_DASHBOARD_PATH} element={<NftDashboard />} />
           <Route path={MEDICAL_DASHBOARD_PATH} element={<MedicalDashboard />} />
           <Route path="/wallet" element={<BalancePage />} />
+          <Route path="media-manager" element={<MediaPage />} />
           <Route path="relay-stats" element={<RelayStats />} />
           <Route path={RELAY_SETTINGS_PATH} element={<RelaySettings />} />
+          <Route path="blocked-pubkeys" element={<BlockedPubkeys />} />
           <Route path="apps">
             <Route path="feed" element={<NewsFeed />} />
           </Route>
@@ -169,6 +180,9 @@ export const AppRouter: React.FC = () => {
             <Route path="notifications" element={<Notifications />} />
             <Route path="payments" element={<Payments />} />
           </Route>
+          <Route path="moderation-notifications" element={<ModerationNotifications />} />
+          <Route path="payment-notifications" element={<PaymentNotifications />} />
+          <Route path="report-notifications" element={<ReportNotifications />} />
           <Route path="ui-components">
             <Route path="button" element={<Buttons />} />
             <Route path="spinner" element={<Spinners />} />

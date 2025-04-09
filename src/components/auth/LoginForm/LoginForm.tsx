@@ -9,6 +9,7 @@ import { persistToken } from '@app/services/localStorage.service';
 import { notificationController } from '@app/controllers/notificationController';
 import * as S from './LoginForm.styles';
 import * as Auth from '@app/components/layouts/AuthLayout/AuthLayout.styles';
+import { NostrProvider } from '@app/types/nostr';
 
 interface LoginFormData {
   npub: string;
@@ -19,24 +20,6 @@ export const initValues: LoginFormData = {
   npub: '', // This will be dynamically set
   password: '',
 };
-
-declare global {
-  interface Window {
-    nostr: {
-      getPublicKey: () => Promise<string>;
-      signEvent: (event: any) => Promise<any>;
-      getRelays: () => Promise<Record<string, { read: boolean; write: boolean }>>;
-      nip04: {
-        encrypt: (pubkey: string, plaintext: string) => Promise<string>;
-        decrypt: (pubkey: string, ciphertext: string) => Promise<string>;
-      };
-      nip44: {
-        encrypt: (pubkey: string, plaintext: string) => Promise<string>;
-        decrypt: (pubkey: string, ciphertext: string) => Promise<string>;
-      };
-    };
-  }
-}
 
 export const LoginForm: React.FC = () => {
   const navigate = useNavigate();

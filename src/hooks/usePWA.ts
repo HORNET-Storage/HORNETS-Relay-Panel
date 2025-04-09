@@ -8,7 +8,7 @@ export const usePWA = (): void => {
   useEffect(() => {
     const handler = (e: any) => {
       e.preventDefault();
-      console.log(e);
+      // console.log(e);
       dispatch(addDeferredPrompt(e));
     };
 

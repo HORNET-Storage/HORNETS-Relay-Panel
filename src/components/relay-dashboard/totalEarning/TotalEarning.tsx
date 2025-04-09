@@ -28,8 +28,8 @@ export const TotalEarning: React.FC = () => {
     };
   }, [bitcoinRates]);
 
-  const latestRate = bitcoinRates.length > 0 ? bitcoinRates[bitcoinRates.length - 1]?.usd_value : undefined;
-  const previousRate = bitcoinRates.length > 1 ? bitcoinRates[bitcoinRates.length - 2]?.usd_value : undefined;
+  const latestRate = bitcoinRates.length > 0 ? Number(bitcoinRates[bitcoinRates.length - 1]?.usd_value) : undefined;
+  const previousRate = bitcoinRates.length > 1 ? Number(bitcoinRates[bitcoinRates.length - 2]?.usd_value) : undefined;
   const isIncreased = latestRate && previousRate ? latestRate > previousRate : false;
   const rateDifference = latestRate && previousRate ? ((latestRate - previousRate) / previousRate) * 100 : 0;
 
@@ -48,7 +48,7 @@ export const TotalEarning: React.FC = () => {
     );
   }
 
-  const formattedLatestRate = latestRate !== undefined ? parseFloat(latestRate.toFixed(0)) : 0;
+  const formattedLatestRate = latestRate !== undefined && !isNaN(latestRate) ? Math.round(latestRate) : 0;
   return (
     <NFTCard isSider>
       <BaseRow gutter={[14, 14]}>

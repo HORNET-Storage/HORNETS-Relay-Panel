@@ -54,7 +54,7 @@ const useActivityData = () => {
     };
 
     fetchData();
-  }, [dispatch]);
+  }, [handleLogout]);
 
   return { data, isLoading };
 };

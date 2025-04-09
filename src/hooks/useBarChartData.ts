@@ -1,8 +1,6 @@
-
 import { useState, useEffect } from 'react';
 import config from '@app/config/config';
 import { readToken } from '@app/services/localStorage.service'; // Assuming these services exist
-import { useDispatch } from 'react-redux';
 import { message } from 'antd';
 import { useHandleLogout } from './authUtils';
 
@@ -15,8 +13,6 @@ interface BarChartDataItem {
 const useBarChartData = () => {
   const [data, setData] = useState<BarChartDataItem[] | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const dispatch = useDispatch();
-
   const handleLogout = useHandleLogout();
 
   useEffect(() => {
@@ -56,7 +52,7 @@ const useBarChartData = () => {
     };
 
     fetchData();
-  }, [dispatch]);
+  }, [handleLogout]);
 
   return { data, isLoading };
 };

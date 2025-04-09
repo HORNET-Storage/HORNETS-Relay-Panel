@@ -225,8 +225,11 @@
     "copy": "Copy",
     "country": "Country",
     "customizeRelaySettings": "Relay Settings",
+    "relay-dashboard": "Relay Dashboard",
+    "access-control": "Access Control",
     "nft-dashboard": "Relay Dashboard",
     "medical-dashboard": "Medical Dashboard",
+    "media-manager": "Media Manager", 
     "dataDisplay": "Data display",
     "dataTables": "Storage Stats",
     "dateTime": "Date & Time",
@@ -629,6 +632,14 @@
     "noAccount": "Don’t have an account? Create one",
     "rememberMe": "Remember me",
     "signupLink": "here"
+  },
+  "mimeGroups": {
+    "images": "Images",
+    "videos": "Videos",
+    "audio": "Audio",
+    "documents": "Documents",
+    "compressed": "Compressed Files",
+    "others": "Other Files"
   },
   "modals": {
     "basic": "Basic modal",
