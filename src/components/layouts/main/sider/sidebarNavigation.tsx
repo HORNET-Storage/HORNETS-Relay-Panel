@@ -32,7 +32,7 @@ export const useSidebarNavigation = (): SidebarNavigationItem[] => {
         icon: <StorageSettingsIcon />,
       },
       {
-        title: 'Access Control',
+        title: 'common.access-control',
         key: 'blocked-pubkeys',
         url: '/blocked-pubkeys',
         icon: <StopOutlined />,

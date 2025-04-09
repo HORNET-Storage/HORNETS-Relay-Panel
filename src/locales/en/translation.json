@@ -225,6 +225,8 @@
     "copy": "Copy",
     "country": "Country",
     "customizeRelaySettings": "Relay Settings",
+    "relay-dashboard": "Relay Dashboard",
+    "access-control": "Access Control",
     "nft-dashboard": "Relay Dashboard",
     "medical-dashboard": "Medical Dashboard",
     "media-manager": "Media Manager", 
