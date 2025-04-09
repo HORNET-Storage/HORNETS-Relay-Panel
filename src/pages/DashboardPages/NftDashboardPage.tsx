@@ -2,7 +2,7 @@ import React from 'react';
 import { PageTitle } from '@app/components/common/PageTitle/PageTitle';
 import { References } from '@app/components/common/References/References';
 import { useResponsive } from '@app/hooks/useResponsive';
-import { TrendingCreators } from '@app/components/relay-dashboard/trending-creators/TrendingCreators';
+import { PaidSubscribers } from '@app/components/relay-dashboard/paid-subscribers/PaidSubscribers';
 import { VisitorsPieChart } from '@app/components/charts/VisitorsPieChart';
 import { LineRaceChart } from '@app/components/charts/LineRaceChart/LineRaceChart';
 import { BarAnimationDelayChart } from '@app/components/charts/BarAnimationDelayChart/BarAnimationDelayChart';
@@ -28,7 +28,7 @@ const MedicalDashboardPage: React.FC = () => {
       <S.LeftSideCol xl={16} xxl={17} id="desktop-content">
         <BaseRow gutter={[60, 60]}>
           <BaseCol span={24}>
-            <TrendingCreators />
+            <PaidSubscribers />
           </BaseCol>
 
           <BaseCol span={12}>
@@ -67,7 +67,7 @@ const MedicalDashboardPage: React.FC = () => {
   const mobileAndTabletLayout = (
     <BaseRow gutter={[20, 24]}>
       <BaseCol span={24}>
-        <TrendingCreators />
+        <PaidSubscribers />
       </BaseCol>
 
       <BaseCol span={24}>
@@ -104,7 +104,7 @@ export default MedicalDashboardPage;
 // import { PageTitle } from '@app/components/common/PageTitle/PageTitle';
 // import { References } from '@app/components/common/References/References';
 // import { useResponsive } from '@app/hooks/useResponsive';
-// import { TrendingCreators } from '@app/components/relay-dashboard/trending-creators/TrendingCreators';
+// import { PaidSubscribers } from '@app/components/relay-dashboard/paid-subscribers/PaidSubscribers';
 // import { RecentlyAddedNft } from '@app/components/relay-dashboard/recently-added/RecentlyAddedNft';
 // import { TrendingCollections } from '@app/components/relay-dashboard/trending-collections/TrendingCollections';
 // import { VisitorsPieChart } from '@app/components/charts/VisitorsPieChart';
@@ -127,7 +127,7 @@ export default MedicalDashboardPage;
 //       <S.LeftSideCol xl={16} xxl={17} id="desktop-content">
 //         <BaseRow gutter={[60, 60]}>
 //           <BaseCol span={24}>
-//             <TrendingCreators />
+//             <PaidSubscribers />
 //           </BaseCol>
 
 //           <BaseCol span={12}>
@@ -166,7 +166,7 @@ export default MedicalDashboardPage;
 //   const mobileAndTabletLayout = (
 //     <BaseRow gutter={[20, 24]}>
 //       <BaseCol span={24}>
-//         <TrendingCreators />
+//         <PaidSubscribers />
 //       </BaseCol>
 
 //       <BaseCol span={24}>
