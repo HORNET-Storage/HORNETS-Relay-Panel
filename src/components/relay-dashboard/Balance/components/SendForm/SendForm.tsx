@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { BaseInput } from '@app/components/common/inputs/BaseInput/BaseInput';
 import { BaseRow } from '@app/components/common/BaseRow/BaseRow';
 import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
@@ -51,25 +51,30 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
 
   const [enableRBF, setEnableRBF] = useState(false); // Default to false
 
-  // Debounced effect to calculate transaction size when the amount changes, with JWT
-  useEffect(() => {
+  // Memoize the isValidAddress check to prevent unnecessary recalculations
+  const isValidAddress = useCallback((address: string) => {
+    if (address.length === 0) {
+      return false;
+    }
+    return validateBech32Address(address);
+  }, []);
 
+  // First useEffect - Transaction size calculation
+  useEffect(() => {
     const debounceTimeout = setTimeout(() => {
       const fetchTransactionSize = async () => {
         if (isValidAddress(formData.address) && isDetailsOpen) {
-          //this should use bech32 regex
           try {
-            // Ensure user is authenticated
             if (!isAuthenticated) {
               console.log('Not Authenticated.');
-              await login(); // Perform login if not authenticated
+              await login();
             }
 
             const response = await fetch(`${config.walletBaseURL}/calculate-tx-size`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`, // Include JWT token in headers
+                Authorization: `Bearer ${token}`,
               },
               body: JSON.stringify({
                 recipient_address: formData.address,
@@ -81,10 +86,9 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
             if (response.status === 401) {
               const errorText = await response.text();
               if (errorText.includes('Token expired') || errorText.includes('Unauthorized: Invalid token')) {
-                // Token has expired, trigger a re-login
                 console.log('Session expired. Please log in again.');
-                deleteWalletToken(); // Clear the old token
-                await login(); // Re-initiate login
+                deleteWalletToken();
+                await login();
               }
               throw new Error(errorText);
             }
@@ -99,20 +103,29 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
       };
 
       fetchTransactionSize();
-    }, 500); // Debounce for 500ms
+    }, 500);
 
-    return () => clearTimeout(debounceTimeout); // Clear the timeout if the amount changes before 500ms
-  }, [formData.amount, feeRate, isAuthenticated, login, token]);
+    return () => clearTimeout(debounceTimeout);
+  }, [formData.address, formData.amount, feeRate, isAuthenticated, login, token, isDetailsOpen, isValidAddress]);
 
-  // Calculate the fee based on the transaction size
+  // Second useEffect - Fee calculation
   useEffect(() => {
-    const estimatedFee = txSize ? txSize * feeRate : 0; // Calculate the fee based on the tx size and fee rate
+    const estimatedFee = txSize ? txSize * feeRate : 0;
     setFee(estimatedFee);
   }, [txSize, feeRate]);
 
+  // Third useEffect - Amount with fee calculation
   useEffect(() => {
-    setAmountWithFee(parseInt(formData.amount) + fee); // Update the amount with fee when the fee changes
+    const amount = parseInt(formData.amount) || 0;
+    setAmountWithFee(amount + fee);
   }, [fee, formData.amount]);
+
+  // Fourth useEffect - Amount validation
+  useEffect(() => {
+    const amount = parseInt(formData.amount) || 0;
+    const isInvalid = formData.amount.length <= 0 || (balanceData ? amount > balanceData.latest_balance : false);
+    setInvalidAmount(isInvalid);
+  }, [formData.amount, balanceData]);
 
   const handleFeeRateChange = useCallback((fee: number) => {
     setFeeRate(fee); // Update the new fee when it changes
@@ -138,14 +151,6 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
       return false;
     }
   }
-
-  const isValidAddress = (address: string) => {
-    //TODO: add some sort of bech32 regex here
-    if (address.length === 0) {
-      return false;
-    }
-    return validateBech32Address(address);
-  };
 
   const handleAddressSubmit = () => {
     const isValid = isValidAddress(formData.address);
@@ -256,14 +261,6 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
       setLoading(false); // Ensure loading stops in all cases
     }
   };
-
-  useEffect(() => {
-    if (formData.amount.length <= 0 || (balanceData && parseInt(formData.amount) > balanceData.latest_balance)) {
-      setInvalidAmount(true);
-    } else {
-      setInvalidAmount(false);
-    }
-  }, [formData.amount]);
 
   const receiverPanel = () => (
     <>

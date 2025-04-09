@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import config from '@app/config/config';
 import { readToken } from '@app/services/localStorage.service'; // Assuming these services exist
-import { useDispatch } from 'react-redux';
 import { message } from 'antd';
 import { useHandleLogout } from './authUtils';
 
@@ -13,7 +12,6 @@ interface MonthlyKindData {
 const useKindTrendData = (kindNumber: number | null) => {
   const [trendData, setTrendData] = useState<MonthlyKindData[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const dispatch = useDispatch();
 
   const handleLogout = useHandleLogout();
 
@@ -58,7 +56,7 @@ const useKindTrendData = (kindNumber: number | null) => {
     };
 
     fetchTrendData();
-  }, [kindNumber, dispatch]);
+  }, [kindNumber, handleLogout]);
 
   return { trendData, isLoading };
 };

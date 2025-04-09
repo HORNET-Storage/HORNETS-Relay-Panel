@@ -6,7 +6,6 @@ import { AddressList } from '../AddressList/AddressList';
 import axios from 'axios';
 import config from '@app/config/config';
 import { readToken } from '@app/services/localStorage.service'; // Assuming these services exist
-import { useDispatch } from 'react-redux';
 import { useHandleLogout } from '@app/hooks/authUtils';
 
 interface TopUpBalanceModalProps extends TopUpDataProps {
@@ -28,8 +27,6 @@ export const TopUpBalanceModal: React.FC<TopUpBalanceModalProps> = ({
 }) => {
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const dispatch = useDispatch();
-
   const handleLogout = useHandleLogout();
 
   useEffect(() => {
@@ -60,7 +57,7 @@ export const TopUpBalanceModal: React.FC<TopUpBalanceModalProps> = ({
           setIsLoading(false);
         });
     }
-  }, [isOpen, dispatch]);
+  }, [isOpen, handleLogout]);
 
   return (
     <BaseModal centered={true} width={500} open={isOpen} onCancel={onOpenChange} footer={null} destroyOnClose>

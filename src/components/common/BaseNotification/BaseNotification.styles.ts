@@ -26,6 +26,10 @@ export const SpaceWrapper = styled(BaseSpace)<SpacewWrapperProps>`
     ${(props) => {
       switch (props.type) {
         case 'error':
+        case 'moderation':
+          return css`
+            color: var(--error-color);
+          `;
         case 'warning':
         case 'success':
           return css`

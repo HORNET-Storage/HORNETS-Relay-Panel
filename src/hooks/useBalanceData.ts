@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import config from '@app/config/config';
 import { readToken } from '@app/services/localStorage.service'; // Assuming these services exist
-import { useDispatch } from 'react-redux';
 import { message } from 'antd';
 import { useHandleLogout } from './authUtils';
 
@@ -22,8 +21,6 @@ const useBalanceData = () => {
   const [balanceData, setBalanceData] = useState<BalanceData | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const dispatch = useDispatch();
-
   const handleLogout = useHandleLogout();
 
   useEffect(() => {
@@ -72,7 +69,6 @@ const useBalanceData = () => {
         }
         const transactionsData: Transaction[] = await transactionsResponse.json();
         setTransactions(transactionsData);
-        console.log('Transactions data:', transactionsData);
 
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -85,7 +81,7 @@ const useBalanceData = () => {
     };
 
     fetchData();
-  }, [dispatch]);
+  }, [handleLogout]);
 
   return { balanceData, transactions, isLoading };
 };

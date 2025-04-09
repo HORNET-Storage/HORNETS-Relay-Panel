@@ -1,7 +1,7 @@
 #!/bin/bash
-# This script sets the necessary environment variable and starts the React app
 
-echo "Setting OpenSSL legacy provider and starting the app..."
-export NODE_OPTIONS=--openssl-legacy-provider
+# Set OpenSSL configuration for Node.js >= 17
+export NODE_OPTIONS="--openssl-legacy-provider"
+
+# Start the app
 yarn start
-

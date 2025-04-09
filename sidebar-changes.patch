@@ -1,0 +1,34 @@
+diff --git a/src/components/layouts/main/sider/sidebarNavigation.tsx b/src/components/layouts/main/sider/sidebarNavigation.tsx
+index fa18628..f2161cd 100644
+--- a/src/components/layouts/main/sider/sidebarNavigation.tsx
++++ b/src/components/layouts/main/sider/sidebarNavigation.tsx
+@@ -1,5 +1,5 @@
+ import React, { useMemo } from 'react';
+-import { DashboardOutlined, TableOutlined } from '@ant-design/icons';
++import { DashboardOutlined, TableOutlined, StopOutlined, FlagOutlined } from '@ant-design/icons';
+ import { ReactComponent as NestIcon } from '@app/assets/icons/hive.svg';
+ import { ReactComponent as BtcIcon } from '@app/assets/icons/btc.svg';
+ import { ReactComponent as StatsIcon } from '@app/assets/icons/stats.svg';
+@@ -20,8 +20,8 @@ export const useSidebarNavigation = (): SidebarNavigationItem[] => {
+   return useMemo(() => {
+     const items: SidebarNavigationItem[] = [
+       {
+         title: 'common.relay-dashboard',
+-        key: 'relay-dashboard',
++        key: 'relay-dashboard',
+         url: '/',
+         icon: <NestIcon />,
+       },
+@@ -31,6 +31,12 @@ export const useSidebarNavigation = (): SidebarNavigationItem[] => {
+         url: '/relay-settings',
+         icon: <StorageSettingsIcon />,
+       },
++      {
++        title: 'Access Control',
++        key: 'blocked-pubkeys',
++        url: '/blocked-pubkeys',
++        icon: <StopOutlined />,
++      },
+       {
+         title: 'Nostr Statistics',
+         key: 'dataTables',

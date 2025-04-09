@@ -13,11 +13,11 @@ const BalancePage: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => { 
-if(isDesktop) {
-  navigate('/relay-dashbaoard');
-
+    if(isDesktop) {
+      navigate('/relay-dashbaoard');
     }
-  }, [isDesktop]);
+  }, [isDesktop, navigate]);
+
   return (
     <div
       style={{

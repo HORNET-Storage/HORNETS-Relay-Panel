@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useCallback } from 'react';
 import { Overlay } from '../../../../common/Overlay/Overlay';
 import { useResponsive } from 'hooks/useResponsive';
 import * as S from './MainSider.styles';
@@ -15,13 +15,13 @@ const MainSider: React.FC<MainSiderProps> = ({ isCollapsed, setCollapsed, ...pro
 
   const isCollapsible = useMemo(() => mobileOnly && tabletOnly, [mobileOnly, tabletOnly]);
 
-  const toggleSider = () => setCollapsed(!isCollapsed);
+  const toggleSider = useCallback(() => setCollapsed(!isCollapsed), [isCollapsed, setCollapsed]);
 
   useEffect(() => {
     if (isDesktop) {
       setCollapsed(false);
     }
-  }, [isCollapsible]);
+  }, [isDesktop, setCollapsed]);
 
   return (
     <>
