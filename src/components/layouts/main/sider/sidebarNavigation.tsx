@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { DashboardOutlined, TableOutlined } from '@ant-design/icons';
+import { DashboardOutlined, TableOutlined, StopOutlined, FlagOutlined } from '@ant-design/icons';
 import { ReactComponent as NestIcon } from '@app/assets/icons/hive.svg';
 import { ReactComponent as BtcIcon } from '@app/assets/icons/btc.svg';
 import { ReactComponent as StatsIcon } from '@app/assets/icons/stats.svg';
@@ -30,6 +30,12 @@ export const useSidebarNavigation = (): SidebarNavigationItem[] => {
         key: 'relay-settings',
         url: '/relay-settings',
         icon: <StorageSettingsIcon />,
+      },
+      {
+        title: 'Access Control',
+        key: 'blocked-pubkeys',
+        url: '/blocked-pubkeys',
+        icon: <StopOutlined />,
       },
       {
         title: 'Nostr Statistics',
