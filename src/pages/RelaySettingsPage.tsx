@@ -3,12 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PageTitle } from '@app/components/common/PageTitle/PageTitle';
-import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
-import { BaseRow } from '@app/components/common/BaseRow/BaseRow';
-import { BaseCol } from '@app/components/common/BaseCol/BaseCol';
-import { Balance } from '@app/components/relay-dashboard/Balance/Balance';
-import { TotalEarning } from '@app/components/relay-dashboard/totalEarning/TotalEarning';
-import { ActivityStory } from '@app/components/relay-dashboard/transactions/Transactions';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@app/hooks/reduxHooks';
 import { setMode } from '@app/store/slices/modeSlice';
