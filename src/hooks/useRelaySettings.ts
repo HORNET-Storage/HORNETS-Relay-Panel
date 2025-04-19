@@ -20,6 +20,7 @@ interface BackendRelaySettings {
   subscription_tiers: BackendSubscriptionTier[];
   freeTierEnabled: boolean;  // New field
   freeTierLimit: string;     // New field - e.g. "100 MB per month"
+  moderationMode: string;    // "strict" or "passive"
   MimeTypeGroups: {
     images: string[];
     videos: string[];
@@ -56,7 +57,8 @@ const getInitialSettings = (): Settings => ({
   isFileStorageActive: false,
   subscription_tiers: defaultTiers,
   freeTierEnabled: false,
-  freeTierLimit: '100 MB per month'
+  freeTierLimit: '100 MB per month',
+  moderationMode: 'strict' // Default to strict mode
 });
 
 const useRelaySettings = () => {
@@ -139,6 +141,7 @@ const useRelaySettings = () => {
       })),
       freeTierEnabled: settings.freeTierEnabled,
       freeTierLimit: settings.freeTierLimit,
+      moderationMode: settings.moderationMode,
       MimeTypeGroups: mimeGroups,
       isFileStorageActive: settings.isFileStorageActive,
       MimeTypeWhitelist: settings.mode === 'smart'
@@ -161,6 +164,7 @@ const useRelaySettings = () => {
     settings.protocol = backendSettings.protocol as string[];
     settings.freeTierEnabled = backendSettings.freeTierEnabled ?? false;
     settings.freeTierLimit = backendSettings.freeTierLimit ?? '100 MB per month';
+    settings.moderationMode = backendSettings.moderationMode ?? 'strict';
 
     // Handle subscription tiers
     if (Array.isArray(backendSettings.subscription_tiers)) {

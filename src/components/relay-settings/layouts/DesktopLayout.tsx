@@ -13,6 +13,7 @@ import { AppBucketsSection } from '@app/components/relay-settings/sections/AppBu
 import { SubscriptionSection } from '@app/components/relay-settings/sections/SubscriptionSection';
 import { KindsSection } from '@app/components/relay-settings/sections/KindsSection';
 import { MediaSection } from '@app/components/relay-settings/sections/MediaSection';
+import { ModerationSection } from '@app/components/relay-settings/sections/ModerationSection';
 import { useTranslation } from 'react-i18next';
 import { SubscriptionTier } from '@app/constants/relaySettings';
 
@@ -68,6 +69,9 @@ interface DesktopLayoutProps {
         onChange: (values: string[]) => void;
         onToggle: (checked: boolean) => void;
     };
+    // Moderation section props
+    moderationMode: string;
+    onModerationModeChange: (mode: string) => void;
 }
 
 export const DesktopLayout: React.FC<DesktopLayoutProps> = ({
@@ -93,7 +97,6 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({
     freeTierEnabled,
     freeTierLimit,
     onFreeTierChange,
-
     // Kinds props
     isKindsActive,
     selectedKinds,
@@ -108,6 +111,9 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({
     photos,
     videos,
     audio,
+    // Moderation props
+    moderationMode,
+    onModerationModeChange,
 }) => {
     const { t } = useTranslation();
 
@@ -142,6 +148,11 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({
                             freeTierEnabled={freeTierEnabled}
                             freeTierLimit={freeTierLimit}
                             onFreeTierChange={onFreeTierChange}
+                        />
+
+                        <ModerationSection
+                            moderationMode={moderationMode}
+                            onModerationModeChange={onModerationModeChange}
                         />
                     </BaseCol>
                 </BaseRow>

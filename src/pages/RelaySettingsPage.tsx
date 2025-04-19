@@ -42,8 +42,9 @@ const RelaySettingsPage: React.FC = () => {
     isAudioActive: true,
     isFileStorageActive: false,
     subscription_tiers: [],
-    freeTierEnabled: false,  // Add this
-    freeTierLimit: '100 MB per month'  // Add this
+    freeTierEnabled: false,
+    freeTierLimit: '100 MB per month',
+    moderationMode: 'strict'  // Default to strict mode
   });
 
   // Initialize stored dynamic items
@@ -138,6 +139,7 @@ const RelaySettingsPage: React.FC = () => {
         updateSettings('freeTierEnabled', settings.freeTierEnabled),
         updateSettings('freeTierLimit', settings.freeTierLimit),
         updateSettings('subscription_tiers', settings.subscription_tiers),
+        updateSettings('moderationMode', settings.moderationMode),
       ]);
 
       await saveSettings();
@@ -232,6 +234,12 @@ const RelaySettingsPage: React.FC = () => {
     updateSettings(type, checked);
   };
 
+  // Moderation mode handler
+  const handleModerationModeChange = (mode: string) => {
+    setSettings(prev => ({ ...prev, moderationMode: mode }));
+    updateSettings('moderationMode', mode);
+  };
+
   const layoutProps = {
     mode: settings.mode,
     onModeChange: handleModeChange,
@@ -269,7 +277,6 @@ const RelaySettingsPage: React.FC = () => {
       updateSettings('freeTierEnabled', enabled);
       updateSettings('freeTierLimit', limit);
     },
-
     // Kinds props
     isKindsActive: settings.isKindsActive,
     selectedKinds: settings.kinds,
@@ -299,6 +306,9 @@ const RelaySettingsPage: React.FC = () => {
       onChange: (values: string[]) => handleMediaChange('audio', values),
       onToggle: (checked: boolean) => handleMediaToggle('isAudioActive', checked),
     },
+    // Moderation props
+    moderationMode: settings.moderationMode,
+    onModerationModeChange: handleModerationModeChange,
   };
 
   return (

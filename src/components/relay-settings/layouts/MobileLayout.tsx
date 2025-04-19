@@ -10,6 +10,7 @@ import { AppBucketsSection } from '@app/components/relay-settings/sections/AppBu
 import { SubscriptionSection } from '@app/components/relay-settings/sections/SubscriptionSection';
 import { KindsSection } from '@app/components/relay-settings/sections/KindsSection';
 import { MediaSection } from '@app/components/relay-settings/sections/MediaSection';
+import { ModerationSection } from '@app/components/relay-settings/sections/ModerationSection';
 import { useTranslation } from 'react-i18next';
 import { SubscriptionTier } from '@app/constants/relaySettings';
 
@@ -65,6 +66,9 @@ interface MobileLayoutProps {
         onChange: (values: string[]) => void;
         onToggle: (checked: boolean) => void;
     };
+    // Moderation section props
+    moderationMode: string;
+    onModerationModeChange: (mode: string) => void;
 }
 
 export const MobileLayout: React.FC<MobileLayoutProps> = ({
@@ -104,6 +108,9 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({
     photos,
     videos,
     audio,
+    // Moderation props
+    moderationMode,
+    onModerationModeChange,
 }) => {
     const { t } = useTranslation();
 
@@ -136,6 +143,11 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({
                     freeTierEnabled={freeTierEnabled}
                     freeTierLimit={freeTierLimit}
                     onFreeTierChange={onFreeTierChange}
+                />
+
+                <ModerationSection
+                    moderationMode={moderationMode}
+                    onModerationModeChange={onModerationModeChange}
                 />
 
                 <S.SwitchContainer
