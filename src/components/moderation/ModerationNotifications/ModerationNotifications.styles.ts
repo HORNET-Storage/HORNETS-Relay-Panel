@@ -105,23 +105,27 @@ export const ModerationBanner = styled.div`
 export const MediaWrapper = styled.div`
   position: relative;
   width: 100%;
-  max-width: 300px;
+  max-width: 400px;
   border-radius: ${BORDER_RADIUS};
   overflow: hidden;
   border: 1px solid var(--border-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1rem;
 `;
 
 export const StyledImage = styled.img`
   max-width: 100%;
-  max-height: 200px;
+  max-height: 300px;
   object-fit: contain;
   display: block;
+  background-color: #000;
 `;
 
 export const StyledVideo = styled.video`
   max-width: 100%;
-  max-height: 200px;
+  max-height: 300px;
   display: block;
+  background-color: #000;
 `;
 
 export const StyledAudio = styled.audio`
@@ -195,4 +199,85 @@ export const ContentTypeTag = styled.span<{ $type: string }>`
         `;
     }
   }}
+`;
+
+// Action buttons container
+export const ActionButtons = styled.div`
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+`;
+
+// View event button
+export const ViewEventButton = styled(Button)`
+  display: flex;
+  align-items: center;
+`;
+
+// Event details modal styles
+export const EventDetailsContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding-bottom: 1rem;
+`;
+
+export const EventSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  background-color: var(--background-color);
+  border-radius: ${BORDER_RADIUS};
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+`;
+
+export const SectionTitle = styled.h3`
+  font-size: ${FONT_SIZE.lg};
+  font-weight: ${FONT_WEIGHT.semibold};
+  margin-bottom: 0.5rem;
+  color: var(--heading-color);
+`;
+
+export const DetailItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 0.5rem;
+`;
+
+export const DetailLabel = styled.span`
+  font-weight: ${FONT_WEIGHT.semibold};
+  color: var(--text-light-color);
+  font-size: ${FONT_SIZE.xs};
+`;
+
+export const DetailValue = styled.span`
+  color: var(--text-main-color);
+  font-size: ${FONT_SIZE.md};
+  word-break: break-all;
+`;
+
+export const EventContent = styled.pre`
+  background-color: var(--secondary-background-color);
+  padding: 1rem;
+  border-radius: ${BORDER_RADIUS};
+  overflow-x: auto;
+  font-family: monospace;
+  font-size: ${FONT_SIZE.xs};
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 250px;
+  overflow-y: auto;
+  margin-bottom: 0.5rem;
+  border: 1px solid var(--border-color);
+`;
+
+export const MediaContainer = styled.div`
+  margin-top: 1rem;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 0.5rem;
 `;

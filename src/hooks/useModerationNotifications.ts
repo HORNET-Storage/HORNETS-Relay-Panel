@@ -3,6 +3,8 @@ import { notificationController } from '@app/controllers/notificationController'
 import config from '@app/config/config';
 import { readToken } from '@app/services/localStorage.service';
 import { useHandleLogout } from './authUtils';
+import * as moderationNotificationsApi from '@app/api/moderationNotifications.api';
+import { BlockedEventResponse } from '@app/api/moderationNotifications.api';
 
 // Static variables outside the hook to ensure true singleton pattern
 let isInitialized = false;
@@ -49,6 +51,9 @@ interface UseModerationNotificationsResult {
   fetchNotifications: (params?: ModerationNotificationParams) => Promise<void>;
   markAsRead: (id: number) => Promise<void>;
   markAllAsRead: () => Promise<void>;
+  getBlockedEvent: (eventId: string) => Promise<BlockedEventResponse>;
+  unblockEvent: (eventId: string) => Promise<{ success: boolean; message: string; event_id: string }>;
+  deleteEvent: (eventId: string) => Promise<{ success: boolean; message: string; event_id: string }>;
 }
 
 /**
@@ -293,6 +298,41 @@ export const useModerationNotifications = (initialParams?: ModerationNotificatio
     }
   }, [token, handleLogout]);
 
+  // Get details of a blocked event
+  const getBlockedEvent = useCallback(async (eventId: string) => {
+    try {
+      console.log(`[useModerationNotifications] Getting details for blocked event ${eventId}`);
+      return await moderationNotificationsApi.getBlockedEvent(eventId);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch blocked event details';
+      notificationController.error({ message: errorMessage });
+      throw err;
+    }
+  }, []);
+
+  // Unblock an incorrectly flagged event
+  const unblockEvent = useCallback(async (eventId: string) => {
+    try {
+      console.log(`[useModerationNotifications] Unblocking event ${eventId}`);
+      return await moderationNotificationsApi.unblockEvent(eventId);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to unblock event';
+      notificationController.error({ message: errorMessage });
+      throw err;
+    }
+  }, []);
+
+  // Permanently delete a moderated event
+  const deleteEvent = useCallback(async (eventId: string) => {
+    try {
+      console.log(`[useModerationNotifications] Permanently deleting event ${eventId}`);
+      return await moderationNotificationsApi.deleteModeratedEvent(eventId);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to delete event';
+      notificationController.error({ message: errorMessage });
+      throw err;
+    }
+  }, []);
 
   return {
     notifications,
@@ -301,6 +341,9 @@ export const useModerationNotifications = (initialParams?: ModerationNotificatio
     error,
     fetchNotifications,
     markAsRead,
-    markAllAsRead
+    markAllAsRead,
+    getBlockedEvent,
+    unblockEvent,
+    deleteEvent
   };
 };
