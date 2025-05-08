@@ -160,13 +160,13 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({
                     }}
                 >
                     <S.LabelSpan>{t('common.serverSetting')}</S.LabelSpan>
-                    <S.LargeSwitch
-                        className="modeSwitch"
-                        checkedChildren="Strict"
-                        unCheckedChildren="Unlimited"
-                        checked={mode === 'smart'}
-                        onChange={onModeChange}
-                    />
+                        <S.LargeSwitch
+                            className="modeSwitch"
+                            checkedChildren="Whitelist"
+                            unCheckedChildren="Blacklist"
+                            checked={mode === 'whitelist'}
+                            onChange={onModeChange}
+                        />
                 </S.SwitchContainer>
 
                 <KindsSection

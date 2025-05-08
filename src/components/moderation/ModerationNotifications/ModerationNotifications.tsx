@@ -120,10 +120,41 @@ export const ModerationNotifications: React.FC<ModerationNotificationsProps> = (
       setIsModalVisible(true);
     } catch (error) {
       console.error('Failed to fetch event details:', error);
-      notificationController.error({
-        message: 'Failed to fetch event details',
-        description: error instanceof Error ? error.message : 'Unknown error'
-      });
+      
+      // Check if this is a 400 error (event not found)
+      if (error instanceof Error && error.message.includes('400')) {
+        // Add this event ID to the list of non-existent events
+        // This is done by accessing the module-level variable directly
+        (window as any).nonExistentEventIds = (window as any).nonExistentEventIds || new Set<string>();
+        (window as any).nonExistentEventIds.add(eventId);
+        
+        // Show success message to the user
+        notificationController.success({
+          message: 'Notification removed',
+          description: 'The notification was automatically removed because the referenced event no longer exists'
+        });
+        
+        // Try to delete on backend, but don't worry if it fails
+        try {
+          await deleteEvent(eventId);
+        } catch (deleteError) {
+          // Silently ignore the error since we're handling it locally
+          console.log('Backend delete failed, handling locally:', deleteError);
+        }
+        
+        // Refresh the notifications list to ensure our changes take effect
+        fetchNotifications({
+          page: pagination?.currentPage || 1,
+          limit: pagination?.pageSize || 10,
+          filter
+        });
+      } else {
+        // For other errors, show the standard error message
+        notificationController.error({
+          message: 'Failed to fetch event details',
+          description: error instanceof Error ? error.message : 'Unknown error'
+        });
+      }
     } finally {
       setIsEventLoading(false);
     }

@@ -171,9 +171,9 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({
                         <S.LabelSpan>{t('common.serverSetting')}</S.LabelSpan>
                         <S.LargeSwitch
                             className="modeSwitch"
-                            checkedChildren="Strict"
-                            unCheckedChildren="Unlimited"
-                            checked={mode === 'smart'}
+                            checkedChildren="Whitelist"
+                            unCheckedChildren="Blacklist"
+                            checked={mode === 'whitelist'}
                             onChange={onModeChange}
                         />
                     </S.SwitchContainer>

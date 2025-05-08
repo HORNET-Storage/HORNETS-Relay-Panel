@@ -33,12 +33,12 @@ export const readUser = (): UserModel | null => {
   }
 };
 
-export const persistRelayMode = (relayMode: 'unlimited' | 'smart'): void => {
+export const persistRelayMode = (relayMode: 'blacklist' | 'whitelist'): void => {
   localStorage.setItem('relayMode', relayMode);
 };
 
-export const readRelayMode = (): 'unlimited' | 'smart' => {
-  return (localStorage.getItem('relayMode') as 'unlimited' | 'smart') || 'unlimited'; // default to 'unlimited' if nothing is stored
+export const readRelayMode = (): 'blacklist' | 'whitelist' => {
+  return (localStorage.getItem('relayMode') as 'blacklist' | 'whitelist') || 'blacklist'; // default to 'blacklist' if nothing is stored
 };
 
 export const deleteToken = (): void => localStorage.removeItem('accessToken');

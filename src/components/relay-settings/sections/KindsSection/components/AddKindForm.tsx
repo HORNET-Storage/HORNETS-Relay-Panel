@@ -19,7 +19,7 @@ export const AddKindForm: React.FC<AddKindFormProps> = ({ onAddKind, mode }) => 
     }
   };
 
-  if (mode === 'smart') {
+  if (mode === 'whitelist') {
     return null;
   }
 

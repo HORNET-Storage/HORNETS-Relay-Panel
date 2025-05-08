@@ -56,6 +56,11 @@ interface UseModerationNotificationsResult {
   deleteEvent: (eventId: string) => Promise<{ success: boolean; message: string; event_id: string }>;
 }
 
+// Set of event IDs that we know don't exist in the backend
+// Store it in the window object so it can be accessed from other components
+(window as any).nonExistentEventIds = (window as any).nonExistentEventIds || new Set<string>();
+const nonExistentEventIds = (window as any).nonExistentEventIds;
+
 /**
  * Shared fetchNotifications function to be used by all hook instances
  */
@@ -110,8 +115,13 @@ const fetchModerationNotifications = async (params: ModerationNotificationParams
       }
     });
     
+    // Filter out notifications for events that we know don't exist
+    const filteredNotifications = data.notifications.filter(
+      (notification: ModerationNotification) => !nonExistentEventIds.has(notification.event_id)
+    );
+    
     // Merge server data with our local knowledge of read status
-    const mergedNotifications = data.notifications.map((notification: ModerationNotification) => {
+    const mergedNotifications = filteredNotifications.map((notification: ModerationNotification) => {
       // If we previously marked this as read manually, keep it marked as read
       if (manuallyMarkedAsRead.has(notification.id)) {
         return { ...notification, is_read: true };
@@ -123,9 +133,9 @@ const fetchModerationNotifications = async (params: ModerationNotificationParams
     globalNotifications = mergedNotifications;
     globalPagination = data.pagination;
     globalLastFetchTime = Date.now();
-    globalPreviousIds = new Set(data.notifications.map((n: ModerationNotification) => n.id));
+    globalPreviousIds = new Set(filteredNotifications.map((n: ModerationNotification) => n.id));
     
-    return { notifications: data.notifications, pagination: data.pagination };
+    return { notifications: mergedNotifications, pagination: data.pagination };
   } catch (error) {
     throw error;
   }

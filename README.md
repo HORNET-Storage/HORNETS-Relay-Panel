@@ -9,7 +9,7 @@ We have a live demo that can be found at http://hornetstorage.net for anyone tha
 
 ## Key Features
 - Manage your hornet-storage relay config directly from the panel
-- Switch between our new dumb and smart model for accepting nostr notes
+- Switch between our new whitelist and blacklist model for accepting nostr notes
 - Decide from which of the supported nostr kinds to enable
 - Choose which supported transport protocols to enable such as libp2p and websockets
 - Enable / disable which media extensions are accepted by the relay such as png and mp4

@@ -25,7 +25,7 @@ const RelaySettingsPage: React.FC = () => {
 
   // Local state for settings
   const [settings, setSettings] = useState<Settings>({
-    mode: JSON.parse(localStorage.getItem('relaySettings') || '{}').mode || relaymode || 'unlimited',
+    mode: JSON.parse(localStorage.getItem('relaySettings') || '{}').mode || relaymode || 'blacklist',
     protocol: ['WebSocket'],
     kinds: [],
     dynamicKinds: [],
@@ -93,7 +93,7 @@ const RelaySettingsPage: React.FC = () => {
 
   // Reset blacklist when mode changes
   useEffect(() => {
-    if (settings.mode === 'unlimited') return;
+    if (settings.mode === 'blacklist') return;
     setBlacklist({
       kinds: [],
       photos: [],
@@ -104,14 +104,14 @@ const RelaySettingsPage: React.FC = () => {
   }, [settings.mode]);
 
   const handleModeChange = (checked: boolean) => {
-    const newMode = checked ? 'smart' : 'unlimited';
+    const newMode = checked ? 'whitelist' : 'blacklist';
     setSettings(prev => ({
       ...prev,
       mode: newMode,
-      kinds: newMode === 'unlimited' ? [] : prev.kinds,
-      photos: newMode === 'unlimited' ? [] : prev.photos,
-      videos: newMode === 'unlimited' ? [] : prev.videos,
-      audio: newMode === 'unlimited' ? [] : prev.audio,
+      kinds: newMode === 'blacklist' ? [] : prev.kinds,
+      photos: newMode === 'blacklist' ? [] : prev.photos,
+      videos: newMode === 'blacklist' ? [] : prev.videos,
+      audio: newMode === 'blacklist' ? [] : prev.audio,
     }));
     updateSettings('mode', newMode);
     dispatch(setMode(newMode));
