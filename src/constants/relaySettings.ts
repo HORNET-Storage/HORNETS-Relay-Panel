@@ -18,6 +18,7 @@ export type Settings = {
   subscription_tiers: SubscriptionTier[];
   freeTierEnabled: boolean;  // New field
   freeTierLimit: string;     // New field - e.g. "100 MB per month
+  moderationMode: string;    // "strict" or "passive"
 }
 
 export type SubscriptionTier = {

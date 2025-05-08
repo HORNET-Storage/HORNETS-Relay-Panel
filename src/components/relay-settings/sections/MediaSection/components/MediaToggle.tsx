@@ -14,7 +14,7 @@ export const MediaToggle: React.FC<MediaToggleProps> = ({
   onChange,
   mode,
 }) => {
-  if (mode === 'unlimited') {
+  if (mode === 'blacklist') {
     return null;
   }
 

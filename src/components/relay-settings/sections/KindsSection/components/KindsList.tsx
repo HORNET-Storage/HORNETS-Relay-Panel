@@ -34,7 +34,7 @@ export const KindsList: React.FC<KindsListProps> = ({
       className="large-label"
       value={selectedKinds}
       onChange={(checkedValues) => onKindsChange(checkedValues as string[])}
-      disabled={mode !== 'smart' ? false : !isKindsActive}
+      disabled={mode !== 'whitelist' ? false : !isKindsActive}
     >
       {groupedNoteOptions.map((group) => (
         <div key={group.id} style={{ paddingBottom: '2rem' }}>
@@ -44,11 +44,11 @@ export const KindsList: React.FC<KindsListProps> = ({
               <div className="checkbox-container" style={{ paddingLeft: '1rem' }} key={note.kindString}>
                 <BaseCheckbox
                   value={note.kindString}
-                  className={mode === 'unlimited' ? 'blacklist-mode-active' : ''}
-                  disabled={mode !== 'smart' ? false : !isKindsActive}
+                  className={mode === 'blacklist' ? 'blacklist-mode-active' : ''}
+                  disabled={mode !== 'whitelist' ? false : !isKindsActive}
                 />
                 <S.CheckboxLabel
-                  isActive={mode !== 'smart' ? true : isKindsActive}
+                  isActive={mode !== 'whitelist' ? true : isKindsActive}
                   style={{
                     paddingRight: '.8rem',
                     paddingLeft: '.8rem',
