@@ -32,3 +32,4 @@ yarn-error.log*
 
 # generated files
 /public/themes
+/memory-bank
