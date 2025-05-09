@@ -46,17 +46,45 @@ const XNostrSettingsComponent: React.FC = () => {
   // Update form values when settings change
   useEffect(() => {
     if (settings) {
-      // Set form values from settings
-      form.setFieldsValue({
-        ...settings,
+      console.log('XNostrSettings - Received settings:', settings);
+      
+      // Transform property names to match form field names
+      // The API returns properties without the prefix, but the form expects prefixed names
+      const settingsObj = settings as Record<string, any>;
+      
+      // Create a transformed settings object with prefixed property names
+      const formValues = {
+        xnostr_enabled: settingsObj.enabled,
+        xnostr_browser_path: settingsObj.browser_path,
+        xnostr_browser_pool_size: typeof settingsObj.browser_pool_size === 'string' 
+          ? parseInt(settingsObj.browser_pool_size) 
+          : settingsObj.browser_pool_size,
+        xnostr_check_interval: typeof settingsObj.check_interval === 'string' 
+          ? parseInt(settingsObj.check_interval) 
+          : settingsObj.check_interval,
+        xnostr_concurrency: typeof settingsObj.concurrency === 'string' 
+          ? parseInt(settingsObj.concurrency) 
+          : settingsObj.concurrency,
+        xnostr_temp_dir: settingsObj.temp_dir,
+        xnostr_update_interval: typeof settingsObj.update_interval === 'string' 
+          ? parseInt(settingsObj.update_interval) 
+          : settingsObj.update_interval,
         // Handle nested objects
-        xnostr_verification_intervals: settings.xnostr_verification_intervals || {},
+        xnostr_verification_intervals: settingsObj.verification_intervals || {},
         // Don't set nitter instances here, we'll handle them separately
-      });
+      };
+      
+      console.log('XNostrSettings - Transformed form values:', formValues);
+      
+      // Set form values with a slight delay to ensure the form is ready
+      setTimeout(() => {
+        form.setFieldsValue(formValues);
+        console.log('XNostrSettings - Form values after set:', form.getFieldsValue());
+      }, 100);
 
       // Set nitter instances
-      if (settings.xnostr_nitter?.instances) {
-        setNitterInstances(settings.xnostr_nitter.instances);
+      if (settingsObj.nitter?.instances) {
+        setNitterInstances(settingsObj.nitter.instances);
       } else {
         setNitterInstances([]);
       }
@@ -230,6 +258,7 @@ const XNostrSettingsComponent: React.FC = () => {
         layout="vertical"
         onValuesChange={handleValuesChange}
         initialValues={settings || {}}
+        onFinish={(values) => console.log('Form submitted with values:', values)}
       >
         {/* General XNostr Settings */}
         <Form.Item

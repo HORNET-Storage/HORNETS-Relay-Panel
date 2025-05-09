@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Collapse, Button, Space, Spin } from 'antd';
 import { BaseRow } from '@app/components/common/BaseRow/BaseRow';
 import { BaseCol } from '@app/components/common/BaseCol/BaseCol';
@@ -32,7 +32,7 @@ const AdvancedSettingsLayout: React.FC<AdvancedSettingsLayoutProps> = ({
 }) => {
   const [saveLoading, setSaveLoading] = useState(false);
   const [resetLoading, setResetLoading] = useState(false);
-  const [activeKeys, setActiveKeys] = useState<string[]>(['general']);
+  const [activeKeys, setActiveKeys] = useState<string[]>(['general', 'image-moderation']);
   
   // Use the generic settings hook to handle saving all settings
   const { 
@@ -45,19 +45,41 @@ const AdvancedSettingsLayout: React.FC<AdvancedSettingsLayoutProps> = ({
   const loading = propLoading || hookLoading;
   const error = propError || (hookError ? hookError.toString() : null);
 
+  // Ensure image-moderation panel is expanded when needed
+  useEffect(() => {
+    // Check URL for any parameters indicating we should expand image moderation
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('section') && urlParams.get('section') === 'image-moderation') {
+      if (!activeKeys.includes('image-moderation')) {
+        setActiveKeys([...activeKeys, 'image-moderation']);
+      }
+    }
+    
+    // Log for debugging
+    console.log('AdvancedSettingsLayout - Active panels:', activeKeys);
+  }, [activeKeys]);
+
   const handleSave = async () => {
+    console.log('Saving all settings...');
     setSaveLoading(true);
     try {
       await saveSettings();
+      console.log('Settings saved successfully');
+    } catch (error) {
+      console.error('Error saving settings:', error);
     } finally {
       setSaveLoading(false);
     }
   };
 
   const handleReset = async () => {
+    console.log('Resetting all settings...');
     setResetLoading(true);
     try {
       await fetchSettings();
+      console.log('Settings reset successfully');
+    } catch (error) {
+      console.error('Error resetting settings:', error);
     } finally {
       setResetLoading(false);
     }
@@ -88,7 +110,10 @@ const AdvancedSettingsLayout: React.FC<AdvancedSettingsLayoutProps> = ({
           <Collapse 
             accordion={false} 
             activeKey={activeKeys} 
-            onChange={(keys) => setActiveKeys(keys as string[])}
+            onChange={(keys) => {
+              console.log('Collapse panels changed:', keys);
+              setActiveKeys(keys as string[]);
+            }}
           >
             <Panel header="General Settings" key="general">
               <GeneralSettingsPanel />

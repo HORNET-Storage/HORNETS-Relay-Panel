@@ -20,7 +20,33 @@ const NestFeederSettings: React.FC = () => {
   // Update form values when settings change
   useEffect(() => {
     if (settings) {
-      form.setFieldsValue(settings);
+      console.log('NestFeederSettings - Received settings:', settings);
+      
+      // Transform property names to match form field names
+      // The API returns properties without the prefix, but the form expects prefixed names
+      const settingsObj = settings as Record<string, any>;
+      
+      const formValues = {
+        nest_feeder_enabled: settingsObj.enabled,
+        nest_feeder_url: settingsObj.url,
+        nest_feeder_timeout: typeof settingsObj.timeout === 'string' 
+          ? parseInt(settingsObj.timeout) 
+          : settingsObj.timeout,
+        nest_feeder_cache_size: typeof settingsObj.cache_size === 'string' 
+          ? parseInt(settingsObj.cache_size) 
+          : settingsObj.cache_size,
+        nest_feeder_cache_ttl: typeof settingsObj.cache_ttl === 'string' 
+          ? parseInt(settingsObj.cache_ttl) 
+          : settingsObj.cache_ttl
+      };
+      
+      console.log('NestFeederSettings - Transformed form values:', formValues);
+      
+      // Set form values with a slight delay to ensure the form is ready
+      setTimeout(() => {
+        form.setFieldsValue(formValues);
+        console.log('NestFeederSettings - Form values after set:', form.getFieldsValue());
+      }, 100);
     }
   }, [settings, form]);
 
@@ -42,6 +68,7 @@ const NestFeederSettings: React.FC = () => {
         layout="vertical"
         onValuesChange={handleValuesChange}
         initialValues={settings || {}}
+        onFinish={(values) => console.log('Form submitted with values:', values)}
       >
         <Form.Item
           name="nest_feeder_enabled"

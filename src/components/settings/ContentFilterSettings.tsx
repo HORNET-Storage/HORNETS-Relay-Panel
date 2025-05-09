@@ -22,7 +22,30 @@ const ContentFilterSettings: React.FC = () => {
   // Update form values when settings change
   useEffect(() => {
     if (settings) {
-      form.setFieldsValue(settings);
+      console.log('ContentFilterSettings - Received settings:', settings);
+      
+      // Transform property names to match form field names
+      // The API returns properties without the prefix, but the form expects prefixed names
+      const settingsObj = settings as Record<string, any>;
+      
+      const formValues = {
+        content_filter_enabled: settingsObj.enabled,
+        content_filter_cache_size: typeof settingsObj.cache_size === 'string' 
+          ? parseInt(settingsObj.cache_size) 
+          : settingsObj.cache_size,
+        content_filter_cache_ttl: typeof settingsObj.cache_ttl === 'string' 
+          ? parseInt(settingsObj.cache_ttl) 
+          : settingsObj.cache_ttl,
+        full_text_kinds: settingsObj.full_text_kinds || []
+      };
+      
+      console.log('ContentFilterSettings - Transformed form values:', formValues);
+      
+      // Set form values with a slight delay to ensure the form is ready
+      setTimeout(() => {
+        form.setFieldsValue(formValues);
+        console.log('ContentFilterSettings - Form values after set:', form.getFieldsValue());
+      }, 100);
     }
   }, [settings, form]);
 
@@ -53,6 +76,7 @@ const ContentFilterSettings: React.FC = () => {
         layout="vertical"
         onValuesChange={handleValuesChange}
         initialValues={settings || {}}
+        onFinish={(values) => console.log('Form submitted with values:', values)}
       >
         <Form.Item
           name="content_filter_enabled"

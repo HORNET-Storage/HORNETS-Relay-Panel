@@ -20,7 +20,24 @@ const WalletSettings: React.FC = () => {
   // Update form values when settings change
   useEffect(() => {
     if (settings) {
-      form.setFieldsValue(settings);
+      console.log('WalletSettings - Received settings:', settings);
+      
+      // Transform property names to match form field names
+      // The API returns properties without the prefix, but the form expects prefixed names
+      const settingsObj = settings as Record<string, any>;
+      
+      const formValues = {
+        wallet_name: settingsObj.name,
+        wallet_api_key: settingsObj.api_key
+      };
+      
+      console.log('WalletSettings - Transformed form values:', formValues);
+      
+      // Set form values with a slight delay to ensure the form is ready
+      setTimeout(() => {
+        form.setFieldsValue(formValues);
+        console.log('WalletSettings - Form values after set:', form.getFieldsValue());
+      }, 100);
     }
   }, [settings, form]);
 
@@ -42,6 +59,7 @@ const WalletSettings: React.FC = () => {
         layout="vertical"
         onValuesChange={handleValuesChange}
         initialValues={settings || {}}
+        onFinish={(values) => console.log('Form submitted with values:', values)}
       >
         <Form.Item
           name="wallet_name"

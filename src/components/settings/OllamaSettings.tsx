@@ -22,7 +22,27 @@ const OllamaSettings: React.FC = () => {
   // Update form values when settings change
   useEffect(() => {
     if (settings) {
-      form.setFieldsValue(settings);
+      console.log('OllamaSettings - Received settings:', settings);
+      
+      // Transform property names to match form field names
+      // The API returns properties without the prefix, but the form expects prefixed names
+      const settingsObj = settings as Record<string, any>;
+      
+      const formValues = {
+        ollama_url: settingsObj.url,
+        ollama_model: settingsObj.model,
+        ollama_timeout: typeof settingsObj.timeout === 'string' 
+          ? parseInt(settingsObj.timeout) 
+          : settingsObj.timeout
+      };
+      
+      console.log('OllamaSettings - Transformed form values:', formValues);
+      
+      // Set form values with a slight delay to ensure the form is ready
+      setTimeout(() => {
+        form.setFieldsValue(formValues);
+        console.log('OllamaSettings - Form values after set:', form.getFieldsValue());
+      }, 100);
     }
   }, [settings, form]);
 
@@ -62,6 +82,7 @@ const OllamaSettings: React.FC = () => {
         layout="vertical"
         onValuesChange={handleValuesChange}
         initialValues={settings || {}}
+        onFinish={(values) => console.log('Form submitted with values:', values)}
       >
         <Form.Item
           name="ollama_url"
