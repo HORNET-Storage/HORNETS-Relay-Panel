@@ -30,12 +30,6 @@ interface SettingsTab {
 
 const settingsTabs: SettingsTab[] = [
   {
-    key: 'relay_settings',
-    label: 'Relay Settings',
-    icon: <SettingOutlined />,
-    path: '/settings/relay'
-  },
-  {
     key: 'image_moderation',
     label: 'Image Moderation',
     icon: <PictureOutlined />,
@@ -99,7 +93,7 @@ const SettingsNavigation: React.FC = () => {
   const getActiveKey = () => {
     const path = location.pathname;
     const tab = settingsTabs.find(tab => tab.path === path);
-    return tab ? tab.key : 'relay_settings';
+    return tab ? tab.key : 'general';
   };
   
   const handleTabChange = (key: string) => {

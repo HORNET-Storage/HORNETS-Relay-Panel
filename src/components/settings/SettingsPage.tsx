@@ -11,20 +11,15 @@ import GeneralSettings from './GeneralSettings';
 import RelayInfoSettings from './RelayInfoSettings';
 import QueryCacheSettings from './QueryCacheSettings';
 import XNostrSettings from './XNostrSettings';
-import { Card } from 'antd';
-
-// Import existing relay settings page
-import RelaySettingsPage from '@app/pages/RelaySettingsPage';
 
 const SettingsPage: React.FC = () => {
   return (
     <>
-      <PageTitle>Settings</PageTitle>
+      <PageTitle>Advanced Settings</PageTitle>
       
       <SettingsNavigation />
       
       <Routes>
-        <Route path="relay" element={<RelaySettingsPage />} />
         <Route path="image-moderation" element={<ImageModerationSettings />} />
         <Route path="content-filter" element={<ContentFilterSettings />} />
         <Route path="nest-feeder" element={<NestFeederSettings />} />
@@ -35,8 +30,8 @@ const SettingsPage: React.FC = () => {
         <Route path="general" element={<GeneralSettings />} />
         <Route path="query-cache" element={<QueryCacheSettings />} />
         
-        {/* Redirect to relay settings by default */}
-        <Route path="/" element={<Navigate to="relay" replace />} />
+        {/* Redirect to general settings by default */}
+        <Route path="/" element={<Navigate to="general" replace />} />
       </Routes>
     </>
   );
