@@ -11,7 +11,7 @@ import {
 } from '@ant-design/icons';
 import useGenericSettings from '@app/hooks/useGenericSettings';
 import { SettingsGroupType, XNostrNitterInstance, XNostrNitterSettings, XNostrIntervalSettings } from '@app/types/settings.types';
-import type { XNostrSettings } from '@app/types/settings.types';
+import type { XNostrSettings as XNostrSettingsType } from '@app/types/settings.types';
 import BaseSettingsForm from './BaseSettingsForm';
 import styled from 'styled-components';
 
@@ -25,7 +25,7 @@ const NitterInstanceContainer = styled.div`
   background-color: #fafafa;
 `;
 
-const XNostrSettings: React.FC = () => {
+const XNostrSettingsComponent: React.FC = () => {
   const {
     settings,
     loading,
@@ -72,7 +72,7 @@ const XNostrSettings: React.FC = () => {
     // This function is just for the form's onValuesChange callback
     
     // For simple fields, we can update them directly
-    const simpleChanges: Partial<XNostrSettings> = {};
+    const simpleChanges: Partial<XNostrSettingsType> = {};
     
     // Only include simple fields (not nested objects)
     if ('xnostr_enabled' in changedValues) {
@@ -545,4 +545,6 @@ const XNostrSettings: React.FC = () => {
   );
 };
 
-export default XNostrSettings;
+// Export the component as a named export and as the default export
+export { XNostrSettingsComponent as XNostrSettings };
+export default XNostrSettingsComponent;
