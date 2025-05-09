@@ -1,10 +1,9 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useRef } from 'react';
 import { CheckboxValueType } from 'antd/es/checkbox/Group';
-import config from '@app/config/config';
-import { readToken } from '@app/services/localStorage.service';
-import { useHandleLogout } from './authUtils';
 import { Settings, noteOptions, mimeTypeOptions, SubscriptionTier } from '@app/constants/relaySettings';
+import useGenericSettings from './useGenericSettings';
 
+// These interfaces are kept for backward compatibility
 interface BackendSubscriptionTier {
   datalimit: string;
   price: string;
@@ -18,9 +17,9 @@ interface BackendRelaySettings {
   maxFileSize: number;
   maxFileSizeUnit: string;
   subscription_tiers: BackendSubscriptionTier[];
-  freeTierEnabled: boolean;  // New field
-  freeTierLimit: string;     // New field - e.g. "100 MB per month"
-  moderationMode: string;    // "strict" or "passive"
+  freeTierEnabled: boolean;
+  freeTierLimit: string;
+  moderationMode: string;
   MimeTypeGroups: {
     images: string[];
     videos: string[];
@@ -61,222 +60,68 @@ const getInitialSettings = (): Settings => ({
   moderationMode: 'strict' // Default to strict mode
 });
 
+/**
+ * Hook for managing relay settings
+ * This is a wrapper around useGenericSettings for backward compatibility
+ */
 const useRelaySettings = () => {
-  const [relaySettings, setRelaySettings] = useState<Settings>(getInitialSettings());
-  const [previousSmartSettings, setPreviousSmartSettings] = useState<{
-    kinds: string[];
-    photos: string[];
-    videos: string[];
-    audio: string[];
-  } | null>(null);
-
-  const handleLogout = useHandleLogout();
-  const token = readToken();
+  // Use the generic settings hook internally
+  const { 
+    settings: genericSettings, 
+    loading,
+    error,
+    fetchSettings: genericFetchSettings,
+    updateSettings: genericUpdateSettings,
+    saveSettings: genericSaveSettings
+  } = useGenericSettings('relay_settings');
   
   // Keep track of the last mode to prevent unnecessary updates
-  const lastMode = useRef(relaySettings.mode);
+  const lastMode = useRef(genericSettings?.mode || 'whitelist');
+  
+  // Transform the generic settings to the expected format
+  const relaySettings: Settings = genericSettings as Settings || getInitialSettings();
 
-  /* eslint-disable react-hooks/exhaustive-deps */
-  // Effect to handle mode changes
-  useEffect(() => {
-    if (relaySettings.mode === lastMode.current) {
-      return;
+  // Handle mode changes (previously in useEffect)
+  const updateSettings = (category: keyof Settings, value: any) => {
+    // Special handling for mode changes
+    if (category === 'mode' && value !== lastMode.current) {
+      lastMode.current = value;
+      
+      const updatedSettings = { ...relaySettings, [category]: value };
+      
+      if (value === 'blacklist') {
+        // In blacklist mode, clear selections
+        updatedSettings.kinds = [];
+        updatedSettings.photos = [];
+        updatedSettings.videos = [];
+        updatedSettings.audio = [];
+      }
+      
+      genericUpdateSettings(updatedSettings);
+    } else {
+      // Normal update for other settings
+      genericUpdateSettings({ ...relaySettings, [category]: value });
     }
-
-    lastMode.current = relaySettings.mode;
-
-    if (relaySettings.mode === 'blacklist') {
-      // Store current settings before clearing
-      setPreviousSmartSettings({
-        kinds: relaySettings.kinds,
-        photos: relaySettings.photos,
-        videos: relaySettings.videos,
-        audio: relaySettings.audio,
-      });
-
-      setRelaySettings(prev => ({
-        ...prev,
-        kinds: [],
-        photos: [],
-        videos: [],
-        audio: [],
-      }));
-    } else if (relaySettings.mode === 'whitelist' && previousSmartSettings) {
-      // Restore previous whitelist mode settings
-      setRelaySettings(prev => ({
-        ...prev,
-        kinds: previousSmartSettings.kinds,
-        photos: previousSmartSettings.photos,
-        videos: previousSmartSettings.videos,
-        audio: previousSmartSettings.audio,
-      }));
-    }
-  }, [relaySettings.mode, previousSmartSettings]);
-  /* eslint-enable react-hooks/exhaustive-deps */
-
-  const transformToBackendSettings = (settings: Settings): BackendRelaySettings => {
-    const mimeGroups = {
-      images: settings.photos,
-      videos: settings.videos,
-      audio: settings.audio,
-      documents: [] as string[]
-    };
-
-    const selectedMimeTypes = [
-      ...mimeGroups.images,
-      ...mimeGroups.videos,
-      ...mimeGroups.audio
-    ];
-
-    return {
-      mode: settings.mode,
-      protocol: settings.protocol as CheckboxValueType[],
-      chunked: [],
-      chunksize: '2',
-      maxFileSize: 10,
-      maxFileSizeUnit: 'MB',
-      subscription_tiers: settings.subscription_tiers.map(tier => ({
-        datalimit: tier.data_limit,
-        price: tier.price
-      })),
-      freeTierEnabled: settings.freeTierEnabled,
-      freeTierLimit: settings.freeTierLimit,
-      moderationMode: settings.moderationMode,
-      MimeTypeGroups: mimeGroups,
-      isFileStorageActive: settings.isFileStorageActive,
-      MimeTypeWhitelist: settings.mode === 'whitelist'
-        ? selectedMimeTypes
-        : mimeTypeOptions
-          .map(m => m.value)
-          .filter(mimeType => !selectedMimeTypes.includes(mimeType)),
-      KindWhitelist: settings.mode === 'whitelist'
-        ? settings.kinds
-        : noteOptions
-          .map(note => note.kindString)
-          .filter(kind => !settings.kinds.includes(kind))
-    };
   };
 
-  const transformFromBackendSettings = (backendSettings: BackendRelaySettings): Settings => {
-    console.log('Raw backend settings:', backendSettings);
-    const settings = getInitialSettings();
-    settings.mode = backendSettings.mode;
-    settings.protocol = backendSettings.protocol as string[];
-    settings.freeTierEnabled = backendSettings.freeTierEnabled ?? false;
-    settings.freeTierLimit = backendSettings.freeTierLimit ?? '100 MB per month';
-    settings.moderationMode = backendSettings.moderationMode ?? 'strict';
-
-    // Handle subscription tiers
-    if (Array.isArray(backendSettings.subscription_tiers)) {
-      settings.subscription_tiers = backendSettings.subscription_tiers.map(tier => ({
-        data_limit: tier.datalimit,
-        price: tier.price
-      }));
-      console.log('Transformed tiers:', settings.subscription_tiers);
-    } else {
-      console.log('No backend tiers, using defaults');
-      settings.subscription_tiers = defaultTiers;
-    }
-
-    if (!settings.subscription_tiers.length ||
-      settings.subscription_tiers.every(tier => !tier.data_limit)) {
-      settings.subscription_tiers = defaultTiers;
-    }
-
-    if (backendSettings.mode === 'blacklist') {
-      // In blacklist mode, start with empty selections
-      settings.photos = [];
-      settings.videos = [];
-      settings.audio = [];
-      settings.kinds = [];
-    } else {
-      // In whitelist mode, use the MimeTypeGroups directly
-      settings.photos = backendSettings.MimeTypeGroups?.images || [];
-      settings.videos = backendSettings.MimeTypeGroups?.videos || [];
-      settings.audio = backendSettings.MimeTypeGroups?.audio || [];
-      settings.kinds = backendSettings.KindWhitelist || [];
-
-      // Store these as the previous whitelist settings
-      setPreviousSmartSettings({
-        kinds: settings.kinds,
-        photos: settings.photos,
-        videos: settings.videos,
-        audio: settings.audio,
-      });
-    }
-
-    // Set active states
-    settings.isKindsActive = true;
-    settings.isPhotosActive = true;
-    settings.isVideosActive = true;
-    settings.isAudioActive = true;
-    settings.isFileStorageActive = backendSettings.isFileStorageActive ?? false;
-
-    return settings;
+  // Fetch settings using the generic hook
+  const fetchSettings = async () => {
+    await genericFetchSettings();
   };
 
+  // Save settings using the generic hook
+  const saveSettings = async () => {
+    await genericSaveSettings();
+  };
 
-  const fetchSettings = useCallback(async () => {
-    try {
-      const response = await fetch(`${config.baseURL}/api/relay-settings`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      if (response.status === 401) {
-        handleLogout();
-        return;
-      }
-
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-
-      const data = await response.json();
-      const settings = transformFromBackendSettings(data.relay_settings);
-      setRelaySettings(settings);
-
-    } catch (error) {
-      console.error('Error fetching settings:', error);
-    }
-  }, [token, handleLogout]);
-
-  const saveSettings = useCallback(async () => {
-    try {
-      const backendSettings = transformToBackendSettings(relaySettings);
-      const response = await fetch(`${config.baseURL}/api/relay-settings`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({ relay_settings: backendSettings }),
-      });
-
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-
-      // Update previous whitelist settings after successful save
-      if (relaySettings.mode === 'whitelist') {
-        setPreviousSmartSettings({
-          kinds: relaySettings.kinds,
-          photos: relaySettings.photos,
-          videos: relaySettings.videos,
-          audio: relaySettings.audio,
-        });
-      }
-    } catch (error) {
-      console.error('Error saving settings:', error);
-      throw error;
-    }
-  }, [relaySettings, token]);
-
-  const updateSettings = useCallback((category: keyof Settings, value: any) => {
-    setRelaySettings(prev => ({
-      ...prev,
-      [category]: value
-    }));
-  }, []);
-
-  return { relaySettings, fetchSettings, updateSettings, saveSettings };
+  return { 
+    relaySettings, 
+    fetchSettings, 
+    updateSettings, 
+    saveSettings,
+    loading,
+    error
+  };
 };
 
 export default useRelaySettings;

@@ -3,6 +3,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthGuard } from '@app/components/AuthGuard';
 import AuthLayout from '@app/components/layouts/AuthLayout/AuthLayout';
+import SettingsPage from '@app/components/settings/SettingsPage';
 
 AuthLayout.displayName = 'AuthLayout';
 import LoginPage from '@app/pages/LoginPage';
@@ -74,6 +75,7 @@ const Logout = React.lazy(() => import('./Logout'));
 export const NFT_DASHBOARD_PATH = '/';
 export const MEDICAL_DASHBOARD_PATH = '/medical-dashboard';
 export const RELAY_SETTINGS_PATH = '/relay-settings';
+export const SETTINGS_PATH = '/settings';
 export const TABLES_PAGE_PATH = '/nostr-stats';
 
 const MedicalDashboard = withLoading(MedicalDashboardPage);
@@ -114,6 +116,7 @@ const DataTables = withLoading(DataTablesPage);
 const Charts = withLoading(ChartsPage);
 const RelayStats = withLoading(RelayStatsPage);
 const RelaySettings = withLoading(RelaySettingsPage);
+const Settings = withLoading(SettingsPage);
 const BlockedPubkeys = withLoading(BlockedPubkeysPage);
 
 // Maps
@@ -155,6 +158,7 @@ export const AppRouter: React.FC = () => {
           <Route path="media-manager" element={<MediaPage />} />
           <Route path="relay-stats" element={<RelayStats />} />
           <Route path={RELAY_SETTINGS_PATH} element={<RelaySettings />} />
+          <Route path={`${SETTINGS_PATH}/*`} element={<Settings />} />
           <Route path="blocked-pubkeys" element={<BlockedPubkeys />} />
           <Route path="apps">
             <Route path="feed" element={<NewsFeed />} />
