@@ -535,8 +535,15 @@ const XNostrSettingsComponent: React.FC = () => {
         </Form.Item>
 
         <Form.Item>
-          <p style={{ color: 'rgba(0, 0, 0, 0.45)' }}>
-            Note: XNostr is used for Twitter verification of Nostr profiles. It requires a browser to be installed and accessible.
+          <p style={{ 
+            color: 'rgba(255, 255, 255, 0.8)',
+            fontSize: '0.9em',
+            padding: '0.75rem',
+            backgroundColor: 'rgba(0, 0, 0, 0.1)',
+            borderLeft: '3px solid rgba(82, 196, 255, 0.8)',
+            borderRadius: '0 4px 4px 0'
+          }}>
+            <span style={{ color: 'rgba(82, 196, 255, 1)' }}>Note:</span> XNostr is used for Twitter verification of Nostr profiles. It requires a browser to be installed and accessible.
             The Nitter instances are used to scrape Twitter profiles when the Twitter API is not available.
           </p>
         </Form.Item>

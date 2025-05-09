@@ -3,16 +3,14 @@ import { Form, Input, Switch, Tooltip } from 'antd';
 import { QuestionCircleOutlined, LockOutlined, DatabaseOutlined, TagOutlined } from '@ant-design/icons';
 import useGenericSettings from '@app/hooks/useGenericSettings';
 import { SettingsGroupType } from '@app/types/settings.types';
-import BaseSettingsForm from './BaseSettingsForm';
+import BaseSettingsPanel from '../BaseSettingsPanel';
 
-const GeneralSettings: React.FC = () => {
+const GeneralSettingsPanel: React.FC = () => {
   const {
     settings,
     loading,
     error,
-    fetchSettings,
     updateSettings,
-    saveSettings,
   } = useGenericSettings('general');
 
   const [form] = Form.useForm();
@@ -30,12 +28,9 @@ const GeneralSettings: React.FC = () => {
   };
 
   return (
-    <BaseSettingsForm
-      title="General Settings"
+    <BaseSettingsPanel
       loading={loading}
       error={error}
-      onSave={saveSettings}
-      onReset={fetchSettings}
     >
       <Form
         form={form}
@@ -174,8 +169,8 @@ const GeneralSettings: React.FC = () => {
           </p>
         </Form.Item>
       </Form>
-    </BaseSettingsForm>
+    </BaseSettingsPanel>
   );
 };
 
-export default GeneralSettings;
+export default GeneralSettingsPanel;

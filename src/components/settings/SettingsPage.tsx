@@ -29,14 +29,13 @@ const SettingsContainer = styled.div`
   width: 100%;
   max-height: calc(100vh - 150px);
   overflow-y: auto;
-  padding-right: 10px;
+  padding-right: 16px;
 `;
 
 const SettingSection = styled.div`
-  margin-bottom: 1rem;
-  border-radius: 8px;
+  margin-bottom: 1px;
   overflow: hidden;
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: transparent;
 `;
 
 const SectionHeader = styled.div<{ $isActive: boolean }>`
@@ -44,15 +43,15 @@ const SectionHeader = styled.div<{ $isActive: boolean }>`
   align-items: center;
   padding: 16px;
   cursor: pointer;
-  background-color: rgba(0, 0, 0, 0.3);
-  transition: background-color 0.3s;
+  background-color: rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
   
   &:hover {
-    background-color: rgba(0, 0, 0, 0.4);
+    background-color: rgba(0, 0, 0, 0.3);
   }
   
   ${props => props.$isActive && `
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.3);
   `}
 `;
 
@@ -61,17 +60,77 @@ const SectionIcon = styled.span`
   font-size: 16px;
   display: flex;
   align-items: center;
+  color: #fff;
 `;
 
 const SectionTitle = styled.span`
   flex: 1;
   font-size: 16px;
+  font-weight: 500;
 `;
 
 const SectionContent = styled.div<{ $isVisible: boolean }>`
-  display: ${props => props.$isVisible ? 'block' : 'none'};
-  padding: 0;
-  transition: all 0.3s;
+  max-height: ${props => props.$isVisible ? '2000px' : '0'};
+  opacity: ${props => props.$isVisible ? '1' : '0'};
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.2s ease;
+  padding: ${props => props.$isVisible ? '20px' : '0'};
+  background-color: rgba(0, 0, 0, 0.15);
+  border-bottom: ${props => props.$isVisible ? '1px solid rgba(255, 255, 255, 0.05)' : 'none'};
+`;
+
+// Custom wrapper to hide the title and style components
+const SettingsWrapper = styled.div`
+  .ant-card-head {
+    display: none;
+  }
+  
+  .ant-card {
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+  }
+  
+  .ant-card-body {
+    padding: 0 10px;
+  }
+  
+  .ant-alert {
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+  }
+  
+  /* Style for notes */
+  p, div {
+    &[class*="note"], &:has(em:first-child:contains("Note")), &:contains("Note:") {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.9em;
+      margin-top: 1rem;
+      padding: 0.75rem;
+      background-color: rgba(0, 0, 0, 0.1);
+      border-left: 3px solid rgba(82, 196, 255, 0.8);
+      border-radius: 0 4px 4px 0;
+      
+      &::first-line {
+        color: rgba(82, 196, 255, 1);
+      }
+      
+      strong, em, b {
+        color: rgba(82, 196, 255, 1);
+      }
+    }
+  }
+  
+  .ant-form-item-label > label {
+    color: rgba(255, 255, 255, 0.85);
+  }
+  
+  .ant-input, .ant-input-number, .ant-select-selector {
+    background-color: rgba(0, 0, 0, 0.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 4px !important;
+  }
 `;
 
 interface SettingItem {
@@ -195,7 +254,9 @@ const SettingsPage: React.FC = () => {
             </SectionHeader>
             
             <SectionContent $isVisible={activeKey === item.key}>
-              {item.component}
+              <SettingsWrapper>
+                {item.component}
+              </SettingsWrapper>
             </SectionContent>
           </SettingSection>
         ))}

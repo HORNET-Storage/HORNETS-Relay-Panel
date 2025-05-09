@@ -1,9 +1,8 @@
-import React from 'react';
-import { Tabs } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Collapse } from 'antd';
 import { useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import {
-  SettingOutlined,
   FilterOutlined,
   PictureOutlined,
   ApiOutlined,
@@ -15,10 +14,51 @@ import {
   DatabaseOutlined
 } from '@ant-design/icons';
 
-const { TabPane } = Tabs;
+const { Panel } = Collapse;
 
-const StyledTabs = styled(Tabs)`
+const StyledCollapse = styled(Collapse)`
   margin-bottom: 1.5rem;
+  
+  .ant-collapse-header {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px !important;
+    
+    .ant-collapse-arrow {
+      right: 16px;
+      left: auto !important;
+    }
+  }
+  
+  .ant-collapse-content-box {
+    padding: 0 !important;
+  }
+  
+  .panel-icon {
+    margin-right: 12px;
+    font-size: 16px;
+  }
+`;
+
+const NavigationItem = styled.div`
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  &.active {
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+  
+  .item-icon {
+    margin-right: 12px;
+    font-size: 16px;
+  }
 `;
 
 interface SettingsTab {
@@ -32,55 +72,55 @@ const settingsTabs: SettingsTab[] = [
   {
     key: 'image_moderation',
     label: 'Image Moderation',
-    icon: <PictureOutlined />,
+    icon: <PictureOutlined className="item-icon" />,
     path: '/settings/image-moderation'
   },
   {
     key: 'content_filter',
     label: 'Content Filter',
-    icon: <FilterOutlined />,
+    icon: <FilterOutlined className="item-icon" />,
     path: '/settings/content-filter'
   },
   {
     key: 'nest_feeder',
     label: 'Nest Feeder',
-    icon: <ApiOutlined />,
+    icon: <ApiOutlined className="item-icon" />,
     path: '/settings/nest-feeder'
   },
   {
     key: 'ollama',
     label: 'Ollama',
-    icon: <RobotOutlined />,
+    icon: <RobotOutlined className="item-icon" />,
     path: '/settings/ollama'
   },
   {
     key: 'xnostr',
     label: 'XNostr',
-    icon: <TwitterOutlined />,
+    icon: <TwitterOutlined className="item-icon" />,
     path: '/settings/xnostr'
   },
   {
     key: 'relay_info',
     label: 'Relay Info',
-    icon: <InfoCircleOutlined />,
+    icon: <InfoCircleOutlined className="item-icon" />,
     path: '/settings/relay-info'
   },
   {
     key: 'wallet',
     label: 'Wallet',
-    icon: <WalletOutlined />,
+    icon: <WalletOutlined className="item-icon" />,
     path: '/settings/wallet'
   },
   {
     key: 'general',
     label: 'General',
-    icon: <GlobalOutlined />,
+    icon: <GlobalOutlined className="item-icon" />,
     path: '/settings/general'
   },
   {
     key: 'query_cache',
     label: 'Query Cache',
-    icon: <DatabaseOutlined />,
+    icon: <DatabaseOutlined className="item-icon" />,
     path: '/settings/query-cache'
   }
 ];
@@ -88,39 +128,48 @@ const settingsTabs: SettingsTab[] = [
 const SettingsNavigation: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [activeKey, setActiveKey] = useState<string | undefined>(undefined);
   
   // Determine active tab based on current path
-  const getActiveKey = () => {
+  useEffect(() => {
     const path = location.pathname;
     const tab = settingsTabs.find(tab => tab.path === path);
-    return tab ? tab.key : 'general';
-  };
-  
-  const handleTabChange = (key: string) => {
-    const tab = settingsTabs.find(tab => tab.key === key);
     if (tab) {
-      navigate(tab.path);
+      setActiveKey(tab.key);
     }
+  }, [location.pathname]);
+  
+  const handleItemClick = (tab: SettingsTab) => {
+    navigate(tab.path);
+    setActiveKey(tab.key);
   };
   
   return (
-    <StyledTabs
-      activeKey={getActiveKey()}
-      onChange={handleTabChange}
-      type="card"
-      size="large"
+    <StyledCollapse 
+      accordion 
+      expandIconPosition="end"
+      ghost
+      activeKey={activeKey}
+      onChange={(key) => setActiveKey(key as string | undefined)}
     >
       {settingsTabs.map(tab => (
-        <TabPane
-          tab={
+        <Panel
+          key={tab.key}
+          header={
             <span>
-              {tab.icon} {tab.label}
+              {React.cloneElement(tab.icon as React.ReactElement, { className: 'panel-icon' })} {tab.label}
             </span>
           }
-          key={tab.key}
-        />
+        >
+          <NavigationItem 
+            className={activeKey === tab.key ? 'active' : ''}
+            onClick={() => handleItemClick(tab)}
+          >
+            {tab.label}
+          </NavigationItem>
+        </Panel>
       ))}
-    </StyledTabs>
+    </StyledCollapse>
   );
 };
 

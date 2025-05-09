@@ -84,8 +84,15 @@ const WalletSettings: React.FC = () => {
         </Form.Item>
 
         <Form.Item>
-          <p style={{ color: 'rgba(0, 0, 0, 0.45)' }}>
-            Note: The wallet API key is stored securely and used to authenticate with the wallet service.
+          <p style={{ 
+            color: 'rgba(255, 255, 255, 0.8)',
+            fontSize: '0.9em',
+            padding: '0.75rem',
+            backgroundColor: 'rgba(0, 0, 0, 0.1)',
+            borderLeft: '3px solid rgba(82, 196, 255, 0.8)',
+            borderRadius: '0 4px 4px 0'
+          }}>
+            <span style={{ color: 'rgba(82, 196, 255, 1)' }}>Note:</span> The wallet API key is stored securely and used to authenticate with the wallet service.
             Make sure to keep your API key confidential and never share it with others.
           </p>
         </Form.Item>
