@@ -80,17 +80,43 @@ const useGenericSettings = <T extends SettingsGroupName>(
 
   const updateSettings = useCallback((updatedSettings: Partial<SettingsGroupType<T>>) => {
     console.log(`Updating ${groupName} settings:`, updatedSettings);
-    setSettings(prevSettings => {
-      if (!prevSettings) {
-        console.log(`No previous ${groupName} settings, using updated settings as initial`);
-        return updatedSettings as SettingsGroupType<T>;
-      }
-      
-      // No special handling for image_moderation - treat all settings groups the same
-      const newSettings = { ...prevSettings, ...updatedSettings };
-      console.log(`New ${groupName} settings after update:`, newSettings);
-      return newSettings;
-    });
+
+    // For image_moderation, we need to handle prefixed keys properly
+    if (groupName === 'image_moderation') {
+      console.log('Handling image_moderation update with prefixed keys');
+
+      setSettings(prevSettings => {
+        if (!prevSettings) {
+          console.log(`No previous ${groupName} settings, using updated settings as initial`);
+          return updatedSettings as SettingsGroupType<T>;
+        }
+
+        // Create a deep copy of the previous settings
+        const prevSettingsCopy = { ...prevSettings };
+
+        // Only update the changed fields, preserving all other fields
+        const newSettings = { ...prevSettingsCopy, ...updatedSettings };
+
+        console.log(`Previous settings:`, prevSettingsCopy);
+        console.log(`Updated fields:`, updatedSettings);
+        console.log(`Merged settings:`, newSettings);
+
+        return newSettings;
+      });
+    } else {
+      // For other settings groups, use the standard approach
+      setSettings(prevSettings => {
+        if (!prevSettings) {
+          console.log(`No previous ${groupName} settings, using updated settings as initial`);
+          return updatedSettings as SettingsGroupType<T>;
+        }
+
+        // Standard merge of settings
+        const newSettings = { ...prevSettings, ...updatedSettings };
+        console.log(`New ${groupName} settings after update:`, newSettings);
+        return newSettings;
+      });
+    }
   }, [groupName]);
 
   const saveSettings = useCallback(async () => {
@@ -102,35 +128,65 @@ const useGenericSettings = <T extends SettingsGroupName>(
     try {
       setLoading(true);
       setError(null);
-      
+
       // For image_moderation, we need to transform the prefixed keys back to unprefixed keys
       let dataToSave = settings;
-      
+
       if (groupName === 'image_moderation') {
-        // Map from prefixed to unprefixed keys
-        const prefixMap: Record<string, string> = {
-          'image_moderation_api': 'api',
-          'image_moderation_check_interval': 'check_interval',
-          'image_moderation_concurrency': 'concurrency',
-          'image_moderation_enabled': 'enabled',
-          'image_moderation_mode': 'mode',
-          'image_moderation_temp_dir': 'temp_dir',
-          'image_moderation_threshold': 'threshold',
-          'image_moderation_timeout': 'timeout'
-        };
-        
-        // Create a new object with only the unprefixed keys
-        const unprefixedSettings: Record<string, any> = {};
-        const settingsObj = settings as Record<string, any>;
-        
-        // Transform all prefixed keys to unprefixed keys
-        Object.entries(prefixMap).forEach(([prefixedKey, unprefixedKey]) => {
-          // Set the value in the unprefixed object, preserving the data type
-          unprefixedSettings[unprefixedKey] = settingsObj[prefixedKey];
+        console.log('Settings from state:', settings);
+
+        // First fetch current settings to preserve values not in the form
+        console.log('Fetching current settings before saving...');
+        const fetchResponse = await fetch(`${config.baseURL}/api/settings/${groupName}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
         });
-        
-        console.log(`Transformed settings for backend (unprefixed keys):`, unprefixedSettings);
-        dataToSave = unprefixedSettings as SettingsGroupType<T>;
+
+        if (!fetchResponse.ok) {
+          throw new Error(`Failed to fetch current settings: ${fetchResponse.status}`);
+        }
+
+        const currentData = await fetchResponse.json();
+        const currentSettings = currentData[groupName] || {};
+        console.log('Current settings from API:', currentSettings);
+
+        // After reviewing the backend code, we see it expects prefixed keys in the payload
+        // Looking at ImageModerationSettings struct in the backend
+        const prefixedSettings: Record<string, any> = {};
+
+        // Copy all existing prefixed settings from the backend
+        Object.entries(currentSettings).forEach(([key, value]) => {
+          const prefixedKey = `image_moderation_${key}`;
+          prefixedSettings[prefixedKey] = value;
+        });
+
+        // Update with changed values from the form
+        const settingsObj = settings as Record<string, any>;
+
+        // Keep track of what fields are in the form
+        const prefixedFormKeys = [
+          'image_moderation_api',
+          'image_moderation_check_interval',
+          'image_moderation_concurrency',
+          'image_moderation_enabled',
+          'image_moderation_mode',
+          'image_moderation_temp_dir',
+          'image_moderation_threshold',
+          'image_moderation_timeout'
+        ];
+
+        // Log and update each field
+        prefixedFormKeys.forEach(prefixedKey => {
+          if (prefixedKey in settingsObj && settingsObj[prefixedKey] !== undefined) {
+            const unprefixedKey = prefixedKey.replace('image_moderation_', '');
+            console.log(`Updating field: ${prefixedKey} from ${prefixedSettings[prefixedKey]} to ${settingsObj[prefixedKey]}`);
+            prefixedSettings[prefixedKey] = settingsObj[prefixedKey];
+          }
+        });
+
+        console.log(`Final settings with prefixed keys for API:`, prefixedSettings);
+        dataToSave = prefixedSettings as unknown as SettingsGroupType<T>;
       }
       
       console.log(`Saving ${groupName} settings:`, dataToSave);

@@ -18,6 +18,9 @@ const ImageModerationPanel: React.FC = () => {
   const [form] = Form.useForm();
   const [isUserEditing, setIsUserEditing] = useState(false);
 
+  // Add initial debug logging
+  console.log('ImageModerationPanel - Initial settings:', settings);
+
   // Update form values when settings change, but only if user isn't actively editing
   useEffect(() => {
     if (settings && !isUserEditing) {
@@ -62,6 +65,8 @@ const ImageModerationPanel: React.FC = () => {
   // Handle form value changes
   const handleValuesChange = (changedValues: Partial<SettingsGroupType<'image_moderation'>>) => {
     setIsUserEditing(true); // Mark that user is currently editing
+    console.log('ImageModerationPanel - changedValues:', changedValues);
+    console.log('ImageModerationPanel - current form values:', form.getFieldsValue());
     updateSettings(changedValues);
   };
 
