@@ -1,29 +1,44 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Input, InputNumber, Select, Tooltip } from 'antd';
+import { Form, Input, InputNumber, Select, Tooltip, Button } from 'antd';
+import { SaveOutlined } from '@ant-design/icons';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import useGenericSettings from '@app/hooks/useGenericSettings';
 import { SettingsGroupType } from '@app/types/settings.types';
-import BaseSettingsForm from './BaseSettingsForm';
+import BaseSettingsPanel from '../BaseSettingsPanel';
 
 const { Option } = Select;
 
-const OllamaSettings: React.FC = () => {
+const OllamaPanel: React.FC = () => {
   const {
     settings,
     loading,
     error,
-    fetchSettings,
     updateSettings,
-    saveSettings,
+    saveSettings: saveOllamaSettings,
   } = useGenericSettings('ollama');
 
   const [form] = Form.useForm();
   const [isUserEditing, setIsUserEditing] = useState(false);
+  
+  // Listen for save button click
+  useEffect(() => {
+    const handleGlobalSave = () => {
+      setTimeout(() => {
+        setIsUserEditing(false);
+      }, 200);
+    };
+    
+    document.addEventListener('settings-saved', handleGlobalSave);
+    
+    return () => {
+      document.removeEventListener('settings-saved', handleGlobalSave);
+    };
+  }, []);
 
   // Update form values when settings change, but only if user isn't actively editing
   useEffect(() => {
     if (settings && !isUserEditing) {
-      console.log('OllamaSettings - Received settings:', settings);
+      console.log('OllamaPanel - Received settings:', settings);
       
       // Transform property names to match form field names
       // The API returns properties without the prefix, but the form expects prefixed names
@@ -37,12 +52,12 @@ const OllamaSettings: React.FC = () => {
           : settingsObj.timeout
       };
       
-      console.log('OllamaSettings - Transformed form values:', formValues);
+      console.log('OllamaPanel - Transformed form values:', formValues);
       
       // Set form values with a slight delay to ensure the form is ready
       setTimeout(() => {
         form.setFieldsValue(formValues);
-        console.log('OllamaSettings - Form values after set:', form.getFieldsValue());
+        console.log('OllamaPanel - Form values after set:', form.getFieldsValue());
       }, 100);
     }
   }, [settings, form, isUserEditing]);
@@ -50,13 +65,9 @@ const OllamaSettings: React.FC = () => {
   // Handle form value changes
   const handleValuesChange = (changedValues: Partial<SettingsGroupType<'ollama'>>) => {
     setIsUserEditing(true); // Mark that user is currently editing
+    console.log('OllamaPanel - changedValues:', changedValues);
+    console.log('OllamaPanel - current form values:', form.getFieldsValue());
     updateSettings(changedValues);
-  };
-
-  // Modified save function to reset the editing flag
-  const handleSave = async () => {
-    await saveSettings();
-    setIsUserEditing(false); // Reset after saving
   };
 
   // Common Ollama models
@@ -77,16 +88,30 @@ const OllamaSettings: React.FC = () => {
     { value: 'orca-mini', label: 'Orca Mini' },
   ];
 
+  const handlePanelSave = async () => {
+    try {
+      await saveOllamaSettings();
+      setIsUserEditing(false);
+      console.log('Ollama settings saved successfully');
+    } catch (error) {
+      console.error('Error saving Ollama settings:', error);
+    }
+  };
+
   return (
-    <BaseSettingsForm
-      title="Ollama Settings"
+    <BaseSettingsPanel
       loading={loading}
       error={error}
-      onSave={handleSave}
-      onReset={() => {
-        fetchSettings();
-        setIsUserEditing(false);
-      }}
+      extra={
+        <Button 
+          type="primary" 
+          icon={<SaveOutlined />} 
+          onClick={handlePanelSave}
+          disabled={loading}
+        >
+          Save
+        </Button>
+      }
     >
       <Form
         form={form}
@@ -157,15 +182,32 @@ const OllamaSettings: React.FC = () => {
             </span>
           }
           rules={[
-            { required: true, message: 'Please enter a timeout value' },
             { type: 'number', min: 1, message: 'Value must be at least 1' }
           ]}
         >
-          <InputNumber min={1} style={{ width: '100%' }} />
+          <InputNumber 
+            min={1} 
+            style={{ width: '100%' }} 
+            onFocus={() => setIsUserEditing(true)}
+            onKeyDown={() => setIsUserEditing(true)}
+          />
+        </Form.Item>
+
+        <Form.Item>
+          <p style={{ 
+            color: 'rgba(255, 255, 255, 0.8)',
+            fontSize: '0.9em',
+            padding: '0.75rem',
+            backgroundColor: 'rgba(0, 0, 0, 0.1)',
+            borderLeft: '3px solid rgba(82, 196, 255, 0.8)',
+            borderRadius: '0 4px 4px 0'
+          }}>
+            <span style={{ color: 'rgba(82, 196, 255, 1)' }}>Note:</span> Ollama provides AI model inference capabilities for the relay. Choose a model based on your performance needs and available resources.
+          </p>
         </Form.Item>
       </Form>
-    </BaseSettingsForm>
+    </BaseSettingsPanel>
   );
 };
 
-export default OllamaSettings;
+export default OllamaPanel;

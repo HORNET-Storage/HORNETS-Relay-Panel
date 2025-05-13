@@ -1,27 +1,41 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Input, Tooltip } from 'antd';
-import { QuestionCircleOutlined, LockOutlined, WalletOutlined } from '@ant-design/icons';
+import { Form, Input, Tooltip, Button } from 'antd';
+import { QuestionCircleOutlined, LockOutlined, WalletOutlined, SaveOutlined } from '@ant-design/icons';
 import useGenericSettings from '@app/hooks/useGenericSettings';
 import { SettingsGroupType } from '@app/types/settings.types';
-import BaseSettingsForm from './BaseSettingsForm';
+import BaseSettingsPanel from '../BaseSettingsPanel';
 
-const WalletSettings: React.FC = () => {
+const WalletPanel: React.FC = () => {
   const {
     settings,
     loading,
     error,
-    fetchSettings,
     updateSettings,
-    saveSettings,
+    saveSettings: saveWalletSettings,
   } = useGenericSettings('wallet');
 
   const [form] = Form.useForm();
   const [isUserEditing, setIsUserEditing] = useState(false);
+  
+  // Listen for save button click
+  useEffect(() => {
+    const handleGlobalSave = () => {
+      setTimeout(() => {
+        setIsUserEditing(false);
+      }, 200);
+    };
+    
+    document.addEventListener('settings-saved', handleGlobalSave);
+    
+    return () => {
+      document.removeEventListener('settings-saved', handleGlobalSave);
+    };
+  }, []);
 
   // Update form values when settings change, but only if user isn't actively editing
   useEffect(() => {
     if (settings && !isUserEditing) {
-      console.log('WalletSettings - Received settings:', settings);
+      console.log('WalletPanel - Received settings:', settings);
       
       // Transform property names to match form field names
       // The API returns properties without the prefix, but the form expects prefixed names
@@ -32,12 +46,12 @@ const WalletSettings: React.FC = () => {
         wallet_api_key: settingsObj.api_key
       };
       
-      console.log('WalletSettings - Transformed form values:', formValues);
+      console.log('WalletPanel - Transformed form values:', formValues);
       
       // Set form values with a slight delay to ensure the form is ready
       setTimeout(() => {
         form.setFieldsValue(formValues);
-        console.log('WalletSettings - Form values after set:', form.getFieldsValue());
+        console.log('WalletPanel - Form values after set:', form.getFieldsValue());
       }, 100);
     }
   }, [settings, form, isUserEditing]);
@@ -45,25 +59,35 @@ const WalletSettings: React.FC = () => {
   // Handle form value changes
   const handleValuesChange = (changedValues: Partial<SettingsGroupType<'wallet'>>) => {
     setIsUserEditing(true); // Mark that user is currently editing
+    console.log('WalletPanel - changedValues:', changedValues);
+    console.log('WalletPanel - current form values:', form.getFieldsValue());
     updateSettings(changedValues);
   };
 
-  // Modified save function to reset the editing flag
-  const handleSave = async () => {
-    await saveSettings();
-    setIsUserEditing(false); // Reset after saving
+  const handlePanelSave = async () => {
+    try {
+      await saveWalletSettings();
+      setIsUserEditing(false);
+      console.log('Wallet settings saved successfully');
+    } catch (error) {
+      console.error('Error saving Wallet settings:', error);
+    }
   };
 
   return (
-    <BaseSettingsForm
-      title="Wallet Settings"
+    <BaseSettingsPanel
       loading={loading}
       error={error}
-      onSave={handleSave}
-      onReset={() => {
-        fetchSettings();
-        setIsUserEditing(false);
-      }}
+      extra={
+        <Button 
+          type="primary" 
+          icon={<SaveOutlined />} 
+          onClick={handlePanelSave}
+          disabled={loading}
+        >
+          Save
+        </Button>
+      }
     >
       <Form
         form={form}
@@ -129,8 +153,8 @@ const WalletSettings: React.FC = () => {
           </p>
         </Form.Item>
       </Form>
-    </BaseSettingsForm>
+    </BaseSettingsPanel>
   );
 };
 
-export default WalletSettings;
+export default WalletPanel;

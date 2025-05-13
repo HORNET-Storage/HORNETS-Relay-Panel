@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Form, InputNumber, Switch, Select, Tooltip } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import useGenericSettings from '@app/hooks/useGenericSettings';
@@ -18,10 +18,11 @@ const ContentFilterSettings: React.FC = () => {
   } = useGenericSettings('content_filter');
 
   const [form] = Form.useForm();
+  const [isUserEditing, setIsUserEditing] = useState(false);
 
-  // Update form values when settings change
+  // Update form values when settings change, but only if user isn't actively editing
   useEffect(() => {
-    if (settings) {
+    if (settings && !isUserEditing) {
       console.log('ContentFilterSettings - Received settings:', settings);
       
       // Transform property names to match form field names
@@ -47,11 +48,18 @@ const ContentFilterSettings: React.FC = () => {
         console.log('ContentFilterSettings - Form values after set:', form.getFieldsValue());
       }, 100);
     }
-  }, [settings, form]);
+  }, [settings, form, isUserEditing]);
 
   // Handle form value changes
   const handleValuesChange = (changedValues: Partial<SettingsGroupType<'content_filter'>>) => {
+    setIsUserEditing(true); // Mark that user is currently editing
     updateSettings(changedValues);
+  };
+
+  // Modified save function to reset the editing flag
+  const handleSave = async () => {
+    await saveSettings();
+    setIsUserEditing(false); // Reset after saving
   };
 
   // Available Nostr kind options for full text filtering
@@ -68,15 +76,21 @@ const ContentFilterSettings: React.FC = () => {
       title="Content Filter Settings"
       loading={loading}
       error={error}
-      onSave={saveSettings}
-      onReset={fetchSettings}
+      onSave={handleSave}
+      onReset={() => {
+        fetchSettings();
+        setIsUserEditing(false);
+      }}
     >
       <Form
         form={form}
         layout="vertical"
         onValuesChange={handleValuesChange}
         initialValues={settings || {}}
-        onFinish={(values) => console.log('Form submitted with values:', values)}
+        onFinish={(values) => {
+          console.log('Form submitted with values:', values);
+          setIsUserEditing(false);
+        }}
       >
         <Form.Item
           name="content_filter_enabled"

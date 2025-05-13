@@ -13,6 +13,7 @@ interface BaseSettingsPanelProps {
   loading: boolean;
   error: Error | null;
   children: React.ReactNode;
+  extra?: React.ReactNode;
 }
 
 const BaseSettingsPanel: React.FC<BaseSettingsPanelProps> = ({
@@ -20,9 +21,13 @@ const BaseSettingsPanel: React.FC<BaseSettingsPanelProps> = ({
   loading,
   error,
   children,
+  extra,
 }) => {
   return (
-    <StyledCard title={title}>
+    <StyledCard 
+      title={title}
+      extra={extra}
+    >
       {error && (
         <Alert
           message="Error"

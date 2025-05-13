@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Form, Input, Switch, Tooltip } from 'antd';
 import { QuestionCircleOutlined, LockOutlined, DatabaseOutlined, TagOutlined } from '@ant-design/icons';
 import useGenericSettings from '@app/hooks/useGenericSettings';
@@ -14,16 +14,26 @@ const GeneralSettingsPanel: React.FC = () => {
   } = useGenericSettings('general');
 
   const [form] = Form.useForm();
+  const [isUserEditing, setIsUserEditing] = useState(false);
 
-  // Update form values when settings change
+  // Update form values when settings change, but only if user isn't actively editing
   useEffect(() => {
-    if (settings) {
-      form.setFieldsValue(settings);
+    if (settings && !isUserEditing) {
+      console.log('GeneralSettingsPanel - Received settings:', settings);
+
+      // Set form values with a slight delay to ensure the form is ready
+      setTimeout(() => {
+        form.setFieldsValue(settings);
+        console.log('GeneralSettingsPanel - Form values after set:', form.getFieldsValue());
+      }, 100);
     }
-  }, [settings, form]);
+  }, [settings, form, isUserEditing]);
 
   // Handle form value changes
   const handleValuesChange = (changedValues: Partial<SettingsGroupType<'general'>>) => {
+    setIsUserEditing(true); // Mark that user is currently editing
+    console.log('GeneralSettingsPanel - changedValues:', changedValues);
+    console.log('GeneralSettingsPanel - current form values:', form.getFieldsValue());
     updateSettings(changedValues);
   };
 

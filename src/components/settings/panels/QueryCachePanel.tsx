@@ -1,64 +1,83 @@
 import React, { useEffect, useState } from 'react';
-import { Form, InputNumber, Switch, Tooltip, Select } from 'antd';
+import { Form, InputNumber, Switch, Tooltip, Button } from 'antd';
+import { SaveOutlined } from '@ant-design/icons';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import useGenericSettings from '@app/hooks/useGenericSettings';
 import { SettingsGroupType } from '@app/types/settings.types';
 import BaseSettingsPanel from '../BaseSettingsPanel';
 
-const { Option } = Select;
-
-const ContentFilterPanel: React.FC = () => {
+const QueryCachePanel: React.FC = () => {
   const {
     settings,
     loading,
     error,
     updateSettings,
-  } = useGenericSettings('content_filter');
+    saveSettings: saveQueryCacheSettings,
+  } = useGenericSettings('query_cache');
 
   const [form] = Form.useForm();
   const [isUserEditing, setIsUserEditing] = useState(false);
+  
+  // Listen for save button click
+  useEffect(() => {
+    const handleGlobalSave = () => {
+      setTimeout(() => {
+        setIsUserEditing(false);
+      }, 200);
+    };
+    
+    document.addEventListener('settings-saved', handleGlobalSave);
+    
+    return () => {
+      document.removeEventListener('settings-saved', handleGlobalSave);
+    };
+  }, []);
 
   // Update form values when settings change, but only if user isn't actively editing
   useEffect(() => {
     if (settings && !isUserEditing) {
-      console.log('ContentFilterPanel - Received settings:', settings);
-      
-      // Transform property names to match form field names
-      const settingsObj = settings as Record<string, any>;
-      
-      const formValues = {
-        content_filter_enabled: settingsObj.enabled,
-        content_filter_cache_size: typeof settingsObj.cache_size === 'string'
-          ? parseInt(settingsObj.cache_size)
-          : settingsObj.cache_size,
-        content_filter_cache_ttl: typeof settingsObj.cache_ttl === 'string'
-          ? parseInt(settingsObj.cache_ttl)
-          : settingsObj.cache_ttl,
-        full_text_kinds: settingsObj.full_text_kinds
-      };
-      
-      console.log('ContentFilterPanel - Transformed form values:', formValues);
-      
+      console.log('QueryCachePanel - Received settings:', settings);
+
       // Set form values with a slight delay to ensure the form is ready
       setTimeout(() => {
-        form.setFieldsValue(formValues);
-        console.log('ContentFilterPanel - Form values after set:', form.getFieldsValue());
+        form.setFieldsValue(settings);
+        console.log('QueryCachePanel - Form values after set:', form.getFieldsValue());
       }, 100);
     }
   }, [settings, form, isUserEditing]);
 
   // Handle form value changes
-  const handleValuesChange = (changedValues: Partial<SettingsGroupType<'content_filter'>>) => {
+  const handleValuesChange = (changedValues: Partial<SettingsGroupType<'query_cache'>>) => {
     setIsUserEditing(true); // Mark that user is currently editing
-    console.log('ContentFilterPanel - changedValues:', changedValues);
-    console.log('ContentFilterPanel - current form values:', form.getFieldsValue());
+    console.log('QueryCachePanel - changedValues:', changedValues);
+    console.log('QueryCachePanel - current form values:', form.getFieldsValue());
     updateSettings(changedValues);
+  };
+
+  const handlePanelSave = async () => {
+    try {
+      await saveQueryCacheSettings();
+      setIsUserEditing(false);
+      console.log('Query Cache settings saved successfully');
+    } catch (error) {
+      console.error('Error saving Query Cache settings:', error);
+    }
   };
 
   return (
     <BaseSettingsPanel
       loading={loading}
       error={error}
+      extra={
+        <Button 
+          type="primary" 
+          icon={<SaveOutlined />} 
+          onClick={handlePanelSave}
+          disabled={loading}
+        >
+          Save
+        </Button>
+      }
     >
       <Form
         form={form}
@@ -71,11 +90,11 @@ const ContentFilterPanel: React.FC = () => {
         }}
       >
         <Form.Item
-          name="content_filter_enabled"
+          name="cache_enabled"
           label={
             <span>
-              Enable Content Filter&nbsp;
-              <Tooltip title="Enable automatic filtering of content">
+              Enable Query Cache&nbsp;
+              <Tooltip title="Enable caching for queries to improve performance">
                 <QuestionCircleOutlined />
               </Tooltip>
             </span>
@@ -86,11 +105,11 @@ const ContentFilterPanel: React.FC = () => {
         </Form.Item>
 
         <Form.Item
-          name="content_filter_cache_size"
+          name="max_cache_size"
           label={
             <span>
-              Cache Size&nbsp;
-              <Tooltip title="Maximum number of entries in the content filter cache">
+              Max Cache Size&nbsp;
+              <Tooltip title="Maximum number of entries in the query cache">
                 <QuestionCircleOutlined />
               </Tooltip>
             </span>
@@ -101,12 +120,15 @@ const ContentFilterPanel: React.FC = () => {
         >
           <InputNumber 
             min={100} 
-            style={{ width: '100%' }}
+            max={100000} 
+            style={{ width: '100%' }} 
+            onFocus={() => setIsUserEditing(true)}
+            onKeyDown={() => setIsUserEditing(true)}
           />
         </Form.Item>
 
         <Form.Item
-          name="content_filter_cache_ttl"
+          name="cache_ttl"
           label={
             <span>
               Cache TTL (seconds)&nbsp;
@@ -121,31 +143,32 @@ const ContentFilterPanel: React.FC = () => {
         >
           <InputNumber 
             min={1} 
-            style={{ width: '100%' }}
+            style={{ width: '100%' }} 
+            onFocus={() => setIsUserEditing(true)}
+            onKeyDown={() => setIsUserEditing(true)}
           />
         </Form.Item>
 
         <Form.Item
-          name="full_text_kinds"
+          name="cleanup_interval"
           label={
             <span>
-              Full Text Kinds&nbsp;
-              <Tooltip title="Nostr event kinds that should have full text analysis">
+              Cleanup Interval (seconds)&nbsp;
+              <Tooltip title="Interval between cache cleanup operations">
                 <QuestionCircleOutlined />
               </Tooltip>
             </span>
           }
+          rules={[
+            { type: 'number', min: 10, message: 'Value must be at least 10' }
+          ]}
         >
-          <Select
-            mode="multiple"
-            placeholder="Select event kinds"
-            style={{ width: '100%' }}
-          >
-            <Option value={1}>Kind 1 - Short Text Note</Option>
-            <Option value={30023}>Kind 30023 - Long-form Content</Option>
-            <Option value={1984}>Kind 1984 - Report</Option>
-            <Option value={9802}>Kind 9802 - Highlights</Option>
-          </Select>
+          <InputNumber 
+            min={10} 
+            style={{ width: '100%' }} 
+            onFocus={() => setIsUserEditing(true)}
+            onKeyDown={() => setIsUserEditing(true)}
+          />
         </Form.Item>
 
         <Form.Item>
@@ -157,7 +180,7 @@ const ContentFilterPanel: React.FC = () => {
             borderLeft: '3px solid rgba(82, 196, 255, 0.8)',
             borderRadius: '0 4px 4px 0'
           }}>
-            <span style={{ color: 'rgba(82, 196, 255, 1)' }}>Note:</span> Content filtering helps prevent spam and inappropriate content. The cache improves performance by avoiding repeated analysis of the same content.
+            <span style={{ color: 'rgba(82, 196, 255, 1)' }}>Note:</span> Query caching improves performance by storing query results temporarily. The cache is automatically cleared according to the cleanup interval and TTL settings.
           </p>
         </Form.Item>
       </Form>
@@ -165,4 +188,4 @@ const ContentFilterPanel: React.FC = () => {
   );
 };
 
-export default ContentFilterPanel;
+export default QueryCachePanel;

@@ -6,6 +6,11 @@ import styled from 'styled-components';
 import GeneralSettingsPanel from '../panels/GeneralSettingsPanel';
 import ImageModerationPanel from '../panels/ImageModerationPanel';
 import ContentFilterPanel from '../panels/ContentFilterPanel';
+import NestFeederPanel from '../panels/NestFeederPanel';
+import OllamaPanel from '../panels/OllamaPanel';
+import WalletPanel from '../panels/WalletPanel';
+import XNostrPanel from '../panels/XNostrPanel';
+import QueryCachePanel from '../panels/QueryCachePanel';
 import useGenericSettings from '@app/hooks/useGenericSettings';
 
 const { Panel } = Collapse;
@@ -65,6 +70,19 @@ const AdvancedSettingsLayout: React.FC<AdvancedSettingsLayoutProps> = ({
     try {
       await saveSettings();
       console.log('Settings saved successfully');
+      
+      // Reset all forms by triggering their submit handlers
+      // This will reset the isUserEditing flag in all panel components
+      const formElements = document.querySelectorAll('form');
+      formElements.forEach(form => {
+        const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+        form.dispatchEvent(submitEvent);
+      });
+      
+      // Also dispatch a custom event that the panel components can listen for
+      const saveEvent = new CustomEvent('settings-saved');
+      document.dispatchEvent(saveEvent);
+      
     } catch (error) {
       console.error('Error saving settings:', error);
     } finally {
@@ -127,7 +145,25 @@ const AdvancedSettingsLayout: React.FC<AdvancedSettingsLayoutProps> = ({
               <ContentFilterPanel />
             </Panel>
             
-            {/* Add more panels here as they are created */}
+            <Panel header="Nest Feeder" key="nest-feeder">
+              <NestFeederPanel />
+            </Panel>
+            
+            <Panel header="Ollama" key="ollama">
+              <OllamaPanel />
+            </Panel>
+            
+            <Panel header="Wallet" key="wallet">
+              <WalletPanel />
+            </Panel>
+            
+            <Panel header="XNostr Twitter Verification" key="xnostr">
+              <XNostrPanel />
+            </Panel>
+            
+            <Panel header="Query Cache" key="query-cache">
+              <QueryCachePanel />
+            </Panel>
           </Collapse>
         </SettingsContainer>
         

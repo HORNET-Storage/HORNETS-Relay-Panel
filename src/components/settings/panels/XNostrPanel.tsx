@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Input, InputNumber, Switch, Tooltip, Button, Space, Divider, Collapse } from 'antd';
+import { Form, Input, InputNumber, Switch, Tooltip, Button, Space, Divider } from 'antd';
+import { SaveOutlined } from '@ant-design/icons';
 import { 
   QuestionCircleOutlined, 
   PlusOutlined, 
@@ -10,44 +11,50 @@ import {
   TeamOutlined
 } from '@ant-design/icons';
 import useGenericSettings from '@app/hooks/useGenericSettings';
-import { SettingsGroupType, XNostrNitterInstance, XNostrNitterSettings, XNostrIntervalSettings } from '@app/types/settings.types';
-import type { XNostrSettings as XNostrSettingsType } from '@app/types/settings.types';
-import BaseSettingsForm from './BaseSettingsForm';
+import { SettingsGroupType, XNostrNitterInstance } from '@app/types/settings.types';
+import BaseSettingsPanel from '../BaseSettingsPanel';
 import styled from 'styled-components';
-
-const { Panel } = Collapse;
 
 const NitterInstanceContainer = styled.div`
   margin-bottom: 16px;
   padding: 16px;
   border: 1px solid #f0f0f0;
   border-radius: 4px;
-  background-color: #fafafa;
+  background-color: rgba(0, 0, 0, 0.1);
 `;
 
-const XNostrSettingsComponent: React.FC = () => {
+const XNostrPanel: React.FC = () => {
   const {
     settings,
     loading,
     error,
-    fetchSettings,
-    updateSettings: updateSettingsGeneric,
-    saveSettings,
+    updateSettings,
+    saveSettings: saveXNostrSettings,
   } = useGenericSettings('xnostr');
-  
-  // Create a typed wrapper for updateSettings
-  const updateSettings = (updatedSettings: Partial<SettingsGroupType<'xnostr'>>) => {
-    updateSettingsGeneric(updatedSettings);
-  };
 
   const [form] = Form.useForm();
-  const [nitterInstances, setNitterInstances] = useState<XNostrNitterInstance[]>([]);
   const [isUserEditing, setIsUserEditing] = useState(false);
+  const [nitterInstances, setNitterInstances] = useState<XNostrNitterInstance[]>([]);
+  
+  // Listen for save button click
+  useEffect(() => {
+    const handleGlobalSave = () => {
+      setTimeout(() => {
+        setIsUserEditing(false);
+      }, 200);
+    };
+    
+    document.addEventListener('settings-saved', handleGlobalSave);
+    
+    return () => {
+      document.removeEventListener('settings-saved', handleGlobalSave);
+    };
+  }, []);
 
   // Update form values when settings change, but only if user isn't actively editing
   useEffect(() => {
     if (settings && !isUserEditing) {
-      console.log('XNostrSettings - Received settings:', settings);
+      console.log('XNostrPanel - Received settings:', settings);
       
       // Transform property names to match form field names
       // The API returns properties without the prefix, but the form expects prefixed names
@@ -70,17 +77,28 @@ const XNostrSettingsComponent: React.FC = () => {
         xnostr_update_interval: typeof settingsObj.update_interval === 'string' 
           ? parseInt(settingsObj.update_interval) 
           : settingsObj.update_interval,
-        // Handle nested objects
-        xnostr_verification_intervals: settingsObj.verification_intervals || {},
-        // Don't set nitter instances here, we'll handle them separately
+        // Handle nested objects - verification intervals
+        xnostr_verification_intervals_follower_update_interval_days: 
+          settingsObj.verification_intervals?.follower_update_interval_days || 7,
+        xnostr_verification_intervals_full_verification_interval_days: 
+          settingsObj.verification_intervals?.full_verification_interval_days || 30,
+        xnostr_verification_intervals_max_verification_attempts: 
+          settingsObj.verification_intervals?.max_verification_attempts || 5,
+        // Handle nested objects - nitter settings
+        xnostr_nitter_failure_threshold: 
+          settingsObj.nitter?.failure_threshold || 3,
+        xnostr_nitter_recovery_threshold: 
+          settingsObj.nitter?.recovery_threshold || 2,
+        xnostr_nitter_requests_per_minute: 
+          settingsObj.nitter?.requests_per_minute || 10,
       };
       
-      console.log('XNostrSettings - Transformed form values:', formValues);
+      console.log('XNostrPanel - Transformed form values:', formValues);
       
       // Set form values with a slight delay to ensure the form is ready
       setTimeout(() => {
         form.setFieldsValue(formValues);
-        console.log('XNostrSettings - Form values after set:', form.getFieldsValue());
+        console.log('XNostrPanel - Form values after set:', form.getFieldsValue());
       }, 100);
 
       // Set nitter instances
@@ -93,51 +111,80 @@ const XNostrSettingsComponent: React.FC = () => {
   }, [settings, form, isUserEditing]);
 
   // Handle form value changes
-  const handleValuesChange = (changedValues: Record<string, any>) => {
+  const handleValuesChange = (changedValues: Partial<Record<string, any>>) => {
     setIsUserEditing(true); // Mark that user is currently editing
+    console.log('XNostrPanel - changedValues:', changedValues);
+    console.log('XNostrPanel - current form values:', form.getFieldsValue());
+
+    // Create a partial settings object from the changed values
+    const updatedSettings: Partial<SettingsGroupType<'xnostr'>> = {};
     
-    // Don't use updateSettings directly with form values
-    // Instead, update the form values and let the form handle the state
-    
-    // We'll handle specific nested object updates in the other functions
-    // This function is just for the form's onValuesChange callback
-    
-    // For simple fields, we can update them directly
-    const simpleChanges: Partial<XNostrSettingsType> = {};
-    
-    // Only include simple fields (not nested objects)
+    // Handle simple fields
     if ('xnostr_enabled' in changedValues) {
-      simpleChanges.xnostr_enabled = changedValues.xnostr_enabled;
+      updatedSettings.xnostr_enabled = changedValues.xnostr_enabled;
     }
     if ('xnostr_browser_path' in changedValues) {
-      simpleChanges.xnostr_browser_path = changedValues.xnostr_browser_path;
+      updatedSettings.xnostr_browser_path = changedValues.xnostr_browser_path;
     }
     if ('xnostr_browser_pool_size' in changedValues) {
-      simpleChanges.xnostr_browser_pool_size = changedValues.xnostr_browser_pool_size;
+      updatedSettings.xnostr_browser_pool_size = changedValues.xnostr_browser_pool_size;
     }
     if ('xnostr_check_interval' in changedValues) {
-      simpleChanges.xnostr_check_interval = changedValues.xnostr_check_interval;
+      updatedSettings.xnostr_check_interval = changedValues.xnostr_check_interval;
     }
     if ('xnostr_concurrency' in changedValues) {
-      simpleChanges.xnostr_concurrency = changedValues.xnostr_concurrency;
+      updatedSettings.xnostr_concurrency = changedValues.xnostr_concurrency;
     }
     if ('xnostr_temp_dir' in changedValues) {
-      simpleChanges.xnostr_temp_dir = changedValues.xnostr_temp_dir;
+      updatedSettings.xnostr_temp_dir = changedValues.xnostr_temp_dir;
     }
     if ('xnostr_update_interval' in changedValues) {
-      simpleChanges.xnostr_update_interval = changedValues.xnostr_update_interval;
+      updatedSettings.xnostr_update_interval = changedValues.xnostr_update_interval;
+    }
+
+    // Handle nested verification intervals object
+    if (
+      'xnostr_verification_intervals_follower_update_interval_days' in changedValues ||
+      'xnostr_verification_intervals_full_verification_interval_days' in changedValues ||
+      'xnostr_verification_intervals_max_verification_attempts' in changedValues
+    ) {
+      // Get current form values for verification intervals
+      const formValues = form.getFieldsValue();
+      updatedSettings.xnostr_verification_intervals = {
+        follower_update_interval_days: formValues.xnostr_verification_intervals_follower_update_interval_days,
+        full_verification_interval_days: formValues.xnostr_verification_intervals_full_verification_interval_days,
+        max_verification_attempts: formValues.xnostr_verification_intervals_max_verification_attempts
+      };
+    }
+
+    // Handle nested nitter settings object
+    if (
+      'xnostr_nitter_failure_threshold' in changedValues ||
+      'xnostr_nitter_recovery_threshold' in changedValues ||
+      'xnostr_nitter_requests_per_minute' in changedValues
+    ) {
+      // Get current form values for nitter settings
+      const formValues = form.getFieldsValue();
+      
+      // We need to preserve the current instances when updating other nitter settings
+      const currentInstances = settings?.xnostr_nitter?.instances || nitterInstances;
+      
+      updatedSettings.xnostr_nitter = {
+        failure_threshold: formValues.xnostr_nitter_failure_threshold,
+        recovery_threshold: formValues.xnostr_nitter_recovery_threshold,
+        requests_per_minute: formValues.xnostr_nitter_requests_per_minute,
+        instances: currentInstances
+      };
     }
     
     // Only update if we have changes
-    if (Object.keys(simpleChanges).length > 0) {
-      updateSettings(simpleChanges);
+    if (Object.keys(updatedSettings).length > 0) {
+      updateSettings(updatedSettings);
     }
   };
 
   // Add a new nitter instance
   const handleAddNitterInstance = () => {
-    setIsUserEditing(true); // Mark that user is currently editing
-    
     const newInstance: XNostrNitterInstance = {
       priority: nitterInstances.length + 1,
       url: ''
@@ -145,25 +192,28 @@ const XNostrSettingsComponent: React.FC = () => {
     
     const newInstances = [...nitterInstances, newInstance];
     setNitterInstances(newInstances);
+    setIsUserEditing(true);
     
     // Update settings with new instances
-    const updatedSettings = { ...settings };
+    const updatedSettings: Partial<SettingsGroupType<'xnostr'>> = settings ? { ...settings } : {};
+    // Initialize xnostr_nitter if needed
     if (!updatedSettings.xnostr_nitter) {
       updatedSettings.xnostr_nitter = {
-        failure_threshold: 3,
-        recovery_threshold: 2,
-        requests_per_minute: 10,
+        failure_threshold: form.getFieldValue('xnostr_nitter_failure_threshold') || 3,
+        recovery_threshold: form.getFieldValue('xnostr_nitter_recovery_threshold') || 2,
+        requests_per_minute: form.getFieldValue('xnostr_nitter_requests_per_minute') || 10,
         instances: []
       };
     }
-    updatedSettings.xnostr_nitter.instances = newInstances;
+    // Ensure xnostr_nitter is defined before setting instances
+    if (updatedSettings.xnostr_nitter) {
+      updatedSettings.xnostr_nitter.instances = newInstances;
+    }
     updateSettings(updatedSettings);
   };
 
   // Remove a nitter instance
   const handleRemoveNitterInstance = (index: number) => {
-    setIsUserEditing(true); // Mark that user is currently editing
-    
     const newInstances = [...nitterInstances];
     newInstances.splice(index, 1);
     
@@ -173,9 +223,10 @@ const XNostrSettingsComponent: React.FC = () => {
     });
     
     setNitterInstances(newInstances);
+    setIsUserEditing(true);
     
     // Update settings with new instances
-    const updatedSettings = { ...settings };
+    const updatedSettings: Partial<SettingsGroupType<'xnostr'>> = settings ? { ...settings } : {};
     if (updatedSettings.xnostr_nitter) {
       updatedSettings.xnostr_nitter.instances = newInstances;
       updateSettings(updatedSettings);
@@ -184,8 +235,6 @@ const XNostrSettingsComponent: React.FC = () => {
 
   // Update a nitter instance
   const handleUpdateNitterInstance = (index: number, field: keyof XNostrNitterInstance, value: number | string | null) => {
-    setIsUserEditing(true); // Mark that user is currently editing
-    
     const newInstances = [...nitterInstances];
     
     // Handle null values from InputNumber
@@ -199,81 +248,42 @@ const XNostrSettingsComponent: React.FC = () => {
     } else if (field === 'url') {
       newInstances[index].url = value as string;
     }
+    
     setNitterInstances(newInstances);
+    setIsUserEditing(true);
     
     // Update settings with new instances
-    const updatedSettings = { ...settings };
+    const updatedSettings: Partial<SettingsGroupType<'xnostr'>> = settings ? { ...settings } : {};
     if (updatedSettings.xnostr_nitter) {
       updatedSettings.xnostr_nitter.instances = newInstances;
       updateSettings(updatedSettings);
     }
   };
 
-  // Update nitter settings
-  const handleNitterSettingsChange = (field: keyof XNostrNitterSettings, value: number | null) => {
-    setIsUserEditing(true); // Mark that user is currently editing
-    
-    // Handle null values from InputNumber
-    if (value === null) {
-      value = 0; // Default to 0 for null number values
+  const handlePanelSave = async () => {
+    try {
+      await saveXNostrSettings();
+      setIsUserEditing(false);
+      console.log('XNostr settings saved successfully');
+    } catch (error) {
+      console.error('Error saving XNostr settings:', error);
     }
-    const updatedSettings = { ...settings };
-    if (!updatedSettings.xnostr_nitter) {
-      updatedSettings.xnostr_nitter = {
-        failure_threshold: 3,
-        recovery_threshold: 2,
-        requests_per_minute: 10,
-        instances: nitterInstances
-      };
-    }
-    
-    updatedSettings.xnostr_nitter = {
-      ...updatedSettings.xnostr_nitter,
-      [field]: value
-    };
-    updateSettings(updatedSettings);
-  };
-
-  // Update verification interval settings
-  const handleIntervalSettingsChange = (field: keyof XNostrIntervalSettings, value: number | null) => {
-    setIsUserEditing(true); // Mark that user is currently editing
-    
-    // Handle null values from InputNumber
-    if (value === null) {
-      value = 0; // Default to 0 for null number values
-    }
-    const updatedSettings = { ...settings };
-    if (!updatedSettings.xnostr_verification_intervals) {
-      updatedSettings.xnostr_verification_intervals = {
-        follower_update_interval_days: 7,
-        full_verification_interval_days: 30,
-        max_verification_attempts: 5
-      };
-    }
-    
-    updatedSettings.xnostr_verification_intervals = {
-      ...updatedSettings.xnostr_verification_intervals,
-      [field]: value
-    };
-    updateSettings(updatedSettings);
-  };
-
-  // Modified save function to reset the editing flag
-  const handleSave = async () => {
-    await saveSettings();
-    setIsUserEditing(false); // Reset after saving
   };
 
   return (
-    <BaseSettingsForm
-      title="XNostr Settings"
+    <BaseSettingsPanel
       loading={loading}
       error={error}
-      onSave={handleSave}
-      onReset={() => {
-        fetchSettings();
-        setIsUserEditing(false);
-      }}
+      extra={
+        <Button 
+          type="primary" 
+          icon={<SaveOutlined />} 
+          onClick={handlePanelSave}
+          disabled={loading}
+        >
+          Save
+        </Button>
+      }
     >
       <Form
         form={form}
@@ -419,6 +429,7 @@ const XNostrSettingsComponent: React.FC = () => {
 
         {/* Nitter Settings */}
         <Form.Item
+          name="xnostr_nitter_failure_threshold"
           label={
             <span>
               Failure Threshold&nbsp;
@@ -427,16 +438,18 @@ const XNostrSettingsComponent: React.FC = () => {
               </Tooltip>
             </span>
           }
+          rules={[
+            { type: 'number', min: 1, message: 'Value must be at least 1' }
+          ]}
         >
           <InputNumber
-            value={settings?.xnostr_nitter?.failure_threshold || 3}
-            onChange={(value) => handleNitterSettingsChange('failure_threshold', value)}
             min={1}
             style={{ width: '100%' }}
           />
         </Form.Item>
 
         <Form.Item
+          name="xnostr_nitter_recovery_threshold"
           label={
             <span>
               Recovery Threshold&nbsp;
@@ -445,16 +458,18 @@ const XNostrSettingsComponent: React.FC = () => {
               </Tooltip>
             </span>
           }
+          rules={[
+            { type: 'number', min: 1, message: 'Value must be at least 1' }
+          ]}
         >
           <InputNumber
-            value={settings?.xnostr_nitter?.recovery_threshold || 2}
-            onChange={(value) => handleNitterSettingsChange('recovery_threshold', value)}
             min={1}
             style={{ width: '100%' }}
           />
         </Form.Item>
 
         <Form.Item
+          name="xnostr_nitter_requests_per_minute"
           label={
             <span>
               Requests Per Minute&nbsp;
@@ -463,10 +478,11 @@ const XNostrSettingsComponent: React.FC = () => {
               </Tooltip>
             </span>
           }
+          rules={[
+            { type: 'number', min: 1, message: 'Value must be at least 1' }
+          ]}
         >
           <InputNumber
-            value={settings?.xnostr_nitter?.requests_per_minute || 10}
-            onChange={(value) => handleNitterSettingsChange('requests_per_minute', value)}
             min={1}
             style={{ width: '100%' }}
           />
@@ -535,6 +551,7 @@ const XNostrSettingsComponent: React.FC = () => {
 
         {/* Verification Interval Settings */}
         <Form.Item
+          name="xnostr_verification_intervals_follower_update_interval_days"
           label={
             <span>
               Follower Update Interval (days)&nbsp;
@@ -543,16 +560,18 @@ const XNostrSettingsComponent: React.FC = () => {
               </Tooltip>
             </span>
           }
+          rules={[
+            { type: 'number', min: 1, message: 'Value must be at least 1' }
+          ]}
         >
           <InputNumber
-            value={settings?.xnostr_verification_intervals?.follower_update_interval_days || 7}
-            onChange={(value) => handleIntervalSettingsChange('follower_update_interval_days', value)}
             min={1}
             style={{ width: '100%' }}
           />
         </Form.Item>
 
         <Form.Item
+          name="xnostr_verification_intervals_full_verification_interval_days"
           label={
             <span>
               Full Verification Interval (days)&nbsp;
@@ -561,16 +580,18 @@ const XNostrSettingsComponent: React.FC = () => {
               </Tooltip>
             </span>
           }
+          rules={[
+            { type: 'number', min: 1, message: 'Value must be at least 1' }
+          ]}
         >
           <InputNumber
-            value={settings?.xnostr_verification_intervals?.full_verification_interval_days || 30}
-            onChange={(value) => handleIntervalSettingsChange('full_verification_interval_days', value)}
             min={1}
             style={{ width: '100%' }}
           />
         </Form.Item>
 
         <Form.Item
+          name="xnostr_verification_intervals_max_verification_attempts"
           label={
             <span>
               Max Verification Attempts&nbsp;
@@ -579,10 +600,11 @@ const XNostrSettingsComponent: React.FC = () => {
               </Tooltip>
             </span>
           }
+          rules={[
+            { type: 'number', min: 1, message: 'Value must be at least 1' }
+          ]}
         >
           <InputNumber
-            value={settings?.xnostr_verification_intervals?.max_verification_attempts || 5}
-            onChange={(value) => handleIntervalSettingsChange('max_verification_attempts', value)}
             min={1}
             style={{ width: '100%' }}
           />
@@ -602,10 +624,8 @@ const XNostrSettingsComponent: React.FC = () => {
           </p>
         </Form.Item>
       </Form>
-    </BaseSettingsForm>
+    </BaseSettingsPanel>
   );
 };
 
-// Export the component as a named export and as the default export
-export { XNostrSettingsComponent as XNostrSettings };
-export default XNostrSettingsComponent;
+export default XNostrPanel;
