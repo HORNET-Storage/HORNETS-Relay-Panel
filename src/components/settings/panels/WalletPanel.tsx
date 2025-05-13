@@ -1,0 +1,160 @@
+import React, { useEffect, useState } from 'react';
+import { Form, Input, Tooltip, Button } from 'antd';
+import { QuestionCircleOutlined, LockOutlined, WalletOutlined, SaveOutlined } from '@ant-design/icons';
+import useGenericSettings from '@app/hooks/useGenericSettings';
+import { SettingsGroupType } from '@app/types/settings.types';
+import BaseSettingsPanel from '../BaseSettingsPanel';
+
+const WalletPanel: React.FC = () => {
+  const {
+    settings,
+    loading,
+    error,
+    updateSettings,
+    saveSettings: saveWalletSettings,
+  } = useGenericSettings('wallet');
+
+  const [form] = Form.useForm();
+  const [isUserEditing, setIsUserEditing] = useState(false);
+  
+  // Listen for save button click
+  useEffect(() => {
+    const handleGlobalSave = () => {
+      setTimeout(() => {
+        setIsUserEditing(false);
+      }, 200);
+    };
+    
+    document.addEventListener('settings-saved', handleGlobalSave);
+    
+    return () => {
+      document.removeEventListener('settings-saved', handleGlobalSave);
+    };
+  }, []);
+
+  // Update form values when settings change, but only if user isn't actively editing
+  useEffect(() => {
+    if (settings && !isUserEditing) {
+      console.log('WalletPanel - Received settings:', settings);
+      
+      // Transform property names to match form field names
+      // The API returns properties without the prefix, but the form expects prefixed names
+      const settingsObj = settings as Record<string, any>;
+      
+      const formValues = {
+        wallet_name: settingsObj.name,
+        wallet_api_key: settingsObj.api_key
+      };
+      
+      console.log('WalletPanel - Transformed form values:', formValues);
+      
+      // Set form values with a slight delay to ensure the form is ready
+      setTimeout(() => {
+        form.setFieldsValue(formValues);
+        console.log('WalletPanel - Form values after set:', form.getFieldsValue());
+      }, 100);
+    }
+  }, [settings, form, isUserEditing]);
+
+  // Handle form value changes
+  const handleValuesChange = (changedValues: Partial<SettingsGroupType<'wallet'>>) => {
+    setIsUserEditing(true); // Mark that user is currently editing
+    console.log('WalletPanel - changedValues:', changedValues);
+    console.log('WalletPanel - current form values:', form.getFieldsValue());
+    updateSettings(changedValues);
+  };
+
+  const handlePanelSave = async () => {
+    try {
+      await saveWalletSettings();
+      setIsUserEditing(false);
+      console.log('Wallet settings saved successfully');
+    } catch (error) {
+      console.error('Error saving Wallet settings:', error);
+    }
+  };
+
+  return (
+    <BaseSettingsPanel
+      loading={loading}
+      error={error}
+      extra={
+        <Button 
+          type="primary" 
+          icon={<SaveOutlined />} 
+          onClick={handlePanelSave}
+          disabled={loading}
+        >
+          Save
+        </Button>
+      }
+    >
+      <Form
+        form={form}
+        layout="vertical"
+        onValuesChange={handleValuesChange}
+        initialValues={settings || {}}
+        onFinish={(values) => {
+          console.log('Form submitted with values:', values);
+          setIsUserEditing(false);
+        }}
+      >
+        <Form.Item
+          name="wallet_name"
+          label={
+            <span>
+              Wallet Name&nbsp;
+              <Tooltip title="Name of the wallet service to use">
+                <QuestionCircleOutlined />
+              </Tooltip>
+            </span>
+          }
+          rules={[
+            { required: true, message: 'Please enter a wallet name' }
+          ]}
+        >
+          <Input 
+            prefix={<WalletOutlined />} 
+            placeholder="Enter wallet name" 
+          />
+        </Form.Item>
+
+        <Form.Item
+          name="wallet_api_key"
+          label={
+            <span>
+              API Key&nbsp;
+              <Tooltip title="API key for the wallet service">
+                <QuestionCircleOutlined />
+              </Tooltip>
+            </span>
+          }
+          rules={[
+            { required: true, message: 'Please enter the wallet API key' }
+          ]}
+        >
+          <Input.Password
+            prefix={<LockOutlined />}
+            placeholder="Enter API key"
+          />
+        </Form.Item>
+
+        <Form.Item>
+          <p style={{ 
+            color: 'rgba(255, 255, 255, 0.8)',
+            fontSize: '0.9em',
+            padding: '0.75rem',
+            backgroundColor: 'rgba(0, 0, 0, 0.1)',
+            borderLeft: '3px solid rgba(82, 196, 255, 0.8)',
+            borderRadius: '0 4px 4px 0'
+          }}>
+            <span style={{ color: 'rgba(82, 196, 255, 1)' }}>Note:</span> The wallet API key is stored securely and used to authenticate with the wallet service.
+            Make sure to keep your API key confidential and never share it with others.
+          </p>
+        </Form.Item>
+      </Form>
+    </BaseSettingsPanel>
+  );
+};
+
+export default WalletPanel;

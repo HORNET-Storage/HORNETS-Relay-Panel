@@ -1,0 +1,3 @@
+interface EventTarget {
+  state?: 'activated';
+}

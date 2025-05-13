@@ -26,4 +26,8 @@ export const notificationsSeverities: NotificationSeverity[] = [
     id: 4,
     name: 'mention',
   },
+  {
+    id: 5,
+    name: 'moderation',
+  },
 ];
