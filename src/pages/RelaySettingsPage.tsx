@@ -25,7 +25,7 @@ const RelaySettingsPage: React.FC = () => {
 
   // Local state for settings
   const [settings, setSettings] = useState<Settings>({
-    mode: JSON.parse(localStorage.getItem('relaySettings') || '{}').mode || relaymode || 'unlimited',
+    mode: JSON.parse(localStorage.getItem('relaySettings') || '{}').mode || relaymode || 'blacklist',
     protocol: ['WebSocket'],
     kinds: [],
     dynamicKinds: [],
@@ -42,8 +42,9 @@ const RelaySettingsPage: React.FC = () => {
     isAudioActive: true,
     isFileStorageActive: false,
     subscription_tiers: [],
-    freeTierEnabled: false,  // Add this
-    freeTierLimit: '100 MB per month'  // Add this
+    freeTierEnabled: false,
+    freeTierLimit: '100 MB per month',
+    moderationMode: 'strict'  // Default to strict mode
   });
 
   // Initialize stored dynamic items
@@ -92,7 +93,7 @@ const RelaySettingsPage: React.FC = () => {
 
   // Reset blacklist when mode changes
   useEffect(() => {
-    if (settings.mode === 'unlimited') return;
+    if (settings.mode === 'blacklist') return;
     setBlacklist({
       kinds: [],
       photos: [],
@@ -103,14 +104,14 @@ const RelaySettingsPage: React.FC = () => {
   }, [settings.mode]);
 
   const handleModeChange = (checked: boolean) => {
-    const newMode = checked ? 'smart' : 'unlimited';
+    const newMode = checked ? 'whitelist' : 'blacklist';
     setSettings(prev => ({
       ...prev,
       mode: newMode,
-      kinds: newMode === 'unlimited' ? [] : prev.kinds,
-      photos: newMode === 'unlimited' ? [] : prev.photos,
-      videos: newMode === 'unlimited' ? [] : prev.videos,
-      audio: newMode === 'unlimited' ? [] : prev.audio,
+      kinds: newMode === 'blacklist' ? [] : prev.kinds,
+      photos: newMode === 'blacklist' ? [] : prev.photos,
+      videos: newMode === 'blacklist' ? [] : prev.videos,
+      audio: newMode === 'blacklist' ? [] : prev.audio,
     }));
     updateSettings('mode', newMode);
     dispatch(setMode(newMode));
@@ -138,6 +139,7 @@ const RelaySettingsPage: React.FC = () => {
         updateSettings('freeTierEnabled', settings.freeTierEnabled),
         updateSettings('freeTierLimit', settings.freeTierLimit),
         updateSettings('subscription_tiers', settings.subscription_tiers),
+        updateSettings('moderationMode', settings.moderationMode),
       ]);
 
       await saveSettings();
@@ -232,6 +234,12 @@ const RelaySettingsPage: React.FC = () => {
     updateSettings(type, checked);
   };
 
+  // Moderation mode handler
+  const handleModerationModeChange = (mode: string) => {
+    setSettings(prev => ({ ...prev, moderationMode: mode }));
+    updateSettings('moderationMode', mode);
+  };
+
   const layoutProps = {
     mode: settings.mode,
     onModeChange: handleModeChange,
@@ -269,7 +277,6 @@ const RelaySettingsPage: React.FC = () => {
       updateSettings('freeTierEnabled', enabled);
       updateSettings('freeTierLimit', limit);
     },
-
     // Kinds props
     isKindsActive: settings.isKindsActive,
     selectedKinds: settings.kinds,
@@ -299,6 +306,9 @@ const RelaySettingsPage: React.FC = () => {
       onChange: (values: string[]) => handleMediaChange('audio', values),
       onToggle: (checked: boolean) => handleMediaToggle('isAudioActive', checked),
     },
+    // Moderation props
+    moderationMode: settings.moderationMode,
+    onModerationModeChange: handleModerationModeChange,
   };
 
   return (

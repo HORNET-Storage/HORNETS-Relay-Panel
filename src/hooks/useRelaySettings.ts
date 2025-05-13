@@ -20,6 +20,7 @@ interface BackendRelaySettings {
   subscription_tiers: BackendSubscriptionTier[];
   freeTierEnabled: boolean;  // New field
   freeTierLimit: string;     // New field - e.g. "100 MB per month"
+  moderationMode: string;    // "strict" or "passive"
   MimeTypeGroups: {
     images: string[];
     videos: string[];
@@ -38,7 +39,7 @@ const defaultTiers: SubscriptionTier[] = [
 ];
 
 const getInitialSettings = (): Settings => ({
-  mode: 'smart',
+  mode: 'whitelist',
   protocol: ['WebSocket'],
   kinds: [],
   dynamicKinds: [],
@@ -56,7 +57,8 @@ const getInitialSettings = (): Settings => ({
   isFileStorageActive: false,
   subscription_tiers: defaultTiers,
   freeTierEnabled: false,
-  freeTierLimit: '100 MB per month'
+  freeTierLimit: '100 MB per month',
+  moderationMode: 'strict' // Default to strict mode
 });
 
 const useRelaySettings = () => {
@@ -83,7 +85,7 @@ const useRelaySettings = () => {
 
     lastMode.current = relaySettings.mode;
 
-    if (relaySettings.mode === 'unlimited') {
+    if (relaySettings.mode === 'blacklist') {
       // Store current settings before clearing
       setPreviousSmartSettings({
         kinds: relaySettings.kinds,
@@ -99,8 +101,8 @@ const useRelaySettings = () => {
         videos: [],
         audio: [],
       }));
-    } else if (relaySettings.mode === 'smart' && previousSmartSettings) {
-      // Restore previous smart mode settings
+    } else if (relaySettings.mode === 'whitelist' && previousSmartSettings) {
+      // Restore previous whitelist mode settings
       setRelaySettings(prev => ({
         ...prev,
         kinds: previousSmartSettings.kinds,
@@ -139,14 +141,15 @@ const useRelaySettings = () => {
       })),
       freeTierEnabled: settings.freeTierEnabled,
       freeTierLimit: settings.freeTierLimit,
+      moderationMode: settings.moderationMode,
       MimeTypeGroups: mimeGroups,
       isFileStorageActive: settings.isFileStorageActive,
-      MimeTypeWhitelist: settings.mode === 'smart'
+      MimeTypeWhitelist: settings.mode === 'whitelist'
         ? selectedMimeTypes
         : mimeTypeOptions
           .map(m => m.value)
           .filter(mimeType => !selectedMimeTypes.includes(mimeType)),
-      KindWhitelist: settings.mode === 'smart'
+      KindWhitelist: settings.mode === 'whitelist'
         ? settings.kinds
         : noteOptions
           .map(note => note.kindString)
@@ -161,6 +164,7 @@ const useRelaySettings = () => {
     settings.protocol = backendSettings.protocol as string[];
     settings.freeTierEnabled = backendSettings.freeTierEnabled ?? false;
     settings.freeTierLimit = backendSettings.freeTierLimit ?? '100 MB per month';
+    settings.moderationMode = backendSettings.moderationMode ?? 'strict';
 
     // Handle subscription tiers
     if (Array.isArray(backendSettings.subscription_tiers)) {
@@ -179,20 +183,20 @@ const useRelaySettings = () => {
       settings.subscription_tiers = defaultTiers;
     }
 
-    if (backendSettings.mode === 'unlimited') {
-      // In unlimited mode, start with empty selections
+    if (backendSettings.mode === 'blacklist') {
+      // In blacklist mode, start with empty selections
       settings.photos = [];
       settings.videos = [];
       settings.audio = [];
       settings.kinds = [];
     } else {
-      // In smart mode, use the MimeTypeGroups directly
+      // In whitelist mode, use the MimeTypeGroups directly
       settings.photos = backendSettings.MimeTypeGroups?.images || [];
       settings.videos = backendSettings.MimeTypeGroups?.videos || [];
       settings.audio = backendSettings.MimeTypeGroups?.audio || [];
       settings.kinds = backendSettings.KindWhitelist || [];
 
-      // Store these as the previous smart settings
+      // Store these as the previous whitelist settings
       setPreviousSmartSettings({
         kinds: settings.kinds,
         photos: settings.photos,
@@ -250,8 +254,8 @@ const useRelaySettings = () => {
 
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
-      // Update previous smart settings after successful save
-      if (relaySettings.mode === 'smart') {
+      // Update previous whitelist settings after successful save
+      if (relaySettings.mode === 'whitelist') {
         setPreviousSmartSettings({
           kinds: relaySettings.kinds,
           photos: relaySettings.photos,

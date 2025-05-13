@@ -1,6 +1,6 @@
 // Define the state and action types for mode settings
 export interface ModeState {
-  relayMode: 'unlimited' | 'smart';
+  relayMode: 'blacklist' | 'whitelist';
   kinds: number[];
   mediaTypes: string[];
 }

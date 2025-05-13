@@ -21,7 +21,7 @@ export const SmartBaseModeSettings: React.FC = () => {
   const kinds = useAppSelector((state) => state.mode.kinds);
 
   const handleModeChange = () => {
-    dispatch(setMode(mode === 'smart' ? 'unlimited' : 'smart'));
+    dispatch(setMode(mode === 'whitelist' ? 'blacklist' : 'whitelist'));
   };
 
   // Example kinds options, adjust as necessary
@@ -38,13 +38,13 @@ export const SmartBaseModeSettings: React.FC = () => {
       <SwitchContainer>
         <span>{t('common.serverSetting')}</span>
         <BaseSwitch
-          checkedChildren="Smart"
-          unCheckedChildren="unlimited"
-          checked={mode === 'smart'}
+          checkedChildren="Whitelist"
+          unCheckedChildren="Blacklist"
+          checked={mode === 'whitelist'}
           onChange={handleModeChange}
         />
       </SwitchContainer>
-      <h4>{mode === 'smart' ? t('common.supportedKindsAndMedia') : t('common.unsupportedKindsAndMedia')}</h4>
+      <h4>{mode === 'whitelist' ? t('common.supportedKindsAndMedia') : t('common.unsupportedKindsAndMedia')}</h4>
       <>
         <BaseSelect
           mode="multiple"

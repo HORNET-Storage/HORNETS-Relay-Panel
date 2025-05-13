@@ -44,11 +44,11 @@ export const MediaTypeList: React.FC<MediaTypeListProps> = ({
 
   return (
     <BaseCheckbox.Group
-      className={`custom-checkbox-group grid-checkbox-group ${mode === 'unlimited' ? 'blacklist-mode-active' : ''}`}
+      className={`custom-checkbox-group grid-checkbox-group ${mode === 'blacklist' ? 'blacklist-mode-active' : ''}`}
       options={options}
       value={selectedFormats}
       onChange={(checkedValues) => onChange(checkedValues as string[])}
-      disabled={mode !== 'smart' ? false : !isActive}
+      disabled={mode !== 'whitelist' ? false : !isActive}
     />
   );
 };

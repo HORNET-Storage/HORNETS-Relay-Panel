@@ -21,7 +21,7 @@ export const DynamicKindsList: React.FC<DynamicKindsListProps> = ({
   onRemoveKind,
   mode,
 }) => {
-  if (!dynamicKinds.length || mode === 'smart') {
+  if (!dynamicKinds.length || mode === 'whitelist') {
     return null;
   }
 
@@ -32,7 +32,7 @@ export const DynamicKindsList: React.FC<DynamicKindsListProps> = ({
   return (
     <BaseCheckbox.Group
       style={{ paddingLeft: '1rem' }}
-      className={`custom-checkbox-group grid-checkbox-group large-label ${dynamicKinds.length ? 'dynamic-group ' : ''}${mode === 'unlimited' ? 'blacklist-mode-active ' : ''}`}
+      className={`custom-checkbox-group grid-checkbox-group large-label ${dynamicKinds.length ? 'dynamic-group ' : ''}${mode === 'blacklist' ? 'blacklist-mode-active ' : ''}`}
       value={selectedDynamicKinds}
       onChange={handleChange}
     >
@@ -43,7 +43,7 @@ export const DynamicKindsList: React.FC<DynamicKindsListProps> = ({
         >
           <div className="checkbox-container">
             <BaseCheckbox
-              className={mode === 'unlimited' ? 'blacklist-mode-active' : ''}
+              className={mode === 'blacklist' ? 'blacklist-mode-active' : ''}
               value={kind}
             />
             <S.CheckboxLabel

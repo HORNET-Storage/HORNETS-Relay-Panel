@@ -76,7 +76,7 @@ export const MediaSection: React.FC<MediaSectionProps> = ({
   audio,
 }) => {
   const getHeader = (type: string) => 
-    mode !== 'smart' ? `Blacklisted ${type} Extensions` : `${type} Extensions`;
+    mode !== 'whitelist' ? `Blacklisted ${type} Extensions` : `${type} Extensions`;
 
   return (
     <>

@@ -20,7 +20,7 @@ export const notificationsSeverities: NotificationSeverity[] = [
   },
   {
     id: 3,
-    name: 'moderation', // Changed from 'error' to 'moderation'
+    name: 'error',
   },
   {
     id: 4,

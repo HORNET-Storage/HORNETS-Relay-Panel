@@ -33,13 +33,13 @@ export const KindsSection: React.FC<KindsSectionProps> = ({
   onAddKind,
   onRemoveKind,
 }) => {
-  const header = mode !== 'smart' ? 'Blacklisted Kind Numbers' : 'Kind Numbers';
+  const header = mode !== 'whitelist' ? 'Blacklisted Kind Numbers' : 'Kind Numbers';
 
   return (
     <CollapsibleSection header={header}>
       <S.Card>
         <div className="flex-col w-full">
-          {mode !== 'unlimited' && mode !== '' && (
+          {mode !== 'blacklist' && mode !== '' && (
             <div className="switch-container">
               <BaseSwitch
                 checkedChildren="ON"
