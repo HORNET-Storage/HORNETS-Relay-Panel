@@ -95,7 +95,6 @@ export type SettingsGroupName =
   | 'content_filter'
   | 'nest_feeder'
   | 'ollama'
-  | 'xnostr'
   | 'relay_info'
   | 'wallet'
   | 'general'
@@ -107,7 +106,6 @@ export type SettingsGroupType<T extends SettingsGroupName> =
   T extends 'content_filter' ? ContentFilterSettings :
   T extends 'nest_feeder' ? NestFeederSettings :
   T extends 'ollama' ? OllamaSettings :
-  T extends 'xnostr' ? XNostrSettings :
   T extends 'relay_info' ? RelayInfoSettings :
   T extends 'wallet' ? WalletSettings :
   T extends 'general' ? GeneralSettings :
