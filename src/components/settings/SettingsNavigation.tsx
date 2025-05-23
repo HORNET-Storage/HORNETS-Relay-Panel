@@ -94,12 +94,6 @@ const settingsTabs: SettingsTab[] = [
     path: '/settings/ollama'
   },
   {
-    key: 'xnostr',
-    label: 'XNostr',
-    icon: <TwitterOutlined className="item-icon" />,
-    path: '/settings/xnostr'
-  },
-  {
     key: 'relay_info',
     label: 'Relay Info',
     icon: <InfoCircleOutlined className="item-icon" />,

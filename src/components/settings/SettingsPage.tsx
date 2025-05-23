@@ -7,7 +7,6 @@ import {
   PictureOutlined,
   ApiOutlined,
   RobotOutlined,
-  TwitterOutlined,
   InfoCircleOutlined,
   WalletOutlined,
   GlobalOutlined,
@@ -23,7 +22,6 @@ import WalletSettings from './WalletSettings';
 import GeneralSettings from './GeneralSettings';
 import RelayInfoSettings from './RelayInfoSettings';
 import QueryCacheSettings from './QueryCacheSettings';
-import XNostrSettings from './XNostrSettings';
 
 const SettingsContainer = styled.div`
   width: 100%;
@@ -174,13 +172,6 @@ const SettingsPage: React.FC = () => {
       label: 'Ollama',
       icon: <RobotOutlined />,
       component: <OllamaSettings />
-    },
-    {
-      key: 'xnostr',
-      path: '/settings/xnostr',
-      label: 'XNostr',
-      icon: <TwitterOutlined />,
-      component: <XNostrSettings />
     },
     {
       key: 'relay_info',

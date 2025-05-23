@@ -9,7 +9,6 @@ import ContentFilterPanel from '../panels/ContentFilterPanel';
 import NestFeederPanel from '../panels/NestFeederPanel';
 import OllamaPanel from '../panels/OllamaPanel';
 import WalletPanel from '../panels/WalletPanel';
-import XNostrPanel from '../panels/XNostrPanel';
 import QueryCachePanel from '../panels/QueryCachePanel';
 import useGenericSettings from '@app/hooks/useGenericSettings';
 
@@ -155,10 +154,6 @@ const AdvancedSettingsLayout: React.FC<AdvancedSettingsLayoutProps> = ({
             
             <Panel header="Wallet" key="wallet">
               <WalletPanel />
-            </Panel>
-            
-            <Panel header="XNostr Twitter Verification" key="xnostr">
-              <XNostrPanel />
             </Panel>
             
             <Panel header="Query Cache" key="query-cache">
