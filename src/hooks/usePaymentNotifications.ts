@@ -1,9 +1,10 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { notificationController } from '@app/controllers/notificationController';
 import config from '@app/config/config';
-import { readToken } from '@app/services/localStorage.service';
+import { readToken, readUser } from '@app/services/localStorage.service';
 import { useHandleLogout } from './authUtils';
 import { PaymentNotification, PaymentNotificationParams, PaginationData } from '@app/api/paymentNotifications.api';
+import '@app/types/nostr'; // Import Nostr types for window.nostr
 
 // Static variables outside the hook to ensure true singleton pattern
 let isInitialized = false;
@@ -237,16 +238,41 @@ export const usePaymentNotifications = (initialParams?: PaymentNotificationParam
   // Mark all notifications as read
   const markAllAsRead = useCallback(async (pubkey?: string) => {
     try {
-      console.log(`[usePaymentNotifications] Marking all notifications as read${pubkey ? ` for ${pubkey}` : ''}`);
+      // If no pubkey provided, try to get it from the Nostr extension
+      let userPubkey = pubkey;
+      if (!userPubkey) {
+        if (window.nostr) {
+          try {
+            userPubkey = await window.nostr.getPublicKey();
+            console.log('[usePaymentNotifications] Got pubkey from Nostr extension:', userPubkey);
+          } catch (error) {
+            console.error('[usePaymentNotifications] Failed to get pubkey from Nostr extension:', error);
+            throw new Error('Failed to get user pubkey from Nostr extension. Please ensure your Nostr extension is connected.');
+          }
+        } else {
+          throw new Error('Nostr extension not available. Please install and connect a Nostr extension.');
+        }
+      }
+
+      const requestBody = { pubkey: userPubkey };
+      console.log(`[usePaymentNotifications] Request body:`, requestBody);
+      console.log(`[usePaymentNotifications] Marking all notifications as read for ${userPubkey}`);
       
-      const response = await fetch(`${config.baseURL}/api/payment/notifications/read-all`, {
+      const requestOptions: RequestInit = {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: pubkey ? JSON.stringify({ pubkey }) : undefined,
+        body: JSON.stringify(requestBody),
+      };
+      console.log('[usePaymentNotifications] Full request options (excluding Authorization token):', {
+        method: requestOptions.method,
+        headers: { 'Content-Type': 'application/json' },
+        body: requestOptions.body
       });
+
+      const response = await fetch(`${config.baseURL}/api/payment/notifications/read-all`, requestOptions);
       
       if (!response.ok) {
         if (response.status === 401) {
