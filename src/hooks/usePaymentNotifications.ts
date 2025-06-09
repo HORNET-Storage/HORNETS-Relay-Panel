@@ -13,6 +13,7 @@ let globalNotifications: PaymentNotification[] = [];
 let globalPagination: PaginationData | null = null;
 let globalLastFetchTime = 0;
 let globalPreviousIds = new Set<number>();
+let isManualRequest = false; // Flag to track manual vs automatic requests
 
 interface UsePaymentNotificationsResult {
   notifications: PaymentNotification[];
@@ -37,6 +38,9 @@ const fetchPaymentNotifications = async (params: PaymentNotificationParams = {})
     if (params.filter) queryParams.append('filter', params.filter);
     if (params.pubkey) queryParams.append('pubkey', params.pubkey);
     
+    console.log('[fetchPaymentNotifications] Making request with params:', params);
+    console.log('[fetchPaymentNotifications] Query string:', queryParams.toString());
+    
     const response = await fetch(`${config.baseURL}/api/payment/notifications?${queryParams}`, {
       headers: {
         'Content-Type': 'application/json',
@@ -44,15 +48,29 @@ const fetchPaymentNotifications = async (params: PaymentNotificationParams = {})
       },
     });
     
+    console.log('[fetchPaymentNotifications] Response status:', response.status);
+    
     if (response.status === 204) {
       // 204 No Content means no notifications, return empty arrays
-      return { notifications: [], pagination: { currentPage: 1, pageSize: params.limit || 10, totalItems: 0, totalPages: 0, hasNext: false, hasPrevious: false } };
+      // But preserve the requested page number for proper pagination display
+      return {
+        notifications: [],
+        pagination: {
+          currentPage: params.page || 1,
+          pageSize: params.limit || 10,
+          totalItems: 0,
+          totalPages: 0,
+          hasNext: false,
+          hasPrevious: false
+        }
+      };
     } else if (!response.ok) {
       throw new Error(`Request failed: ${response.status}`);
     }
     
     // Only parse JSON if there's content
     const data = response.status !== 204 ? await response.json() : { notifications: [], pagination: null };
+    console.log('[fetchPaymentNotifications] Response data:', data);
     
     // Check if there are new notifications
     if (globalLastFetchTime > 0) {
@@ -113,15 +131,19 @@ const initializePolling = (initialParams?: PaymentNotificationParams) => {
   }
   
   // Initial fetch
-  fetchPaymentNotifications(initialParams).catch(error => 
+  isManualRequest = false; // Mark as automatic
+  fetchPaymentNotifications(initialParams).catch(error =>
     console.error('Failed to fetch payment notifications:', error)
   );
   
   // Set up recurring polling
   activePollingInterval = setInterval(() => {
-    fetchPaymentNotifications(initialParams).catch(error => 
-      console.error('Failed to fetch payment notifications:', error)
-    );
+    if (!isManualRequest) { // Only poll if no manual request is in progress
+      isManualRequest = false; // Mark as automatic
+      fetchPaymentNotifications(initialParams).catch(error =>
+        console.error('Failed to fetch payment notifications:', error)
+      );
+    }
   }, config.notifications.pollingInterval);
   
   // Set up visibility change handler
@@ -138,9 +160,12 @@ const initializePolling = (initialParams?: PaymentNotificationParams) => {
     
     // Set up new interval
     activePollingInterval = setInterval(() => {
-      fetchPaymentNotifications(initialParams).catch(error => 
-        console.error('Failed to fetch payment notifications:', error)
-      );
+      if (!isManualRequest) { // Only poll if no manual request is in progress
+        isManualRequest = false; // Mark as automatic
+        fetchPaymentNotifications(initialParams).catch(error =>
+          console.error('Failed to fetch payment notifications:', error)
+        );
+      }
     }, interval);
   };
 
@@ -163,13 +188,41 @@ export const usePaymentNotifications = (initialParams?: PaymentNotificationParam
     initializePolling(initialParams);
     
     // Subscribe to changes in the global state
-    const checkForUpdates = setInterval(() => {
-      setNotifications(globalNotifications);
-      setPagination(globalPagination);
-    }, 1000); // Check every second
+    // Only sync for dropdown notifications, not for the main page
+    const isMainPage = window.location.pathname.includes('payment-notifications');
+    
+    let checkForUpdates: NodeJS.Timeout | null = null;
+    
+    if (!isMainPage) {
+      checkForUpdates = setInterval(() => {
+        // Don't update local state if there's a manual request in progress
+        if (isManualRequest) {
+          return;
+        }
+        
+        // Only update if data has actually changed
+        setNotifications(prev => {
+          if (JSON.stringify(prev) !== JSON.stringify(globalNotifications)) {
+            console.log('[usePaymentNotifications] Updating notifications from global state');
+            return [...globalNotifications];
+          }
+          return prev;
+        });
+        
+        setPagination(prev => {
+          if (JSON.stringify(prev) !== JSON.stringify(globalPagination)) {
+            console.log('[usePaymentNotifications] Updating pagination from global state');
+            return globalPagination ? { ...globalPagination } : null;
+          }
+          return prev;
+        });
+      }, 5000); // Check every 5 seconds
+    }
     
     return () => {
-      clearInterval(checkForUpdates);
+      if (checkForUpdates) {
+        clearInterval(checkForUpdates);
+      }
     };
   }, [initialParams]);
   
@@ -178,17 +231,22 @@ export const usePaymentNotifications = (initialParams?: PaymentNotificationParam
     setError(null);
     
     try {
+      console.log('[usePaymentNotifications] Manual fetch with params:', params);
+      isManualRequest = true; // Mark as manual request
       const { notifications: newNotifications, pagination: newPagination } = await fetchPaymentNotifications(params);
+      console.log('[usePaymentNotifications] Received notifications:', newNotifications.length, 'pagination:', newPagination);
       
       // Local state update
       setNotifications(newNotifications);
       setPagination(newPagination);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch payment notifications';
+      console.error('[usePaymentNotifications] Error fetching notifications:', err);
       setError(errorMessage);
       notificationController.error({ message: errorMessage });
     } finally {
       setIsLoading(false);
+      isManualRequest = false; // Reset flag
     }
   }, []);
 

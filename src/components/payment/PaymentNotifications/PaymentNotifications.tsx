@@ -275,7 +275,7 @@ export const PaymentNotifications: React.FC<PaymentNotificationsProps> = ({ clas
                   <BasePagination
                     current={pagination.currentPage}
                     pageSize={pagination.pageSize}
-                    total={pagination.totalItems}
+                    total={Math.max(pagination.totalItems, pagination.currentPage * pagination.pageSize)}
                     onChange={handlePageChange}
                     showSizeChanger={false}
                   />
