@@ -78,6 +78,35 @@
 
 ---
 
+## Issue #5: Payment Notifications Pagination Stuck on Page 2
+
+**Problem:** When viewing payment notifications on the payments page, the pagination gets stuck on page 2. Users can navigate to page 2, but attempting to move forward or backward from page 2 doesn't work - the pagination controls become unresponsive.
+
+**Screen Recording:**
+
+![Payment Pagination Issue](screenshots/Screen%20Recording%202025-06-09%20at%2010.14.54.mov)
+
+**Steps to Reproduce:**
+1. Click "View all" in the payment notifications dropdown
+2. Navigate to the payments page
+3. Go to page 2 using pagination controls
+4. Try to navigate to any other page (forward/backward)
+5. Pagination controls become unresponsive
+
+**Expected Fix:**
+- Fix pagination logic to allow proper navigation between all pages
+- Ensure pagination state is properly managed and updated
+- Verify API calls are made correctly for each page request
+- Test pagination functionality across all available pages
+
+**Component Location:**
+- Payment notifications page component
+- Pagination component used for payment notifications
+- Related API calls in `src/api/paymentNotifications.api.ts`
+- Pagination logic in `src/hooks/usePaymentNotifications.ts`
+
+---
+
 ## Note
 
 Hey, just play around with the panel a bit - I may have missed some other issues that need fixing.
