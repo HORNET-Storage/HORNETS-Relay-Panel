@@ -78,9 +78,9 @@
 
 ---
 
-## Issue #5: Payment Notifications Pagination Stuck on Page 2
+## Issue #5: Payment Notifications Pagination Stuck on Page 2 ✅ RESOLVED
 
-**Problem:** When viewing payment notifications on the payments page, the pagination gets stuck on page 2. Users can navigate to page 2, but attempting to move forward or backward from page 2 doesn't work - the pagination controls become unresponsive.
+**Problem:** When viewing payment notifications on the payments page, the pagination gets stuck on page 2. Users can navigate to page 2, but attempting to move forward or backward from page 2 doesn't work - the pagination controls become unresponsive. Additionally, page scrolling was blocked due to infinite re-renders.
 
 **Screen Recording:**
 
@@ -92,18 +92,25 @@
 3. Go to page 2 using pagination controls
 4. Try to navigate to any other page (forward/backward)
 5. Pagination controls become unresponsive
+6. Page scrolling stops working after reload
 
-**Expected Fix:**
-- Fix pagination logic to allow proper navigation between all pages
-- Ensure pagination state is properly managed and updated
-- Verify API calls are made correctly for each page request
-- Test pagination functionality across all available pages
+**Root Cause:**
+- Pagination state was being reset due to 204 responses always returning `currentPage: 1`
+- Constant state syncing (every 1 second) was causing infinite re-renders that blocked the browser's main thread
+- Global state management conflicts between dropdown and main page usage
 
-**Component Location:**
-- Payment notifications page component
-- Pagination component used for payment notifications
-- Related API calls in `src/api/paymentNotifications.api.ts`
-- Pagination logic in `src/hooks/usePaymentNotifications.ts`
+**Solution Implemented:**
+- Fixed pagination by preserving requested page number in 204 responses
+- Disabled constant syncing on main payment notifications page to prevent scroll blocking
+- Improved state synchronization to only update when data actually changes
+- Reduced sync frequency from 1s to 5s for dropdown usage
+- Enhanced pagination display for empty result sets
+
+**Files Modified:**
+- `src/hooks/usePaymentNotifications.ts` - Fixed pagination state management and syncing
+- `src/components/payment/PaymentNotifications/PaymentNotifications.tsx` - Improved pagination display
+
+**Status:** ✅ **RESOLVED** - Pagination now works correctly and page scrolling is restored
 
 ---
 
