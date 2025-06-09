@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Table, Input, Button, Space, Badge, Spin, Modal } from 'antd';
-import { StopOutlined, SearchOutlined, FlagOutlined } from '@ant-design/icons';
+import { Input, Button,  Modal } from 'antd';
+import { StopOutlined, SearchOutlined } from '@ant-design/icons';
 import { useModerationStats, UserStat } from '@app/hooks/useModerationStats';
 import { BlockedPubkey } from '@app/api/blockedPubkeys.api';
+
 import * as S from '../BlockedPubkeys.styles';
 
 interface FlaggedPubkeysTableProps {
@@ -109,7 +110,7 @@ export const FlaggedPubkeysTable: React.FC<FlaggedPubkeysTableProps> = ({
         />
       </div>
       
-      <Table
+      <S.TableRoot
         dataSource={filteredPubkeys}
         columns={columns}
         rowKey="pubkey"
@@ -119,7 +120,7 @@ export const FlaggedPubkeysTable: React.FC<FlaggedPubkeysTableProps> = ({
           showSizeChanger: true,
           showTotal: (total) => `Total: ${total} flagged pubkeys`,
         }}
-        locale={{ emptyText: statsLoading ? 'Loading...' : 'No flagged pubkeys found' }}
+        locale={{ emptyText: statsLoading ?<S.EmptyList>Loading... </S.EmptyList>: <S.EmptyList>No flagged pubkeys found</S.EmptyList> }}
       />
       
       {/* Block Confirmation Modal */}

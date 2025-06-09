@@ -66,7 +66,7 @@ export const darkColorsTheme: ITheme = {
   siderBackground: '#121430',
   spinnerBase: '#339CFD',
   scroll: '#797C9A',
-  border: '#ffffff',
+  border: '#a9a9a9',// changed to a grayer color
   borderNft: '#797C9A',
   textMain: '#ffffff',
   textLight: '#9A9B9F',
@@ -91,7 +91,7 @@ export const darkColorsTheme: ITheme = {
   notificationWarning: '#FFF4E7',
   notificationError: '#FFE2E2',
   heading: BASE_COLORS.white,
-  borderBase: '#a9a9a9',
+  borderBase: '#c7c6ca78',
   disable: '#7e7e7e',
   disabledBg: '#1c2137',
   layoutBodyBg: '#1e2142',

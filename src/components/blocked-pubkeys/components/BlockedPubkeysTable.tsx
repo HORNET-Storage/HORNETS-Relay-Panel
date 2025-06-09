@@ -127,7 +127,7 @@ export const BlockedPubkeysTable: React.FC<BlockedPubkeysTableProps> = ({
   return (
     <>
       <div style={{ marginBottom: '1rem' }}>
-        <Input
+        <S.InputRoot
           placeholder="Search pubkeys or reasons"
           value={searchText}
           onChange={e => setSearchText(e.target.value)}
@@ -136,7 +136,7 @@ export const BlockedPubkeysTable: React.FC<BlockedPubkeysTableProps> = ({
         />
       </div>
 
-      <Table
+      <S.TableRoot
         dataSource={filteredPubkeys}
         columns={columns}
         rowKey="pubkey"
@@ -146,7 +146,7 @@ export const BlockedPubkeysTable: React.FC<BlockedPubkeysTableProps> = ({
           showSizeChanger: true,
           showTotal: (total) => `Total: ${total} blocked pubkeys`,
         }}
-        locale={{ emptyText: 'No blocked pubkeys' }}
+        locale={{ emptyText: <S.EmptyList>No blocked pubkeys</S.EmptyList> }}
       />
 
       <Modal

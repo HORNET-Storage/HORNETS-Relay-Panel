@@ -1,4 +1,54 @@
 import styled from 'styled-components';
+import Card from 'antd/lib/card/Card';
+import Table from 'antd/es/table';
+import { Input } from 'antd';
+import { BaseCol } from '../common/BaseCol/BaseCol';
+export const TableRoot = styled(Table)`
+  border-radius: 12px;
+
+  & .ant-table-thead .ant-table-cell {
+    background-color: var(--secondary-background-color);
+  }
+  .ant-table-container table > thead > tr:first-child th:last-child {
+    border-top-right-radius: 12px;
+  }
+  .ant-table-container table > thead > tr:first-child th:first-child {
+    border-top-left-radius: 12px;
+  }
+  .ant-table-tbody {
+    background-color: var(--layout-sider-bg-color);
+  }
+  .ant-table-placeholder .ant-table-cell {
+    background-color: var(--layout-sider-bg-color);
+    transition: none;
+  }
+  .ant-table-placeholder .ant-table-cell:hover {
+    background-color: var(--layout-sider-bg-color);
+  }
+`;
+export const InputRoot = styled(Input)`
+  background-color: var(--layout-sider-bg-color);
+  & input {
+    background-color: var(--layout-sider-bg-color);
+  }
+`;
+export const BaseColRoot = styled(BaseCol)`
+  overflow: auto;
+  border-radius: 8px;
+  height: 100%;
+`;
+export const TableContainer = styled.div`
+  border-radius: 8px;
+`;
+export const CardRoot = styled(Card)`
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background-color: var(--background-color);
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  padding-top: 1rem;
+  padding-bottom: 2rem;
+`;
 
 export const HeaderWrapper = styled.div`
   display: flex;
@@ -6,7 +56,7 @@ export const HeaderWrapper = styled.div`
   margin-bottom: 1.5rem;
   flex-wrap: wrap;
   gap: 1rem;
-  
+
   @media (max-width: 768px) {
     flex-direction: column;
   }
@@ -53,4 +103,11 @@ export const CircularBadge = styled.div<{ color: string }>`
   border-radius: 50%;
   font-weight: bold;
   margin-right: 8px;
+`;
+export const EmptyList = styled.div`
+  min-height: 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-light-color);
 `;
