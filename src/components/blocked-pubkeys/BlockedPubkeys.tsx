@@ -7,6 +7,7 @@ import { BlockedPubkeysTable } from './components/BlockedPubkeysTable';
 import { FlaggedPubkeysTable } from './components/FlaggedPubkeysTable';
 import { BlockPubkeyForm } from './components/BlockPubkeyForm';
 import { useModerationStats } from '@app/hooks/useModerationStats';
+import { LockFilled } from '@ant-design/icons';
 import * as S from './BlockedPubkeys.styles';
 
 const { Title, Text } = Typography;
@@ -35,7 +36,7 @@ export const BlockedPubkeys: React.FC = () => {
         <Space direction="vertical" size="large" style={{ width: '100%' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
-              <Title level={3}>Access Control</Title>
+              <Title level={3}>Access Control <LockFilled /></Title>
               <Text style={{color:"var(--text-light-color)"}}>
                 Control access to your relay and manage flagged pubkeys
               </Text>
