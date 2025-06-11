@@ -1,26 +1,8 @@
 import styled from 'styled-components';
 import Card from 'antd/lib/card/Card';
-import Table from 'antd/es/table';
+import { Table, TableProps } from 'antd';
 import { Input } from 'antd';
 import { BaseCol } from '../common/BaseCol/BaseCol';
-export const TableRoot = styled(Table)`
-  border-radius: 12px;
-
-  & .ant-table-thead .ant-table-cell {
-    background-color: var(--secondary-background-color);
-  }
-
-  .ant-table-tbody {
-    background-color: var(--layout-sider-bg-color);
-  }
-  .ant-table-placeholder .ant-table-cell {
-    background-color: var(--layout-sider-bg-color);
-    transition: none;
-  }
-  .ant-table-placeholder .ant-table-cell:hover {
-    background-color: var(--layout-sider-bg-color);
-  }
-`;
 export const InputRoot = styled(Input)`
   background-color: var(--layout-sider-bg-color);
   & input {
