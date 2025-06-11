@@ -11,12 +11,12 @@ interface BlockedPubkeysTableProps {
   loading: boolean;
   onUnblock: (pubkey: string) => Promise<void>;
 }
-const TableRoot = createStyledTable<BlockedPubkey>();
 export const BlockedPubkeysTable: React.FC<BlockedPubkeysTableProps> = ({ blockedPubkeys, loading, onUnblock }) => {
   const [searchText, setSearchText] = useState('');
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
   const [currentPubkey, setCurrentPubkey] = useState('');
   const { getFlagCountsForPubkeys, loading: statsLoading } = useModerationStats();
+  const TableRoot = createStyledTable<BlockedPubkey>();
 
   // Get flag counts for all pubkeys in the table
   const pubkeyFlagCounts = getFlagCountsForPubkeys(blockedPubkeys.map((bp) => bp.pubkey));

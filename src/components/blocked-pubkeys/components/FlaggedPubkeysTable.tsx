@@ -12,7 +12,7 @@ interface FlaggedPubkeysTableProps {
   onBlock: (pubkey: string, reason?: string) => Promise<void>;
   disabled?: boolean;
 }
-const TableRoot = createStyledTable<UserStat>();
+
 export const FlaggedPubkeysTable: React.FC<FlaggedPubkeysTableProps> = ({
   blockedPubkeys,
   onBlock,
@@ -23,6 +23,7 @@ export const FlaggedPubkeysTable: React.FC<FlaggedPubkeysTableProps> = ({
   const [currentPubkey, setCurrentPubkey] = useState('');
   const [blockReason, setBlockReason] = useState('');
   const { stats, loading: statsLoading } = useModerationStats();
+  const TableRoot = createStyledTable<UserStat>();
 
   // Filter out already blocked pubkeys and return the rest
   const flaggedUsers =

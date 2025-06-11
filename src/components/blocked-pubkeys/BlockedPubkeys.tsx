@@ -16,7 +16,7 @@ const { Title, Text } = Typography;
 export function createStyledTable<T extends object = any>() {
   const GenericTable: FC<TableProps<T>> = (props) => <Table {...props} />;
 
-  return styled(GenericTable)`
+  const StyledTable = styled(GenericTable)`
     border-radius: 12px;
 
     & .ant-table-thead .ant-table-cell {
@@ -34,6 +34,7 @@ export function createStyledTable<T extends object = any>() {
       background-color: var(--layout-sider-bg-color);
     }
   `;
+  return StyledTable;
 }
 export const BlockedPubkeys: React.FC = () => {
   const [activeView, setActiveView] = useState<'blocked' | 'flagged'>('blocked');
