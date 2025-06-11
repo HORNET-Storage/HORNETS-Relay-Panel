@@ -110,18 +110,20 @@ export const FlaggedPubkeysTable: React.FC<FlaggedPubkeysTableProps> = ({
         />
       </div>
       
-      <S.TableRoot
-        dataSource={filteredPubkeys}
-        columns={columns}
-        rowKey="pubkey"
-        loading={statsLoading}
-        pagination={{
-          pageSize: 10,
-          showSizeChanger: true,
-          showTotal: (total) => `Total: ${total} flagged pubkeys`,
-        }}
-        locale={{ emptyText: statsLoading ?<S.EmptyList>Loading... </S.EmptyList>: <S.EmptyList>No flagged pubkeys found</S.EmptyList> }}
-      />
+      <S.TableContainer>
+        <S.TableRoot
+          dataSource={filteredPubkeys}
+          columns={columns}
+          rowKey="pubkey"
+          loading={statsLoading}
+          pagination={{
+            pageSize: 10,
+            showSizeChanger: true,
+            showTotal: (total) => `Total: ${total} flagged pubkeys`,
+          }}
+          locale={{ emptyText: statsLoading ?<S.EmptyList>Loading... </S.EmptyList>: <S.EmptyList>No flagged pubkeys found</S.EmptyList> }}
+        />
+      </S.TableContainer> 
       
       {/* Block Confirmation Modal */}
       <Modal
