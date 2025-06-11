@@ -9,12 +9,7 @@ export const TableRoot = styled(Table)`
   & .ant-table-thead .ant-table-cell {
     background-color: var(--secondary-background-color);
   }
-  .ant-table-container table > thead > tr:first-child th:last-child {
-    border-top-right-radius: 12px;
-  }
-  .ant-table-container table > thead > tr:first-child th:first-child {
-    border-top-left-radius: 12px;
-  }
+
   .ant-table-tbody {
     background-color: var(--layout-sider-bg-color);
   }
@@ -38,7 +33,13 @@ export const BaseColRoot = styled(BaseCol)`
   height: 100%;
 `;
 export const TableContainer = styled.div`
-  border-radius: 8px;
+  border-radius: 12px;
+  margin: 0 2px;
+  padding-top: 0.4rem;
+  padding-bottom: 2rem;
+  background-color: var(--secondary-background-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border-base-color);
 `;
 export const CardRoot = styled(Card)`
   border: none;
@@ -110,4 +111,5 @@ export const EmptyList = styled.div`
   align-items: center;
   justify-content: center;
   color: var(--text-light-color);
+  border-bottom: none;
 `;
