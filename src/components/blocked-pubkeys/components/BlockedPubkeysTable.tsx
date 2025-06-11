@@ -136,18 +136,20 @@ export const BlockedPubkeysTable: React.FC<BlockedPubkeysTableProps> = ({
         />
       </div>
 
-      <S.TableRoot
-        dataSource={filteredPubkeys}
-        columns={columns}
-        rowKey="pubkey"
-        loading={loading}
-        pagination={{
-          pageSize: 10,
-          showSizeChanger: true,
-          showTotal: (total) => `Total: ${total} blocked pubkeys`,
-        }}
-        locale={{ emptyText: <S.EmptyList>No blocked pubkeys</S.EmptyList> }}
-      />
+      <S.TableContainer>
+        <S.TableRoot
+          dataSource={filteredPubkeys}
+          columns={columns}
+          rowKey="pubkey"
+          loading={loading}
+          pagination={{
+            pageSize: 10,
+            showSizeChanger: true,
+            showTotal: (total) => `Total: ${total} blocked pubkeys`,
+          }}
+          locale={{ emptyText: <S.EmptyList>No blocked pubkeys</S.EmptyList> }}
+        />
+      </S.TableContainer>
 
       <Modal
         title="Confirm Unblock"
