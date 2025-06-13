@@ -17,49 +17,7 @@
 
 ---
 
-## Issue #2: Access Control Text Readability & Visual Design
-
-**Problem:** The Access Control page has poor text contrast and readability issues. Some text elements are difficult to read due to low contrast against the dark background, affecting user experience and accessibility.
-
-**Screenshot:**
-
-![Access Control Text Readability Issue](screenshots/access-control-issue.png)
-
-**Expected Fix:**
-- Improve text contrast ratios to meet accessibility standards
-- Enhance readability of form labels, placeholder text, and table headers
-- Adjust color scheme for better visual hierarchy
-- Ensure all text elements are clearly visible against the dark theme
-
-**Component Location:**
-- `src/components/blocked-pubkeys/BlockedPubkeys.tsx`
-- `src/components/blocked-pubkeys/components/BlockedPubkeysTable.tsx`
-- `src/components/blocked-pubkeys/BlockedPubkeys.styles.ts`
-
----
-
-## Issue #3: Flagged Access Tab Text Readability
-
-**Problem:** The Flagged Access tab view has the same text readability issues as the Blocked Access tab. Poor contrast makes it difficult to read table content, search placeholder text, and other UI elements against the dark background.
-
-**Screenshot:**
-
-![Flagged Access Text Readability Issue](screenshots/flagged-access-issue.png)
-
-**Expected Fix:**
-- Improve text contrast ratios for table headers and content
-- Enhance readability of search input placeholder text
-- Ensure "No flagged pubkeys found" message is clearly visible
-- Apply consistent color scheme improvements across both tabs
-
-**Component Location:**
-- `src/components/blocked-pubkeys/BlockedPubkeys.tsx`
-- `src/components/blocked-pubkeys/components/FlaggedPubkeysTable.tsx`
-- `src/components/blocked-pubkeys/BlockedPubkeys.styles.ts`
-
----
-
-## Issue #4: Notification Dropdown Auto-Close Behavior
+## Issue #2: Notification Dropdown Auto-Close Behavior
 
 **Problem:** When clicking "View all" in the notifications dropdown, the dropdown doesn't automatically close. Users expect the dropdown to close when navigating to the full notifications page, but it remains open creating a poor UX.
 
