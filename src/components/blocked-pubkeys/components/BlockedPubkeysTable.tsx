@@ -1,28 +1,25 @@
 import React, { useState } from 'react';
-import { Table, Input, Button, Modal, Tooltip, Space, Badge, Spin } from 'antd';
-import { DeleteOutlined, CopyOutlined, SearchOutlined, FlagOutlined } from '@ant-design/icons';
+import { Button, Modal, Tooltip, Space, Spin, TableColumnsType, Table } from 'antd';
+import { DeleteOutlined, CopyOutlined, SearchOutlined } from '@ant-design/icons';
 import { BlockedPubkey } from '@app/api/blockedPubkeys.api';
 import { useModerationStats } from '@app/hooks/useModerationStats';
 import * as S from '../BlockedPubkeys.styles';
+import { createStyledTable } from '../BlockedPubkeys';
 
 interface BlockedPubkeysTableProps {
   blockedPubkeys: BlockedPubkey[];
   loading: boolean;
   onUnblock: (pubkey: string) => Promise<void>;
 }
-
-export const BlockedPubkeysTable: React.FC<BlockedPubkeysTableProps> = ({
-  blockedPubkeys,
-  loading,
-  onUnblock,
-}) => {
+export const BlockedPubkeysTable: React.FC<BlockedPubkeysTableProps> = ({ blockedPubkeys, loading, onUnblock }) => {
   const [searchText, setSearchText] = useState('');
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
   const [currentPubkey, setCurrentPubkey] = useState('');
   const { getFlagCountsForPubkeys, loading: statsLoading } = useModerationStats();
-  
+  const TableRoot = createStyledTable<BlockedPubkey>();
+
   // Get flag counts for all pubkeys in the table
-  const pubkeyFlagCounts = getFlagCountsForPubkeys(blockedPubkeys.map(bp => bp.pubkey));
+  const pubkeyFlagCounts = getFlagCountsForPubkeys(blockedPubkeys.map((bp) => bp.pubkey));
 
   // Handle pubkey copy
   const handleCopy = (pubkey: string) => {
@@ -43,9 +40,10 @@ export const BlockedPubkeysTable: React.FC<BlockedPubkeysTableProps> = ({
   };
 
   // Filter pubkeys based on search
-  const filteredPubkeys = blockedPubkeys.filter(item => 
-    item.pubkey.toLowerCase().includes(searchText.toLowerCase()) ||
-    (item.reason && item.reason.toLowerCase().includes(searchText.toLowerCase()))
+  const filteredPubkeys = blockedPubkeys.filter(
+    (item) =>
+      item.pubkey.toLowerCase().includes(searchText.toLowerCase()) ||
+      (item.reason && item.reason.toLowerCase().includes(searchText.toLowerCase())),
   );
 
   // Format pubkey for display (truncate)
@@ -56,7 +54,7 @@ export const BlockedPubkeysTable: React.FC<BlockedPubkeysTableProps> = ({
     return `${cleanPubkey.substring(0, 6)}...${cleanPubkey.substring(cleanPubkey.length - 6)}`;
   };
 
-  const columns = [
+  const columns: TableColumnsType<BlockedPubkey> = [
     {
       title: 'Pubkey',
       dataIndex: 'pubkey',
@@ -65,12 +63,7 @@ export const BlockedPubkeysTable: React.FC<BlockedPubkeysTableProps> = ({
         <Space>
           {formatPubkey(pubkey)}
           <Tooltip title="Copy full pubkey">
-            <Button 
-              icon={<CopyOutlined />} 
-              type="text" 
-              size="small" 
-              onClick={() => handleCopy(pubkey)}
-            />
+            <Button icon={<CopyOutlined />} type="text" size="small" onClick={() => handleCopy(pubkey)} />
           </Tooltip>
         </Space>
       ),
@@ -96,7 +89,7 @@ export const BlockedPubkeysTable: React.FC<BlockedPubkeysTableProps> = ({
             {statsLoading ? (
               <Spin size="small" />
             ) : (
-              <S.CircularBadge 
+              <S.CircularBadge
                 color={count > 10 ? 'var(--error-color)' : count > 5 ? 'var(--warning-color)' : 'var(--primary-color)'}
               >
                 {count}
@@ -105,7 +98,7 @@ export const BlockedPubkeysTable: React.FC<BlockedPubkeysTableProps> = ({
           </S.FlagCountContainer>
         );
       },
-      sorter: (a: BlockedPubkey, b: BlockedPubkey) => 
+      sorter: (a: BlockedPubkey, b: BlockedPubkey) =>
         (pubkeyFlagCounts[a.pubkey] || 0) - (pubkeyFlagCounts[b.pubkey] || 0),
       defaultSortOrder: 'descend' as const,
     },
@@ -113,11 +106,7 @@ export const BlockedPubkeysTable: React.FC<BlockedPubkeysTableProps> = ({
       title: 'Actions',
       key: 'actions',
       render: (_: any, record: BlockedPubkey) => (
-        <Button
-          danger
-          icon={<DeleteOutlined />}
-          onClick={() => showConfirmModal(record.pubkey)}
-        >
+        <Button danger icon={<DeleteOutlined />} onClick={() => showConfirmModal(record.pubkey)}>
           Unblock
         </Button>
       ),
@@ -127,27 +116,29 @@ export const BlockedPubkeysTable: React.FC<BlockedPubkeysTableProps> = ({
   return (
     <>
       <div style={{ marginBottom: '1rem' }}>
-        <Input
+        <S.InputRoot
           placeholder="Search pubkeys or reasons"
           value={searchText}
-          onChange={e => setSearchText(e.target.value)}
+          onChange={(e) => setSearchText(e.target.value)}
           prefix={<SearchOutlined />}
           allowClear
         />
       </div>
 
-      <Table
-        dataSource={filteredPubkeys}
-        columns={columns}
-        rowKey="pubkey"
-        loading={loading}
-        pagination={{
-          pageSize: 10,
-          showSizeChanger: true,
-          showTotal: (total) => `Total: ${total} blocked pubkeys`,
-        }}
-        locale={{ emptyText: 'No blocked pubkeys' }}
-      />
+      <S.TableContainer>
+        <TableRoot
+          dataSource={filteredPubkeys}
+          columns={columns}
+          rowKey="pubkey"
+          loading={loading}
+          pagination={{
+            pageSize: 10,
+            showSizeChanger: true,
+            showTotal: (total) => `Total: ${total} blocked pubkeys`,
+          }}
+          locale={{ emptyText: <S.EmptyList>No blocked pubkeys</S.EmptyList> }}
+        />
+      </S.TableContainer>
 
       <Modal
         title="Confirm Unblock"
@@ -158,7 +149,9 @@ export const BlockedPubkeysTable: React.FC<BlockedPubkeysTableProps> = ({
         okButtonProps={{ danger: true }}
       >
         <p>Are you sure you want to unblock this pubkey?</p>
-        <p><strong>{currentPubkey.replace('blocked_pubkey:', '')}</strong></p>
+        <p>
+          <strong>{currentPubkey.replace('blocked_pubkey:', '')}</strong>
+        </p>
       </Modal>
     </>
   );

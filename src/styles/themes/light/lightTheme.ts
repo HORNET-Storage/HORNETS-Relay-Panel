@@ -69,7 +69,7 @@ export const lightColorsTheme: ITheme = {
   border: '#cce1f4',
   borderNft: '#79819A',
   textMain: '#404040',
-  textLight: '#9A9B9F',
+  textLight: '#777778',
   textSuperLight: '#BEC0C6',
   textSecondary: BASE_COLORS.white,
   textDark: '#404040',

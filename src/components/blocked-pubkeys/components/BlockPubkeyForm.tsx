@@ -1,16 +1,38 @@
 import React, { useState } from 'react';
 import { Form, Input, Button, Card } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
+import styled from 'styled-components';
+import { BREAKPOINTS } from '@app/styles/themes/constants';
 
 interface BlockPubkeyFormProps {
   onSubmit: (pubkey: string, reason?: string) => Promise<void>;
   disabled: boolean;
 }
+const CardRoot = styled(Card)`
+  border-color: var(--border-base-color) !important;
+  border-width: 1px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  background-color: var(--secondary-background-color) !important;
 
-export const BlockPubkeyForm: React.FC<BlockPubkeyFormProps> = ({
-  onSubmit,
-  disabled,
-}) => {
+  & .ant-card-head {
+    border-bottom-color: var(--border-base-color) !important;
+  }
+}
+`;
+const TextArea = styled(Input.TextArea)`
+  background-color: var(--layout-sider-bg-color) !important;
+`;
+const InputArea = styled(Input)`
+  background-color: var(--layout-sider-bg-color) !important;
+`;
+export const FormItemContainer = styled.div`
+  width: 100%;
+  @media screen and (min-width: ${BREAKPOINTS.md}px) {
+    padding-right: 1.5rem;
+  }
+`;
+
+export const BlockPubkeyForm: React.FC<BlockPubkeyFormProps> = ({ onSubmit, disabled }) => {
   const [form] = Form.useForm();
   const [submitting, setSubmitting] = useState(false);
 
@@ -36,42 +58,26 @@ export const BlockPubkeyForm: React.FC<BlockPubkeyFormProps> = ({
   };
 
   return (
-    <Card title="Block a Pubkey" size="small">
-      <Form
-        form={form}
-        layout="vertical"
-        onFinish={handleSubmit}
-      >
-        <Form.Item
-          name="pubkey"
-          label="Pubkey to block"
-          rules={[{ validator: validatePubkey }]}
-        >
-          <Input placeholder="Enter the 64-character hex pubkey" />
-        </Form.Item>
+    <CardRoot title="Block a Pubkey" size="small">
+      <Form form={form} layout="vertical" onFinish={handleSubmit}>
+        <FormItemContainer>
+          <Form.Item name="pubkey" label="Pubkey to block" rules={[{ validator: validatePubkey }]}>
+            <InputArea placeholder="Enter the 64-character hex pubkey" />
+          </Form.Item>
+        </FormItemContainer>
 
-        <Form.Item
-          name="reason"
-          label="Reason (optional)"
-        >
-          <Input.TextArea 
-            placeholder="Enter reason for blocking this pubkey" 
-            rows={2} 
-          />
-        </Form.Item>
+        <FormItemContainer>
+          <Form.Item name="reason" label="Reason (optional)">
+            <TextArea placeholder="Enter reason for blocking this pubkey" rows={2} />
+          </Form.Item>
+        </FormItemContainer>
 
         <Form.Item>
-          <Button
-            type="primary"
-            htmlType="submit"
-            icon={<PlusOutlined />}
-            loading={submitting}
-            disabled={disabled}
-          >
+          <Button type="primary" htmlType="submit" icon={<PlusOutlined />} loading={submitting} disabled={disabled}>
             Block Pubkey
           </Button>
         </Form.Item>
       </Form>
-    </Card>
+    </CardRoot>
   );
 };

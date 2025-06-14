@@ -6,7 +6,7 @@ export const LayoutMaster = styled(BaseLayout)`
 `;
 
 export const LayoutMain = styled(BaseLayout)`
-  height: fit-content;
+  height: 100vh;
   @media only screen and ${media.md} {
     margin-left: 80px;
   }

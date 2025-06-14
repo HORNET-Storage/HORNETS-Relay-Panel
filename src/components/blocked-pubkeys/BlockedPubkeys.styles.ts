@@ -1,4 +1,37 @@
 import styled from 'styled-components';
+import Card from 'antd/lib/card/Card';
+import { Table, TableProps } from 'antd';
+import { Input } from 'antd';
+import { BaseCol } from '../common/BaseCol/BaseCol';
+export const InputRoot = styled(Input)`
+  background-color: var(--layout-sider-bg-color);
+  & input {
+    background-color: var(--layout-sider-bg-color);
+  }
+`;
+export const BaseColRoot = styled(BaseCol)`
+  overflow: auto;
+  border-radius: 8px;
+  height: 100%;
+`;
+export const TableContainer = styled.div`
+  border-radius: 12px;
+  margin: 0 2px;
+  padding-top: 0.4rem;
+  padding-bottom: 2rem;
+  background-color: var(--secondary-background-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border-base-color);
+`;
+export const CardRoot = styled(Card)`
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background-color: var(--background-color);
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  padding-top: 1rem;
+  padding-bottom: 2rem;
+`;
 
 export const HeaderWrapper = styled.div`
   display: flex;
@@ -6,7 +39,7 @@ export const HeaderWrapper = styled.div`
   margin-bottom: 1.5rem;
   flex-wrap: wrap;
   gap: 1rem;
-  
+
   @media (max-width: 768px) {
     flex-direction: column;
   }
@@ -53,4 +86,12 @@ export const CircularBadge = styled.div<{ color: string }>`
   border-radius: 50%;
   font-weight: bold;
   margin-right: 8px;
+`;
+export const EmptyList = styled.div`
+  min-height: 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-light-color);
+  border-bottom: none;
 `;
