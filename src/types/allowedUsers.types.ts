@@ -85,7 +85,8 @@ export const MODE_CONFIGURATIONS: Record<AllowedUsersMode, ModeOptions> = {
       { value: 'all_users', label: 'All Users' }
     ],
     writeOptions: [
-      { value: 'allowed_users', label: 'Allowed Users' }
+      { value: 'allowed_users', label: 'Allowed Users' },
+      { value: 'all_users', label: 'All Users' }
     ],
     allowsFreeTiers: true,
     requiresNpubManagement: true

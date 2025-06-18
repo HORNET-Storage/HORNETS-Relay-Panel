@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Input, Table, Space, Modal, Form, Select, message, Popconfirm, Switch } from 'antd';
+import { Button, Input, Table, Space, Modal, Form, Select, message, Popconfirm } from 'antd';
 import { PlusOutlined, UploadOutlined, DeleteOutlined, DownloadOutlined } from '@ant-design/icons';
 import { useAllowedUsersNpubs, useAllowedUsersValidation } from '@app/hooks/useAllowedUsers';
 import { AllowedUsersSettings, AllowedUsersMode } from '@app/types/allowedUsers.types';
@@ -220,9 +220,9 @@ export const NPubManagement: React.FC<NPubManagementProps> = ({
       key: 'readAccess',
       align: 'center' as const,
       render: (_: any, record: UnifiedUser) => (
-        <Switch
+        <S.StyledSwitch
           checked={record.readAccess}
-          onChange={(checked) => handleToggleAccess(record.npub, 'read', checked)}
+          onChange={(checked: boolean) => handleToggleAccess(record.npub, 'read', checked)}
           loading={readNpubs.loading}
           size="small"
         />
@@ -233,9 +233,9 @@ export const NPubManagement: React.FC<NPubManagementProps> = ({
       key: 'writeAccess',
       align: 'center' as const,
       render: (_: any, record: UnifiedUser) => (
-        <Switch
+        <S.StyledSwitch
           checked={record.writeAccess}
-          onChange={(checked) => handleToggleAccess(record.npub, 'write', checked)}
+          onChange={(checked: boolean) => handleToggleAccess(record.npub, 'write', checked)}
           loading={writeNpubs.loading}
           size="small"
         />
@@ -346,10 +346,14 @@ export const NPubManagement: React.FC<NPubManagementProps> = ({
           >
             <Space direction="vertical">
               <Form.Item name="readAccess" valuePropName="checked" style={{ marginBottom: 8 }}>
-                <Switch size="small" /> Read Access
+                <S.PermissionLabel>
+                  <S.StyledSwitch size="small" /> Read Access
+                </S.PermissionLabel>
               </Form.Item>
               <Form.Item name="writeAccess" valuePropName="checked" style={{ marginBottom: 0 }}>
-                <Switch size="small" /> Write Access
+                <S.PermissionLabel>
+                  <S.StyledSwitch size="small" /> Write Access
+                </S.PermissionLabel>
               </Form.Item>
             </Space>
           </Form.Item>

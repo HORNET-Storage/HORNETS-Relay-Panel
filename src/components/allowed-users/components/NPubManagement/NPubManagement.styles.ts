@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { Switch } from 'antd';
 import { media } from '@app/styles/themes/constants';
 
 export const Container = styled.div`
@@ -62,4 +63,58 @@ export const BulkImportContainer = styled.div`
       }
     }
   }
+`;
+
+export const StyledSwitch = styled(Switch)`
+  &.ant-switch {
+    /* When switch is OFF (unchecked) */
+    background-color: #434343 !important;
+    border: 1px solid #666 !important;
+    
+    /* When switch is ON (checked) */
+    &.ant-switch-checked {
+      background-color: var(--primary-color) !important;
+      border: 1px solid var(--primary-color) !important;
+    }
+    
+    /* Handle styling */
+    .ant-switch-handle {
+      background-color: #fff !important;
+      border: 1px solid #d9d9d9;
+      
+      &::before {
+        background-color: #fff !important;
+      }
+    }
+    
+    /* Disabled state */
+    &.ant-switch-disabled {
+      background-color: #2a2a2a !important;
+      border: 1px solid #444 !important;
+      opacity: 0.6;
+      
+      .ant-switch-handle {
+        background-color: #666 !important;
+      }
+    }
+    
+    /* Loading state */
+    &.ant-switch-loading {
+      background-color: #434343 !important;
+      border: 1px solid #666 !important;
+      
+      &.ant-switch-checked {
+        background-color: var(--primary-color) !important;
+        opacity: 0.7;
+      }
+    }
+  }
+`;
+
+export const PermissionLabel = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-main-color);
+  font-size: 14px;
 `;
