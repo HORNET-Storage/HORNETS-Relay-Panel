@@ -72,7 +72,12 @@ export const PermissionsConfig: React.FC<PermissionsConfigProps> = ({
           description="Your relay is configured to allow read access to all users. This means anyone can read events from your relay."
           type="warning"
           showIcon
-          style={{ marginBottom: '1rem' }}
+          style={{ 
+            marginBottom: '1rem',
+            backgroundColor: '#25284B',
+            border: '1px solid #d9d9d9',
+            color: '#d9d9d9'
+          }}
         />
       )}
 

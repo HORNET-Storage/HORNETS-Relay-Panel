@@ -157,9 +157,9 @@ export const TiersConfig: React.FC<TiersConfigProps> = ({
           showIcon
           style={{ 
             marginBottom: '1rem',
-            backgroundColor: '#ffffff !important',
-            border: '1px solid #ffd666 !important',
-            color: '#1f1f1f !important'
+            backgroundColor: '#25284B',
+            border: '1px solid #d9d9d9',
+            color: '#d9d9d9'
           }}
         />
       )}
@@ -172,9 +172,9 @@ export const TiersConfig: React.FC<TiersConfigProps> = ({
           showIcon
           style={{ 
             marginBottom: '1rem',
-            backgroundColor: '#ffffff !important',
-            border: '1px solid #52c41a !important',
-            color: '#1f1f1f !important'
+            backgroundColor: '#25284B',
+            border: '1px solid #d9d9d9',
+            color: '#d9d9d9'
           }}
         />
       )}
@@ -187,9 +187,9 @@ export const TiersConfig: React.FC<TiersConfigProps> = ({
           showIcon
           style={{ 
             marginBottom: '1rem',
-            backgroundColor: '#ffffff !important',
-            border: '1px solid #1890ff !important',
-            color: '#1f1f1f !important'
+            backgroundColor: '#25284B',
+            border: '1px solid #d9d9d9',
+            color: '#d9d9d9'
           }}
         />
       )}
@@ -269,6 +269,11 @@ export const TiersConfig: React.FC<TiersConfigProps> = ({
               message="Note: Free tiers (price = 0) are not allowed in paid mode"
               type="warning"
               showIcon
+              style={{
+                backgroundColor: '#fafafa',
+                border: '1px solid #d9d9d9',
+                color: '#262626'
+              }}
             />
           )}
           
@@ -278,9 +283,9 @@ export const TiersConfig: React.FC<TiersConfigProps> = ({
               type="success"
               showIcon
               style={{
-                backgroundColor: '#ffffff !important',
-                border: '1px solid #52c41a !important',
-                color: '#1f1f1f !important'
+                backgroundColor: '#fafafa',
+                border: '1px solid #d9d9d9',
+                color: '#262626'
               }}
             />
           )}
