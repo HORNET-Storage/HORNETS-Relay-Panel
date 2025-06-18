@@ -39,6 +39,7 @@ const NotificationsPage = React.lazy(() => import('@app/pages/NotificationsPage'
 const PaymentNotificationsPage = React.lazy(() => import('@app/pages/PaymentNotificationsPage'));
 const ReportNotificationsPage = React.lazy(() => import('@app/pages/ReportNotificationsPage'));
 const PaymentsPage = React.lazy(() => import('@app/pages/PaymentsPage'));
+const AllowedUsersPage = React.lazy(() => import('@app/pages/AllowedUsersPage'));
 const ButtonsPage = React.lazy(() => import('@app/pages/uiComponentsPages/ButtonsPage'));
 const SpinnersPage = React.lazy(() => import('@app/pages/uiComponentsPages/SpinnersPage'));
 const AvatarsPage = React.lazy(() => import('@app/pages/uiComponentsPages/dataDisplay/AvatarsPage'));
@@ -135,6 +136,7 @@ const Notifications = withLoading(NotificationsPage);
 const PaymentNotifications = withLoading(PaymentNotificationsPage);
 const ReportNotifications = withLoading(ReportNotificationsPage);
 const Payments = withLoading(PaymentsPage);
+const AllowedUsers = withLoading(AllowedUsersPage);
 
 const AuthLayoutFallback = withLoading(AuthLayout);
 const LogoutFallback = withLoading(Logout);
@@ -159,6 +161,7 @@ export const AppRouter: React.FC = () => {
           <Route path="relay-stats" element={<RelayStats />} />
           <Route path={RELAY_SETTINGS_PATH} element={<RelaySettings />} />
           <Route path={`${SETTINGS_PATH}/*`} element={<Settings />} />
+          <Route path="allowed-users" element={<AllowedUsers />} />
           <Route path="blocked-pubkeys" element={<BlockedPubkeys />} />
           <Route path="apps">
             <Route path="feed" element={<NewsFeed />} />

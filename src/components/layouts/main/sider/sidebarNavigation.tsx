@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { DashboardOutlined, TableOutlined, StopOutlined, FlagOutlined, SettingOutlined } from '@ant-design/icons';
+import { DashboardOutlined, TableOutlined, StopOutlined, FlagOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
 import { ReactComponent as NestIcon } from '@app/assets/icons/hive.svg';
 import { ReactComponent as BtcIcon } from '@app/assets/icons/btc.svg';
 import { ReactComponent as StatsIcon } from '@app/assets/icons/stats.svg';
@@ -36,6 +36,12 @@ export const useSidebarNavigation = (): SidebarNavigationItem[] => {
         key: 'advanced-settings',
         url: '/settings',
         icon: <SettingOutlined />,
+      },
+      {
+        title: 'Allowed Users',
+        key: 'allowed-users',
+        url: '/allowed-users',
+        icon: <UserOutlined />,
       },
       {
         title: 'common.access-control',
