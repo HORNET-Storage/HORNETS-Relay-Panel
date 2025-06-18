@@ -5,7 +5,8 @@ import {
   AllowedUsersApiResponse,
   AllowedUsersNpubsResponse,
   BulkImportRequest,
-  AllowedUsersNpub
+  AllowedUsersNpub,
+  DEFAULT_TIERS
 } from '@app/types/allowedUsers.types';
 
 // Settings Management
@@ -24,12 +25,23 @@ export const getAllowedUsersSettings = async (): Promise<AllowedUsersSettings> =
     const data: AllowedUsersApiResponse = JSON.parse(text);
     
     // Transform tiers from backend format to frontend format
+    let transformedTiers = data.allowed_users.tiers.map(tier => ({
+      data_limit: (tier as any).datalimit || tier.data_limit || '',
+      price: tier.price
+    }));
+
+    // For free mode, reconstruct full UI options with active tier marked
+    if (data.allowed_users.mode === 'free' && transformedTiers.length === 1) {
+      const activeTierDataLimit = transformedTiers[0].data_limit;
+      transformedTiers = DEFAULT_TIERS.free.map(defaultTier => ({
+        ...defaultTier,
+        active: defaultTier.data_limit === activeTierDataLimit
+      }));
+    }
+    
     const transformedSettings = {
       ...data.allowed_users,
-      tiers: data.allowed_users.tiers.map(tier => ({
-        data_limit: (tier as any).datalimit || tier.data_limit || '',
-        price: tier.price
-      }))
+      tiers: transformedTiers
     };
     
     return transformedSettings;
@@ -40,6 +52,11 @@ export const getAllowedUsersSettings = async (): Promise<AllowedUsersSettings> =
 
 export const updateAllowedUsersSettings = async (settings: AllowedUsersSettings): Promise<{ success: boolean, message: string }> => {
   const token = readToken();
+  
+  // Filter tiers based on mode - for free mode, only send active tier
+  const tiersToSend = settings.mode === 'free' 
+    ? settings.tiers.filter(tier => tier.active)
+    : settings.tiers;
   
   // Transform to nested format as expected by backend
   const nestedSettings = {
@@ -53,7 +70,7 @@ export const updateAllowedUsersSettings = async (settings: AllowedUsersSettings)
         "enabled": settings.write_access.enabled,
         "scope": settings.write_access.scope
       },
-      "tiers": settings.tiers.map(tier => ({
+      "tiers": tiersToSend.map(tier => ({
         "datalimit": tier.data_limit || "1 GB per month",  // Backend expects 'datalimit' not 'data_limit', fallback for empty values
         "price": tier.price || "0"
       }))

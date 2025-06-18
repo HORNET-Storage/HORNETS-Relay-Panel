@@ -10,7 +10,7 @@ import { useResponsive } from '@app/hooks/useResponsive';
 import useRelaySettings from '@app/hooks/useRelaySettings';
 import { DesktopLayout } from '@app/components/relay-settings/layouts/DesktopLayout';
 import { MobileLayout } from '@app/components/relay-settings/layouts/MobileLayout';
-import { Settings, Category, defaultTiers, SubscriptionTier } from '@app/constants/relaySettings';
+import { Settings, Category } from '@app/constants/relaySettings';
 
 const RelaySettingsPage: React.FC = () => {
   const { t } = useTranslation();
@@ -41,9 +41,6 @@ const RelaySettingsPage: React.FC = () => {
     isGitNestrActive: true,
     isAudioActive: true,
     isFileStorageActive: false,
-    subscription_tiers: [],
-    freeTierEnabled: false,
-    freeTierLimit: '100 MB per month',
     moderationMode: 'strict'  // Default to strict mode
   });
 
@@ -75,17 +72,9 @@ const RelaySettingsPage: React.FC = () => {
     if (relaySettings) {
       console.log('Raw relay settings:', relaySettings); // For debugging
 
-      // Only set defaults if there are no tiers or if they are invalid
-      const tiers = Array.isArray(relaySettings.subscription_tiers) &&
-        relaySettings.subscription_tiers.length > 0 &&
-        relaySettings.subscription_tiers.every(tier => tier.data_limit && tier.price)
-        ? relaySettings.subscription_tiers
-        : defaultTiers;
-
       setSettings(prev => ({
         ...relaySettings,
-        protocol: Array.isArray(relaySettings.protocol) ? relaySettings.protocol : [relaySettings.protocol],
-        subscription_tiers: tiers
+        protocol: Array.isArray(relaySettings.protocol) ? relaySettings.protocol : [relaySettings.protocol]
       }));
       setDynamicAppBuckets(relaySettings.dynamicAppBuckets);
     }
@@ -136,9 +125,6 @@ const RelaySettingsPage: React.FC = () => {
         updateSettings('isFileStorageActive', settings.isFileStorageActive),
         updateSettings('appBuckets', settings.appBuckets),
         updateSettings('dynamicAppBuckets', settings.dynamicAppBuckets),
-        updateSettings('freeTierEnabled', settings.freeTierEnabled),
-        updateSettings('freeTierLimit', settings.freeTierLimit),
-        updateSettings('subscription_tiers', settings.subscription_tiers),
         updateSettings('moderationMode', settings.moderationMode),
       ]);
 
@@ -257,26 +243,6 @@ const RelaySettingsPage: React.FC = () => {
     onDynamicAppBucketsChange: handleDynamicAppBucketsChange,
     onAddBucket: handleAddBucket,
     onRemoveBucket: handleRemoveBucket,
-    // Subscription props
-    subscriptionTiers: settings.subscription_tiers || defaultTiers,
-    freeTierEnabled: settings.freeTierEnabled,
-    freeTierLimit: settings.freeTierLimit,
-    onSubscriptionChange: (tiers: SubscriptionTier[]) => {
-      setSettings(prev => ({
-        ...prev,
-        subscription_tiers: tiers
-      }));
-      updateSettings('subscription_tiers', tiers);
-    },
-    onFreeTierChange: (enabled: boolean, limit: string) => {  // Combined function
-      setSettings(prev => ({
-        ...prev,
-        freeTierEnabled: enabled,
-        freeTierLimit: limit
-      }));
-      updateSettings('freeTierEnabled', enabled);
-      updateSettings('freeTierLimit', limit);
-    },
     // Kinds props
     isKindsActive: settings.isKindsActive,
     selectedKinds: settings.kinds,

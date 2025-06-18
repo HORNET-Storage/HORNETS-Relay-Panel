@@ -7,12 +7,10 @@ import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
 import * as S from '@app/pages/uiComponentsPages/UIComponentsPage.styles';
 import { NetworkSection } from '@app/components/relay-settings/sections/NetworkSection';
 import { AppBucketsSection } from '@app/components/relay-settings/sections/AppBucketsSection';
-import { SubscriptionSection } from '@app/components/relay-settings/sections/SubscriptionSection';
 import { KindsSection } from '@app/components/relay-settings/sections/KindsSection';
 import { MediaSection } from '@app/components/relay-settings/sections/MediaSection';
 import { ModerationSection } from '@app/components/relay-settings/sections/ModerationSection';
 import { useTranslation } from 'react-i18next';
-import { SubscriptionTier } from '@app/constants/relaySettings';
 
 interface MobileLayoutProps {
     mode: string;
@@ -31,12 +29,6 @@ interface MobileLayoutProps {
     onDynamicAppBucketsChange: (values: string[]) => void;
     onAddBucket: (bucket: string) => void;
     onRemoveBucket: (bucket: string) => void;
-    // Subscription section props
-    subscriptionTiers: SubscriptionTier[];
-    onSubscriptionChange: (newTiers: SubscriptionTier[]) => void;
-    freeTierEnabled: boolean,
-    freeTierLimit: string,
-    onFreeTierChange: (enabled: boolean, limit: string) => void;
     // Kinds section props
     isKindsActive: boolean;
     selectedKinds: string[];
@@ -88,12 +80,6 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({
     onDynamicAppBucketsChange,
     onAddBucket,
     onRemoveBucket,
-    // Subscription props
-    subscriptionTiers,
-    onSubscriptionChange,
-    freeTierEnabled,
-    freeTierLimit,
-    onFreeTierChange,
     // Kinds props
     isKindsActive,
     selectedKinds,
@@ -137,13 +123,6 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({
                     onRemoveBucket={onRemoveBucket}
                 />
 
-                <SubscriptionSection
-                    tiers={subscriptionTiers}
-                    onChange={onSubscriptionChange}
-                    freeTierEnabled={freeTierEnabled}
-                    freeTierLimit={freeTierLimit}
-                    onFreeTierChange={onFreeTierChange}
-                />
 
                 <ModerationSection
                     moderationMode={moderationMode}

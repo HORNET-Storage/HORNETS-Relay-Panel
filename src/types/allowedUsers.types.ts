@@ -5,6 +5,7 @@ export type AccessScope = 'all_users' | 'paid_users' | 'allowed_users';
 export interface AllowedUsersTier {
   data_limit: string;
   price: string;
+  active?: boolean; // For free mode - only one tier can be active at a time
 }
 
 // Backend expects this format
@@ -96,9 +97,9 @@ export const MODE_CONFIGURATIONS: Record<AllowedUsersMode, ModeOptions> = {
 // Default tier configurations for each mode
 export const DEFAULT_TIERS: Record<AllowedUsersMode, AllowedUsersTier[]> = {
   free: [
-    { data_limit: '100 MB per month', price: '0' },
-    { data_limit: '500 MB per month', price: '0' },
-    { data_limit: '1 GB per month', price: '0' }
+    { data_limit: '100 MB per month', price: '0', active: false },
+    { data_limit: '500 MB per month', price: '0', active: true }, // Default active tier
+    { data_limit: '1 GB per month', price: '0', active: false }
   ],
   paid: [
     { data_limit: '1 GB per month', price: '1000' },

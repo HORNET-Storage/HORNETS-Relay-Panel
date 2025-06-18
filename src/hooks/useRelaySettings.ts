@@ -3,12 +3,7 @@ import { CheckboxValueType } from 'antd/es/checkbox/Group';
 import config from '@app/config/config';
 import { readToken } from '@app/services/localStorage.service';
 import { useHandleLogout } from './authUtils';
-import { Settings, noteOptions, mimeTypeOptions, SubscriptionTier } from '@app/constants/relaySettings';
-
-interface BackendSubscriptionTier {
-  datalimit: string;
-  price: string;
-}
+import { Settings, noteOptions, mimeTypeOptions } from '@app/constants/relaySettings';
 
 interface BackendRelaySettings {
   mode: string;
@@ -17,9 +12,6 @@ interface BackendRelaySettings {
   chunksize: string;
   maxFileSize: number;
   maxFileSizeUnit: string;
-  subscription_tiers: BackendSubscriptionTier[];
-  freeTierEnabled: boolean;  // New field
-  freeTierLimit: string;     // New field - e.g. "100 MB per month"
   moderationMode: string;    // "strict" or "passive"
   MimeTypeGroups: {
     images: string[];
@@ -31,12 +23,6 @@ interface BackendRelaySettings {
   KindWhitelist: string[];
   isFileStorageActive?: boolean;
 }
-
-const defaultTiers: SubscriptionTier[] = [
-  { data_limit: '1 GB per month', price: '8000' },
-  { data_limit: '5 GB per month', price: '10000' },
-  { data_limit: '10 GB per month', price: '15000' }
-];
 
 const getInitialSettings = (): Settings => ({
   mode: 'whitelist',
@@ -55,9 +41,6 @@ const getInitialSettings = (): Settings => ({
   isGitNestrActive: true,
   isAudioActive: true,
   isFileStorageActive: false,
-  subscription_tiers: defaultTiers,
-  freeTierEnabled: false,
-  freeTierLimit: '100 MB per month',
   moderationMode: 'strict' // Default to strict mode
 });
 
@@ -135,12 +118,6 @@ const useRelaySettings = () => {
       chunksize: '2',
       maxFileSize: 10,
       maxFileSizeUnit: 'MB',
-      subscription_tiers: settings.subscription_tiers.map(tier => ({
-        datalimit: tier.data_limit,
-        price: tier.price
-      })),
-      freeTierEnabled: settings.freeTierEnabled,
-      freeTierLimit: settings.freeTierLimit,
       moderationMode: settings.moderationMode,
       MimeTypeGroups: mimeGroups,
       isFileStorageActive: settings.isFileStorageActive,
@@ -162,26 +139,7 @@ const useRelaySettings = () => {
     const settings = getInitialSettings();
     settings.mode = backendSettings.mode;
     settings.protocol = backendSettings.protocol as string[];
-    settings.freeTierEnabled = backendSettings.freeTierEnabled ?? false;
-    settings.freeTierLimit = backendSettings.freeTierLimit ?? '100 MB per month';
     settings.moderationMode = backendSettings.moderationMode ?? 'strict';
-
-    // Handle subscription tiers
-    if (Array.isArray(backendSettings.subscription_tiers)) {
-      settings.subscription_tiers = backendSettings.subscription_tiers.map(tier => ({
-        data_limit: tier.datalimit,
-        price: tier.price
-      }));
-      console.log('Transformed tiers:', settings.subscription_tiers);
-    } else {
-      console.log('No backend tiers, using defaults');
-      settings.subscription_tiers = defaultTiers;
-    }
-
-    if (!settings.subscription_tiers.length ||
-      settings.subscription_tiers.every(tier => !tier.data_limit)) {
-      settings.subscription_tiers = defaultTiers;
-    }
 
     if (backendSettings.mode === 'blacklist') {
       // In blacklist mode, start with empty selections

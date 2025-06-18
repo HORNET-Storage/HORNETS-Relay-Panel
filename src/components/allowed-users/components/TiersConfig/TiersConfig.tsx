@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Input, Table, Space, Modal, Form, InputNumber, Popconfirm, Alert } from 'antd';
+import { Button, Input, Table, Space, Modal, Form, InputNumber, Popconfirm, Alert, Radio, Card } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { AllowedUsersSettings, AllowedUsersMode, AllowedUsersTier } from '@app/types/allowedUsers.types';
 import * as S from './TiersConfig.styles';
@@ -28,6 +28,20 @@ export const TiersConfig: React.FC<TiersConfigProps> = ({
 
   const isPaidMode = mode === 'paid';
   const isFreeMode = mode === 'free';
+
+  const handleFreeTierChange = (dataLimit: string) => {
+    const updatedTiers = settings.tiers.map(tier => ({
+      ...tier,
+      active: tier.data_limit === dataLimit
+    }));
+    
+    const updatedSettings = {
+      ...settings,
+      tiers: updatedTiers
+    };
+    
+    onSettingsChange(updatedSettings);
+  };
 
   const handleAddTier = () => {
     setEditingIndex(null);
@@ -195,24 +209,57 @@ export const TiersConfig: React.FC<TiersConfigProps> = ({
       )}
 
       <S.TiersHeader>
-        <S.TiersTitle>Subscription Tiers</S.TiersTitle>
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={handleAddTier}
-          disabled={disabled}
-        >
-          Add Tier
-        </Button>
+        <S.TiersTitle>
+          {isFreeMode ? 'Free Tier Selection' : 'Subscription Tiers'}
+        </S.TiersTitle>
+        {!isFreeMode && (
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={handleAddTier}
+            disabled={disabled}
+          >
+            Add Tier
+          </Button>
+        )}
       </S.TiersHeader>
 
-      <Table
-        columns={columns}
-        dataSource={settings.tiers.map((tier, index) => ({ ...tier, key: index }))}
-        pagination={false}
-        size="small"
-        locale={{ emptyText: 'No tiers configured' }}
-      />
+      {isFreeMode ? (
+        <Radio.Group
+          value={settings.tiers.find(tier => tier.active)?.data_limit}
+          onChange={(e) => handleFreeTierChange(e.target.value)}
+          disabled={disabled}
+        >
+          <Space direction="vertical" style={{ width: '100%' }}>
+            {settings.tiers.map((tier, index) => (
+              <Card
+                key={index}
+                size="small"
+                style={{ 
+                  cursor: disabled ? 'not-allowed' : 'pointer',
+                  border: tier.active ? '2px solid var(--primary-color)' : '1px solid #d9d9d9'
+                }}
+                onClick={() => !disabled && handleFreeTierChange(tier.data_limit)}
+              >
+                <Radio value={tier.data_limit} disabled={disabled}>
+                  <Space>
+                    <S.DataLimit>{tier.data_limit}</S.DataLimit>
+                    <S.Price $isFree={true}>Free</S.Price>
+                  </Space>
+                </Radio>
+              </Card>
+            ))}
+          </Space>
+        </Radio.Group>
+      ) : (
+        <Table
+          columns={columns}
+          dataSource={settings.tiers.map((tier, index) => ({ ...tier, key: index }))}
+          pagination={false}
+          size="small"
+          locale={{ emptyText: 'No tiers configured' }}
+        />
+      )}
 
       <Modal
         title={editingIndex !== null ? 'Edit Tier' : 'Add New Tier'}

@@ -125,8 +125,8 @@ export const NPubManagement: React.FC<NPubManagementProps> = ({
     try {
       // Remove from both lists
       await Promise.all([
-        readNpubs.removeNpub(npub).catch(() => {}), // Ignore errors if not in list
-        writeNpubs.removeNpub(npub).catch(() => {}) // Ignore errors if not in list
+        readNpubs.removeNpub(npub).catch(() => { /* Ignore errors if not in list */ }),
+        writeNpubs.removeNpub(npub).catch(() => { /* Ignore errors if not in list */ })
       ]);
     } catch (error) {
       message.error('Failed to remove user');
