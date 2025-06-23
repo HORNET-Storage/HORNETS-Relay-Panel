@@ -94,21 +94,20 @@ export const MediaSection: React.FC<MediaSectionProps> = ({
             onChange={photos.onToggle}
             mode={mode}
           />
-          <FileSizeLimitInput
-            label="Maximum Photo Size"
-            value={photos.maxSizeMB}
-            onChange={photos.onMaxSizeChange}
-            min={1}
-            max={1000}
-            description="Set the maximum file size limit for photo uploads"
-            disabled={!photos.isActive}
-          />
           <MediaTypeList
             formats={imageFormats}
             selectedFormats={photos.selected}
             onChange={photos.onChange}
             isActive={photos.isActive}
             mode={mode}
+          />
+          <FileSizeLimitInput
+            label="Maximum Photo Size"
+            value={photos.maxSizeMB}
+            onChange={photos.onMaxSizeChange}
+            min={1}
+            max={1000}
+            disabled={!photos.isActive}
           />
         </S.Card>
       </CollapsibleSection>
@@ -120,21 +119,20 @@ export const MediaSection: React.FC<MediaSectionProps> = ({
             onChange={videos.onToggle}
             mode={mode}
           />
-          <FileSizeLimitInput
-            label="Maximum Video Size"
-            value={videos.maxSizeMB}
-            onChange={videos.onMaxSizeChange}
-            min={1}
-            max={5000}
-            description="Set the maximum file size limit for video uploads"
-            disabled={!videos.isActive}
-          />
           <MediaTypeList
             formats={videoFormats}
             selectedFormats={videos.selected}
             onChange={videos.onChange}
             isActive={videos.isActive}
             mode={mode}
+          />
+          <FileSizeLimitInput
+            label="Maximum Video Size"
+            value={videos.maxSizeMB}
+            onChange={videos.onMaxSizeChange}
+            min={1}
+            max={5000}
+            disabled={!videos.isActive}
           />
         </S.Card>
       </CollapsibleSection>
@@ -146,21 +144,20 @@ export const MediaSection: React.FC<MediaSectionProps> = ({
             onChange={audio.onToggle}
             mode={mode}
           />
-          <FileSizeLimitInput
-            label="Maximum Audio Size"
-            value={audio.maxSizeMB}
-            onChange={audio.onMaxSizeChange}
-            min={1}
-            max={500}
-            description="Set the maximum file size limit for audio uploads"
-            disabled={!audio.isActive}
-          />
           <MediaTypeList
             formats={audioFormats}
             selectedFormats={audio.selected}
             onChange={audio.onChange}
             isActive={audio.isActive}
             mode={mode}
+          />
+          <FileSizeLimitInput
+            label="Maximum Audio Size"
+            value={audio.maxSizeMB}
+            onChange={audio.onMaxSizeChange}
+            min={1}
+            max={500}
+            disabled={!audio.isActive}
           />
         </S.Card>
       </CollapsibleSection>

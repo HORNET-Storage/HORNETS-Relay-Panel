@@ -1,57 +1,74 @@
 // src/components/relay-settings/sections/MediaSection/components/FileSizeLimitInput.tsx
 
 import React from 'react';
-import { BaseForm } from '@app/components/common/forms/BaseForm/BaseForm';
-import { InputNumber, Space } from 'antd';
+import { InputNumber } from 'antd';
 import styled from 'styled-components';
 
 const StyledContainer = styled.div`
-  margin: 16px 0;
-  padding: 12px;
-  background: var(--secondary-background-color);
-  border-radius: 8px;
+  margin: 8px 0;
+  padding: 8px 12px;
+  background: var(--additional-background-color);
+  border-radius: 6px;
   border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
 `;
 
 const StyledLabel = styled.div`
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   color: var(--text-main-color);
-  margin-bottom: 8px;
-`;
-
-const StyledDescription = styled.div`
-  font-size: 12px;
-  color: var(--text-light-color);
-  margin-bottom: 12px;
+  flex: 1;
+  min-width: 0;
 `;
 
 const StyledInputWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  
   .ant-input-number {
-    width: 120px;
+    width: 80px;
+    height: 28px;
     background: var(--background-color);
     border-color: var(--border-color);
-    color: var(--text-main-color);
+    border-radius: 4px;
     
     &:hover {
       border-color: var(--primary-color);
     }
     
-    &:focus {
+    &:focus-within {
       border-color: var(--primary-color);
-      box-shadow: 0 0 0 2px var(--primary-color)20;
+      box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1);
     }
-  }
-  
-  .ant-input-number-input {
-    color: var(--text-main-color);
+    
+    .ant-input-number-input {
+      color: var(--text-main-color);
+      font-size: 12px;
+      height: 26px;
+      line-height: 26px;
+    }
+    
+    &.ant-input-number-disabled {
+      background: var(--secondary-background-color);
+      border-color: var(--border-color);
+      opacity: 0.6;
+      
+      .ant-input-number-input {
+        color: var(--text-light-color);
+      }
+    }
   }
 `;
 
 const StyledUnit = styled.span`
-  font-size: 14px;
+  font-size: 12px;
   color: var(--text-light-color);
-  margin-left: 8px;
+  font-weight: 500;
+  min-width: 20px;
 `;
 
 export interface FileSizeLimitInputProps {
@@ -61,7 +78,6 @@ export interface FileSizeLimitInputProps {
   min?: number;
   max?: number;
   step?: number;
-  description?: string;
   disabled?: boolean;
 }
 
@@ -72,7 +88,6 @@ export const FileSizeLimitInput: React.FC<FileSizeLimitInputProps> = ({
   min = 1,
   max = 5000,
   step = 1,
-  description,
   disabled = false,
 }) => {
   const handleChange = (newValue: number | null) => {
@@ -84,21 +99,19 @@ export const FileSizeLimitInput: React.FC<FileSizeLimitInputProps> = ({
   return (
     <StyledContainer>
       <StyledLabel>{label}</StyledLabel>
-      {description && <StyledDescription>{description}</StyledDescription>}
       <StyledInputWrapper>
-        <Space align="center">
-          <InputNumber
-            value={value}
-            onChange={handleChange}
-            min={min}
-            max={max}
-            step={step}
-            disabled={disabled}
-            placeholder="Enter size"
-            precision={0}
-          />
-          <StyledUnit>MB</StyledUnit>
-        </Space>
+        <InputNumber
+          value={value}
+          onChange={handleChange}
+          min={min}
+          max={max}
+          step={step}
+          disabled={disabled}
+          placeholder={min.toString()}
+          precision={0}
+          size="small"
+        />
+        <StyledUnit>MB</StyledUnit>
       </StyledInputWrapper>
     </StyledContainer>
   );
