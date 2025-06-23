@@ -1,4 +1,4 @@
-export type AllowedUsersMode = 'free' | 'paid' | 'exclusive';
+export type AllowedUsersMode = 'free' | 'paid' | 'exclusive' | 'personal';
 
 export type AccessScope = 'all_users' | 'paid_users' | 'allowed_users';
 
@@ -91,6 +91,16 @@ export const MODE_CONFIGURATIONS: Record<AllowedUsersMode, ModeOptions> = {
     ],
     allowsFreeTiers: true,
     requiresNpubManagement: true
+  },
+  personal: {
+    readOptions: [
+      { value: 'allowed_users', label: 'Only Me' }
+    ],
+    writeOptions: [
+      { value: 'allowed_users', label: 'Only Me' }
+    ],
+    allowsFreeTiers: true,
+    requiresNpubManagement: true
   }
 };
 
@@ -110,5 +120,8 @@ export const DEFAULT_TIERS: Record<AllowedUsersMode, AllowedUsersTier[]> = {
     { data_limit: '5 GB per month', price: '0' },
     { data_limit: '50 GB per month', price: '0' },
     { data_limit: 'unlimited', price: '0' }
+  ],
+  personal: [
+    { data_limit: 'unlimited', price: '0', active: true } // Personal use, unlimited and free
   ]
 };
