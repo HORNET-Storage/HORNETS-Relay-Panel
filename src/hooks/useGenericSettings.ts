@@ -4,6 +4,269 @@ import { readToken } from '@app/services/localStorage.service';
 import { useHandleLogout } from './authUtils';
 import { SettingsGroupName, SettingsGroupType } from '@app/types/settings.types';
 
+// Helper function to extract the correct nested data for each settings group
+const extractSettingsForGroup = (settings: any, groupName: string) => {
+  console.log(`Extracting settings for group: ${groupName}`, settings);
+  
+  let rawData: any = {};
+  
+  switch (groupName) {
+    case 'image_moderation':
+      rawData = settings?.content_filtering?.image_moderation || {};
+      break;
+    
+    case 'content_filter':
+      rawData = settings?.content_filtering?.text_filter || {};
+      break;
+    
+    case 'nest_feeder':
+      rawData = settings?.external_services?.nest_feeder || {};
+      break;
+    
+    case 'ollama':
+      rawData = settings?.external_services?.ollama || {};
+      break;
+    
+    case 'wallet':
+      rawData = settings?.external_services?.wallet || {};
+      break;
+    
+    case 'relay_info':
+      rawData = settings?.relay || {};
+      break;
+    
+    case 'general':
+      rawData = settings?.server || {};
+      break;
+    
+    default:
+      console.warn(`Unknown settings group: ${groupName}`);
+      return {};
+  }
+
+  // Handle the prefixed field name issue
+  // The backend returns both prefixed and unprefixed fields, but forms expect prefixed ones
+  if (groupName === 'image_moderation' && rawData) {
+    const processedData: any = {};
+    
+    // Map unprefixed fields to prefixed ones that the form expects
+    const imageModerationMappings: Record<string, string[]> = {
+      'image_moderation_api': ['image_moderation_api', 'api'],
+      'image_moderation_check_interval': ['image_moderation_check_interval_seconds', 'check_interval_seconds'],
+      'image_moderation_concurrency': ['image_moderation_concurrency', 'concurrency'],
+      'image_moderation_enabled': ['image_moderation_enabled', 'enabled'],
+      'image_moderation_mode': ['image_moderation_mode', 'mode'],
+      'image_moderation_temp_dir': ['image_moderation_temp_dir', 'temp_dir'],
+      'image_moderation_threshold': ['image_moderation_threshold', 'threshold'],
+      'image_moderation_timeout': ['image_moderation_timeout_seconds', 'timeout_seconds']
+    };
+    
+    // Map fields, prioritizing prefixed versions if they exist
+    Object.entries(imageModerationMappings).forEach(([formField, possibleBackendFields]) => {
+      for (const backendField of possibleBackendFields) {
+        if (rawData[backendField] !== undefined) {
+          processedData[formField] = rawData[backendField];
+          break; // Use the first found value
+        }
+      }
+    });
+    
+    console.log(`Processed ${groupName} data:`, processedData);
+    return processedData;
+  }
+  
+  if (groupName === 'content_filter' && rawData) {
+    const processedData: any = {};
+    
+    // Handle content filter prefixed fields
+    const contentFilterMappings: Record<string, string> = {
+      'content_filter_cache_size': 'cache_size',
+      'content_filter_cache_ttl': 'cache_ttl_seconds', 
+      'content_filter_enabled': 'enabled',
+      'full_text_kinds': 'full_text_search_kinds' // Special mapping
+    };
+    
+    // Start with raw data
+    Object.keys(rawData).forEach(key => {
+      processedData[key] = rawData[key];
+    });
+    
+    // Apply prefixed field mappings
+    Object.entries(contentFilterMappings).forEach(([prefixedKey, rawKey]) => {
+      if (rawData[rawKey] !== undefined) {
+        processedData[prefixedKey] = rawData[rawKey];
+      }
+    });
+    
+    console.log(`Processed ${groupName} data:`, processedData);
+    return processedData;
+  }
+  
+  // Add more mappings for other services that might need prefixed fields
+  if (groupName === 'nest_feeder' && rawData) {
+    const processedData: any = {};
+    
+    // Handle nest_feeder prefixed fields based on the prefixedSettingsMap
+    const nestFeederMappings: Record<string, string> = {
+      'nest_feeder_cache_size': 'cache_size',
+      'nest_feeder_cache_ttl': 'cache_ttl',
+      'nest_feeder_enabled': 'enabled',
+      'nest_feeder_timeout': 'timeout',
+      'nest_feeder_url': 'url'
+    };
+    
+    // Start with raw data
+    Object.keys(rawData).forEach(key => {
+      processedData[key] = rawData[key];
+    });
+    
+    // Apply prefixed field mappings
+    Object.entries(nestFeederMappings).forEach(([prefixedKey, rawKey]) => {
+      if (rawData[rawKey] !== undefined) {
+        processedData[prefixedKey] = rawData[rawKey];
+      }
+    });
+    
+    console.log(`Processed ${groupName} data:`, processedData);
+    return processedData;
+  }
+  
+  // Handle relay info field name mapping
+  if (groupName === 'relay_info' && rawData) {
+    const processedData: any = {};
+    
+    // Map backend field names to frontend field names
+    const relayInfoMappings: Record<string, string> = {
+      'relayname': 'name',
+      'relaydescription': 'description', 
+      'relaycontact': 'contact',
+      'relaypubkey': 'pubkey', // This might not exist in backend, will be empty
+      'relaydhtkey': 'dht_key',
+      'relaysoftware': 'software',
+      'relayversion': 'version',
+      'relaysupportednips': 'supported_nips'
+    };
+    
+    // Apply field mappings
+    Object.entries(relayInfoMappings).forEach(([frontendKey, backendKey]) => {
+      if (rawData[backendKey] !== undefined) {
+        processedData[frontendKey] = rawData[backendKey];
+      } else {
+        // Set default values for missing fields
+        if (frontendKey === 'relaypubkey') {
+          processedData[frontendKey] = ''; // Default empty for pubkey
+        } else if (frontendKey === 'relaysupportednips') {
+          processedData[frontendKey] = []; // Default empty array
+        }
+      }
+    });
+    
+    console.log(`Processed ${groupName} data:`, processedData);
+    return processedData;
+  }
+  
+  return rawData;
+};
+
+// Helper function to build the nested update structure for the new API
+const buildNestedUpdate = (groupName: string, data: any) => {
+  switch (groupName) {
+    case 'image_moderation':
+      return {
+        settings: {
+          content_filtering: {
+            image_moderation: data
+          }
+        }
+      };
+    
+    case 'content_filter':
+      return {
+        settings: {
+          content_filtering: {
+            text_filter: data
+          }
+        }
+      };
+    
+    case 'nest_feeder':
+      return {
+        settings: {
+          external_services: {
+            nest_feeder: data
+          }
+        }
+      };
+    
+    case 'ollama':
+      return {
+        settings: {
+          external_services: {
+            ollama: data
+          }
+        }
+      };
+    
+    case 'wallet':
+      return {
+        settings: {
+          external_services: {
+            wallet: data
+          }
+        }
+      };
+    
+    case 'relay_info':
+      // Reverse the field mapping for saving
+      const backendRelayData: any = {};
+      const relayFieldMappings: Record<string, string> = {
+        'name': 'relayname',
+        'description': 'relaydescription',
+        'contact': 'relaycontact', 
+        'dht_key': 'relaydhtkey',
+        'software': 'relaysoftware',
+        'version': 'relayversion',
+        'supported_nips': 'relaysupportednips'
+        // Note: not mapping pubkey since it doesn't exist in backend
+      };
+      
+      Object.entries(relayFieldMappings).forEach(([backendKey, frontendKey]) => {
+        if (data[frontendKey] !== undefined) {
+          // Special handling for supported_nips to ensure they're numbers
+          if (backendKey === 'supported_nips') {
+            const nips = data[frontendKey];
+            if (Array.isArray(nips)) {
+              backendRelayData[backendKey] = nips.map((nip: any) => Number(nip)).filter((nip: number) => !isNaN(nip));
+            } else {
+              backendRelayData[backendKey] = [];
+            }
+          } else {
+            backendRelayData[backendKey] = data[frontendKey];
+          }
+        }
+      });
+      
+      return {
+        settings: {
+          relay: backendRelayData
+        }
+      };
+    
+    case 'general':
+      return {
+        settings: {
+          server: data
+        }
+      };
+    
+    default:
+      console.warn(`Unknown settings group for save: ${groupName}`);
+      return {
+        settings: {}
+      };
+  }
+};
+
 interface UseGenericSettingsResult<T> {
   settings: T | null;
   loading: boolean;
@@ -35,7 +298,7 @@ const useGenericSettings = <T extends SettingsGroupName>(
       
       console.log(`Fetching ${groupName} settings...`);
 
-      const response = await fetch(`${config.baseURL}/api/settings/${groupName}`, {
+      const response = await fetch(`${config.baseURL}/api/settings`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -52,10 +315,10 @@ const useGenericSettings = <T extends SettingsGroupName>(
       }
 
       const data = await response.json();
-      console.log(`Raw ${groupName} settings data:`, data);
+      console.log(`Raw settings data:`, data);
       
-      // The API returns data in the format { [groupName]: settings }
-      const settingsData = data[groupName] as SettingsGroupType<T>;
+      // Extract the correct nested data based on groupName
+      const settingsData = extractSettingsForGroup(data.settings, groupName) as SettingsGroupType<T>;
 
       if (!settingsData) {
         console.warn(`No settings data found for group: ${groupName}`);
@@ -185,9 +448,9 @@ const useGenericSettings = <T extends SettingsGroupName>(
         console.log(`Settings from state for ${groupName}:`, settings);
         const { prefix, formKeys } = prefixedSettingsMap[groupName];
 
-        // First fetch current settings to preserve values not in the form
-        console.log(`Fetching current ${groupName} settings before saving...`);
-        const fetchResponse = await fetch(`${config.baseURL}/api/settings/${groupName}`, {
+        // First fetch complete settings structure to preserve all values
+        console.log(`Fetching complete settings before saving ${groupName}...`);
+        const fetchResponse = await fetch(`${config.baseURL}/api/settings`, {
           headers: {
             'Authorization': `Bearer ${token}`,
           },
@@ -198,7 +461,7 @@ const useGenericSettings = <T extends SettingsGroupName>(
         }
 
         const currentData = await fetchResponse.json();
-        const currentSettings = currentData[groupName] || {};
+        const currentSettings = extractSettingsForGroup(currentData.settings, groupName) || {};
         console.log(`Current ${groupName} settings from API:`, currentSettings);
 
         // Create a properly prefixed object for the API
@@ -231,13 +494,17 @@ const useGenericSettings = <T extends SettingsGroupName>(
       
       console.log(`Saving ${groupName} settings:`, dataToSave);
 
-      const response = await fetch(`${config.baseURL}/api/settings/${groupName}`, {
+      // Construct the nested update structure for the new API
+      const nestedUpdate = buildNestedUpdate(groupName, dataToSave);
+      console.log(`Nested update structure:`, nestedUpdate);
+
+      const response = await fetch(`${config.baseURL}/api/settings`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ [groupName]: dataToSave }),
+        body: JSON.stringify(nestedUpdate),
       });
 
       if (response.status === 401) {

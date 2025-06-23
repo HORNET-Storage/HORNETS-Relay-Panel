@@ -98,7 +98,6 @@ export type SettingsGroupName =
   | 'relay_info'
   | 'wallet'
   | 'general'
-  | 'query_cache'
   | 'relay_settings';
 
 export type SettingsGroupType<T extends SettingsGroupName> = 
@@ -109,6 +108,5 @@ export type SettingsGroupType<T extends SettingsGroupName> =
   T extends 'relay_info' ? RelayInfoSettings :
   T extends 'wallet' ? WalletSettings :
   T extends 'general' ? GeneralSettings :
-  T extends 'query_cache' ? QueryCacheSettings :
   T extends 'relay_settings' ? any : // Using any for relay_settings as it's already defined elsewhere
   never;
