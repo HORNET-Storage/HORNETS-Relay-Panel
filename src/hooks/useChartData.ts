@@ -5,6 +5,7 @@ import config from '@app/config/config';
 import { readToken } from '@app/services/localStorage.service';
 import { message } from 'antd';
 import { useHandleLogout } from './authUtils';
+import { FileCountResponse } from '@app/types/newSettings.types';
 
 interface ChartDataItem {
   value: number;
@@ -43,16 +44,52 @@ const useChartData = () => {
           throw new Error(`Network response was not ok (status: ${response.status})`);
         }
 
-        const data = await response.json();
+        const data: FileCountResponse = await response.json();
 
         // Process the data into chartDataItems using translated names
-        const newChartData: ChartDataItem[] = [
-          { value: data.kinds, name: t('categories.kinds') },
-          { value: data.photos, name: t('categories.photos') },
-          { value: data.videos, name: t('categories.videos') },
-          { value: data.audio, name: t('categories.audio') },
-          { value: data.misc, name: t('categories.misc') },
-        ];
+        // Handle dynamic media types while maintaining UI compatibility
+        const newChartData: ChartDataItem[] = [];
+        
+        // Always include kinds first
+        newChartData.push({ value: data.kinds, name: t('categories.kinds') });
+        
+        // Destructure to separate kinds from media types
+        const { kinds, ...mediaCounts } = data;
+        
+        // Map dynamic media types to chart data with fallback translations
+        Object.entries(mediaCounts).forEach(([mediaType, count]) => {
+          let translationKey = '';
+          let fallbackName = '';
+          
+          // Map new media types to existing translation keys for UI compatibility
+          switch (mediaType) {
+            case 'image':
+              translationKey = 'categories.photos';
+              fallbackName = 'Photos';
+              break;
+            case 'video':
+              translationKey = 'categories.videos';
+              fallbackName = 'Videos';
+              break;
+            case 'audio':
+              translationKey = 'categories.audio';
+              fallbackName = 'Audio';
+              break;
+            case 'git':
+              translationKey = 'categories.misc';
+              fallbackName = 'Git';
+              break;
+            default:
+              // For any new media types not yet in translations
+              translationKey = `categories.${mediaType}`;
+              fallbackName = mediaType.charAt(0).toUpperCase() + mediaType.slice(1);
+              break;
+          }
+          
+          // Use translation if available, otherwise use fallback
+          const displayName = t(translationKey, { defaultValue: fallbackName });
+          newChartData.push({ value: count, name: displayName });
+        });
 
         setChartData(newChartData);
       } catch (error) {

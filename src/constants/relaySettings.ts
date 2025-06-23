@@ -16,9 +16,13 @@ export type Settings = {
   isAudioActive: boolean;
   isFileStorageActive: boolean;
   moderationMode: string;    // "strict" or "passive"
+  // File size limits in MB
+  photoMaxSizeMB: number;
+  videoMaxSizeMB: number;
+  audioMaxSizeMB: number;
 }
 
-export type Category = 'kinds' | 'photos' | 'videos' | 'gitNestr' | 'audio' | 'dynamicKinds' | 'appBuckets' | 'dynamicAppBuckets';  
+export type Category = 'kinds' | 'photos' | 'videos' | 'gitNestr' | 'audio' | 'dynamicKinds' | 'appBuckets' | 'dynamicAppBuckets' | 'photoMaxSizeMB' | 'videoMaxSizeMB' | 'audioMaxSizeMB';  
 export const noteOptions = [
   { kind: 0, kindString: 'kind0', description: 'Metadata', category: 1 },
   { kind: 1, kindString: 'kind1', description: 'Text Note', category: 1 },
@@ -43,6 +47,12 @@ export const noteOptions = [
   { kind: 10011, kindString: 'kind10011', description: 'Issue Notes', category: 3 },
   { kind: 10022, kindString: 'kind10022', description: 'PR Notes', category: 3 },
   { kind: 9803, kindString: 'kind9803', description: 'Commit Notes', category: 3 },
+  // Core kinds essential for relay operation
+  { kind: 10010, kindString: 'kind10010', description: 'Content Filtering', category: 1 },
+  { kind: 22242, kindString: 'kind22242', description: 'NIP-42 Auth Events', category: 1 },
+  { kind: 19841, kindString: 'kind19841', description: 'Storage Manifest', category: 1 },
+  { kind: 19842, kindString: 'kind19842', description: 'Storage Metadata', category: 1 },
+  { kind: 19843, kindString: 'kind19843', description: 'Storage Delete', category: 1 },
 ];
 export const appBuckets = [
   { id: 'nostr', label: 'Nostr' },

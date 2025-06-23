@@ -41,7 +41,11 @@ const RelaySettingsPage: React.FC = () => {
     isGitNestrActive: true,
     isAudioActive: true,
     isFileStorageActive: false,
-    moderationMode: 'strict'  // Default to strict mode
+    moderationMode: 'strict',  // Default to strict mode
+    // Default file size limits in MB
+    photoMaxSizeMB: 100,
+    videoMaxSizeMB: 500,
+    audioMaxSizeMB: 100
   });
 
   // Initialize stored dynamic items
@@ -220,6 +224,12 @@ const RelaySettingsPage: React.FC = () => {
     updateSettings(type, checked);
   };
 
+  // File size change handler
+  const handleFileSizeChange = (type: 'photoMaxSizeMB' | 'videoMaxSizeMB' | 'audioMaxSizeMB', size: number) => {
+    setSettings(prev => ({ ...prev, [type]: size }));
+    updateSettings(type, size);
+  };
+
   // Moderation mode handler
   const handleModerationModeChange = (mode: string) => {
     setSettings(prev => ({ ...prev, moderationMode: mode }));
@@ -257,20 +267,26 @@ const RelaySettingsPage: React.FC = () => {
     photos: {
       selected: settings.photos,
       isActive: settings.isPhotosActive,
+      maxSizeMB: settings.photoMaxSizeMB,
       onChange: (values: string[]) => handleMediaChange('photos', values),
       onToggle: (checked: boolean) => handleMediaToggle('isPhotosActive', checked),
+      onMaxSizeChange: (size: number) => handleFileSizeChange('photoMaxSizeMB', size),
     },
     videos: {
       selected: settings.videos,
       isActive: settings.isVideosActive,
+      maxSizeMB: settings.videoMaxSizeMB,
       onChange: (values: string[]) => handleMediaChange('videos', values),
       onToggle: (checked: boolean) => handleMediaToggle('isVideosActive', checked),
+      onMaxSizeChange: (size: number) => handleFileSizeChange('videoMaxSizeMB', size),
     },
     audio: {
       selected: settings.audio,
       isActive: settings.isAudioActive,
+      maxSizeMB: settings.audioMaxSizeMB,
       onChange: (values: string[]) => handleMediaChange('audio', values),
       onToggle: (checked: boolean) => handleMediaToggle('isAudioActive', checked),
+      onMaxSizeChange: (size: number) => handleFileSizeChange('audioMaxSizeMB', size),
     },
     // Moderation props
     moderationMode: settings.moderationMode,
