@@ -170,7 +170,7 @@ const extractSettingsForGroup = (settings: any, groupName: string) => {
       'relayname': 'name',
       'relaydescription': 'description', 
       'relaycontact': 'contact',
-      'relaypubkey': 'pubkey', // This might not exist in backend, will be empty
+      'relaypubkey': 'public_key', // Backend sends 'public_key'
       'relaydhtkey': 'dht_key',
       'relaysoftware': 'software',
       'relayversion': 'version',
@@ -183,9 +183,7 @@ const extractSettingsForGroup = (settings: any, groupName: string) => {
         processedData[frontendKey] = rawData[backendKey];
       } else {
         // Set default values for missing fields
-        if (frontendKey === 'relaypubkey') {
-          processedData[frontendKey] = ''; // Default empty for pubkey
-        } else if (frontendKey === 'relaysupportednips') {
+        if (frontendKey === 'relaysupportednips') {
           processedData[frontendKey] = []; // Default empty array
         }
       }
@@ -258,11 +256,11 @@ const buildNestedUpdate = (groupName: string, data: any) => {
         'name': 'relayname',
         'description': 'relaydescription',
         'contact': 'relaycontact', 
+        'public_key': 'relaypubkey', // Frontend 'relaypubkey' -> backend 'public_key'
         'dht_key': 'relaydhtkey',
         'software': 'relaysoftware',
         'version': 'relayversion',
         'supported_nips': 'relaysupportednips'
-        // Note: not mapping pubkey since it doesn't exist in backend
       };
       
       Object.entries(relayFieldMappings).forEach(([backendKey, frontendKey]) => {
