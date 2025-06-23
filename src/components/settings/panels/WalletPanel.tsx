@@ -37,22 +37,15 @@ const WalletPanel: React.FC = () => {
     if (settings && !isUserEditing) {
       console.log('WalletPanel - Received settings:', settings);
       
-      // Transform property names to match form field names
-      // The API returns properties without the prefix, but the form expects prefixed names
+      // The useGenericSettings hook now returns properly prefixed field names
+      // so we can use the settings directly without transformation
       const settingsObj = settings as Record<string, any>;
       
-      const formValues = {
-        wallet_name: settingsObj.name,
-        wallet_api_key: settingsObj.api_key
-      };
+      console.log('WalletPanel - Setting form values directly:', settingsObj);
       
-      console.log('WalletPanel - Transformed form values:', formValues);
-      
-      // Set form values with a slight delay to ensure the form is ready
-      setTimeout(() => {
-        form.setFieldsValue(formValues);
-        console.log('WalletPanel - Form values after set:', form.getFieldsValue());
-      }, 100);
+      // Set form values directly since they're already properly prefixed
+      form.setFieldsValue(settingsObj);
+      console.log('WalletPanel - Form values after set:', form.getFieldsValue());
     }
   }, [settings, form, isUserEditing]);
 

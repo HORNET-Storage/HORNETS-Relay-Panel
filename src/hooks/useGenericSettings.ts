@@ -49,14 +49,15 @@ const extractSettingsForGroup = (settings: any, groupName: string) => {
   if (groupName === 'image_moderation' && rawData) {
     const processedData: any = {};
     
-    // Map unprefixed fields to prefixed ones that the form expects
+    // Map backend fields to prefixed ones that the form expects
+    // Based on the actual backend response, backend sends both prefixed and unprefixed versions
     const imageModerationMappings: Record<string, string[]> = {
-      'image_moderation_api': ['image_moderation_api', 'api'],
+      'image_moderation_api': ['image_moderation_api'],
       'image_moderation_check_interval': ['image_moderation_check_interval_seconds', 'check_interval_seconds'],
       'image_moderation_concurrency': ['image_moderation_concurrency', 'concurrency'],
       'image_moderation_enabled': ['image_moderation_enabled', 'enabled'],
       'image_moderation_mode': ['image_moderation_mode', 'mode'],
-      'image_moderation_temp_dir': ['image_moderation_temp_dir', 'temp_dir'],
+      'image_moderation_temp_dir': ['image_moderation_temp_dir'],
       'image_moderation_threshold': ['image_moderation_threshold', 'threshold'],
       'image_moderation_timeout': ['image_moderation_timeout_seconds', 'timeout_seconds']
     };
@@ -124,6 +125,66 @@ const extractSettingsForGroup = (settings: any, groupName: string) => {
     Object.entries(nestFeederMappings).forEach(([prefixedKey, rawKey]) => {
       if (rawData[rawKey] !== undefined) {
         processedData[prefixedKey] = rawData[rawKey];
+      }
+    });
+    
+    console.log(`Processed ${groupName} data:`, processedData);
+    return processedData;
+  }
+  
+  // Handle wallet field name mapping
+  if (groupName === 'wallet' && rawData) {
+    const processedData: any = {};
+    
+    // Map backend field names to frontend field names
+    const walletMappings: Record<string, string> = {
+      'wallet_name': 'name',
+      'wallet_api_key': 'key' // Backend sends 'key', frontend expects 'wallet_api_key'
+    };
+    
+    // Apply field mappings
+    Object.entries(walletMappings).forEach(([frontendKey, backendKey]) => {
+      if (rawData[backendKey] !== undefined) {
+        processedData[frontendKey] = rawData[backendKey];
+      }
+    });
+    
+    console.log(`Processed ${groupName} data:`, processedData);
+    return processedData;
+  }
+  
+  // Handle general settings field name mapping
+  if (groupName === 'general' && rawData) {
+    const processedData: any = {};
+    
+    // General settings come from both server and relay sections
+    // We need to access both sections from the root settings
+    const relayData = settings?.relay || {};
+    
+    // Map backend field names to frontend field names
+    // Some fields come from server section, others from relay section
+    const generalMappings: Record<string, { section: string; field: string }> = {
+      'port': { section: 'server', field: 'port' },
+      'private_key': { section: 'relay', field: 'private_key' },
+      'service_tag': { section: 'relay', field: 'service_tag' },
+      'relay_stats_db': { section: 'server', field: 'stats_db' },
+      'proxy': { section: 'server', field: 'proxy' }, // May not exist
+      'demo_mode': { section: 'server', field: 'demo' },
+      'web': { section: 'server', field: 'web' }
+    };
+    
+    // Apply field mappings
+    Object.entries(generalMappings).forEach(([frontendKey, mapping]) => {
+      const sourceData = mapping.section === 'relay' ? relayData : rawData;
+      if (sourceData[mapping.field] !== undefined) {
+        processedData[frontendKey] = sourceData[mapping.field];
+      } else {
+        // Set default values for missing fields
+        if (frontendKey === 'relay_stats_db') {
+          processedData[frontendKey] = ''; // Default empty
+        } else if (frontendKey === 'proxy') {
+          processedData[frontendKey] = false; // Default false
+        }
       }
     });
     
@@ -208,10 +269,23 @@ const buildNestedUpdate = (groupName: string, data: any) => {
       };
     
     case 'wallet':
+      // Reverse the field mapping for saving
+      const backendWalletData: any = {};
+      const walletFieldMappings: Record<string, string> = {
+        'name': 'wallet_name',
+        'key': 'wallet_api_key'
+      };
+      
+      Object.entries(walletFieldMappings).forEach(([backendKey, frontendKey]) => {
+        if (data[frontendKey] !== undefined) {
+          backendWalletData[backendKey] = data[frontendKey];
+        }
+      });
+      
       return {
         settings: {
           external_services: {
-            wallet: data
+            wallet: backendWalletData
           }
         }
       };
@@ -253,11 +327,42 @@ const buildNestedUpdate = (groupName: string, data: any) => {
       };
     
     case 'general':
-      return {
-        settings: {
-          server: data
-        }
+      // Reverse the field mapping for saving
+      // General settings need to be split between server and relay sections
+      const serverData: any = {};
+      const relayData: any = {};
+      
+      const generalFieldMappings: Record<string, { section: string; field: string }> = {
+        'port': { section: 'server', field: 'port' },
+        'private_key': { section: 'relay', field: 'private_key' },
+        'service_tag': { section: 'relay', field: 'service_tag' },
+        'stats_db': { section: 'server', field: 'relay_stats_db' },
+        'proxy': { section: 'server', field: 'proxy' },
+        'demo': { section: 'server', field: 'demo_mode' }, // Frontend 'demo_mode' -> backend 'demo'
+        'web': { section: 'server', field: 'web' }
       };
+      
+      Object.entries(generalFieldMappings).forEach(([backendField, mapping]) => {
+        const frontendField = mapping.field;
+        if (data[frontendField] !== undefined) {
+          if (mapping.section === 'server') {
+            serverData[backendField] = data[frontendField];
+          } else {
+            relayData[backendField] = data[frontendField];
+          }
+        }
+      });
+      
+      // Return nested structure with both server and relay sections
+      const result: any = { settings: {} };
+      if (Object.keys(serverData).length > 0) {
+        result.settings.server = serverData;
+      }
+      if (Object.keys(relayData).length > 0) {
+        result.settings.relay = relayData;
+      }
+      
+      return result;
     
     default:
       console.warn(`Unknown settings group for save: ${groupName}`);

@@ -9,7 +9,6 @@ import ContentFilterPanel from '../panels/ContentFilterPanel';
 import NestFeederPanel from '../panels/NestFeederPanel';
 import OllamaPanel from '../panels/OllamaPanel';
 import WalletPanel from '../panels/WalletPanel';
-import QueryCachePanel from '../panels/QueryCachePanel';
 import useGenericSettings from '@app/hooks/useGenericSettings';
 
 const { Panel } = Collapse;
@@ -154,10 +153,6 @@ const AdvancedSettingsLayout: React.FC<AdvancedSettingsLayoutProps> = ({
             
             <Panel header="Wallet" key="wallet">
               <WalletPanel />
-            </Panel>
-            
-            <Panel header="Query Cache" key="query-cache">
-              <QueryCachePanel />
             </Panel>
           </Collapse>
         </SettingsContainer>
