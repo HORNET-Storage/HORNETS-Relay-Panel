@@ -93,7 +93,6 @@ export interface QueryCacheSettings {
 export type SettingsGroupName = 
   | 'image_moderation'
   | 'content_filter'
-  | 'nest_feeder'
   | 'ollama'
   | 'relay_info'
   | 'wallet'
@@ -103,7 +102,6 @@ export type SettingsGroupName =
 export type SettingsGroupType<T extends SettingsGroupName> = 
   T extends 'image_moderation' ? ImageModerationSettings :
   T extends 'content_filter' ? ContentFilterSettings :
-  T extends 'nest_feeder' ? NestFeederSettings :
   T extends 'ollama' ? OllamaSettings :
   T extends 'relay_info' ? RelayInfoSettings :
   T extends 'wallet' ? WalletSettings :

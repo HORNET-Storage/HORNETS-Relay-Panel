@@ -6,7 +6,6 @@ import styled from 'styled-components';
 import GeneralSettingsPanel from '../panels/GeneralSettingsPanel';
 import ImageModerationPanel from '../panels/ImageModerationPanel';
 import ContentFilterPanel from '../panels/ContentFilterPanel';
-import NestFeederPanel from '../panels/NestFeederPanel';
 import OllamaPanel from '../panels/OllamaPanel';
 import WalletPanel from '../panels/WalletPanel';
 import useGenericSettings from '@app/hooks/useGenericSettings';
@@ -141,10 +140,6 @@ const AdvancedSettingsLayout: React.FC<AdvancedSettingsLayoutProps> = ({
             
             <Panel header="Content Filter" key="content-filter">
               <ContentFilterPanel />
-            </Panel>
-            
-            <Panel header="Nest Feeder" key="nest-feeder">
-              <NestFeederPanel />
             </Panel>
             
             <Panel header="Ollama" key="ollama">

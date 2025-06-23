@@ -19,9 +19,6 @@ const extractSettingsForGroup = (settings: any, groupName: string) => {
       rawData = settings?.content_filtering?.text_filter || {};
       break;
     
-    case 'nest_feeder':
-      rawData = settings?.external_services?.nest_feeder || {};
-      break;
     
     case 'ollama':
       rawData = settings?.external_services?.ollama || {};
@@ -103,34 +100,6 @@ const extractSettingsForGroup = (settings: any, groupName: string) => {
     return processedData;
   }
   
-  // Add more mappings for other services that might need prefixed fields
-  if (groupName === 'nest_feeder' && rawData) {
-    const processedData: any = {};
-    
-    // Handle nest_feeder prefixed fields based on the prefixedSettingsMap
-    const nestFeederMappings: Record<string, string> = {
-      'nest_feeder_cache_size': 'cache_size',
-      'nest_feeder_cache_ttl': 'cache_ttl',
-      'nest_feeder_enabled': 'enabled',
-      'nest_feeder_timeout': 'timeout',
-      'nest_feeder_url': 'url'
-    };
-    
-    // Start with raw data
-    Object.keys(rawData).forEach(key => {
-      processedData[key] = rawData[key];
-    });
-    
-    // Apply prefixed field mappings
-    Object.entries(nestFeederMappings).forEach(([prefixedKey, rawKey]) => {
-      if (rawData[rawKey] !== undefined) {
-        processedData[prefixedKey] = rawData[rawKey];
-      }
-    });
-    
-    console.log(`Processed ${groupName} data:`, processedData);
-    return processedData;
-  }
   
   // Handle wallet field name mapping
   if (groupName === 'wallet' && rawData) {
@@ -250,14 +219,6 @@ const buildNestedUpdate = (groupName: string, data: any) => {
         }
       };
     
-    case 'nest_feeder':
-      return {
-        settings: {
-          external_services: {
-            nest_feeder: data
-          }
-        }
-      };
     
     case 'ollama':
       return {
@@ -505,16 +466,6 @@ const useGenericSettings = <T extends SettingsGroupName>(
             'content_filter_cache_ttl',
             'content_filter_enabled',
             'full_text_kinds' // Special case without prefix
-          ]
-        },
-        'nest_feeder': {
-          prefix: 'nest_feeder_',
-          formKeys: [
-            'nest_feeder_cache_size',
-            'nest_feeder_cache_ttl',
-            'nest_feeder_enabled',
-            'nest_feeder_timeout',
-            'nest_feeder_url'
           ]
         },
         'ollama': {
