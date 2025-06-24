@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { Button, Input, Table, Space, Modal, Form, InputNumber, Popconfirm, Alert, Radio, Card } from 'antd';
+import { Button, Table, Space, Modal, Popconfirm, Alert, Radio, Card } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { AllowedUsersSettings, AllowedUsersMode, AllowedUsersTier } from '@app/types/allowedUsers.types';
+import { TierEditor } from '../TierEditor/TierEditor';
+import { displayToFriendlyString, bytesToDisplayFormat } from '@app/utils/tierConversion.utils';
 import * as S from './TiersConfig.styles';
 
 interface TiersConfigProps {
@@ -11,10 +13,7 @@ interface TiersConfigProps {
   disabled?: boolean;
 }
 
-interface TierFormData {
-  data_limit: string;
-  price: string;
-}
+// Remove old form interface - using TierEditor now
 
 export const TiersConfig: React.FC<TiersConfigProps> = ({
   settings,
@@ -24,15 +23,15 @@ export const TiersConfig: React.FC<TiersConfigProps> = ({
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const [form] = Form.useForm<TierFormData>();
+  const [currentTier, setCurrentTier] = useState<AllowedUsersTier | null>(null);
 
   const isPaidMode = mode === 'paid';
   const isFreeMode = mode === 'free';
 
-  const handleFreeTierChange = (dataLimit: string) => {
+  const handleFreeTierChange = (tierName: string) => {
     const updatedTiers = settings.tiers.map(tier => ({
       ...tier,
-      active: tier.data_limit === dataLimit
+      active: tier.name === tierName
     }));
     
     const updatedSettings = {
@@ -45,17 +44,18 @@ export const TiersConfig: React.FC<TiersConfigProps> = ({
 
   const handleAddTier = () => {
     setEditingIndex(null);
-    form.resetFields();
+    setCurrentTier({
+      name: '',
+      price_sats: isFreeMode ? 0 : 1000,
+      monthly_limit_bytes: 1073741824, // 1 GB default
+      unlimited: false
+    });
     setIsModalVisible(true);
   };
 
   const handleEditTier = (index: number) => {
     setEditingIndex(index);
-    const tier = settings.tiers[index];
-    form.setFieldsValue({
-      data_limit: tier.data_limit,
-      price: tier.price
-    });
+    setCurrentTier({ ...settings.tiers[index] });
     setIsModalVisible(true);
   };
 
@@ -68,68 +68,74 @@ export const TiersConfig: React.FC<TiersConfigProps> = ({
     onSettingsChange(updatedSettings);
   };
 
-  const handleModalOk = async () => {
-    try {
-      const values = await form.validateFields();
-      
-      // Validate price for paid mode
-      if (isPaidMode && values.price === '0') {
-        form.setFields([{
-          name: 'price',
-          errors: ['Paid mode cannot have free tiers']
-        }]);
-        return;
-      }
+  const handleTierChange = (updatedTier: AllowedUsersTier) => {
+    setCurrentTier(updatedTier);
+  };
 
-      // Force price to "0" only for free mode, ensure it's always a string
-      const tierPrice = isFreeMode ? '0' : String(values.price || '0');
+  const handleModalOk = () => {
+    if (!currentTier) return;
 
-      const newTier: AllowedUsersTier = {
-        data_limit: values.data_limit,
-        price: tierPrice
-      };
-
-      let newTiers: AllowedUsersTier[];
-      if (editingIndex !== null) {
-        newTiers = [...settings.tiers];
-        newTiers[editingIndex] = newTier;
-      } else {
-        newTiers = [...settings.tiers, newTier];
-      }
-
-      const updatedSettings = {
-        ...settings,
-        tiers: newTiers
-      };
-
-      onSettingsChange(updatedSettings);
-      setIsModalVisible(false);
-      form.resetFields();
-    } catch (error) {
-      // Form validation failed
+    // Validate for paid mode
+    if (isPaidMode && currentTier.price_sats === 0) {
+      return; // TierEditor should show validation error
     }
+
+    // Force price to 0 for free mode
+    const finalTier = {
+      ...currentTier,
+      price_sats: isFreeMode ? 0 : currentTier.price_sats
+    };
+
+    let newTiers: AllowedUsersTier[];
+    if (editingIndex !== null) {
+      newTiers = [...settings.tiers];
+      newTiers[editingIndex] = finalTier;
+    } else {
+      newTiers = [...settings.tiers, finalTier];
+    }
+
+    const updatedSettings = {
+      ...settings,
+      tiers: newTiers
+    };
+
+    onSettingsChange(updatedSettings);
+    setIsModalVisible(false);
+    setCurrentTier(null);
   };
 
   const handleModalCancel = () => {
     setIsModalVisible(false);
-    form.resetFields();
+    setCurrentTier(null);
     setEditingIndex(null);
   };
 
   const columns = [
     {
+      title: 'Tier Name',
+      dataIndex: 'name',
+      key: 'name',
+      render: (name: string) => <S.DataLimit>{name}</S.DataLimit>
+    },
+    {
       title: 'Data Limit',
-      dataIndex: 'data_limit',
-      key: 'data_limit',
-      render: (text: string) => <S.DataLimit>{text}</S.DataLimit>
+      dataIndex: 'monthly_limit_bytes',
+      key: 'monthly_limit_bytes',
+      render: (bytes: number, record: AllowedUsersTier) => {
+        if (record.unlimited) {
+          return <S.DataLimit>unlimited</S.DataLimit>;
+        }
+        const display = bytesToDisplayFormat(bytes);
+        return <S.DataLimit>{displayToFriendlyString({ ...display, unlimited: false })}</S.DataLimit>;
+      }
     },
     {
       title: 'Price (sats)',
-      dataIndex: 'price',
-      key: 'price',
-      render: (price: string) => (
-        <S.Price $isFree={price === '0'}>
-          {price === '0' ? 'Free' : `${price} sats`}
+      dataIndex: 'price_sats',
+      key: 'price_sats',
+      render: (priceSats: number) => (
+        <S.Price $isFree={priceSats === 0}>
+          {priceSats === 0 ? 'Free' : `${priceSats} sats`}
         </S.Price>
       )
     },
@@ -226,29 +232,36 @@ export const TiersConfig: React.FC<TiersConfigProps> = ({
 
       {isFreeMode ? (
         <Radio.Group
-          value={settings.tiers.find(tier => tier.active)?.data_limit}
+          value={settings.tiers.find(tier => tier.active)?.name}
           onChange={(e) => handleFreeTierChange(e.target.value)}
           disabled={disabled}
         >
           <Space direction="vertical" style={{ width: '100%' }}>
-            {settings.tiers.map((tier, index) => (
-              <Card
-                key={index}
-                size="small"
-                style={{ 
-                  cursor: disabled ? 'not-allowed' : 'pointer',
-                  border: tier.active ? '2px solid var(--primary-color)' : '1px solid #d9d9d9'
-                }}
-                onClick={() => !disabled && handleFreeTierChange(tier.data_limit)}
-              >
-                <Radio value={tier.data_limit} disabled={disabled}>
-                  <Space>
-                    <S.DataLimit>{tier.data_limit}</S.DataLimit>
-                    <S.Price $isFree={true}>Free</S.Price>
-                  </Space>
-                </Radio>
-              </Card>
-            ))}
+            {settings.tiers.map((tier, index) => {
+              const display = tier.unlimited 
+                ? { value: 0, unit: 'MB' as const, unlimited: true }
+                : { ...bytesToDisplayFormat(tier.monthly_limit_bytes), unlimited: false };
+              
+              return (
+                <Card
+                  key={index}
+                  size="small"
+                  style={{ 
+                    cursor: disabled ? 'not-allowed' : 'pointer',
+                    border: tier.active ? '2px solid var(--primary-color)' : '1px solid #d9d9d9'
+                  }}
+                  onClick={() => !disabled && handleFreeTierChange(tier.name)}
+                >
+                  <Radio value={tier.name} disabled={disabled}>
+                    <Space>
+                      <S.DataLimit>{tier.name}</S.DataLimit>
+                      <S.DataLimit>{displayToFriendlyString(display)}</S.DataLimit>
+                      <S.Price $isFree={true}>Free</S.Price>
+                    </Space>
+                  </Radio>
+                </Card>
+              );
+            })}
           </Space>
         </Radio.Group>
       ) : (
@@ -267,76 +280,45 @@ export const TiersConfig: React.FC<TiersConfigProps> = ({
         onOk={handleModalOk}
         onCancel={handleModalCancel}
         destroyOnClose
+        width={600}
       >
-        <Form
-          form={form}
-          layout="vertical"
-          initialValues={{ price: '0' }}
-        >
-          <Form.Item
-            name="data_limit"
-            label="Data Limit"
-            rules={[
-              { required: true, message: 'Please enter data limit' },
-              { 
-                pattern: /^\d+\s*(MB|GB|TB)\s*per\s*(day|week|month|year)$/i,
-                message: 'Format: "1 GB per month"'
-              }
-            ]}
-          >
-            <Input placeholder="e.g., 1 GB per month" />
-          </Form.Item>
+        {currentTier && (
+          <TierEditor
+            tier={currentTier}
+            onTierChange={handleTierChange}
+            disabled={disabled}
+            showName={true}
+            showPrice={true}
+          />
+        )}
 
-          <Form.Item
-            name="price"
-            label="Price (sats)"
-            rules={[
-              { required: true, message: 'Please enter price' },
-              { 
-                validator: (_, value) => {
-                  if (isPaidMode && value === '0') {
-                    return Promise.reject('Paid mode cannot have free tiers');
-                  }
-                  return Promise.resolve();
-                }
-              }
-            ]}
-          >
-            <InputNumber
-              min={0}
-              style={{ width: '100%' }}
-              placeholder="0 for free, or amount in sats"
-              disabled={isFreeMode}
-              value={isFreeMode ? 0 : undefined}
-            />
-          </Form.Item>
-
-          {isPaidMode && (
-            <Alert
-              message="Note: Free tiers (price = 0) are not allowed in paid mode"
-              type="warning"
-              showIcon
-              style={{
-                backgroundColor: '#fafafa',
-                border: '1px solid #d9d9d9',
-                color: '#262626'
-              }}
-            />
-          )}
-          
-          {isFreeMode && (
-            <Alert
-              message="Note: Price will be automatically set to 0 (free) in free mode"
-              type="success"
-              showIcon
-              style={{
-                backgroundColor: '#fafafa',
-                border: '1px solid #d9d9d9',
-                color: '#262626'
-              }}
-            />
-          )}
-        </Form>
+        {isPaidMode && (
+          <Alert
+            message="Note: Free tiers (price = 0) are not allowed in paid mode"
+            type="warning"
+            showIcon
+            style={{
+              marginTop: 16,
+              backgroundColor: '#fafafa',
+              border: '1px solid #d9d9d9',
+              color: '#262626'
+            }}
+          />
+        )}
+        
+        {isFreeMode && (
+          <Alert
+            message="Note: Price will be automatically set to 0 (free) in free mode"
+            type="success"
+            showIcon
+            style={{
+              marginTop: 16,
+              backgroundColor: '#fafafa',
+              border: '1px solid #d9d9d9',
+              color: '#262626'
+            }}
+          />
+        )}
       </Modal>
     </S.Container>
   );

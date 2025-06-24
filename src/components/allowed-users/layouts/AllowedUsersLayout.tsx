@@ -37,20 +37,20 @@ export const AllowedUsersLayout: React.FC = () => {
       if (currentTiers.length === 0) return false;
       
       return currentTiers.every(tier => {
-        const hasValidDataLimit = tier.data_limit && tier.data_limit.trim() !== '';
+        const hasValidName = tier.name && tier.name.trim() !== '';
         
         if (targetMode === 'paid') {
           // Paid mode requires at least one tier with non-zero price
-          return hasValidDataLimit && tier.price && tier.price !== '0';
+          return hasValidName && tier.price_sats > 0;
         } else if (targetMode === 'free') {
-          // Free mode should have price "0"
-          return hasValidDataLimit && tier.price === '0';
+          // Free mode should have price 0
+          return hasValidName && tier.price_sats === 0;
         } else if (targetMode === 'exclusive') {
           // Exclusive mode can have any price
-          return hasValidDataLimit;
+          return hasValidName;
         }
         
-        return hasValidDataLimit;
+        return hasValidName;
       });
     };
     

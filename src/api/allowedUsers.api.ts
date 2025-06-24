@@ -37,8 +37,10 @@ export const getAllowedUsersSettings = async (): Promise<AllowedUsersSettings> =
     // Check if tiers exist in response, otherwise use defaults
     if (allowedUsersData.tiers && Array.isArray(allowedUsersData.tiers)) {
       transformedTiers = allowedUsersData.tiers.map((tier: any) => ({
-        data_limit: tier.datalimit || tier.data_limit || '',
-        price: tier.price || '0'
+        name: tier.name || 'Unnamed Tier',
+        price_sats: tier.price_sats || 0,
+        monthly_limit_bytes: tier.monthly_limit_bytes || 0,
+        unlimited: tier.unlimited || false
       }));
     } else {
       // Use default tiers for the mode if none provided
@@ -48,10 +50,10 @@ export const getAllowedUsersSettings = async (): Promise<AllowedUsersSettings> =
 
     // For free mode, reconstruct full UI options with active tier marked
     if (allowedUsersData.mode === 'free' && transformedTiers.length === 1) {
-      const activeTierDataLimit = transformedTiers[0].data_limit;
+      const activeTierBytes = transformedTiers[0].monthly_limit_bytes;
       transformedTiers = DEFAULT_TIERS.free.map(defaultTier => ({
         ...defaultTier,
-        active: defaultTier.data_limit === activeTierDataLimit
+        active: defaultTier.monthly_limit_bytes === activeTierBytes
       }));
     }
     
@@ -95,8 +97,10 @@ export const updateAllowedUsersSettings = async (settings: AllowedUsersSettings)
           "scope": settings.write_access.scope
         },
         "tiers": tiersToSend.map(tier => ({
-          "datalimit": tier.data_limit || "1 GB per month",  // Backend expects 'datalimit' not 'data_limit', fallback for empty values
-          "price": tier.price || "0"
+          "name": tier.name,
+          "price_sats": tier.price_sats,
+          "monthly_limit_bytes": tier.monthly_limit_bytes,
+          "unlimited": tier.unlimited
         }))
       }
     }
