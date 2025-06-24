@@ -11,7 +11,6 @@ import {
   InfoCircleOutlined,
   WalletOutlined,
   GlobalOutlined,
-  DatabaseOutlined
 } from '@ant-design/icons';
 
 const { Panel } = Collapse;
@@ -82,12 +81,6 @@ const settingsTabs: SettingsTab[] = [
     path: '/settings/content-filter'
   },
   {
-    key: 'nest_feeder',
-    label: 'Nest Feeder',
-    icon: <ApiOutlined className="item-icon" />,
-    path: '/settings/nest-feeder'
-  },
-  {
     key: 'ollama',
     label: 'Ollama',
     icon: <RobotOutlined className="item-icon" />,
@@ -111,12 +104,6 @@ const settingsTabs: SettingsTab[] = [
     icon: <GlobalOutlined className="item-icon" />,
     path: '/settings/general'
   },
-  {
-    key: 'query_cache',
-    label: 'Query Cache',
-    icon: <DatabaseOutlined className="item-icon" />,
-    path: '/settings/query-cache'
-  }
 ];
 
 const SettingsNavigation: React.FC = () => {

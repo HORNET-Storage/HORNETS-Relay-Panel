@@ -5,6 +5,7 @@ import config from '@app/config/config';
 import { readToken } from '@app/services/localStorage.service';
 import { message } from 'antd';
 import { useHandleLogout } from './authUtils';
+import { FileCountResponse } from '@app/types/newSettings.types';
 
 interface ChartDataItem {
   value: number;
@@ -27,7 +28,7 @@ const useChartData = () => {
           throw new Error('No authentication token found');
         }
 
-        const response = await fetch(`${config.baseURL}/api/relaycount`, {
+        const response = await fetch(`${config.baseURL}/api/relay/count`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -43,17 +44,70 @@ const useChartData = () => {
           throw new Error(`Network response was not ok (status: ${response.status})`);
         }
 
-        const data = await response.json();
+        const data: FileCountResponse = await response.json();
+        
+        // Log the complete backend response for debugging
+        console.log('=== CHART DATA BACKEND RESPONSE ===');
+        console.log('Full response:', JSON.stringify(data, null, 2));
+        console.log('Response keys:', Object.keys(data));
+        console.log('==============================');
 
         // Process the data into chartDataItems using translated names
-        const newChartData: ChartDataItem[] = [
-          { value: data.kinds, name: t('categories.kinds') },
-          { value: data.photos, name: t('categories.photos') },
-          { value: data.videos, name: t('categories.videos') },
-          { value: data.audio, name: t('categories.audio') },
-          { value: data.misc, name: t('categories.misc') },
-        ];
+        // Handle dynamic media types while maintaining UI compatibility
+        const newChartData: ChartDataItem[] = [];
+        
+        // Always include kinds first
+        console.log('Adding kinds data:', { value: data.kinds, name: t('categories.kinds') });
+        newChartData.push({ value: data.kinds, name: t('categories.kinds') });
+        
+        // Destructure to separate kinds from media types
+        const { kinds, ...mediaCounts } = data;
+        console.log('Media counts after destructuring:', mediaCounts);
+        console.log('Media count entries:', Object.entries(mediaCounts));
+        
+        // Map dynamic media types to chart data with fallback translations
+        Object.entries(mediaCounts).forEach(([mediaType, count]) => {
+          console.log(`Processing media type: ${mediaType} with count: ${count}`);
+          let translationKey = '';
+          let fallbackName = '';
+          
+          // Map new media types to existing translation keys for UI compatibility
+          switch (mediaType) {
+            case 'image':
+              translationKey = 'categories.photos';
+              fallbackName = 'Photos';
+              break;
+            case 'video':
+              translationKey = 'categories.videos';
+              fallbackName = 'Videos';
+              break;
+            case 'audio':
+              translationKey = 'categories.audio';
+              fallbackName = 'Audio';
+              break;
+            case 'git':
+              translationKey = 'categories.misc';
+              fallbackName = 'Git';
+              break;
+            default:
+              // For any new media types not yet in translations
+              translationKey = `categories.${mediaType}`;
+              fallbackName = mediaType.charAt(0).toUpperCase() + mediaType.slice(1);
+              break;
+          }
+          
+          // Use translation if available, otherwise use fallback
+          const displayName = t(translationKey, { defaultValue: fallbackName });
+          const chartItem = { value: count, name: displayName };
+          console.log(`Adding chart item:`, chartItem);
+          newChartData.push(chartItem);
+        });
 
+        console.log('=== FINAL CHART DATA ===');
+        console.log('Final chart data:', newChartData);
+        console.log('Chart data length:', newChartData.length);
+        console.log('========================');
+        
         setChartData(newChartData);
       } catch (error) {
         console.error('Error:', error);
@@ -71,89 +125,3 @@ const useChartData = () => {
 };
 
 export default useChartData;
-
-
-// import { useState, useEffect } from 'react';
-// import { useTranslation } from 'react-i18next';
-// import { useDispatch } from 'react-redux';
-// import config from '@app/config/config';
-// import { readToken, deleteToken, deleteUser } from '@app/services/localStorage.service';
-// import { setUser } from '@app/store/slices/userSlice';
-// import { message } from 'antd';
-
-// interface ChartDataItem {
-//   value: number;
-//   name: string;
-// }
-
-// const useChartData = () => {
-//   const [chartData, setChartData] = useState<ChartDataItem[] | null>(null);
-//   const [isLoading, setIsLoading] = useState<boolean>(true);
-//   const { t } = useTranslation();
-//   const dispatch = useDispatch();
-
-//   const handleLogout = () => {
-//     deleteToken();
-//     deleteUser();
-//     dispatch(setUser(null));
-//     console.log('Token deleted, user logged out');
-//     message.info('You have been logged out. Please login again.');
-//   };
-
-//   useEffect(() => {
-//     console.log('Component mounted, starting data fetch...');
-//     const fetchData = async () => {
-//       console.log('Preparing to fetch data...');
-//       setIsLoading(true);
-//       try {
-//         const token = readToken();
-//         if (!token) {
-//           throw new Error('No authentication token found');
-//         }
-//         console.log('Sending request to server...');
-//         const response = await fetch(`${config.baseURL}/api/relaycount`, {
-//           method: 'GET',
-//           headers: {
-//             'Content-Type': 'application/json',
-//             'Authorization': `Bearer ${token}`,
-//           },
-//         });
-//         if (!response.ok) {
-//           if (response.status === 401) {
-//             handleLogout();
-//             throw new Error('Authentication failed. You have been logged out.');
-//           }
-//           throw new Error(`Network response was not ok (status: ${response.status})`);
-//         }
-//         const data = await response.json();
-//         console.log('Response Data:', data);
-//         // Process the data into chartDataItems using translated names
-//         const newChartData: ChartDataItem[] = [
-//           { value: data.kinds, name: t('categories.kinds') },
-//           { value: data.photos, name: t('categories.photos') },
-//           { value: data.videos, name: t('categories.videos') },
-//           { value: data.audio, name: t('categories.audio') },
-//           { value: data.misc, name: t('categories.misc') },
-//         ];
-//         setChartData(newChartData);
-//       } catch (error) {
-//         console.error('Error:', error);
-//         message.error(error instanceof Error ? error.message : 'An error occurred');
-//         setChartData(null);
-//       } finally {
-//         console.log('Fetching process complete.');
-//         setIsLoading(false);
-//       }
-//     };
-
-//     fetchData();
-
-//     return () => {
-//       console.log('Cleanup called; Component unmounting...');
-//     };
-//   }, [t, dispatch]);
-
-//   return { chartData, isLoading };
-// };
-
-// export default useChartData;

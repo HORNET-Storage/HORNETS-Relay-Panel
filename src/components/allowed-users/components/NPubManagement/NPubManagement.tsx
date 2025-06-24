@@ -72,10 +72,16 @@ export const NPubManagement: React.FC<NPubManagementProps> = ({
 
     setUnifiedUsers(Array.from(allNpubs.values()));
   }, [readNpubs.npubs, writeNpubs.npubs]);
-  const tierOptions = settings.tiers.map(tier => ({
-    label: `${tier.data_limit} (${tier.price === '0' ? 'Free' : `${tier.price} sats`})`,
-    value: tier.data_limit
-  }));
+  const tierOptions = settings.tiers.map(tier => {
+    const displayFormat = tier.unlimited 
+      ? 'unlimited' 
+      : `${(tier.monthly_limit_bytes / 1073741824).toFixed(tier.monthly_limit_bytes % 1073741824 === 0 ? 0 : 1)} GB per month`;
+    
+    return {
+      label: `${tier.name} - ${displayFormat} (${tier.price_sats === 0 ? 'Free' : `${tier.price_sats} sats`})`,
+      value: tier.name
+    };
+  });
 
   const handleAddNpub = async () => {
     try {
@@ -140,7 +146,7 @@ export const NPubManagement: React.FC<NPubManagementProps> = ({
     }
 
     const lines = bulkText.split('\n').filter(line => line.trim());
-    const defaultTier = settings.tiers[0]?.data_limit || 'basic';
+    const defaultTier = settings.tiers[0]?.name || 'basic';
 
     try {
       for (const line of lines) {

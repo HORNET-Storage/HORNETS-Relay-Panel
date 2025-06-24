@@ -10,18 +10,15 @@ import {
   InfoCircleOutlined,
   WalletOutlined,
   GlobalOutlined,
-  DatabaseOutlined,
   DownOutlined,
   RightOutlined
 } from '@ant-design/icons';
 import ImageModerationSettings from './ImageModerationSettings';
 import ContentFilterSettings from './ContentFilterSettings';
-import NestFeederSettings from './NestFeederSettings';
 import OllamaSettings from './OllamaSettings';
 import WalletSettings from './WalletSettings';
 import GeneralSettings from './GeneralSettings';
 import RelayInfoSettings from './RelayInfoSettings';
-import QueryCacheSettings from './QueryCacheSettings';
 
 const SettingsContainer = styled.div`
   width: 100%;
@@ -160,13 +157,6 @@ const SettingsPage: React.FC = () => {
       component: <ContentFilterSettings />
     },
     {
-      key: 'nest_feeder',
-      path: '/settings/nest-feeder',
-      label: 'Nest Feeder',
-      icon: <ApiOutlined />,
-      component: <NestFeederSettings />
-    },
-    {
       key: 'ollama',
       path: '/settings/ollama',
       label: 'Ollama',
@@ -194,13 +184,6 @@ const SettingsPage: React.FC = () => {
       icon: <GlobalOutlined />,
       component: <GeneralSettings />
     },
-    {
-      key: 'query_cache',
-      path: '/settings/query-cache',
-      label: 'Query Cache',
-      icon: <DatabaseOutlined />,
-      component: <QueryCacheSettings />
-    }
   ], []);
   
   // Set active key based on current path

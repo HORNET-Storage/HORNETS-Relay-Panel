@@ -205,9 +205,26 @@ const RelayInfoSettings: React.FC = () => {
           }
         >
           <Select
-            mode="multiple"
-            placeholder="Select supported NIPs"
+            mode="tags"
+            placeholder="Select or type custom NIP numbers (e.g. 1, 42, 999)"
             style={{ width: '100%' }}
+            tokenSeparators={[',', ' ']}
+            filterOption={(input, option) => {
+              if (!option?.children) return false;
+              return option.children.toString().toLowerCase().includes(input.toLowerCase());
+            }}
+            onChange={(values: (string | number)[]) => {
+              // Convert all values to numbers, filtering out invalid ones
+              const numberValues = values
+                .map((val: string | number) => {
+                  const num = Number(val);
+                  return isNaN(num) ? null : num;
+                })
+                .filter((val: number | null): val is number => val !== null);
+              
+              // Update the form field with number values
+              form.setFieldsValue({ relaysupportednips: numberValues });
+            }}
           >
             {nipOptions.map(option => (
               <Option key={option.value} value={option.value}>

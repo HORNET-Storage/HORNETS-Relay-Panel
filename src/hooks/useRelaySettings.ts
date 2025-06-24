@@ -1,33 +1,17 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { CheckboxValueType } from 'antd/es/checkbox/Group';
 import config from '@app/config/config';
 import { readToken } from '@app/services/localStorage.service';
 import { useHandleLogout } from './authUtils';
-import { Settings, noteOptions, mimeTypeOptions } from '@app/constants/relaySettings';
+import { Settings } from '@app/constants/relaySettings';
+import { CORE_KINDS, ensureCoreKinds } from '@app/constants/coreKinds';
 
-interface BackendRelaySettings {
-  mode: string;
-  protocol: CheckboxValueType[];
-  chunked: CheckboxValueType[];
-  chunksize: string;
-  maxFileSize: number;
-  maxFileSizeUnit: string;
-  moderationMode: string;    // "strict" or "passive"
-  MimeTypeGroups: {
-    images: string[];
-    videos: string[];
-    audio: string[];
-    documents: string[];
-  };
-  MimeTypeWhitelist: string[];
-  KindWhitelist: string[];
-  isFileStorageActive?: boolean;
-}
+// Legacy interface - no longer used with new API
+// interface BackendRelaySettings { ... }
 
 const getInitialSettings = (): Settings => ({
   mode: 'whitelist',
   protocol: ['WebSocket'],
-  kinds: [],
+  kinds: [...CORE_KINDS], // Always start with core kinds
   dynamicKinds: [],
   photos: [],
   videos: [],
@@ -41,7 +25,11 @@ const getInitialSettings = (): Settings => ({
   isGitNestrActive: true,
   isAudioActive: true,
   isFileStorageActive: false,
-  moderationMode: 'strict' // Default to strict mode
+  moderationMode: 'strict', // Default to strict mode
+  // Default file size limits in MB
+  photoMaxSizeMB: 100,
+  videoMaxSizeMB: 500,
+  audioMaxSizeMB: 100
 });
 
 const useRelaySettings = () => {
@@ -97,64 +85,44 @@ const useRelaySettings = () => {
   }, [relaySettings.mode, previousSmartSettings]);
   /* eslint-enable react-hooks/exhaustive-deps */
 
-  const transformToBackendSettings = (settings: Settings): BackendRelaySettings => {
-    const mimeGroups = {
-      images: settings.photos,
-      videos: settings.videos,
-      audio: settings.audio,
-      documents: [] as string[]
-    };
+  // Legacy transformation functions - kept for reference but not used with new API
+  // These can be removed once migration is fully tested
 
-    const selectedMimeTypes = [
-      ...mimeGroups.images,
-      ...mimeGroups.videos,
-      ...mimeGroups.audio
-    ];
-
-    return {
-      mode: settings.mode,
-      protocol: settings.protocol as CheckboxValueType[],
-      chunked: [],
-      chunksize: '2',
-      maxFileSize: 10,
-      maxFileSizeUnit: 'MB',
-      moderationMode: settings.moderationMode,
-      MimeTypeGroups: mimeGroups,
-      isFileStorageActive: settings.isFileStorageActive,
-      MimeTypeWhitelist: settings.mode === 'whitelist'
-        ? selectedMimeTypes
-        : mimeTypeOptions
-          .map(m => m.value)
-          .filter(mimeType => !selectedMimeTypes.includes(mimeType)),
-      KindWhitelist: settings.mode === 'whitelist'
-        ? settings.kinds
-        : noteOptions
-          .map(note => note.kindString)
-          .filter(kind => !settings.kinds.includes(kind))
-    };
-  };
-
-  const transformFromBackendSettings = (backendSettings: BackendRelaySettings): Settings => {
-    console.log('Raw backend settings:', backendSettings);
+  // Simplified transformation functions based on actual backend response
+  const transformFromBackendSettings = useCallback((backendData: any): Settings => {
+    console.log('Raw backend settings:', backendData);
     const settings = getInitialSettings();
-    settings.mode = backendSettings.mode;
-    settings.protocol = backendSettings.protocol as string[];
-    settings.moderationMode = backendSettings.moderationMode ?? 'strict';
+    
+    // Map from actual backend structure
+    if (backendData.event_filtering) {
+      settings.mode = backendData.event_filtering.mode || 'whitelist';
+      settings.moderationMode = backendData.event_filtering.moderation_mode || 'strict';
+      // Always ensure core kinds are included from backend data
+      const backendKinds = backendData.event_filtering.kind_whitelist || [];
+      settings.kinds = ensureCoreKinds(backendKinds);
+      
+      // Extract mime types and file sizes from actual backend format
+      const mediaDefinitions = backendData.event_filtering.media_definitions || {};
+      // Handle both old and new field names for backward compatibility
+      settings.photos = mediaDefinitions.image?.mime_patterns || mediaDefinitions.image?.mimepatterns || [];
+      settings.videos = mediaDefinitions.video?.mime_patterns || mediaDefinitions.video?.mimepatterns || [];
+      settings.audio = mediaDefinitions.audio?.mime_patterns || mediaDefinitions.audio?.mimepatterns || [];
+      
+      // Extract file size limits (handle both old and new field names)
+      settings.photoMaxSizeMB = mediaDefinitions.image?.max_size_mb || mediaDefinitions.image?.maxsizemb || 100;
+      settings.videoMaxSizeMB = mediaDefinitions.video?.max_size_mb || mediaDefinitions.video?.maxsizemb || 500;
+      settings.audioMaxSizeMB = mediaDefinitions.audio?.max_size_mb || mediaDefinitions.audio?.maxsizemb || 100;
+      
+      // Set protocols
+      if (backendData.event_filtering.protocols?.enabled) {
+        settings.protocol = backendData.event_filtering.protocols.allowed_protocols || ['WebSocket'];
+      } else {
+        settings.protocol = ['WebSocket'];
+      }
+    }
 
-    if (backendSettings.mode === 'blacklist') {
-      // In blacklist mode, start with empty selections
-      settings.photos = [];
-      settings.videos = [];
-      settings.audio = [];
-      settings.kinds = [];
-    } else {
-      // In whitelist mode, use the MimeTypeGroups directly
-      settings.photos = backendSettings.MimeTypeGroups?.images || [];
-      settings.videos = backendSettings.MimeTypeGroups?.videos || [];
-      settings.audio = backendSettings.MimeTypeGroups?.audio || [];
-      settings.kinds = backendSettings.KindWhitelist || [];
-
-      // Store these as the previous whitelist settings
+    // Store these as the previous whitelist settings if in whitelist mode
+    if (settings.mode === 'whitelist') {
       setPreviousSmartSettings({
         kinds: settings.kinds,
         photos: settings.photos,
@@ -168,15 +136,54 @@ const useRelaySettings = () => {
     settings.isPhotosActive = true;
     settings.isVideosActive = true;
     settings.isAudioActive = true;
-    settings.isFileStorageActive = backendSettings.isFileStorageActive ?? false;
+    settings.isFileStorageActive = true;
 
     return settings;
-  };
+  }, []);
 
+  const transformToBackendSettings = useCallback((settings: Settings) => {
+    // Always create media definitions with correct field names to avoid backend conflicts
+    const mediaDefinitions = {
+      image: {
+        mime_patterns: settings.photos, // Only send correct field name
+        extensions: [".jpg", ".jpeg", ".png", ".gif", ".webp"],
+        max_size_mb: settings.photoMaxSizeMB // Only send correct field name
+      },
+      video: {
+        mime_patterns: settings.videos, // Only send correct field name
+        extensions: [".mp4", ".webm", ".avi", ".mov"],
+        max_size_mb: settings.videoMaxSizeMB // Only send correct field name
+      },
+      audio: {
+        mime_patterns: settings.audio, // Only send correct field name
+        extensions: [".mp3", ".wav", ".ogg", ".flac"],
+        max_size_mb: settings.audioMaxSizeMB // Only send correct field name
+      }
+    };
+
+    return {
+      settings: {
+        event_filtering: {
+          mode: settings.mode,
+          moderation_mode: settings.moderationMode,
+          kind_whitelist: ensureCoreKinds(settings.kinds), // Always include core kinds
+          media_definitions: mediaDefinitions,
+          dynamic_kinds: {
+            enabled: false,
+            allowed_kinds: []
+          },
+          protocols: {
+            enabled: settings.protocol.length > 0,
+            allowed_protocols: settings.protocol
+          }
+        }
+      }
+    };
+  }, []);
 
   const fetchSettings = useCallback(async () => {
     try {
-      const response = await fetch(`${config.baseURL}/api/relay-settings`, {
+      const response = await fetch(`${config.baseURL}/api/settings`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -190,24 +197,25 @@ const useRelaySettings = () => {
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
       const data = await response.json();
-      const settings = transformFromBackendSettings(data.relay_settings);
+      const settings = transformFromBackendSettings(data.settings);
       setRelaySettings(settings);
 
     } catch (error) {
       console.error('Error fetching settings:', error);
     }
-  }, [token, handleLogout]);
+  }, [token, handleLogout, transformFromBackendSettings]);
 
   const saveSettings = useCallback(async () => {
     try {
-      const backendSettings = transformToBackendSettings(relaySettings);
-      const response = await fetch(`${config.baseURL}/api/relay-settings`, {
+      const updateRequest = transformToBackendSettings(relaySettings);
+      
+      const response = await fetch(`${config.baseURL}/api/settings`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ relay_settings: backendSettings }),
+        body: JSON.stringify(updateRequest),
       });
 
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -225,7 +233,7 @@ const useRelaySettings = () => {
       console.error('Error saving settings:', error);
       throw error;
     }
-  }, [relaySettings, token]);
+  }, [relaySettings, token, transformToBackendSettings]);
 
   const updateSettings = useCallback((category: keyof Settings, value: any) => {
     setRelaySettings(prev => ({

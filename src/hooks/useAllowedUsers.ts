@@ -50,7 +50,7 @@ export const useAllowedUsersSettings = () => {
           scope: 'all_users'
         },
         tiers: [
-          { data_limit: '1 GB per month', price: '0' }
+          { name: 'Basic', price_sats: 0, monthly_limit_bytes: 1073741824, unlimited: false }
         ]
       });
     } finally {
@@ -232,7 +232,7 @@ export const useAllowedUsersValidation = () => {
     }
     
     // Tier validation
-    if (settings.mode === 'paid' && settings.tiers.some(t => t.price === '0')) {
+    if (settings.mode === 'paid' && settings.tiers.some(t => t.price_sats === 0)) {
       errors.push('Paid mode cannot have free tiers');
     }
     

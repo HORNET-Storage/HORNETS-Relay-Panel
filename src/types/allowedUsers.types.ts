@@ -1,17 +1,20 @@
-export type AllowedUsersMode = 'free' | 'paid' | 'exclusive';
+export type AllowedUsersMode = 'free' | 'paid' | 'exclusive' | 'personal';
 
 export type AccessScope = 'all_users' | 'paid_users' | 'allowed_users';
 
 export interface AllowedUsersTier {
-  data_limit: string;
-  price: string;
+  name: string;
+  price_sats: number;
+  monthly_limit_bytes: number;
+  unlimited: boolean;
   active?: boolean; // For free mode - only one tier can be active at a time
 }
 
-// Backend expects this format
-export interface AllowedUsersTierBackend {
-  datalimit: string;
+// Legacy interface - kept for migration purposes
+export interface AllowedUsersTierLegacy {
+  data_limit: string;
   price: string;
+  active?: boolean;
 }
 
 export interface AllowedUsersAccessConfig {
@@ -91,24 +94,37 @@ export const MODE_CONFIGURATIONS: Record<AllowedUsersMode, ModeOptions> = {
     ],
     allowsFreeTiers: true,
     requiresNpubManagement: true
+  },
+  personal: {
+    readOptions: [
+      { value: 'allowed_users', label: 'Only Me' }
+    ],
+    writeOptions: [
+      { value: 'allowed_users', label: 'Only Me' }
+    ],
+    allowsFreeTiers: true,
+    requiresNpubManagement: true
   }
 };
 
 // Default tier configurations for each mode
 export const DEFAULT_TIERS: Record<AllowedUsersMode, AllowedUsersTier[]> = {
   free: [
-    { data_limit: '100 MB per month', price: '0', active: false },
-    { data_limit: '500 MB per month', price: '0', active: true }, // Default active tier
-    { data_limit: '1 GB per month', price: '0', active: false }
+    { name: 'Basic', price_sats: 0, monthly_limit_bytes: 104857600, unlimited: false, active: false }, // 100 MB
+    { name: 'Standard', price_sats: 0, monthly_limit_bytes: 524288000, unlimited: false, active: true }, // 500 MB - default active
+    { name: 'Plus', price_sats: 0, monthly_limit_bytes: 1073741824, unlimited: false, active: false } // 1 GB
   ],
   paid: [
-    { data_limit: '1 GB per month', price: '1000' },
-    { data_limit: '5 GB per month', price: '5000' },
-    { data_limit: '10 GB per month', price: '10000' }
+    { name: 'Starter', price_sats: 1000, monthly_limit_bytes: 1073741824, unlimited: false }, // 1 GB
+    { name: 'Professional', price_sats: 5000, monthly_limit_bytes: 5368709120, unlimited: false }, // 5 GB
+    { name: 'Business', price_sats: 10000, monthly_limit_bytes: 10737418240, unlimited: false } // 10 GB
   ],
   exclusive: [
-    { data_limit: '5 GB per month', price: '0' },
-    { data_limit: '50 GB per month', price: '0' },
-    { data_limit: 'unlimited', price: '0' }
+    { name: 'Member', price_sats: 0, monthly_limit_bytes: 5368709120, unlimited: false }, // 5 GB
+    { name: 'VIP', price_sats: 0, monthly_limit_bytes: 53687091200, unlimited: false }, // 50 GB
+    { name: 'Unlimited', price_sats: 0, monthly_limit_bytes: 0, unlimited: true }
+  ],
+  personal: [
+    { name: 'Personal', price_sats: 0, monthly_limit_bytes: 0, unlimited: true, active: true } // Unlimited and free
   ]
 };

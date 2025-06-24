@@ -46,20 +46,26 @@ interface DesktopLayoutProps {
     photos: {
         selected: string[];
         isActive: boolean;
+        maxSizeMB: number;
         onChange: (values: string[]) => void;
         onToggle: (checked: boolean) => void;
+        onMaxSizeChange: (size: number) => void;
     };
     videos: {
         selected: string[];
         isActive: boolean;
+        maxSizeMB: number;
         onChange: (values: string[]) => void;
         onToggle: (checked: boolean) => void;
+        onMaxSizeChange: (size: number) => void;
     };
     audio: {
         selected: string[];
         isActive: boolean;
+        maxSizeMB: number;
         onChange: (values: string[]) => void;
         onToggle: (checked: boolean) => void;
+        onMaxSizeChange: (size: number) => void;
     };
     // Moderation section props
     moderationMode: string;

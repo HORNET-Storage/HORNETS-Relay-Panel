@@ -6,10 +6,8 @@ import styled from 'styled-components';
 import GeneralSettingsPanel from '../panels/GeneralSettingsPanel';
 import ImageModerationPanel from '../panels/ImageModerationPanel';
 import ContentFilterPanel from '../panels/ContentFilterPanel';
-import NestFeederPanel from '../panels/NestFeederPanel';
 import OllamaPanel from '../panels/OllamaPanel';
 import WalletPanel from '../panels/WalletPanel';
-import QueryCachePanel from '../panels/QueryCachePanel';
 import useGenericSettings from '@app/hooks/useGenericSettings';
 
 const { Panel } = Collapse;
@@ -144,20 +142,12 @@ const AdvancedSettingsLayout: React.FC<AdvancedSettingsLayoutProps> = ({
               <ContentFilterPanel />
             </Panel>
             
-            <Panel header="Nest Feeder" key="nest-feeder">
-              <NestFeederPanel />
-            </Panel>
-            
             <Panel header="Ollama" key="ollama">
               <OllamaPanel />
             </Panel>
             
             <Panel header="Wallet" key="wallet">
               <WalletPanel />
-            </Panel>
-            
-            <Panel header="Query Cache" key="query-cache">
-              <QueryCachePanel />
             </Panel>
           </Collapse>
         </SettingsContainer>
