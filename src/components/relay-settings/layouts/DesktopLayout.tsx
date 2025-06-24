@@ -10,12 +10,10 @@ import { ActivityStory } from '@app/components/relay-dashboard/transactions/Tran
 import * as S from '@app/pages/uiComponentsPages/UIComponentsPage.styles';
 import { NetworkSection } from '@app/components/relay-settings/sections/NetworkSection';
 import { AppBucketsSection } from '@app/components/relay-settings/sections/AppBucketsSection';
-import { SubscriptionSection } from '@app/components/relay-settings/sections/SubscriptionSection';
 import { KindsSection } from '@app/components/relay-settings/sections/KindsSection';
 import { MediaSection } from '@app/components/relay-settings/sections/MediaSection';
 import { ModerationSection } from '@app/components/relay-settings/sections/ModerationSection';
 import { useTranslation } from 'react-i18next';
-import { SubscriptionTier } from '@app/constants/relaySettings';
 
 interface DesktopLayoutProps {
     mode: string;
@@ -34,12 +32,6 @@ interface DesktopLayoutProps {
     onDynamicAppBucketsChange: (values: string[]) => void;
     onAddBucket: (bucket: string) => void;
     onRemoveBucket: (bucket: string) => void;
-    // Subscription section props
-    subscriptionTiers: SubscriptionTier[];
-    onSubscriptionChange: (newTiers: SubscriptionTier[]) => void;
-    freeTierEnabled: boolean,
-    freeTierLimit: string,
-    onFreeTierChange: (enabled: boolean, limit: string) => void;
     // Kinds section props
     isKindsActive: boolean;
     selectedKinds: string[];
@@ -91,12 +83,6 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({
     onDynamicAppBucketsChange,
     onAddBucket,
     onRemoveBucket,
-    // Subscription props
-    subscriptionTiers,
-    onSubscriptionChange,
-    freeTierEnabled,
-    freeTierLimit,
-    onFreeTierChange,
     // Kinds props
     isKindsActive,
     selectedKinds,
@@ -142,13 +128,6 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({
                             onRemoveBucket={onRemoveBucket}
                         />
 
-                        <SubscriptionSection
-                            tiers={subscriptionTiers}
-                            onChange={onSubscriptionChange}
-                            freeTierEnabled={freeTierEnabled}
-                            freeTierLimit={freeTierLimit}
-                            onFreeTierChange={onFreeTierChange}
-                        />
 
                         <ModerationSection
                             moderationMode={moderationMode}

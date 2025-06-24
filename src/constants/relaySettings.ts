@@ -15,15 +15,7 @@ export type Settings = {
   isGitNestrActive: boolean;
   isAudioActive: boolean;
   isFileStorageActive: boolean;
-  subscription_tiers: SubscriptionTier[];
-  freeTierEnabled: boolean;  // New field
-  freeTierLimit: string;     // New field - e.g. "100 MB per month
   moderationMode: string;    // "strict" or "passive"
-}
-
-export type SubscriptionTier = {
-  data_limit: string;
-  price: string;
 }
 
 export type Category = 'kinds' | 'photos' | 'videos' | 'gitNestr' | 'audio' | 'dynamicKinds' | 'appBuckets' | 'dynamicAppBuckets';  
@@ -114,8 +106,3 @@ export const mimeTypeOptions: FormatOption[] = [
   { value: 'audio/midi', label: 'MIDI Audio' },
 ];
 
-export const defaultTiers: SubscriptionTier[] = [
-  { data_limit: '1 GB per month', price: '8000' },
-  { data_limit: '5 GB per month', price: '10000' },
-  { data_limit: '10 GB per month', price: '15000' }
-];
