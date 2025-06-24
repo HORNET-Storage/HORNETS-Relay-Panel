@@ -8,12 +8,14 @@ export const Container = styled.div`
 
 export const ModeGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
   gap: 1rem;
   margin-bottom: 1.5rem;
 
   ${media.md} {
     grid-template-columns: 1fr;
+    grid-template-rows: none;
     gap: 0.75rem;
   }
 `;
@@ -24,10 +26,14 @@ interface ModeButtonProps {
 }
 
 export const ModeButton = styled(Button)<ModeButtonProps>`
-  height: 60px;
+  height: 80px;
   border-radius: 8px;
   font-weight: 600;
   transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
 
   ${({ $isActive, $color }) => $isActive && `
     background-color: ${$color} !important;
@@ -41,7 +47,7 @@ export const ModeButton = styled(Button)<ModeButtonProps>`
   }
 
   ${media.md} {
-    height: 50px;
+    height: 70px;
   }
 `;
 

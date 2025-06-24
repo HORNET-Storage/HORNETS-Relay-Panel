@@ -10,25 +10,29 @@ interface ModeSelectorProps {
 }
 
 const MODE_INFO = {
+  personal: {
+    label: 'Only Me',
+    subtitle: '[Free]',
+    description: 'Personal relay for single user with unlimited access',
+    color: '#fa541c'
+  },
+  exclusive: {
+    label: 'Invite Only',
+    subtitle: '[Free]',
+    description: 'Invite-only access with manual NPUB management',
+    color: '#722ed1'
+  },
   free: {
-    label: 'Free - Public Relay',
+    label: 'Public Relay',
+    subtitle: '[Free]',
     description: 'Open access with optional free tiers',
     color: '#1890ff'
   },
   paid: {
-    label: 'Paid - Subscription Tiers', 
+    label: 'Subscription',
+    subtitle: '[Paid]',
     description: 'Subscription-based access control',
     color: '#52c41a'
-  },
-  exclusive: {
-    label: 'Free - Invite Only',
-    description: 'Invite-only access with manual NPUB management',
-    color: '#722ed1'
-  },
-  personal: {
-    label: 'Free - Only Me',
-    description: 'Personal relay for single user with unlimited access',
-    color: '#fa541c'
   }
 };
 
@@ -40,7 +44,7 @@ export const ModeSelector: React.FC<ModeSelectorProps> = ({
   return (
     <S.Container>
       <S.ModeGrid>
-        {(Object.keys(MODE_INFO) as AllowedUsersMode[]).map((mode) => {
+        {(['personal', 'exclusive', 'free', 'paid'] as AllowedUsersMode[]).map((mode) => {
           const info = MODE_INFO[mode];
           const isActive = currentMode === mode;
           
@@ -54,7 +58,16 @@ export const ModeSelector: React.FC<ModeSelectorProps> = ({
                 $isActive={isActive}
                 $color={info.color}
               >
-                {info.label}
+                <div style={{ 
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  alignItems: 'center',
+                  gap: '2px',
+                  lineHeight: '1.2'
+                }}>
+                  <div style={{ fontSize: '16px', fontWeight: '600' }}>{info.label}</div>
+                  <div style={{ fontSize: '12px', opacity: 0.8, fontWeight: '400' }}>{info.subtitle}</div>
+                </div>
               </S.ModeButton>
             </Tooltip>
           );
