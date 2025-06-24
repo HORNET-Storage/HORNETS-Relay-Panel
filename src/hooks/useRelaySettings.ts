@@ -103,14 +103,15 @@ const useRelaySettings = () => {
       
       // Extract mime types and file sizes from actual backend format
       const mediaDefinitions = backendData.event_filtering.media_definitions || {};
-      settings.photos = mediaDefinitions.image?.mimepatterns || [];
-      settings.videos = mediaDefinitions.video?.mimepatterns || [];
-      settings.audio = mediaDefinitions.audio?.mimepatterns || [];
+      // Handle both old and new field names for backward compatibility
+      settings.photos = mediaDefinitions.image?.mime_patterns || mediaDefinitions.image?.mimepatterns || [];
+      settings.videos = mediaDefinitions.video?.mime_patterns || mediaDefinitions.video?.mimepatterns || [];
+      settings.audio = mediaDefinitions.audio?.mime_patterns || mediaDefinitions.audio?.mimepatterns || [];
       
-      // Extract file size limits
-      settings.photoMaxSizeMB = mediaDefinitions.image?.maxsizemb || 100;
-      settings.videoMaxSizeMB = mediaDefinitions.video?.maxsizemb || 500;
-      settings.audioMaxSizeMB = mediaDefinitions.audio?.maxsizemb || 100;
+      // Extract file size limits (handle both old and new field names)
+      settings.photoMaxSizeMB = mediaDefinitions.image?.max_size_mb || mediaDefinitions.image?.maxsizemb || 100;
+      settings.videoMaxSizeMB = mediaDefinitions.video?.max_size_mb || mediaDefinitions.video?.maxsizemb || 500;
+      settings.audioMaxSizeMB = mediaDefinitions.audio?.max_size_mb || mediaDefinitions.audio?.maxsizemb || 100;
       
       // Set protocols
       if (backendData.event_filtering.protocols?.enabled) {
@@ -141,32 +142,24 @@ const useRelaySettings = () => {
   }, []);
 
   const transformToBackendSettings = useCallback((settings: Settings) => {
-    const mediaDefinitions: any = {};
-    
-    // Create media definitions in the format backend expects
-    if (settings.photos.length > 0) {
-      mediaDefinitions.image = {
-        mimepatterns: settings.photos,
+    // Always create media definitions with correct field names to avoid backend conflicts
+    const mediaDefinitions = {
+      image: {
+        mime_patterns: settings.photos, // Only send correct field name
         extensions: [".jpg", ".jpeg", ".png", ".gif", ".webp"],
-        maxsizemb: settings.photoMaxSizeMB
-      };
-    }
-    
-    if (settings.videos.length > 0) {
-      mediaDefinitions.video = {
-        mimepatterns: settings.videos,
+        max_size_mb: settings.photoMaxSizeMB // Only send correct field name
+      },
+      video: {
+        mime_patterns: settings.videos, // Only send correct field name
         extensions: [".mp4", ".webm", ".avi", ".mov"],
-        maxsizemb: settings.videoMaxSizeMB
-      };
-    }
-    
-    if (settings.audio.length > 0) {
-      mediaDefinitions.audio = {
-        mimepatterns: settings.audio,
+        max_size_mb: settings.videoMaxSizeMB // Only send correct field name
+      },
+      audio: {
+        mime_patterns: settings.audio, // Only send correct field name
         extensions: [".mp3", ".wav", ".ogg", ".flac"],
-        maxsizemb: settings.audioMaxSizeMB
-      };
-    }
+        max_size_mb: settings.audioMaxSizeMB // Only send correct field name
+      }
+    };
 
     return {
       settings: {
