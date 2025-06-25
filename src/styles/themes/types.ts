@@ -64,6 +64,7 @@ export interface ITheme {
   layoutHeaderBg: string;
   layoutSiderBg: string;
   inputPlaceholder: string;
+  inputBg: string;
   itemHoverBg: string;
   backgroundColorBase: string;
   avatarBg: string;
