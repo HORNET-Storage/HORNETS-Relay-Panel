@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { Input, InputNumber } from 'antd';
+import { Input, InputNumber, Select } from 'antd';
 
 export const InputField = styled(Input)`
   border-radius: 7px !important;
@@ -60,3 +60,9 @@ export const InputNumberField = styled(InputNumber)`
     color: var(--text-main-color) !important;
   opacity: 0.7 !important;}
 `;
+
+export const SelectField = styled(Select)`
+  .ant-select-arrow, .ant-select-clear{
+    color: var(--text-main-color) !important;
+  }
+`
