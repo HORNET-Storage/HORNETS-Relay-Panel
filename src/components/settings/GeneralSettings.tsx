@@ -4,6 +4,7 @@ import { QuestionCircleOutlined, LockOutlined, DatabaseOutlined, TagOutlined } f
 import useGenericSettings from '@app/hooks/useGenericSettings';
 import { SettingsGroupType } from '@app/types/settings.types';
 import BaseSettingsForm from './BaseSettingsForm';
+import * as S from './Settings.styles';
 
 const GeneralSettings: React.FC = () => {
   const {
@@ -92,7 +93,7 @@ const GeneralSettings: React.FC = () => {
             </span>
           }
         >
-          <Input
+          <S.InputField
             prefix={<TagOutlined />}
             placeholder="Enter service tag"
           />
@@ -109,7 +110,7 @@ const GeneralSettings: React.FC = () => {
             </span>
           }
         >
-          <Input
+          <S.InputField
             prefix={<DatabaseOutlined />}
             placeholder="./data/stats.db"
           />

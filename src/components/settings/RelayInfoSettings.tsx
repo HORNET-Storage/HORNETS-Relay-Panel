@@ -4,19 +4,12 @@ import { QuestionCircleOutlined, InfoCircleOutlined, UserOutlined, KeyOutlined }
 import useGenericSettings from '@app/hooks/useGenericSettings';
 import { SettingsGroupType } from '@app/types/settings.types';
 import BaseSettingsForm from './BaseSettingsForm';
-
+import * as S from './Settings.styles';
 const { Option } = Select;
 const { TextArea } = Input;
 
 const RelayInfoSettings: React.FC = () => {
-  const {
-    settings,
-    loading,
-    error,
-    fetchSettings,
-    updateSettings,
-    saveSettings,
-  } = useGenericSettings('relay_info');
+  const { settings, loading, error, fetchSettings, updateSettings, saveSettings } = useGenericSettings('relay_info');
 
   const [form] = Form.useForm();
 
@@ -64,12 +57,7 @@ const RelayInfoSettings: React.FC = () => {
       onSave={saveSettings}
       onReset={fetchSettings}
     >
-      <Form
-        form={form}
-        layout="vertical"
-        onValuesChange={handleValuesChange}
-        initialValues={settings || {}}
-      >
+      <Form form={form} layout="vertical" onValuesChange={handleValuesChange} initialValues={settings || {}}>
         <Form.Item
           name="relayname"
           label={
@@ -80,14 +68,9 @@ const RelayInfoSettings: React.FC = () => {
               </Tooltip>
             </span>
           }
-          rules={[
-            { required: true, message: 'Please enter the relay name' }
-          ]}
+          rules={[{ required: true, message: 'Please enter the relay name' }]}
         >
-          <Input 
-            prefix={<InfoCircleOutlined />} 
-            placeholder="My Nostr Relay" 
-          />
+          <S.InputField prefix={<InfoCircleOutlined />} placeholder="My Nostr Relay" />
         </Form.Item>
 
         <Form.Item
@@ -101,10 +84,7 @@ const RelayInfoSettings: React.FC = () => {
             </span>
           }
         >
-          <TextArea
-            placeholder="A Nostr relay for..."
-            autoSize={{ minRows: 2, maxRows: 6 }}
-          />
+          <TextArea placeholder="A Nostr relay for..." autoSize={{ minRows: 2, maxRows: 6 }} />
         </Form.Item>
 
         <Form.Item
@@ -118,10 +98,7 @@ const RelayInfoSettings: React.FC = () => {
             </span>
           }
         >
-          <Input 
-            prefix={<UserOutlined />} 
-            placeholder="admin@example.com" 
-          />
+          <S.InputField prefix={<UserOutlined />} placeholder="admin@example.com" />
         </Form.Item>
 
         <Form.Item
@@ -134,14 +111,9 @@ const RelayInfoSettings: React.FC = () => {
               </Tooltip>
             </span>
           }
-          rules={[
-            { required: true, message: 'Please enter the relay public key' }
-          ]}
+          rules={[{ required: true, message: 'Please enter the relay public key' }]}
         >
-          <Input 
-            prefix={<KeyOutlined />} 
-            placeholder="npub..." 
-          />
+          <S.InputField prefix={<KeyOutlined />} placeholder="npub..." />
         </Form.Item>
 
         <Form.Item
@@ -155,10 +127,7 @@ const RelayInfoSettings: React.FC = () => {
             </span>
           }
         >
-          <Input 
-            prefix={<KeyOutlined />} 
-            placeholder="DHT key" 
-          />
+          <S.InputField prefix={<KeyOutlined />} placeholder="DHT key" />
         </Form.Item>
 
         <Form.Item
@@ -172,9 +141,7 @@ const RelayInfoSettings: React.FC = () => {
             </span>
           }
         >
-          <Input 
-            placeholder="HORNETS Relay" 
-          />
+          <Input placeholder="HORNETS Relay" />
         </Form.Item>
 
         <Form.Item
@@ -188,9 +155,7 @@ const RelayInfoSettings: React.FC = () => {
             </span>
           }
         >
-          <Input 
-            placeholder="1.0.0" 
-          />
+          <Input placeholder="1.0.0" />
         </Form.Item>
 
         <Form.Item
@@ -221,12 +186,12 @@ const RelayInfoSettings: React.FC = () => {
                   return isNaN(num) ? null : num;
                 })
                 .filter((val: number | null): val is number => val !== null);
-              
+
               // Update the form field with number values
               form.setFieldsValue({ relaysupportednips: numberValues });
             }}
           >
-            {nipOptions.map(option => (
+            {nipOptions.map((option) => (
               <Option key={option.value} value={option.value}>
                 {option.label}
               </Option>
@@ -235,16 +200,18 @@ const RelayInfoSettings: React.FC = () => {
         </Form.Item>
 
         <Form.Item>
-          <p style={{ 
-            color: 'rgba(255, 255, 255, 0.8)',
-            fontSize: '0.9em',
-            padding: '0.75rem',
-            backgroundColor: 'rgba(0, 0, 0, 0.1)',
-            borderLeft: '3px solid rgba(82, 196, 255, 0.8)',
-            borderRadius: '0 4px 4px 0'
-          }}>
-            <span style={{ color: 'rgba(82, 196, 255, 1)' }}>Note:</span> This information will be publicly available to clients connecting to your relay.
-            It helps users understand the capabilities and ownership of your relay.
+          <p
+            style={{
+              color: 'rgba(255, 255, 255, 0.8)',
+              fontSize: '0.9em',
+              padding: '0.75rem',
+              backgroundColor: 'rgba(0, 0, 0, 0.1)',
+              borderLeft: '3px solid rgba(82, 196, 255, 0.8)',
+              borderRadius: '0 4px 4px 0',
+            }}
+          >
+            <span style={{ color: 'rgba(82, 196, 255, 1)' }}>Note:</span> This information will be publicly available to
+            clients connecting to your relay. It helps users understand the capabilities and ownership of your relay.
           </p>
         </Form.Item>
       </Form>
