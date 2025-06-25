@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState} from 'react';
 import { Form, Input, Select, Tooltip } from 'antd';
 import { QuestionCircleOutlined, InfoCircleOutlined, UserOutlined, KeyOutlined, UploadOutlined } from '@ant-design/icons';
 import useGenericSettings from '@app/hooks/useGenericSettings';
@@ -10,7 +10,7 @@ const { TextArea } = Input;
 
 const RelayInfoSettings: React.FC = () => {
   const { settings, loading, error, fetchSettings, updateSettings, saveSettings } = useGenericSettings('relay_info');
-
+  const [image, setImage] = useState<string  | null>(null); 
   const [form] = Form.useForm();
 
   // Update form values when settings change
@@ -23,6 +23,10 @@ const RelayInfoSettings: React.FC = () => {
   // Handle form value changes
   const handleValuesChange = (changedValues: Partial<SettingsGroupType<'relay_info'>>) => {
     updateSettings(changedValues);
+  };
+
+  const onUploadIcon = (url: string) => { // use as onUploadIcon prop in Upload Component
+    setImage(url);
   };
 
   // Common NIPs that relays might support
@@ -86,6 +90,9 @@ const RelayInfoSettings: React.FC = () => {
           <S.InputFieldWithPrefix
             suffix={<S.UploadButton size='small' aria-label='Upload Relay Icon' icon={<UploadOutlined />}  > Upload Relay Icon</S.UploadButton>}
           />
+          {image && (
+            <S.UploadedImageWrapper><img src={image} alt="" /></S.UploadedImageWrapper>
+          )}
         </Form.Item>
         <Form.Item
           name="relaydescription"
