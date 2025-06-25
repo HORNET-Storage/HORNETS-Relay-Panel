@@ -103,7 +103,7 @@ const WalletSettings: React.FC = () => {
             { required: true, message: 'Please enter the wallet API key' }
           ]}
         >
-          <Input.Password
+          <S.PasswordField
             prefix={<LockOutlined />}
             placeholder="Enter API key"
           />
