@@ -2,6 +2,14 @@ import styled from 'styled-components';
 import { Input } from 'antd';
 
 export const InputField = styled(Input)`
+  border-radius: 7px !important;
+  padding: 0.5rem !important;
+  &:focus{
+  border-color: var(--ant-primary-5) !important;
+  box-shadow: 0 0 0 2px var(--ant-primary-color-outline) !important;
+  }
+`;
+
 export const InputFieldWithPrefix = styled(Input)`
   &.ant-input-affix-wrapper {
     padding: 0 !important;
