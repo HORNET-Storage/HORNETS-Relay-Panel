@@ -1,12 +1,12 @@
 import styled from 'styled-components';
-import { Input } from 'antd';
+import { Input, InputNumber } from 'antd';
 
 export const InputField = styled(Input)`
   border-radius: 7px !important;
   padding: 0.7rem !important;
-  &:focus{
-  border-color: var(--ant-primary-5) !important;
-  box-shadow: 0 0 0 2px var(--ant-primary-color-outline) !important;
+  &:focus {
+    border-color: var(--ant-primary-5) !important;
+    box-shadow: 0 0 0 2px var(--ant-primary-color-outline) !important;
   }
 `;
 
@@ -22,7 +22,6 @@ export const InputFieldWithPrefix = styled(Input)`
       background-color: transparent !important;
     }
     .ant-input-prefix {
-
       padding: 0.7rem 0rem 0.7rem 0.7rem !important;
     }
   }
@@ -42,9 +41,22 @@ export const PasswordField = styled(Input.Password)`
     .ant-input-suffix {
       padding: 0.7rem 0.7rem 0.7rem 0 !important;
       .ant-input-password-icon.anticon {
-        color: var(--text-color) !important;
+        color: var(--text-main-color) !important;
         opacity: 0.7 !important;
       }
     }
   }
+`;
+export const InputNumberField = styled(InputNumber)`
+  &.ant-input-number {
+    border-radius: 7px !important;
+    padding: 0rem !important;
+  }
+  &.ant-input-number:focus {
+    border-color: var(--ant-primary-5) !important;
+    box-shadow: 0 0 0 2px var(--ant-primary-color-outline) !important;
+  }
+  .anticon-up.ant-input-number-handler-up-inner, .anticon-down.ant-input-number-handler-down-inner {
+    color: var(--text-main-color) !important;
+  opacity: 0.7 !important;}
 `;
