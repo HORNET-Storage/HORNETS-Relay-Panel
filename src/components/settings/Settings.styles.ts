@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { Input, InputNumber, Select } from 'antd';
+import { Input, InputNumber, Select, Button} from 'antd';
 
 export const InputField = styled(Input)`
   border-radius: 7px !important;
@@ -66,3 +66,6 @@ export const SelectField = styled(Select)`
     color: var(--text-main-color) !important;
   }
 `
+export const UploadButton = styled(Button)`
+  margin-right:.5rem;
+`;
