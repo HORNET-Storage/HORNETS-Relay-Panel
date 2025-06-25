@@ -83,7 +83,7 @@ const WalletSettings: React.FC = () => {
             { required: true, message: 'Please enter a wallet name' }
           ]}
         >
-          <S.InputField
+          <S.InputFieldWithPrefix
             prefix={<WalletOutlined />}
             placeholder="Enter wallet name"
           />

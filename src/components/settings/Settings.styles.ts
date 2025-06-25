@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { Input } from 'antd';
 
 export const InputField = styled(Input)`
+export const InputFieldWithPrefix = styled(Input)`
   &.ant-input-affix-wrapper {
     padding: 0 !important;
   }

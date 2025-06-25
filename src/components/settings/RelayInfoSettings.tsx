@@ -70,7 +70,7 @@ const RelayInfoSettings: React.FC = () => {
           }
           rules={[{ required: true, message: 'Please enter the relay name' }]}
         >
-          <S.InputField prefix={<InfoCircleOutlined />} placeholder="My Nostr Relay" />
+          <S.InputFieldWithPrefix prefix={<InfoCircleOutlined />} placeholder="My Nostr Relay" />
         </Form.Item>
 
         <Form.Item
@@ -98,7 +98,7 @@ const RelayInfoSettings: React.FC = () => {
             </span>
           }
         >
-          <S.InputField prefix={<UserOutlined />} placeholder="admin@example.com" />
+          <S.InputFieldWithPrefix prefix={<UserOutlined />} placeholder="admin@example.com" />
         </Form.Item>
 
         <Form.Item
@@ -113,7 +113,7 @@ const RelayInfoSettings: React.FC = () => {
           }
           rules={[{ required: true, message: 'Please enter the relay public key' }]}
         >
-          <S.InputField prefix={<KeyOutlined />} placeholder="npub..." />
+          <S.InputFieldWithPrefix prefix={<KeyOutlined />} placeholder="npub..." />
         </Form.Item>
 
         <Form.Item
@@ -127,7 +127,7 @@ const RelayInfoSettings: React.FC = () => {
             </span>
           }
         >
-          <S.InputField prefix={<KeyOutlined />} placeholder="DHT key" />
+          <S.InputFieldWithPrefix prefix={<KeyOutlined />} placeholder="DHT key" />
         </Form.Item>
 
         <Form.Item
