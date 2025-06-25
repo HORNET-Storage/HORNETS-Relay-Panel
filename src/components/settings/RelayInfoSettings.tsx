@@ -141,7 +141,7 @@ const RelayInfoSettings: React.FC = () => {
             </span>
           }
         >
-          <Input placeholder="HORNETS Relay" />
+          <S.InputField placeholder="HORNETS Relay" />
         </Form.Item>
 
         <Form.Item
@@ -155,7 +155,7 @@ const RelayInfoSettings: React.FC = () => {
             </span>
           }
         >
-          <Input placeholder="1.0.0" />
+          <S.InputField placeholder="1.0.0" />
         </Form.Item>
 
         <Form.Item

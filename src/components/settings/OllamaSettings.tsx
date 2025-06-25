@@ -4,6 +4,7 @@ import { QuestionCircleOutlined } from '@ant-design/icons';
 import useGenericSettings from '@app/hooks/useGenericSettings';
 import { SettingsGroupType } from '@app/types/settings.types';
 import BaseSettingsForm from './BaseSettingsForm';
+import { InputField } from './Settings.styles';
 
 const { Option } = Select;
 
@@ -113,7 +114,7 @@ const OllamaSettings: React.FC = () => {
             { type: 'url', message: 'Please enter a valid URL' }
           ]}
         >
-          <Input placeholder="http://localhost:11434" />
+          <InputField placeholder="http://localhost:11434" />
         </Form.Item>
 
         <Form.Item

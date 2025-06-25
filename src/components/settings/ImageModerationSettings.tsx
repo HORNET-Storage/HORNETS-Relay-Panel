@@ -4,7 +4,7 @@ import { QuestionCircleOutlined } from '@ant-design/icons';
 import useGenericSettings from '@app/hooks/useGenericSettings';
 import { ImageModerationSettings as ImageModerationSettingsType, SettingsGroupType } from '@app/types/settings.types';
 import BaseSettingsForm from './BaseSettingsForm';
-
+import * as S from './Settings.styles';
 const { Option } = Select;
 
 const ImageModerationSettings: React.FC = () => {
@@ -118,14 +118,14 @@ const ImageModerationSettings: React.FC = () => {
           label="API Endpoint"
           rules={[{ required: true, message: 'Please enter the API endpoint' }]}
         >
-          <Input placeholder="http://localhost:8000/moderate" />
+          <S.InputField placeholder="http://localhost:8000/moderate" />
         </Form.Item>
 
         <Form.Item
           name="image_moderation_temp_dir"
           label="Temporary Directory"
         >
-          <Input placeholder="./data/moderation/temp" />
+          <S.InputField placeholder="./data/moderation/temp" />
         </Form.Item>
 
         <Form.Item
