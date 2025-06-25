@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Input, InputNumber, Switch, Select, Tooltip } from 'antd';
+import { Form, Switch, Select, Tooltip } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import useGenericSettings from '@app/hooks/useGenericSettings';
 import { ImageModerationSettings as ImageModerationSettingsType, SettingsGroupType } from '@app/types/settings.types';
@@ -8,14 +8,8 @@ import * as S from './Settings.styles';
 const { Option } = Select;
 
 const ImageModerationSettings: React.FC = () => {
-  const {
-    settings,
-    loading,
-    error,
-    fetchSettings,
-    updateSettings,
-    saveSettings,
-  } = useGenericSettings('image_moderation');
+  const { settings, loading, error, fetchSettings, updateSettings, saveSettings } =
+    useGenericSettings('image_moderation');
 
   const [form] = Form.useForm();
   const [isUserEditing, setIsUserEditing] = useState(false);
@@ -24,13 +18,13 @@ const ImageModerationSettings: React.FC = () => {
   useEffect(() => {
     if (settings && !isUserEditing) {
       console.log('ImageModerationSettings - Received settings:', settings);
-      
+
       // The useGenericSettings hook now returns properly prefixed field names
       // so we can use the settings directly without transformation
       const settingsObj = settings as Record<string, any>;
-      
+
       console.log('ImageModerationSettings - Setting form values directly:', settingsObj);
-      
+
       // Set form values directly since they're already properly prefixed
       form.setFieldsValue(settingsObj);
       console.log('ImageModerationSettings - Form values after set:', form.getFieldsValue());
@@ -70,11 +64,7 @@ const ImageModerationSettings: React.FC = () => {
           setIsUserEditing(false);
         }}
       >
-        <Form.Item
-          name="image_moderation_enabled"
-          label="Enable Image Moderation"
-          valuePropName="checked"
-        >
+        <Form.Item name="image_moderation_enabled" label="Enable Image Moderation" valuePropName="checked">
           <Switch />
         </Form.Item>
 
@@ -89,27 +79,35 @@ const ImageModerationSettings: React.FC = () => {
             </span>
           }
         >
-          <Select
-            allowClear={true}
-            placeholder="Select a moderation mode"
-          >
+          <Select allowClear={true} placeholder="Select a moderation mode">
             <Option value="basic">Basic Mode (Fastest, detects explicit content only)</Option>
             <Option value="strict">Strict Mode (Fast, blocks all buttocks)</Option>
             <Option value="full">Full Mode (Most accurate, uses Llama Vision)</Option>
           </Select>
         </Form.Item>
-        
+
         <Form.Item>
-          <div style={{ 
-            backgroundColor: 'rgba(0, 0, 0, 0.1)', 
-            padding: '12px', 
-            borderRadius: '4px',
-            marginBottom: '16px'
-          }}>
+          <div
+            style={{
+              backgroundColor: 'rgba(0, 0, 0, 0.1)',
+              padding: '12px',
+              borderRadius: '4px',
+              marginBottom: '16px',
+            }}
+          >
             <h4 style={{ marginTop: 0 }}>Moderation Mode Details:</h4>
-            <p><strong>Basic Mode:</strong> Only detects genitals, anus, and exposed breasts. Fastest processing (no Llama Vision). Best for high-volume applications.</p>
-            <p><strong>Strict Mode:</strong> Includes all &quot;basic&quot; detection plus automatic blocking of all detected buttocks. Fast processing. Best for zero-tolerance platforms.</p>
-            <p><strong>Full Mode (Default):</strong> Complete analysis with contextual evaluation. Slower due to Llama Vision, but most accurate. Reduces false positives.</p>
+            <p>
+              <strong>Basic Mode:</strong> Only detects genitals, anus, and exposed breasts. Fastest processing (no
+              Llama Vision). Best for high-volume applications.
+            </p>
+            <p>
+              <strong>Strict Mode:</strong> Includes all &quot;basic&quot; detection plus automatic blocking of all
+              detected buttocks. Fast processing. Best for zero-tolerance platforms.
+            </p>
+            <p>
+              <strong>Full Mode (Default):</strong> Complete analysis with contextual evaluation. Slower due to Llama
+              Vision, but most accurate. Reduces false positives.
+            </p>
           </div>
         </Form.Item>
 
@@ -121,10 +119,7 @@ const ImageModerationSettings: React.FC = () => {
           <S.InputField placeholder="http://localhost:8000/moderate" />
         </Form.Item>
 
-        <Form.Item
-          name="image_moderation_temp_dir"
-          label="Temporary Directory"
-        >
+        <Form.Item name="image_moderation_temp_dir" label="Temporary Directory">
           <S.InputField placeholder="./data/moderation/temp" />
         </Form.Item>
 
@@ -140,15 +135,10 @@ const ImageModerationSettings: React.FC = () => {
           }
           rules={[
             { required: true, message: 'Please enter a threshold value' },
-            { type: 'number', min: 0, max: 1, message: 'Value must be between 0 and 1' }
+            { type: 'number', min: 0, max: 1, message: 'Value must be between 0 and 1' },
           ]}
         >
-          <InputNumber
-            step={0.1}
-            min={0}
-            max={1}
-            style={{ width: '100%' }}
-          />
+          <S.InputNumberField step={0.1} min={0} max={1} style={{ width: '100%' }} />
         </Form.Item>
 
         <Form.Item
@@ -156,10 +146,10 @@ const ImageModerationSettings: React.FC = () => {
           label="Check Interval (seconds)"
           rules={[
             { required: true, message: 'Please enter a check interval' },
-            { type: 'number', min: 1, message: 'Value must be at least 1' }
+            { type: 'number', min: 1, message: 'Value must be at least 1' },
           ]}
         >
-          <InputNumber min={1} style={{ width: '100%' }} />
+          <S.InputNumberField min={1} style={{ width: '100%' }} />
         </Form.Item>
 
         <Form.Item
@@ -167,10 +157,10 @@ const ImageModerationSettings: React.FC = () => {
           label="Concurrency"
           rules={[
             { required: true, message: 'Please enter a concurrency value' },
-            { type: 'number', min: 1, message: 'Value must be at least 1' }
+            { type: 'number', min: 1, message: 'Value must be at least 1' },
           ]}
         >
-          <InputNumber min={1} style={{ width: '100%' }} />
+          <S.InputNumberField min={1} style={{ width: '100%' }} />
         </Form.Item>
 
         <Form.Item
@@ -178,10 +168,10 @@ const ImageModerationSettings: React.FC = () => {
           label="Timeout (seconds)"
           rules={[
             { required: true, message: 'Please enter a timeout value' },
-            { type: 'number', min: 1, message: 'Value must be at least 1' }
+            { type: 'number', min: 1, message: 'Value must be at least 1' },
           ]}
         >
-          <InputNumber min={1} style={{ width: '100%' }} />
+          <S.InputNumberField min={1} style={{ width: '100%' }} />
         </Form.Item>
       </Form>
     </BaseSettingsForm>

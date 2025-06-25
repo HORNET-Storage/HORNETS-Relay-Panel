@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Input, InputNumber, Select, Tooltip } from 'antd';
+import { Form, Select, Tooltip } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import useGenericSettings from '@app/hooks/useGenericSettings';
 import { SettingsGroupType } from '@app/types/settings.types';
 import BaseSettingsForm from './BaseSettingsForm';
-import { InputField } from './Settings.styles';
+import { InputField, InputNumberField } from './Settings.styles';
 
 const { Option } = Select;
 
@@ -162,7 +162,7 @@ const OllamaSettings: React.FC = () => {
             { type: 'number', min: 1, message: 'Value must be at least 1' }
           ]}
         >
-          <InputNumber min={1} style={{ width: '100%' }} />
+          <InputNumberField min={1} style={{ width: '100%' }} />
         </Form.Item>
       </Form>
     </BaseSettingsForm>

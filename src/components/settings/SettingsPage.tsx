@@ -123,7 +123,6 @@ const SettingsWrapper = styled.div`
   
   .ant-input, .ant-input-number, .ant-select-selector {
     background-color: var(--input-bg-color) !important;
-    border: 1px solid var(--border-base-color) !important;
   }
 `;
 
