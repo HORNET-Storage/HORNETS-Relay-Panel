@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Input, Table, Space, Modal, Form, Select, message, Popconfirm } from 'antd';
-import { PlusOutlined, UploadOutlined, DeleteOutlined, DownloadOutlined } from '@ant-design/icons';
+import { PlusOutlined, UploadOutlined, DeleteOutlined, DownloadOutlined, EditOutlined } from '@ant-design/icons';
 import { useAllowedUsersNpubs, useAllowedUsersValidation } from '@app/hooks/useAllowedUsers';
 import { AllowedUsersSettings, AllowedUsersMode } from '@app/types/allowedUsers.types';
 import * as S from './NPubManagement.styles';
@@ -30,10 +30,13 @@ export const NPubManagement: React.FC<NPubManagementProps> = ({
   mode
 }) => {
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
+  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [isBulkModalVisible, setIsBulkModalVisible] = useState(false);
   const [bulkText, setBulkText] = useState('');
   const [unifiedUsers, setUnifiedUsers] = useState<UnifiedUser[]>([]);
+  const [editingUser, setEditingUser] = useState<UnifiedUser | null>(null);
   const [addForm] = Form.useForm<AddNpubFormData>();
+  const [editForm] = Form.useForm<AddNpubFormData>();
 
   const readNpubs = useAllowedUsersNpubs('read');
   const writeNpubs = useAllowedUsersNpubs('write');
@@ -129,6 +132,67 @@ export const NPubManagement: React.FC<NPubManagementProps> = ({
       }
     } catch (error) {
       message.error(`Failed to update ${type} access`);
+    }
+  };
+
+  const handleEditUser = (user: UnifiedUser) => {
+    setEditingUser(user);
+    setIsEditModalVisible(true);
+    // Set form values after modal is visible
+    setTimeout(() => {
+      editForm.setFieldsValue({
+        npub: user.npub,
+        tier: user.tier,
+        readAccess: user.readAccess,
+        writeAccess: user.writeAccess
+      });
+    }, 0);
+  };
+
+  const handleSaveEdit = async () => {
+    try {
+      const values = await editForm.validateFields();
+      const originalUser = editingUser!;
+      
+      // Check what actually changed
+      const readChanged = originalUser.readAccess !== values.readAccess;
+      const writeChanged = originalUser.writeAccess !== values.writeAccess;
+      const tierChanged = originalUser.tier !== values.tier;
+      
+      // Handle read access changes
+      if (readChanged || (tierChanged && values.readAccess)) {
+        if (values.readAccess) {
+          // Remove old entry if exists and re-add with new tier
+          if (originalUser.readAccess) {
+            await readNpubs.removeNpub(values.npub);
+          }
+          await readNpubs.addNpub(values.npub, values.tier);
+        } else {
+          // Remove read access
+          await readNpubs.removeNpub(values.npub);
+        }
+      }
+      
+      // Handle write access changes
+      if (writeChanged || (tierChanged && values.writeAccess)) {
+        if (values.writeAccess) {
+          // Remove old entry if exists and re-add with new tier
+          if (originalUser.writeAccess) {
+            await writeNpubs.removeNpub(values.npub);
+          }
+          await writeNpubs.addNpub(values.npub, values.tier);
+        } else {
+          // Remove write access
+          await writeNpubs.removeNpub(values.npub);
+        }
+      }
+      
+      setIsEditModalVisible(false);
+      setEditingUser(null);
+      editForm.resetFields();
+    } catch (error) {
+      console.error('Edit user error:', error);
+      message.error('Failed to update user');
     }
   };
 
@@ -262,17 +326,27 @@ export const NPubManagement: React.FC<NPubManagementProps> = ({
       title: 'Actions',
       key: 'actions',
       render: (_: any, record: UnifiedUser) => (
-        <Popconfirm
-          title="Are you sure you want to remove this user completely?"
-          onConfirm={() => handleRemoveUser(record.npub)}
-        >
+        <Space size="small">
           <Button
             type="text"
-            danger
-            icon={<DeleteOutlined />}
+            icon={<EditOutlined />}
             size="small"
+            onClick={() => handleEditUser(record)}
+            title="Edit user"
           />
-        </Popconfirm>
+          <Popconfirm
+            title="Are you sure you want to remove this user completely?"
+            onConfirm={() => handleRemoveUser(record.npub)}
+          >
+            <Button
+              type="text"
+              danger
+              icon={<DeleteOutlined />}
+              size="small"
+              title="Remove user"
+            />
+          </Popconfirm>
+        </Space>
       )
     }
   ];
@@ -340,6 +414,65 @@ export const NPubManagement: React.FC<NPubManagementProps> = ({
             ]}
           >
             <Input placeholder="npub1..." />
+          </Form.Item>
+
+          <Form.Item
+            name="tier"
+            label="Tier"
+            rules={[{ required: true, message: 'Please select a tier' }]}
+          >
+            <Select placeholder="Select tier" options={tierOptions} />
+          </Form.Item>
+
+          <Form.Item
+            label="Permissions"
+            style={{ marginBottom: 0 }}
+          >
+            <Space direction="vertical">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-main-color)' }}>
+                <Form.Item name="readAccess" valuePropName="checked" style={{ marginBottom: 0 }}>
+                  <S.StyledSwitch size="small" />
+                </Form.Item>
+                <span>Read Access</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-main-color)' }}>
+                <Form.Item name="writeAccess" valuePropName="checked" style={{ marginBottom: 0 }}>
+                  <S.StyledSwitch size="small" />
+                </Form.Item>
+                <span>Write Access</span>
+              </div>
+            </Space>
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      {/* Edit User Modal */}
+      <Modal
+        title="Edit User"
+        open={isEditModalVisible}
+        onOk={handleSaveEdit}
+        onCancel={() => {
+          setIsEditModalVisible(false);
+          setEditingUser(null);
+          editForm.resetFields();
+        }}
+        destroyOnClose
+      >
+        <Form 
+          form={editForm} 
+          layout="vertical"
+          initialValues={{ 
+            npub: editingUser?.npub || '',
+            tier: editingUser?.tier || '',
+            readAccess: editingUser?.readAccess || false,
+            writeAccess: editingUser?.writeAccess || false
+          }}
+        >
+          <Form.Item
+            name="npub"
+            label="NPUB"
+          >
+            <Input disabled />
           </Form.Item>
 
           <Form.Item
