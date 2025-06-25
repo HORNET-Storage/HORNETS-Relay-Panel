@@ -76,7 +76,7 @@ const GeneralSettings: React.FC = () => {
             { required: true, message: 'Please enter the private key' }
           ]}
         >
-          <Input.Password
+          <S.PasswordField
             prefix={<LockOutlined />}
             placeholder="Enter private key"
           />
