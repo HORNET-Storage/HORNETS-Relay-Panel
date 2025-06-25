@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Form, Input, Select, Tooltip } from 'antd';
-import { QuestionCircleOutlined, InfoCircleOutlined, UserOutlined, KeyOutlined } from '@ant-design/icons';
+import { QuestionCircleOutlined, InfoCircleOutlined, UserOutlined, KeyOutlined, UploadOutlined } from '@ant-design/icons';
 import useGenericSettings from '@app/hooks/useGenericSettings';
 import { SettingsGroupType } from '@app/types/settings.types';
 import BaseSettingsForm from './BaseSettingsForm';
@@ -72,7 +72,21 @@ const RelayInfoSettings: React.FC = () => {
         >
           <S.InputFieldWithPrefix prefix={<InfoCircleOutlined />} placeholder="My Nostr Relay" />
         </Form.Item>
-
+        <Form.Item
+        name = "relayIcon"
+        label={
+          <span>
+            Relay Icon&nbsp;
+            <Tooltip title="An icon representing your relay">
+              <QuestionCircleOutlined />
+            </Tooltip>
+          </span>
+        }
+        >
+          <S.InputFieldWithPrefix
+            suffix={<S.UploadButton size='small' aria-label='Upload Relay Icon' icon={<UploadOutlined />}  > Upload Relay Icon</S.UploadButton>}
+          />
+        </Form.Item>
         <Form.Item
           name="relaydescription"
           label={
