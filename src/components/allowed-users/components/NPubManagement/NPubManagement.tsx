@@ -47,7 +47,7 @@ export const NPubManagement: React.FC<NPubManagementProps> = ({
     readNpubs.npubs.forEach(npub => {
       allNpubs.set(npub.npub, {
         npub: npub.npub,
-        tier: npub.tier,
+        tier: npub.tier || settings.tiers[0]?.name || 'basic',
         readAccess: true,
         writeAccess: false,
         added_at: npub.added_at
@@ -59,10 +59,12 @@ export const NPubManagement: React.FC<NPubManagementProps> = ({
       const existing = allNpubs.get(npub.npub);
       if (existing) {
         existing.writeAccess = true;
+        // Preserve the tier from read access, or use write tier, or fallback
+        existing.tier = existing.tier || npub.tier || settings.tiers[0]?.name || 'basic';
       } else {
         allNpubs.set(npub.npub, {
           npub: npub.npub,
-          tier: npub.tier,
+          tier: npub.tier || settings.tiers[0]?.name || 'basic',
           readAccess: false,
           writeAccess: true,
           added_at: npub.added_at
@@ -71,7 +73,7 @@ export const NPubManagement: React.FC<NPubManagementProps> = ({
     });
 
     setUnifiedUsers(Array.from(allNpubs.values()));
-  }, [readNpubs.npubs, writeNpubs.npubs]);
+  }, [readNpubs.npubs, writeNpubs.npubs, settings.tiers]);
   const tierOptions = settings.tiers.map(tier => {
     const displayFormat = tier.unlimited 
       ? 'unlimited' 
@@ -108,16 +110,19 @@ export const NPubManagement: React.FC<NPubManagementProps> = ({
     const user = unifiedUsers.find(u => u.npub === npub);
     if (!user) return;
 
+    // Ensure we have a valid tier - fallback to first available tier if undefined
+    const tierToUse = user.tier || settings.tiers[0]?.name || 'basic';
+
     try {
       if (type === 'read') {
         if (enabled) {
-          await readNpubs.addNpub(npub, user.tier);
+          await readNpubs.addNpub(npub, tierToUse);
         } else {
           await readNpubs.removeNpub(npub);
         }
       } else {
         if (enabled) {
-          await writeNpubs.addNpub(npub, user.tier);
+          await writeNpubs.addNpub(npub, tierToUse);
         } else {
           await writeNpubs.removeNpub(npub);
         }
@@ -346,21 +351,22 @@ export const NPubManagement: React.FC<NPubManagementProps> = ({
           </Form.Item>
 
           <Form.Item
-            name="readAccess"
             label="Permissions"
             style={{ marginBottom: 0 }}
           >
             <Space direction="vertical">
-              <Form.Item name="readAccess" valuePropName="checked" style={{ marginBottom: 8 }}>
-                <S.PermissionLabel>
-                  <S.StyledSwitch size="small" /> Read Access
-                </S.PermissionLabel>
-              </Form.Item>
-              <Form.Item name="writeAccess" valuePropName="checked" style={{ marginBottom: 0 }}>
-                <S.PermissionLabel>
-                  <S.StyledSwitch size="small" /> Write Access
-                </S.PermissionLabel>
-              </Form.Item>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-main-color)' }}>
+                <Form.Item name="readAccess" valuePropName="checked" style={{ marginBottom: 0 }}>
+                  <S.StyledSwitch size="small" />
+                </Form.Item>
+                <span>Read Access</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-main-color)' }}>
+                <Form.Item name="writeAccess" valuePropName="checked" style={{ marginBottom: 0 }}>
+                  <S.StyledSwitch size="small" />
+                </Form.Item>
+                <span>Write Access</span>
+              </div>
             </Space>
           </Form.Item>
         </Form>
