@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Switch, Select, Tooltip } from 'antd';
+import { Form, Switch, Tooltip } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import useGenericSettings from '@app/hooks/useGenericSettings';
 import { ImageModerationSettings as ImageModerationSettingsType, SettingsGroupType } from '@app/types/settings.types';
 import BaseSettingsForm from './BaseSettingsForm';
 import * as S from './Settings.styles';
-const { Option } = Select;
+const { Option } = S.SelectField;
 
 const ImageModerationSettings: React.FC = () => {
   const { settings, loading, error, fetchSettings, updateSettings, saveSettings } =
@@ -79,11 +79,11 @@ const ImageModerationSettings: React.FC = () => {
             </span>
           }
         >
-          <Select allowClear={true} placeholder="Select a moderation mode">
+          <S.SelectField allowClear={true} placeholder="Select a moderation mode">
             <Option value="basic">Basic Mode (Fastest, detects explicit content only)</Option>
             <Option value="strict">Strict Mode (Fast, blocks all buttocks)</Option>
             <Option value="full">Full Mode (Most accurate, uses Llama Vision)</Option>
-          </Select>
+          </S.SelectField>
         </Form.Item>
 
         <Form.Item>
