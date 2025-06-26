@@ -201,11 +201,14 @@ export const Root = styled(BaseCard)`
   .ant-space.ant-space-horizontal {
     width: 100%;
   }
+  margin-left: 5%;
+  margin-right: 5%;
   @media only screen and ${media.lg} {
-    padding-left: 30%;
-  }
-  @media only screen and ${media.lg} {
-    padding-left: 20%;
+    > .ant-card-head,
+    > .ant-card-body {
+      margin-left: 15%;
+      margin-right: 15%;
+    }
   }
 `;
 export const TransactionWrapper = styled.div`
