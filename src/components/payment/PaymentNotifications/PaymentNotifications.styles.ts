@@ -196,14 +196,16 @@ export const ExpirationInfo = styled.div`
 export const Root = styled(BaseCard)`
   padding: 0;
   padding-top: 1.25rem;
-  width: fit-content;
+  min-width: fit-content;
 
   .ant-space.ant-space-horizontal {
     width: 100%;
   }
   @media only screen and ${media.lg} {
+    padding-left: 30%;
+  }
+  @media only screen and ${media.lg} {
     padding-left: 20%;
-    padding-right: 20%;
   }
 `;
 export const TransactionWrapper = styled.div`
@@ -220,7 +222,6 @@ export const LeftSideTX = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
-  ;
 `;
 
 export const CardFooter = styled.div`
