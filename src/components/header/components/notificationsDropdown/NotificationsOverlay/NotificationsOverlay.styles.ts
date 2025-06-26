@@ -7,7 +7,7 @@ import { BaseNotification } from '@app/components/common/BaseNotification/BaseNo
 import { BaseSpace } from '@app/components/common/BaseSpace/BaseSpace';
 
 export const NoticesOverlayMenu = styled.div`
-  max-width: 15rem;
+  max-width: 100%;
 
   @media only screen and ${media.md} {
     max-width: 25rem;
