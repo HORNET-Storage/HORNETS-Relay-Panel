@@ -106,7 +106,6 @@ export const updateAllowedUsersSettings = async (settings: AllowedUsersSettings)
     }
   };
   
-  console.log('Sending to backend:', JSON.stringify(nestedSettings, null, 2));
   
   const response = await fetch(`${config.baseURL}/api/settings`, {
     method: 'POST',
@@ -118,10 +117,8 @@ export const updateAllowedUsersSettings = async (settings: AllowedUsersSettings)
   });
   
   const text = await response.text();
-  console.log('Backend response:', response.status, text);
   
   if (!response.ok) {
-    console.error('Backend error:', response.status, text);
     throw new Error(`HTTP error! status: ${response.status}, response: ${text}`);
   }
   
@@ -147,9 +144,14 @@ export const getReadNpubs = async (page = 1, pageSize = 20): Promise<AllowedUser
   const text = await response.text();
   try {
     const data = JSON.parse(text);
-    // Transform backend response to expected format
+    // Transform backend response to expected format - map tier_name to tier
+    const transformedNpubs = (data.npubs || []).map((npub: any) => ({
+      ...npub,
+      tier: npub.tier_name || npub.tier || 'basic'
+    }));
+    
     return {
-      npubs: data.npubs || [],
+      npubs: transformedNpubs,
       total: data.pagination?.total || 0,
       page: data.pagination?.page || page,
       pageSize: data.pagination?.pageSize || pageSize
@@ -161,13 +163,16 @@ export const getReadNpubs = async (page = 1, pageSize = 20): Promise<AllowedUser
 
 export const addReadNpub = async (npub: string, tier: string): Promise<{ success: boolean, message: string }> => {
   const token = readToken();
+  const requestBody = { npub, tier };
+  
+  
   const response = await fetch(`${config.baseURL}/api/allowed-npubs/read`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`,
     },
-    body: JSON.stringify({ npub, tier }),
+    body: JSON.stringify(requestBody),
   });
   
   if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -213,9 +218,14 @@ export const getWriteNpubs = async (page = 1, pageSize = 20): Promise<AllowedUse
   const text = await response.text();
   try {
     const data = JSON.parse(text);
-    // Transform backend response to expected format
+    // Transform backend response to expected format - map tier_name to tier
+    const transformedNpubs = (data.npubs || []).map((npub: any) => ({
+      ...npub,
+      tier: npub.tier_name || npub.tier || 'basic'
+    }));
+    
     return {
-      npubs: data.npubs || [],
+      npubs: transformedNpubs,
       total: data.pagination?.total || 0,
       page: data.pagination?.page || page,
       pageSize: data.pagination?.pageSize || pageSize
@@ -227,13 +237,16 @@ export const getWriteNpubs = async (page = 1, pageSize = 20): Promise<AllowedUse
 
 export const addWriteNpub = async (npub: string, tier: string): Promise<{ success: boolean, message: string }> => {
   const token = readToken();
+  const requestBody = { npub, tier };
+  
+  
   const response = await fetch(`${config.baseURL}/api/allowed-npubs/write`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`,
     },
-    body: JSON.stringify({ npub, tier }),
+    body: JSON.stringify(requestBody),
   });
   
   if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
