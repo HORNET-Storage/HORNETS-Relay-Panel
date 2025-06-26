@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { BaseCard } from '@app/components/common/BaseCard/BaseCard';
 import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
 import { BaseSelect } from '@app/components/common/selects/BaseSelect/BaseSelect';
 import { BaseSpace } from '@app/components/common/BaseSpace/BaseSpace';
@@ -9,7 +8,7 @@ import { BaseCol } from '@app/components/common/BaseCol/BaseCol';
 import { BasePagination } from '@app/components/common/BasePagination/BasePagination';
 import { BaseNotification } from '@app/components/common/BaseNotification/BaseNotification';
 import { usePaymentNotifications } from '@app/hooks/usePaymentNotifications';
-import { PaymentNotification, PaymentNotificationParams } from '@app/api/paymentNotifications.api';
+import { PaymentNotificationParams } from '@app/api/paymentNotifications.api';
 import { notificationController } from '@app/controllers/notificationController';
 import * as S from './PaymentNotifications.styles';
 
@@ -24,141 +23,6 @@ export const PaymentNotifications: React.FC<PaymentNotificationsProps> = ({ clas
 
   const { notifications, pagination, isLoading, fetchNotifications, markAsRead, markAllAsRead } =
     usePaymentNotifications();
-
-  const testNotifications: PaymentNotification[] = [
-    {
-      id: 1231203013202,
-      pubkey: 'npub1examplepubkey1234567890',
-      tx_id: 'tx1234567890abcdef',
-      amount: 1000, // in satoshis
-      subscription_tier: '5GB',
-      is_new_subscriber: true,
-      expiration_date: '2024-12-31T23:59:59Z',
-      created_at: '2024-01-01T12:00:00Z',
-      is_read: false,
-    },
-    {
-      id: 1231203013203,
-      pubkey: 'npub1anotheruser0987654321',
-      tx_id: 'txabcdef1234567890',
-      amount: 5000,
-      subscription_tier: '10GB',
-      is_new_subscriber: false,
-      expiration_date: '2024-11-30T23:59:59Z',
-      created_at: '2024-02-10T09:30:00Z',
-      is_read: true,
-    },
-    {
-      id: 1231203013204,
-      pubkey: 'npub1thirduser1122334455',
-      tx_id: 'txfedcba0987654321',
-      amount: 2500,
-      subscription_tier: '5GB',
-      is_new_subscriber: true,
-      expiration_date: '2024-10-15T23:59:59Z',
-      created_at: '2024-03-05T15:45:00Z',
-      is_read: false,
-    },
-    {
-      id: 1231203013205,
-      pubkey: 'npub1fourthuser5566778899',
-      tx_id: 'tx1122334455667788',
-      amount: 10000,
-      subscription_tier: '20GB',
-      is_new_subscriber: false,
-      expiration_date: '2024-09-01T23:59:59Z',
-      created_at: '2024-04-12T18:20:00Z',
-      is_read: true,
-    },
-    {
-      id: 1231203013206,
-      pubkey: 'npub1fifthuser9988776655',
-      tx_id: 'tx9988776655443322',
-      amount: 750,
-      subscription_tier: '2GB',
-      is_new_subscriber: true,
-      expiration_date: '2024-08-20T23:59:59Z',
-      created_at: '2024-05-01T08:10:00Z',
-      is_read: false,
-    },
-    {
-      id: 1231203013207,
-      pubkey: 'npub1sixthuser2233445566',
-      tx_id: 'tx2233445566778899',
-      amount: 3000,
-      subscription_tier: '10GB',
-      is_new_subscriber: false,
-      expiration_date: '2024-07-15T23:59:59Z',
-      created_at: '2024-06-18T13:55:00Z',
-      is_read: true,
-    },
-    {
-      id: 1231203013208,
-      pubkey: 'npub1seventhuser3344556677',
-      tx_id: 'tx3344556677889900',
-      amount: 1200,
-      subscription_tier: '5GB',
-      is_new_subscriber: true,
-      expiration_date: '2024-06-10T23:59:59Z',
-      created_at: '2024-07-02T11:25:00Z',
-      is_read: false,
-    },
-    {
-      id: 1231203013209,
-      pubkey: 'npub1eighthuser4455667788',
-      tx_id: 'tx4455667788990011',
-      amount: 8000,
-      subscription_tier: '20GB',
-      is_new_subscriber: false,
-      expiration_date: '2024-05-05T23:59:59Z',
-      created_at: '2024-08-14T16:40:00Z',
-      is_read: true,
-    },
-    {
-      id: 1231203013210,
-      pubkey: 'npub1ninthuser5566778899',
-      tx_id: 'tx5566778899001122',
-      amount: 2000,
-      subscription_tier: '5GB',
-      is_new_subscriber: true,
-      expiration_date: '2024-04-25T23:59:59Z',
-      created_at: '2024-09-09T10:05:00Z',
-      is_read: false,
-    },
-    {
-      id: 1231203013211,
-      pubkey: 'npub1tenthuser6677889900',
-      tx_id: 'tx6677889900112233',
-      amount: 15000,
-      subscription_tier: '50GB',
-      is_new_subscriber: false,
-      expiration_date: '2024-03-15T23:59:59Z',
-      created_at: '2024-10-21T19:15:00Z',
-      is_read: true,
-    },
-    {
-      id: 1231203013212,
-      pubkey: 'npub1eleventhuser7788990011',
-      tx_id: 'tx7788990011223344',
-      amount: 600,
-      subscription_tier: '2GB',
-      is_new_subscriber: true,
-      expiration_date: '2024-02-28T23:59:59Z',
-      created_at: '2024-11-30T07:50:00Z',
-      is_read: false,
-    },
-    {
-      id: 123120301321222,
-      pubkey: 'npub1eleventhuser7788990011',
-      tx_id: 'tx7788990011223344',
-      amount: 600,
-      subscription_tier: '2GB',
-      is_new_subscriber: false,
-      expiration_date: '2024-02-28T23:59:59Z',
-      created_at: '2024-11-30T07:50:00Z',
-      is_read: true,
-    },
-  ];
 
   // Fetch unread notifications on component mount
   useEffect(() => {
@@ -295,10 +159,10 @@ export const PaymentNotifications: React.FC<PaymentNotificationsProps> = ({ clas
           <div style={{ fontSize: '28px', marginBottom: '16px' }}>⏳</div>
           <S.Text style={{ fontSize: '16px' }}>{t('common.loading', 'Loading...')}</S.Text>
         </div>
-      ) : testNotifications.length > 0 ? (
+      ) : notifications.length > 0 ? (
         <>
           <BaseSpace direction="vertical" size={10} split={<div style={{ height: '1rem' }}></div>}>
-            {testNotifications.map((notification) => (
+            {notifications.map((notification) => (
               <S.NotificationItem
                 key={notification.id}
                 $isRead={notification.is_read}
