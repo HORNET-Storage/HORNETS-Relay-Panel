@@ -201,7 +201,8 @@ export const Root = styled(BaseCard)`
     width: 100%;
   }
   @media only screen and ${media.lg} {
-    padding-left: 3rem;
+    padding-left: 20%;
+    padding-right: 20%;
   }
 `;
 export const TransactionWrapper = styled.div`
@@ -210,9 +211,9 @@ export const TransactionWrapper = styled.div`
   align-items: center;
   margin-bottom: 1.5rem;
   margin-top: 1.5rem;
-  min-width: 30rem;
+  min-width: 65vw;
   @media only screen and ${media.lg} {
-    min-width: 40vw;
+    min-width: 42vw;
 `;
 export const LeftSideTX = styled.div`
   display: flex;
