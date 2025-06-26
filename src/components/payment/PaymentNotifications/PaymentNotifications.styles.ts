@@ -3,6 +3,8 @@ import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
 import { BaseTypography } from '@app/components/common/BaseTypography/BaseTypography';
 import { BaseInput } from '@app/components/common/inputs/BaseInput/BaseInput';
 import { BORDER_RADIUS, FONT_SIZE, FONT_WEIGHT } from '@app/styles/themes/constants';
+import { Card } from 'antd';
+import { BaseRow } from '@app/components/common/BaseRow/BaseRow';
 
 export const FiltersWrapper = styled.div`
   margin-bottom: 1.5rem;
@@ -18,22 +20,31 @@ export const SplitDivider = styled.div`
   width: 100%;
 `;
 
-export const NotificationItem = styled.div<{ $isRead: boolean; $isNew?: boolean }>`
+export const NotificationItem = styled(Card)<{ $isRead: boolean; $isNew?: boolean }>`
   position: relative;
   transition: all 0.3s ease;
-
+  background-color: var(--additional-background-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  border: none;
+  .ant-space {
+    background-color: transparent;
+  }
+  .anticon-info-circle {
+    color: var(--text-light-color);
+    width: 2.4rem; 
+    padding: 0 0.2rem;
+  }
   ${(props) =>
     !props.$isRead &&
     `
-    background-color: var(--background-color);
     border-radius: ${BORDER_RADIUS};
     position: relative;
     
     &::before {
       content: '';
       position: absolute;
-      left: -0.5rem;
-      top: 50%;
+      left: 1rem;
+      top: 2.2rem;
       transform: translateY(-50%);
       width: 0.5rem;
       height: 0.5rem;
@@ -45,10 +56,12 @@ export const NotificationItem = styled.div<{ $isRead: boolean; $isNew?: boolean 
   ${(props) =>
     props.$isNew &&
     `
-    border-left: 3px solid var(--success-color);
+    border-left: 3px solid var(--success-color) !important;
   `}
 `;
-
+export const NotificationHeader = styled(BaseRow)`
+  color: var(--text-main-color);
+`;
 export const NotificationContent = styled.div`
   padding-top: 0.5rem;
 `;
@@ -87,7 +100,7 @@ export const CopyButton = styled(BaseButton)`
   height: 20px;
   border-radius: ${BORDER_RADIUS};
   background-color: var(--background-color);
-  
+
   &:hover {
     background-color: var(--secondary-background-color);
   }
@@ -122,13 +135,15 @@ export const TierTag = styled.span<{ $tier: string }>`
 `;
 
 export const NewSubscriberBadge = styled.span`
-  display: inline-block;
-  padding: 0.25rem 0.5rem;
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
   border-radius: ${BORDER_RADIUS};
   font-size: ${FONT_SIZE.xs};
   font-weight: ${FONT_WEIGHT.semibold};
   margin-left: 0.5rem;
   background-color: var(--success-color);
+  height: 1.5rem;
   color: var(--text-secondary-color);
 `;
 
@@ -150,12 +165,17 @@ export const ExpirationInfo = styled.div`
   margin-top: 0.5rem;
   font-size: ${FONT_SIZE.xs};
   color: var(--text-light-color);
-  
-  ${(props) => props.color === 'warning' && `
+  font-weight: ${FONT_WEIGHT.regular};
+
+  ${(props) =>
+    props.color === 'warning' &&
+    `
     color: var(--warning-color);
   `}
-  
-  ${(props) => props.color === 'error' && `
+
+  ${(props) =>
+    props.color === 'error' &&
+    `
     color: var(--error-color);
   `}
 `;
