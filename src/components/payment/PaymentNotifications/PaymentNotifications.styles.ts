@@ -110,10 +110,12 @@ export const MarkReadButton = styled(BaseButton)`
   margin-top: 0.75rem;
   padding: 0;
   height: auto;
+  font-size: ${FONT_SIZE.xs};
 `;
 
 export const UserInput = styled(BaseInput)`
   width: 100%;
+  background-color: var(--input-bg-color);
 `;
 
 export const Text = styled(BaseTypography.Text)`
