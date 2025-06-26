@@ -1,8 +1,9 @@
 import styled from 'styled-components';
+import { BaseCard } from '@app/components/common/BaseCard/BaseCard';
 import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
 import { BaseTypography } from '@app/components/common/BaseTypography/BaseTypography';
 import { BaseInput } from '@app/components/common/inputs/BaseInput/BaseInput';
-import { BORDER_RADIUS, FONT_SIZE, FONT_WEIGHT } from '@app/styles/themes/constants';
+import { BORDER_RADIUS, FONT_SIZE, FONT_WEIGHT, media } from '@app/styles/themes/constants';
 import { Card } from 'antd';
 import { BaseRow } from '@app/components/common/BaseRow/BaseRow';
 
@@ -23,6 +24,7 @@ export const SplitDivider = styled.div`
 export const NotificationItem = styled(Card)<{ $isRead: boolean; $isNew?: boolean }>`
   position: relative;
   transition: all 0.3s ease;
+  width: 100%;
   background-color: var(--additional-background-color);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
   border: none;
@@ -31,7 +33,7 @@ export const NotificationItem = styled(Card)<{ $isRead: boolean; $isNew?: boolea
   }
   .anticon-info-circle {
     color: var(--text-light-color);
-    width: 2.4rem; 
+    width: 2.4rem;
     padding: 0 0.2rem;
   }
   ${(props) =>
@@ -43,13 +45,17 @@ export const NotificationItem = styled(Card)<{ $isRead: boolean; $isNew?: boolea
     &::before {
       content: '';
       position: absolute;
-      left: 1rem;
-      top: 2.2rem;
+      left: -1.1rem;
+      top: 2.4rem;
       transform: translateY(-50%);
       width: 0.5rem;
       height: 0.5rem;
       border-radius: 50%;
       background-color: var(--primary-color);
+
+      @media only screen and ${media.lg} {
+        left: -2rem;
+      }
     }
   `}
 
@@ -61,6 +67,7 @@ export const NotificationItem = styled(Card)<{ $isRead: boolean; $isNew?: boolea
 `;
 export const NotificationHeader = styled(BaseRow)`
   color: var(--text-main-color);
+  font-size: ${FONT_SIZE.md};
 `;
 export const NotificationContent = styled.div`
   padding-top: 0.5rem;
@@ -68,6 +75,7 @@ export const NotificationContent = styled.div`
 
 export const NotificationMeta = styled.div`
   display: flex;
+
   flex-wrap: wrap;
   gap: 0.75rem;
   margin-bottom: 0.5rem;
@@ -83,10 +91,13 @@ export const MetaItem = styled.div`
 export const MetaLabel = styled.span`
   font-weight: ${FONT_WEIGHT.semibold};
   margin-right: 0.5rem;
+  font-size: ${FONT_SIZE.md};
 `;
 
 export const MetaValue = styled.span`
   display: inline-flex;
+  font-size: ${FONT_SIZE.md};
+  color: var(--text-main-color);
   align-items: center;
 `;
 
@@ -97,7 +108,7 @@ export const CopyButton = styled(BaseButton)`
   justify-content: center;
   font-size: ${FONT_SIZE.xs};
   padding: 2px 6px;
-  height: 20px;
+  height: 24px;
   border-radius: ${BORDER_RADIUS};
   background-color: var(--background-color);
 
@@ -107,7 +118,6 @@ export const CopyButton = styled(BaseButton)`
 `;
 
 export const MarkReadButton = styled(BaseButton)`
-  margin-top: 0.75rem;
   padding: 0;
   height: auto;
   font-size: ${FONT_SIZE.xs};
@@ -151,7 +161,9 @@ export const NewSubscriberBadge = styled.span`
 
 export const AmountDisplay = styled.div`
   display: flex;
+  font-size: ${FONT_SIZE.lg};
   flex-direction: column;
+  align-items: flex-end;
 `;
 
 export const SatAmount = styled.span`
@@ -180,4 +192,37 @@ export const ExpirationInfo = styled.div`
     `
     color: var(--error-color);
   `}
+`;
+export const Root = styled(BaseCard)`
+  padding: 0;
+  padding-top: 1.25rem;
+
+  .ant-space.ant-space-horizontal {
+    width: 100%;
+  }
+  @media only screen and ${media.lg} {
+    padding-left: 3rem;
+  }
+`;
+export const TransactionWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  margin-top: 1.5rem;
+  min-width: 30rem;
+  @media only screen and ${media.lg} {
+    min-width: 40vw;
+`;
+export const LeftSideTX = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  ;
+`;
+
+export const CardFooter = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 `;

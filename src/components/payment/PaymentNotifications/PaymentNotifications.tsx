@@ -153,7 +153,7 @@ export const PaymentNotifications: React.FC<PaymentNotificationsProps> = ({ clas
       tx_id: 'tx7788990011223344',
       amount: 600,
       subscription_tier: '2GB',
-      is_new_subscriber: true,
+      is_new_subscriber: false,
       expiration_date: '2024-02-28T23:59:59Z',
       created_at: '2024-11-30T07:50:00Z',
       is_read: true,
@@ -252,10 +252,10 @@ export const PaymentNotifications: React.FC<PaymentNotificationsProps> = ({ clas
   };
 
   return (
-    <BaseCard
+    <S.Root
       className={className}
       title={t('payment.notifications.title', 'Payment Notifications')}
-      padding="1.25rem 2.5rem"
+      padding="1.25rem 1.5rem"
     >
       <S.FiltersWrapper>
         <BaseRow gutter={[16, 16]} align="middle">
@@ -324,10 +324,6 @@ export const PaymentNotifications: React.FC<PaymentNotificationsProps> = ({ clas
                     <S.NotificationContent>
                       <S.NotificationMeta>
                         <S.MetaItem>
-                          <S.MetaValue>{formatDate(notification.created_at)}</S.MetaValue>
-                        </S.MetaItem>
-
-                        <S.MetaItem>
                           <S.MetaLabel>User:</S.MetaLabel>
                           <S.MetaValue>
                             {notification.pubkey.substring(0, 10)}...
@@ -343,36 +339,40 @@ export const PaymentNotifications: React.FC<PaymentNotificationsProps> = ({ clas
                             </S.CopyButton>
                           </S.MetaValue>
                         </S.MetaItem>
-
-                        <S.MetaItem>
-                          <S.MetaLabel>TX ID:</S.MetaLabel>
-                          <S.MetaValue>
-                            {notification.tx_id.substring(0, 10)}...
-                            <S.CopyButton
-                              onClick={() => {
-                                navigator.clipboard.writeText(notification.tx_id);
-                                notificationController.success({
-                                  message: 'Transaction ID copied to clipboard',
-                                });
-                              }}
-                            >
-                              Copy TX ID
-                            </S.CopyButton>
-                          </S.MetaValue>
-                        </S.MetaItem>
                       </S.NotificationMeta>
+                      <S.TransactionWrapper>
+                        <S.LeftSideTX>
+                          <S.MetaItem>
+                            <S.MetaValue>{formatDate(notification.created_at)}</S.MetaValue>
+                          </S.MetaItem>
+                          <S.MetaItem>
+                            <S.MetaLabel>TX ID:</S.MetaLabel>
+                            <S.MetaValue>
+                              {notification.tx_id.substring(0, 10)}...
+                              <S.CopyButton
+                                onClick={() => {
+                                  navigator.clipboard.writeText(notification.tx_id);
+                                  notificationController.success({
+                                    message: 'Transaction ID copied to clipboard',
+                                  });
+                                }}
+                              >
+                                Copy TX ID
+                              </S.CopyButton>
+                            </S.MetaValue>
+                          </S.MetaItem>
+                        </S.LeftSideTX>
+                        <div>{formatAmount(notification.amount)}</div>
+                      </S.TransactionWrapper>
+                      <S.CardFooter>
+                        {formatExpirationDate(notification.expiration_date)}
 
-                      <div>
-                        {formatAmount(notification.amount)}
-                      </div>
-
-                      {formatExpirationDate(notification.expiration_date)}
-
-                      {!notification.is_read && (
-                        <S.MarkReadButton onClick={() => markAsRead(notification.id)} size="small" type="link">
-                          {t('payment.notifications.markAsRead', 'Mark as read')}
-                        </S.MarkReadButton>
-                      )}
+                        {!notification.is_read && (
+                          <S.MarkReadButton onClick={() => markAsRead(notification.id)} size="small" type="link">
+                            {t('payment.notifications.markAsRead', 'Mark as read')}
+                          </S.MarkReadButton>
+                        )}
+                      </S.CardFooter>
                     </S.NotificationContent>
                   }
                 />
@@ -435,6 +435,6 @@ export const PaymentNotifications: React.FC<PaymentNotificationsProps> = ({ clas
           </S.Text>
         </div>
       )}
-    </BaseCard>
+    </S.Root>
   );
 };
