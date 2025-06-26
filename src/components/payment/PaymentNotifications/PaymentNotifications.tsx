@@ -259,7 +259,7 @@ export const PaymentNotifications: React.FC<PaymentNotificationsProps> = ({ clas
     >
       <S.FiltersWrapper>
         <BaseRow gutter={[16, 16]} align="middle">
-          <BaseCol xs={24} md={8}>
+          <BaseCol xs={24} sm={10} md={12}>
             <BaseSelect
               value={filter}
               onChange={handleFilterChange}
@@ -273,14 +273,14 @@ export const PaymentNotifications: React.FC<PaymentNotificationsProps> = ({ clas
 
           {filter === 'user' && (
             <>
-              <BaseCol xs={24} md={12}>
+              <BaseCol xs={24} md={9}>
                 <S.UserInput
                   placeholder={t('payment.notifications.userPlaceholder', 'Enter user pubkey')}
                   value={userPubkey}
                   onChange={handleUserPubkeyChange}
                 />
               </BaseCol>
-              <BaseCol xs={24} md={4}>
+              <BaseCol xs={24} md={3}>
                 <BaseButton type="primary" onClick={handleUserPubkeyFilter}>
                   {t('payment.notifications.filter', 'Filter')}
                 </BaseButton>

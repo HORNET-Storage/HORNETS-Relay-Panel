@@ -196,6 +196,7 @@ export const ExpirationInfo = styled.div`
 export const Root = styled(BaseCard)`
   padding: 0;
   padding-top: 1.25rem;
+  width: fit-content;
 
   .ant-space.ant-space-horizontal {
     width: 100%;
