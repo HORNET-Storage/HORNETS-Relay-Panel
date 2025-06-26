@@ -1,10 +1,7 @@
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { BaseNotification } from '@app/components/common/BaseNotification/BaseNotification';
 import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
-import { capitalize } from '@app/utils/utils';
-import { BaseSpace } from '@app/components/common/BaseSpace/BaseSpace';
 import { BaseRow } from '@app/components/common/BaseRow/BaseRow';
 import { BaseCol } from '@app/components/common/BaseCol/BaseCol';
 import { PaymentNotification } from '@app/api/paymentNotifications.api';
