@@ -363,7 +363,6 @@ export const PaymentNotifications: React.FC<PaymentNotificationsProps> = ({ clas
                       </S.NotificationMeta>
 
                       <div>
-                        <strong>{t('payment.notifications.amount', 'Amount')}: </strong>
                         {formatAmount(notification.amount)}
                       </div>
 

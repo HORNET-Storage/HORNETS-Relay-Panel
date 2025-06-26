@@ -5,7 +5,6 @@ import styled from 'styled-components';
 import {
   FilterOutlined,
   PictureOutlined,
-  ApiOutlined,
   RobotOutlined,
   InfoCircleOutlined,
   WalletOutlined,
