@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Form, InputNumber, Switch, Select, Tooltip } from 'antd';
+import { Form, Switch, Select, Tooltip } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import useGenericSettings from '@app/hooks/useGenericSettings';
 import { SettingsGroupType } from '@app/types/settings.types';
 import BaseSettingsForm from './BaseSettingsForm';
+import { InputNumberField } from './Settings.styles';
 
 const { Option } = Select;
 
@@ -115,7 +116,7 @@ const ContentFilterSettings: React.FC = () => {
             { type: 'number', min: 100, message: 'Value must be at least 100' }
           ]}
         >
-          <InputNumber min={100} style={{ width: '100%' }} />
+          <InputNumberField min={100} style={{ width: '100%' }} />
         </Form.Item>
 
         <Form.Item
@@ -133,7 +134,7 @@ const ContentFilterSettings: React.FC = () => {
             { type: 'number', min: 1, message: 'Value must be at least 1' }
           ]}
         >
-          <InputNumber min={1} style={{ width: '100%' }} />
+          <InputNumberField min={1} style={{ width: '100%' }} />
         </Form.Item>
 
         <Form.Item

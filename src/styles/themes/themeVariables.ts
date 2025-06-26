@@ -97,6 +97,7 @@ const getThemeVariables = (theme: ThemeType) => css`
   --layout-header-bg-color: ${themeObject[theme].layoutHeaderBg};
   --layout-sider-bg-color: ${themeObject[theme].layoutSiderBg};
   --input-placeholder-color: ${themeObject[theme].inputPlaceholder};
+  --input-bg-color: ${themeObject[theme].inputBg};
   --avatar-bg: ${themeObject[theme].avatarBg};
   --alert-text-color: ${themeObject[theme].alertTextColor};
   --breadcrumb-color: ${themeObject[theme].breadcrumb};

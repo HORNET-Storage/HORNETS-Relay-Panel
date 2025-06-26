@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Input, InputNumber, Select, Tooltip } from 'antd';
+import { Form, Tooltip } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import useGenericSettings from '@app/hooks/useGenericSettings';
 import { SettingsGroupType } from '@app/types/settings.types';
 import BaseSettingsForm from './BaseSettingsForm';
+import { InputField, InputNumberField, SelectField } from './Settings.styles';
 
-const { Option } = Select;
+const { Option } = SelectField;
 
 const OllamaSettings: React.FC = () => {
   const {
@@ -113,7 +114,7 @@ const OllamaSettings: React.FC = () => {
             { type: 'url', message: 'Please enter a valid URL' }
           ]}
         >
-          <Input placeholder="http://localhost:11434" />
+          <InputField placeholder="http://localhost:11434" />
         </Form.Item>
 
         <Form.Item
@@ -130,7 +131,7 @@ const OllamaSettings: React.FC = () => {
             { required: true, message: 'Please select an Ollama model' }
           ]}
         >
-          <Select
+          <SelectField
             placeholder="Select a model"
             allowClear
             showSearch
@@ -143,7 +144,7 @@ const OllamaSettings: React.FC = () => {
                 {option.label}
               </Option>
             ))}
-          </Select>
+          </SelectField>
         </Form.Item>
 
         <Form.Item
@@ -161,7 +162,7 @@ const OllamaSettings: React.FC = () => {
             { type: 'number', min: 1, message: 'Value must be at least 1' }
           ]}
         >
-          <InputNumber min={1} style={{ width: '100%' }} />
+          <InputNumberField min={1} style={{ width: '100%' }} />
         </Form.Item>
       </Form>
     </BaseSettingsForm>

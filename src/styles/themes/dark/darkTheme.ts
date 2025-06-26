@@ -98,6 +98,7 @@ export const darkColorsTheme: ITheme = {
   layoutHeaderBg: '#1e2142',
   layoutSiderBg: '#121430',
   inputPlaceholder: 'rgba(255, 255, 255, 0.5)',
+  inputBg: `rgba(0, 0, 0, 0.2)`,
   itemHoverBg: '#1c2137',
   backgroundColorBase: '#1c2137',
   avatarBg: '#1c2137',

@@ -4,6 +4,7 @@ import { QuestionCircleOutlined, LockOutlined, DatabaseOutlined, TagOutlined } f
 import useGenericSettings from '@app/hooks/useGenericSettings';
 import { SettingsGroupType } from '@app/types/settings.types';
 import BaseSettingsForm from './BaseSettingsForm';
+import * as S from './Settings.styles';
 
 const GeneralSettings: React.FC = () => {
   const {
@@ -58,7 +59,7 @@ const GeneralSettings: React.FC = () => {
             { pattern: /^\d+$/, message: 'Port must be a number' }
           ]}
         >
-          <Input placeholder="8080" />
+          <S.InputField placeholder="8080" />
         </Form.Item>
 
         <Form.Item
@@ -75,7 +76,7 @@ const GeneralSettings: React.FC = () => {
             { required: true, message: 'Please enter the private key' }
           ]}
         >
-          <Input.Password
+          <S.PasswordField
             prefix={<LockOutlined />}
             placeholder="Enter private key"
           />
@@ -92,7 +93,7 @@ const GeneralSettings: React.FC = () => {
             </span>
           }
         >
-          <Input
+          <S.InputFieldWithPrefix
             prefix={<TagOutlined />}
             placeholder="Enter service tag"
           />
@@ -109,7 +110,7 @@ const GeneralSettings: React.FC = () => {
             </span>
           }
         >
-          <Input
+          <S.InputFieldWithPrefix
             prefix={<DatabaseOutlined />}
             placeholder="./data/stats.db"
           />

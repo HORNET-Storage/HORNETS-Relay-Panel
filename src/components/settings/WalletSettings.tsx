@@ -4,6 +4,7 @@ import { QuestionCircleOutlined, LockOutlined, WalletOutlined } from '@ant-desig
 import useGenericSettings from '@app/hooks/useGenericSettings';
 import { SettingsGroupType } from '@app/types/settings.types';
 import BaseSettingsForm from './BaseSettingsForm';
+import * as S from './Settings.styles';
 
 const WalletSettings: React.FC = () => {
   const {
@@ -82,9 +83,9 @@ const WalletSettings: React.FC = () => {
             { required: true, message: 'Please enter a wallet name' }
           ]}
         >
-          <Input 
-            prefix={<WalletOutlined />} 
-            placeholder="Enter wallet name" 
+          <S.InputFieldWithPrefix
+            prefix={<WalletOutlined />}
+            placeholder="Enter wallet name"
           />
         </Form.Item>
 
@@ -102,7 +103,7 @@ const WalletSettings: React.FC = () => {
             { required: true, message: 'Please enter the wallet API key' }
           ]}
         >
-          <Input.Password
+          <S.PasswordField
             prefix={<LockOutlined />}
             placeholder="Enter API key"
           />
