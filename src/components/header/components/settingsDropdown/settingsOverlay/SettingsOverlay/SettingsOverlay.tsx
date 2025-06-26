@@ -1,15 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { DropdownCollapse } from '@app/components/header/Header.styles';
 import { useTranslation } from 'react-i18next';
-import { NightModeSettings } from '../nightModeSettings/NightModeSettings';
-import { ThemePicker } from '../ThemePicker/ThemePicker';
 import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
 import { useAppSelector } from '@app/hooks/reduxHooks';
 import { useAppDispatch } from '@app/hooks/reduxHooks';
 import { setShowAlert } from '@app/store/slices/pwaSlice';
 import * as S from './SettingsOverlay.styles';
-import { Alert } from 'antd';
 
 export const SettingsOverlay: React.FC = ({ ...props }) => {
   const { t } = useTranslation();
@@ -31,12 +28,12 @@ export const SettingsOverlay: React.FC = ({ ...props }) => {
   return (
     <S.SettingsOverlayMenu {...props}>
       <DropdownCollapse bordered={false} expandIconPosition="end" ghost defaultActiveKey="themePicker">
-        <DropdownCollapse.Panel header={t('header.changeTheme')} key="themePicker">
+        {/* { <DropdownCollapse.Panel header={t('header.changeTheme')} key="themePicker">
           <ThemePicker />
         </DropdownCollapse.Panel>
         <DropdownCollapse.Panel header={t('header.nightMode.title')} key="nightMode">
           <NightModeSettings />
-        </DropdownCollapse.Panel>
+        </DropdownCollapse.Panel>} */}
       </DropdownCollapse>
       <S.Text>
         <Link to="/logout">{t('header.logout')}</Link>

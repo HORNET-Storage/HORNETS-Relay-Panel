@@ -5,9 +5,9 @@ interface ThemeState {
   theme: ThemeType;
 }
 
-const preferredTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+//const preferredTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 
-export const defaultTheme = (localStorage.getItem('theme') as ThemeType) || preferredTheme;
+export const defaultTheme = 'dark';// Removing Support for preferred theme detection for launch 
 
 localStorage.setItem('theme', defaultTheme);
 
