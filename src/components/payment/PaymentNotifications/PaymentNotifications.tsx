@@ -330,7 +330,7 @@ export const PaymentNotifications: React.FC<PaymentNotificationsProps> = ({ clas
                         <S.MetaItem>
                           <S.MetaLabel>User:</S.MetaLabel>
                           <S.MetaValue>
-                            {notification.pubkey.substring(0, 15)}...
+                            {notification.pubkey.substring(0, 10)}...
                             <S.CopyButton
                               onClick={() => {
                                 navigator.clipboard.writeText(notification.pubkey);
@@ -347,7 +347,7 @@ export const PaymentNotifications: React.FC<PaymentNotificationsProps> = ({ clas
                         <S.MetaItem>
                           <S.MetaLabel>TX ID:</S.MetaLabel>
                           <S.MetaValue>
-                            {notification.tx_id.substring(0, 15)}...
+                            {notification.tx_id.substring(0, 10)}...
                             <S.CopyButton
                               onClick={() => {
                                 navigator.clipboard.writeText(notification.tx_id);
