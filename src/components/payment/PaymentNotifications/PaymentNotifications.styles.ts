@@ -97,8 +97,11 @@ export const MetaLabel = styled.span`
 export const MetaValue = styled.span`
   display: inline-flex;
   font-size: ${FONT_SIZE.md};
-  color: var(--text-main-color);
   align-items: center;
+  &:not(.date){
+    color: var(--text-main-color);
+  }
+
 `;
 
 export const CopyButton = styled(BaseButton)`
@@ -206,8 +209,8 @@ export const Root = styled(BaseCard)`
   @media only screen and ${media.lg} {
     > .ant-card-head,
     > .ant-card-body {
-      margin-left: 15%;
-      margin-right: 15%;
+      margin-left: 18%;
+      margin-right: 18%;
     }
   }
 `;
@@ -219,7 +222,7 @@ export const TransactionWrapper = styled.div`
   margin-top: 1.5rem;
   min-width: 65vw;
   @media only screen and ${media.lg} {
-    min-width: 42vw;
+    min-width: 40vw;
 `;
 export const LeftSideTX = styled.div`
   display: flex;

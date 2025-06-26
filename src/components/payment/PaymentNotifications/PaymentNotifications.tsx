@@ -203,27 +203,27 @@ export const PaymentNotifications: React.FC<PaymentNotificationsProps> = ({ clas
                             </S.CopyButton>
                           </S.MetaValue>
                         </S.MetaItem>
+                        <S.MetaItem>
+                          <S.MetaLabel>TX ID:</S.MetaLabel>
+                          <S.MetaValue>
+                            {notification.tx_id.substring(0, 10)}...
+                            <S.CopyButton
+                              onClick={() => {
+                                navigator.clipboard.writeText(notification.tx_id);
+                                notificationController.success({
+                                  message: 'Transaction ID copied to clipboard',
+                                });
+                              }}
+                            >
+                              Copy TX ID
+                            </S.CopyButton>
+                          </S.MetaValue>
+                        </S.MetaItem>
                       </S.NotificationMeta>
                       <S.TransactionWrapper>
                         <S.LeftSideTX>
                           <S.MetaItem>
-                            <S.MetaValue>{formatDate(notification.created_at)}</S.MetaValue>
-                          </S.MetaItem>
-                          <S.MetaItem>
-                            <S.MetaLabel>TX ID:</S.MetaLabel>
-                            <S.MetaValue>
-                              {notification.tx_id.substring(0, 10)}...
-                              <S.CopyButton
-                                onClick={() => {
-                                  navigator.clipboard.writeText(notification.tx_id);
-                                  notificationController.success({
-                                    message: 'Transaction ID copied to clipboard',
-                                  });
-                                }}
-                              >
-                                Copy TX ID
-                              </S.CopyButton>
-                            </S.MetaValue>
+                            <S.MetaValue className='date'>{formatDate(notification.created_at)}</S.MetaValue>
                           </S.MetaItem>
                         </S.LeftSideTX>
                         <div>{formatAmount(notification.amount)}</div>
