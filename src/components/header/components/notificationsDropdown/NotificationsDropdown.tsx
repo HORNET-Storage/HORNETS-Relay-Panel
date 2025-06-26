@@ -135,7 +135,7 @@ export const NotificationsDropdown: React.FC = () => {
     <BasePopover
       trigger="click"
       content={
-        <div style={{ maxWidth: '400px', minWidth: '320px', maxHeight: '450px' }}>
+        <div style={{ maxWidth: '400px', minWidth: '320px' }}>
           <Tabs 
             defaultActiveKey="1" 
             items={tabItems}

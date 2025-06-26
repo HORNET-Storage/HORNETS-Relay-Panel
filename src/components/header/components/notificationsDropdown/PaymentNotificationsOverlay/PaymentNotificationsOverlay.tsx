@@ -34,8 +34,8 @@ export const PaymentNotificationsOverlay: React.FC<PaymentNotificationsOverlayPr
   const formatAmount = (satoshis: number) => {
     const btc = satoshis / 100000000;
     return (
-      <div>
-        <div style={{ fontWeight: 'bold' }}>{satoshis.toLocaleString()} sats</div>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'end' }}>
+        <div style={{ fontWeight: 'bold', fontSize: "1rem"}}>{satoshis.toLocaleString()} sats</div>
         <div style={{ fontSize: '0.85rem', color: 'var(--text-light-color)' }}>
           ({btc.toFixed(8)} BTC)
         </div>
@@ -48,7 +48,7 @@ export const PaymentNotificationsOverlay: React.FC<PaymentNotificationsOverlayPr
   }, [markAllAsRead]);
 
   const noticesList = notifications.map((notification) => (
-    <BaseNotification
+    <S.RootNotification
       key={notification.id}
       type="info"
       title={
@@ -89,35 +89,36 @@ export const PaymentNotificationsOverlay: React.FC<PaymentNotificationsOverlayPr
       }
       description={
         <div>
+          <S.TransactionWrapper>
           <div style={{ fontSize: '0.85rem', color: 'var(--text-light-color)', marginBottom: '4px' }}>
             {formatDate(notification.created_at)}
           </div>
           
           <div style={{ marginBottom: '8px' }}>
-            <strong>{t('payment.notifications.amount', 'Amount')}: </strong>
             {formatAmount(notification.amount)}
           </div>
+          </S.TransactionWrapper>
           
-          <div style={{ fontSize: '0.85rem', color: 'var(--text-light-color)', marginTop: '4px' }}>
+          {/* <div style={{ fontSize: '0.85rem', color: 'var(--text-light-color)', marginTop: '4px' }}>
             {t('payment.notifications.expiration', 'Expires')}: {formatDate(notification.expiration_date)}
-          </div>
-          
+          </div> */}
+          <S.ActionRow>
+            <Link to="/payment-notifications" style={{ fontSize: '0.85rem' }}>
+              {t('payment.notifications.viewDetails', 'View details')}
+            </Link>
           {!notification.is_read && (
             <BaseButton 
               type="link" 
               size="small" 
               onClick={() => markAsRead(notification.id)}
-              style={{ padding: '4px 0', height: 'auto', marginTop: '4px' }}
+              style={{ padding: '4px 0', height: 'auto', marginTop: '4px', fontSize: '0.85rem' }}
             >
               {t('payment.notifications.markAsRead', 'Mark as read')}
             </BaseButton>
           )}
           
-          <div style={{ marginTop: '4px' }}>
-            <Link to="/payment-notifications" style={{ fontSize: '0.85rem' }}>
-              {t('payment.notifications.viewDetails', 'View details')}
-            </Link>
-          </div>
+          
+          </S.ActionRow>
         </div>
       }
     />
@@ -129,9 +130,9 @@ export const PaymentNotificationsOverlay: React.FC<PaymentNotificationsOverlayPr
         <BaseCol span={24}>
           {notifications.length > 0 ? (
             <S.NotificationsList>
-              <BaseSpace direction="vertical" size={10} split={<S.SplitDivider />}>
+              <S.NotificationsWrapper direction="vertical" size={10} split={<S.SplitDivider />} style={{ width: '95%' }}>
                 {noticesList}
-              </BaseSpace>
+              </S.NotificationsWrapper>
             </S.NotificationsList>
           ) : (
             <div style={{ textAlign: 'center', padding: '20px 0' }}>
