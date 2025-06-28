@@ -2,12 +2,14 @@ import config from '@app/config/config';
 import { readToken } from '@app/services/localStorage.service';
 import {
   AllowedUsersSettings,
-  AllowedUsersApiResponse,
-  AllowedUsersNpubsResponse,
-  BulkImportRequest,
-  AllowedUsersNpub,
+  AllowedUsersResponse,
+  AddAllowedUserRequest,
+  RemoveAllowedUserRequest,
+  ApiResponse,
   AllowedUsersMode,
-  DEFAULT_TIERS
+  DEFAULT_TIERS,
+  RelayOwnerResponse,
+  SetRelayOwnerRequest
 } from '@app/types/allowedUsers.types';
 
 // Settings Management
@@ -45,28 +47,15 @@ export const getAllowedUsersSettings = async (): Promise<AllowedUsersSettings> =
     } else {
       // Use default tiers for the mode if none provided
       const mode = allowedUsersData.mode as AllowedUsersMode;
-      transformedTiers = DEFAULT_TIERS[mode] || DEFAULT_TIERS.free;
-    }
-
-    // For free mode, reconstruct full UI options with active tier marked
-    if (allowedUsersData.mode === 'free' && transformedTiers.length === 1) {
-      const activeTierBytes = transformedTiers[0].monthly_limit_bytes;
-      transformedTiers = DEFAULT_TIERS.free.map(defaultTier => ({
-        ...defaultTier,
-        active: defaultTier.monthly_limit_bytes === activeTierBytes
-      }));
-    }
-    
-    // For personal mode, reconstruct with single unlimited tier
-    if (allowedUsersData.mode === 'personal' && transformedTiers.length === 1) {
-      transformedTiers = DEFAULT_TIERS.personal;
+      transformedTiers = DEFAULT_TIERS[mode] || DEFAULT_TIERS['public'];
     }
     
     const transformedSettings = {
-      mode: allowedUsersData.mode || 'free',
-      read_access: allowedUsersData.read_access || { enabled: true, scope: 'all_users' },
-      write_access: allowedUsersData.write_access || { enabled: true, scope: 'all_users' },
-      tiers: transformedTiers
+      mode: allowedUsersData.mode || 'public',
+      read: allowedUsersData.read || 'all_users',
+      write: allowedUsersData.write || 'all_users',
+      tiers: transformedTiers,
+      relay_owner_npub: allowedUsersData.relay_owner_npub || ''
     };
     
     return transformedSettings;
@@ -75,37 +64,46 @@ export const getAllowedUsersSettings = async (): Promise<AllowedUsersSettings> =
   }
 };
 
-export const updateAllowedUsersSettings = async (settings: AllowedUsersSettings): Promise<{ success: boolean, message: string }> => {
+export const updateAllowedUsersSettings = async (settings: AllowedUsersSettings): Promise<ApiResponse> => {
   const token = readToken();
   
-  // Filter tiers based on mode - for free and personal modes, only send active tier
-  const tiersToSend = (settings.mode === 'free' || settings.mode === 'personal')
-    ? settings.tiers.filter(tier => tier.active)
-    : settings.tiers;
-  
   // Transform to nested format as expected by new unified backend API
+  // Note: relay_owner_npub is no longer sent in settings - it's managed via /api/allowed-users
   const nestedSettings = {
     "settings": {
       "allowed_users": {
         "mode": settings.mode,
-        "read_access": {
-          "enabled": settings.read_access.enabled,
-          "scope": settings.read_access.scope
-        },
-        "write_access": {
-          "enabled": settings.write_access.enabled,
-          "scope": settings.write_access.scope
-        },
-        "tiers": tiersToSend.map(tier => ({
-          "name": tier.name,
-          "price_sats": tier.price_sats,
-          "monthly_limit_bytes": tier.monthly_limit_bytes,
-          "unlimited": tier.unlimited
-        }))
+        "read": settings.read,
+        "write": settings.write,
+        "tiers": settings.mode === 'public' 
+          ? settings.tiers.filter(tier => tier.active).map(tier => ({
+              "name": tier.name,
+              "price_sats": tier.price_sats,
+              "monthly_limit_bytes": tier.monthly_limit_bytes,
+              "unlimited": tier.unlimited
+            }))
+          : settings.tiers.map(tier => ({
+              "name": tier.name,
+              "price_sats": tier.price_sats,
+              "monthly_limit_bytes": tier.monthly_limit_bytes,
+              "unlimited": tier.unlimited
+            }))
       }
     }
   };
   
+  // Comprehensive logging for debugging
+  console.group('🔧 [API] Updating Allowed Users Settings');
+  console.log('📤 Original frontend settings:', settings);
+  console.log('📦 Transformed payload for backend:', nestedSettings);
+  console.log('🎯 Mode being sent:', settings.mode);
+  console.log('📖 Read permission:', settings.read);
+  console.log('✍️ Write permission:', settings.write);
+  console.log('🏷️ Number of tiers:', settings.tiers.length);
+  console.log('📋 Tiers details:', settings.tiers);
+  console.log('🌐 Request URL:', `${config.baseURL}/api/settings`);
+  console.log('📄 Request body (stringified):', JSON.stringify(nestedSettings, null, 2));
+  console.groupEnd();
   
   const response = await fetch(`${config.baseURL}/api/settings`, {
     method: 'POST',
@@ -118,22 +116,38 @@ export const updateAllowedUsersSettings = async (settings: AllowedUsersSettings)
   
   const text = await response.text();
   
+  // Log response details
+  console.group('📥 [API] Settings Update Response');
+  console.log('📊 Response status:', response.status);
+  console.log('✅ Response OK:', response.ok);
+  console.log('📄 Response text:', text);
+  console.groupEnd();
+  
   if (!response.ok) {
+    console.error('❌ [API] Settings update failed:', {
+      status: response.status,
+      statusText: response.statusText,
+      responseText: text,
+      sentPayload: nestedSettings
+    });
     throw new Error(`HTTP error! status: ${response.status}, response: ${text}`);
   }
   
   try {
-    return JSON.parse(text) || { success: true, message: 'Settings updated successfully' };
+    const parsedResponse = JSON.parse(text);
+    console.log('✅ [API] Settings update successful:', parsedResponse);
+    return parsedResponse;
   } catch (jsonError) {
     // If response is not JSON, assume success if status was OK
+    console.log('ℹ️ [API] Non-JSON response, assuming success');
     return { success: true, message: 'Settings updated successfully' };
   }
 };
 
-// Read NPUBs Management
-export const getReadNpubs = async (page = 1, pageSize = 20): Promise<AllowedUsersNpubsResponse> => {
+// Unified User Management - Direct API calls (no fallback needed)
+export const getAllowedUsers = async (page = 1, pageSize = 20): Promise<AllowedUsersResponse> => {
   const token = readToken();
-  const response = await fetch(`${config.baseURL}/api/allowed-npubs/read?page=${page}&pageSize=${pageSize}`, {
+  const response = await fetch(`${config.baseURL}/api/allowed-users?page=${page}&pageSize=${pageSize}`, {
     headers: {
       'Authorization': `Bearer ${token}`,
     },
@@ -144,35 +158,80 @@ export const getReadNpubs = async (page = 1, pageSize = 20): Promise<AllowedUser
   const text = await response.text();
   try {
     const data = JSON.parse(text);
-    // Transform backend response to expected format - map tier_name to tier
-    const transformedNpubs = (data.npubs || []).map((npub: any) => ({
-      ...npub,
-      tier: npub.tier_name || npub.tier || 'basic'
-    }));
     
     return {
-      npubs: transformedNpubs,
-      total: data.pagination?.total || 0,
-      page: data.pagination?.page || page,
-      pageSize: data.pagination?.pageSize || pageSize
+      allowed_users: data.allowed_users || [],
+      pagination: data.pagination || {
+        page: page,
+        page_size: pageSize,
+        total_pages: 1,
+        total_items: 0
+      }
     };
   } catch (jsonError) {
     throw new Error(`Invalid JSON response: ${text}`);
   }
 };
 
-export const addReadNpub = async (npub: string, tier: string): Promise<{ success: boolean, message: string }> => {
+export const addAllowedUser = async (request: AddAllowedUserRequest): Promise<ApiResponse> => {
   const token = readToken();
-  const requestBody = { npub, tier };
   
+  // Comprehensive logging for user addition
+  console.group('👤 [API] Adding Allowed User');
+  console.log('📤 Request payload:', request);
+  console.log('🌐 Request URL:', `${config.baseURL}/api/allowed-users`);
+  console.log('📄 Request body (stringified):', JSON.stringify(request, null, 2));
+  console.log('🔑 Authorization token present:', !!token);
+  console.groupEnd();
   
-  const response = await fetch(`${config.baseURL}/api/allowed-npubs/read`, {
+  const response = await fetch(`${config.baseURL}/api/allowed-users`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`,
     },
-    body: JSON.stringify(requestBody),
+    body: JSON.stringify(request),
+  });
+  
+  const text = await response.text();
+  
+  // Log response details
+  console.group('📥 [API] Add User Response');
+  console.log('📊 Response status:', response.status);
+  console.log('✅ Response OK:', response.ok);
+  console.log('📄 Response text:', text);
+  console.groupEnd();
+  
+  if (!response.ok) {
+    console.error('❌ [API] Add user failed:', {
+      status: response.status,
+      statusText: response.statusText,
+      responseText: text,
+      sentPayload: request
+    });
+    throw new Error(`HTTP error! status: ${response.status}, response: ${text}`);
+  }
+  
+  try {
+    const parsedResponse = JSON.parse(text);
+    console.log('✅ [API] Add user successful:', parsedResponse);
+    return parsedResponse;
+  } catch (jsonError) {
+    console.log('ℹ️ [API] Non-JSON response, assuming success');
+    return { success: true, message: 'User added successfully' };
+  }
+};
+
+export const removeAllowedUser = async (request: RemoveAllowedUserRequest): Promise<ApiResponse> => {
+  const token = readToken();
+  
+  const response = await fetch(`${config.baseURL}/api/allowed-users`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify(request),
   });
   
   if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -185,9 +244,89 @@ export const addReadNpub = async (npub: string, tier: string): Promise<{ success
   }
 };
 
-export const removeReadNpub = async (npub: string): Promise<{ success: boolean, message: string }> => {
+// Relay Owner Management API (for only-me mode)
+export const getRelayOwner = async (): Promise<RelayOwnerResponse> => {
   const token = readToken();
-  const response = await fetch(`${config.baseURL}/api/allowed-npubs/read/${npub}`, {
+  
+  console.group('🔍 [API] Getting Relay Owner');
+  console.log('🌐 Request URL:', `${config.baseURL}/api/admin/owner`);
+  console.log('🔑 Authorization token present:', !!token);
+  console.groupEnd();
+  
+  const response = await fetch(`${config.baseURL}/api/admin/owner`, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+  
+  const text = await response.text();
+  
+  console.group('📥 [API] Get Owner Response');
+  console.log('📊 Response status:', response.status);
+  console.log('✅ Response OK:', response.ok);
+  console.log('📄 Response text:', text);
+  console.groupEnd();
+  
+  if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+  
+  try {
+    const parsedResponse = JSON.parse(text);
+    console.log('✅ [API] Get owner successful:', parsedResponse);
+    return parsedResponse;
+  } catch (jsonError) {
+    throw new Error(`Invalid JSON response: ${text}`);
+  }
+};
+
+export const setRelayOwner = async (request: SetRelayOwnerRequest): Promise<ApiResponse> => {
+  const token = readToken();
+  
+  console.group('👤 [API] Setting Relay Owner');
+  console.log('📤 Request payload:', request);
+  console.log('🌐 Request URL:', `${config.baseURL}/api/admin/owner`);
+  console.groupEnd();
+  
+  const response = await fetch(`${config.baseURL}/api/admin/owner`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify(request),
+  });
+  
+  const text = await response.text();
+  
+  console.group('📥 [API] Set Owner Response');
+  console.log('📊 Response status:', response.status);
+  console.log('✅ Response OK:', response.ok);
+  console.log('📄 Response text:', text);
+  console.groupEnd();
+  
+  if (!response.ok) {
+    console.error('❌ [API] Set owner failed:', {
+      status: response.status,
+      statusText: response.statusText,
+      responseText: text,
+      sentPayload: request
+    });
+    throw new Error(`HTTP error! status: ${response.status}, response: ${text}`);
+  }
+  
+  try {
+    const parsedResponse = JSON.parse(text);
+    console.log('✅ [API] Set owner successful:', parsedResponse);
+    return parsedResponse;
+  } catch (jsonError) {
+    console.log('ℹ️ [API] Non-JSON response, assuming success');
+    return { success: true, message: 'Relay owner set successfully' };
+  }
+};
+
+export const removeRelayOwner = async (): Promise<ApiResponse> => {
+  const token = readToken();
+  
+  const response = await fetch(`${config.baseURL}/api/admin/owner`, {
     method: 'DELETE',
     headers: {
       'Authorization': `Bearer ${token}`,
@@ -198,104 +337,9 @@ export const removeReadNpub = async (npub: string): Promise<{ success: boolean, 
   
   const text = await response.text();
   try {
-    return JSON.parse(text);
+    const parsedResponse = JSON.parse(text);
+    return parsedResponse;
   } catch (jsonError) {
-    throw new Error(`Invalid JSON response: ${text}`);
-  }
-};
-
-// Write NPUBs Management
-export const getWriteNpubs = async (page = 1, pageSize = 20): Promise<AllowedUsersNpubsResponse> => {
-  const token = readToken();
-  const response = await fetch(`${config.baseURL}/api/allowed-npubs/write?page=${page}&pageSize=${pageSize}`, {
-    headers: {
-      'Authorization': `Bearer ${token}`,
-    },
-  });
-  
-  if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-  
-  const text = await response.text();
-  try {
-    const data = JSON.parse(text);
-    // Transform backend response to expected format - map tier_name to tier
-    const transformedNpubs = (data.npubs || []).map((npub: any) => ({
-      ...npub,
-      tier: npub.tier_name || npub.tier || 'basic'
-    }));
-    
-    return {
-      npubs: transformedNpubs,
-      total: data.pagination?.total || 0,
-      page: data.pagination?.page || page,
-      pageSize: data.pagination?.pageSize || pageSize
-    };
-  } catch (jsonError) {
-    throw new Error(`Invalid JSON response: ${text}`);
-  }
-};
-
-export const addWriteNpub = async (npub: string, tier: string): Promise<{ success: boolean, message: string }> => {
-  const token = readToken();
-  const requestBody = { npub, tier };
-  
-  
-  const response = await fetch(`${config.baseURL}/api/allowed-npubs/write`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`,
-    },
-    body: JSON.stringify(requestBody),
-  });
-  
-  if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-  
-  const text = await response.text();
-  try {
-    return JSON.parse(text);
-  } catch (jsonError) {
-    throw new Error(`Invalid JSON response: ${text}`);
-  }
-};
-
-export const removeWriteNpub = async (npub: string): Promise<{ success: boolean, message: string }> => {
-  const token = readToken();
-  const response = await fetch(`${config.baseURL}/api/allowed-npubs/write/${npub}`, {
-    method: 'DELETE',
-    headers: {
-      'Authorization': `Bearer ${token}`,
-    },
-  });
-  
-  if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-  
-  const text = await response.text();
-  try {
-    return JSON.parse(text);
-  } catch (jsonError) {
-    throw new Error(`Invalid JSON response: ${text}`);
-  }
-};
-
-// Bulk Import
-export const bulkImportNpubs = async (importData: BulkImportRequest): Promise<{ success: boolean, message: string, imported: number, failed: number }> => {
-  const token = readToken();
-  const response = await fetch(`${config.baseURL}/api/allowed-npubs/bulk-import`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`,
-    },
-    body: JSON.stringify(importData),
-  });
-  
-  if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-  
-  const text = await response.text();
-  try {
-    return JSON.parse(text);
-  } catch (jsonError) {
-    throw new Error(`Invalid JSON response: ${text}`);
+    return { success: true, message: 'Relay owner removed successfully' };
   }
 };
