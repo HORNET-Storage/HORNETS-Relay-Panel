@@ -144,10 +144,10 @@ export const updateAllowedUsersSettings = async (settings: AllowedUsersSettings)
   }
 };
 
-// Unified User Management - Direct API calls (no fallback needed)
+// Unified User Management - Using correct invite-only endpoints
 export const getAllowedUsers = async (page = 1, pageSize = 20): Promise<AllowedUsersResponse> => {
   const token = readToken();
-  const response = await fetch(`${config.baseURL}/api/allowed-users?page=${page}&pageSize=${pageSize}`, {
+  const response = await fetch(`${config.baseURL}/api/allowed/users?page=${page}&pageSize=${pageSize}`, {
     headers: {
       'Authorization': `Bearer ${token}`,
     },
@@ -176,15 +176,16 @@ export const getAllowedUsers = async (page = 1, pageSize = 20): Promise<AllowedU
 export const addAllowedUser = async (request: AddAllowedUserRequest): Promise<ApiResponse> => {
   const token = readToken();
   
-  // Comprehensive logging for user addition
+  // Backend expects NPUB format (not hex), so keep as-is
   console.group('👤 [API] Adding Allowed User');
   console.log('📤 Request payload:', request);
-  console.log('🌐 Request URL:', `${config.baseURL}/api/allowed-users`);
+  console.log('🌐 Request URL:', `${config.baseURL}/api/allowed/add`);
   console.log('📄 Request body (stringified):', JSON.stringify(request, null, 2));
   console.log('🔑 Authorization token present:', !!token);
   console.groupEnd();
   
-  const response = await fetch(`${config.baseURL}/api/allowed-users`, {
+  // Using correct POST method with request body
+  const response = await fetch(`${config.baseURL}/api/allowed/add`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -225,7 +226,8 @@ export const addAllowedUser = async (request: AddAllowedUserRequest): Promise<Ap
 export const removeAllowedUser = async (request: RemoveAllowedUserRequest): Promise<ApiResponse> => {
   const token = readToken();
   
-  const response = await fetch(`${config.baseURL}/api/allowed-users`, {
+  // Using correct DELETE method with request body
+  const response = await fetch(`${config.baseURL}/api/allowed/remove`, {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
