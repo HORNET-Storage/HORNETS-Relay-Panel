@@ -61,3 +61,38 @@ export const NoteItem = styled.div`
     color: var(--text-main-color);
   }
 `;
+
+export const PermissionExplanations = styled.div`
+  margin-top: 1rem;
+  padding: 1rem;
+  background: var(--background-color-light);
+  border-radius: 6px;
+  border-left: 4px solid var(--primary-color);
+
+  h4 {
+    margin: 0 0 0.75rem 0;
+    color: var(--text-main-color);
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  ul {
+    margin: 0;
+    padding-left: 1.25rem;
+    
+    li {
+      margin-bottom: 0.5rem;
+      font-size: 13px;
+      color: var(--text-secondary-color);
+      line-height: 1.4;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      strong {
+        color: var(--text-main-color);
+      }
+    }
+  }
+`;

@@ -51,12 +51,11 @@ export const TierEditor: React.FC<TierEditorProps> = ({
         price_sats: priceSats,
         monthly_limit_bytes: displayFormat.unlimited ? 0 : 
           Math.round(displayFormat.value * getUnitMultiplier(displayFormat.unit)),
-        unlimited: displayFormat.unlimited,
-        active: tier.active // Preserve active state
+        unlimited: displayFormat.unlimited
       };
       onTierChange(updatedTier);
     }
-  }, [displayFormat, name, priceSats, isValid, onTierChange, tier.active]);
+  }, [displayFormat, name, priceSats, isValid, onTierChange]);
 
   const getUnitMultiplier = (unit: DataUnit): number => {
     switch (unit) {

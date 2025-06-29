@@ -1,130 +1,152 @@
-export type AllowedUsersMode = 'free' | 'paid' | 'exclusive' | 'personal';
+// Updated mode names to match backend
+export type AllowedUsersMode = 'only-me' | 'invite-only' | 'public' | 'subscription';
 
-export type AccessScope = 'all_users' | 'paid_users' | 'allowed_users';
+// Permission types as defined by backend
+export type PermissionType = 'all_users' | 'paid_users' | 'allowed_users' | 'only_me';
 
+// Tier structure remains the same
 export interface AllowedUsersTier {
   name: string;
   price_sats: number;
   monthly_limit_bytes: number;
   unlimited: boolean;
-  active?: boolean; // For free mode - only one tier can be active at a time
+  active?: boolean; // Optional field for public mode tier selection
 }
 
-// Legacy interface - kept for migration purposes
-export interface AllowedUsersTierLegacy {
-  data_limit: string;
-  price: string;
-  active?: boolean;
-}
-
-export interface AllowedUsersAccessConfig {
-  enabled: boolean;
-  scope: AccessScope;
-}
-
+// Updated settings structure to match backend
 export interface AllowedUsersSettings {
   mode: AllowedUsersMode;
-  read_access: AllowedUsersAccessConfig;
-  write_access: AllowedUsersAccessConfig;
+  read: PermissionType;
+  write: PermissionType;
   tiers: AllowedUsersTier[];
+  relay_owner_npub?: string; // Optional field for only-me mode
 }
 
-export interface AllowedUsersNpub {
+// Simplified user structure - no more per-user permissions
+export interface AllowedUser {
   npub: string;
   tier: string;
-  added_at: string;
+  created_at: string;
+  created_by: string;
 }
 
-export interface AllowedUsersNpubsResponse {
-  npubs: AllowedUsersNpub[];
-  total: number;
+// Pagination structure for API responses
+export interface PaginationInfo {
   page: number;
-  pageSize: number;
+  page_size: number;
+  total_pages: number;
+  total_items: number;
 }
 
-export interface BulkImportRequest {
-  type: 'read' | 'write';
-  npubs: string[]; // Format: "npub1...:tier"
+// API response for getting allowed users
+export interface AllowedUsersResponse {
+  allowed_users: AllowedUser[];
+  pagination: PaginationInfo;
 }
 
-export interface AllowedUsersApiResponse {
-  allowed_users: AllowedUsersSettings;
+// Request structure for adding a user
+export interface AddAllowedUserRequest {
+  npub: string;
+  tier: string;
 }
 
-// Mode-specific option configurations
-export interface ModeOptions {
-  readOptions: { value: AccessScope; label: string }[];
-  writeOptions: { value: AccessScope; label: string }[];
-  allowsFreeTiers: boolean;
-  requiresNpubManagement: boolean;
+// Request structure for removing a user
+export interface RemoveAllowedUserRequest {
+  npub: string;
 }
 
-export const MODE_CONFIGURATIONS: Record<AllowedUsersMode, ModeOptions> = {
-  free: {
-    readOptions: [
-      { value: 'all_users', label: 'All Users' },
-      { value: 'allowed_users', label: 'Allowed Users' }
-    ],
-    writeOptions: [
-      { value: 'all_users', label: 'All Users' },
-      { value: 'allowed_users', label: 'Allowed Users' }
-    ],
-    allowsFreeTiers: true,
-    requiresNpubManagement: false
+// API response structure
+export interface ApiResponse {
+  success: boolean;
+  message: string;
+}
+
+// Relay Owner Management (only-me mode)
+export interface RelayOwner {
+  npub: string;
+  created_at: string;
+  created_by: string;
+}
+
+export interface RelayOwnerResponse {
+  relay_owner: RelayOwner | null;
+}
+
+export interface SetRelayOwnerRequest {
+  npub: string;
+}
+
+// Mode-specific configurations with validation rules
+export interface ModeConfiguration {
+  readOptions: PermissionType[];
+  writeOptions: PermissionType[];
+  forcedRead?: PermissionType;
+  forcedWrite?: PermissionType;
+  description: string;
+}
+
+export const MODE_CONFIGURATIONS: Record<AllowedUsersMode, ModeConfiguration> = {
+  'only-me': {
+    readOptions: ['only_me', 'all_users', 'allowed_users'],
+    writeOptions: ['only_me'],
+    forcedWrite: 'only_me',
+    description: 'Personal relay for single user'
   },
-  paid: {
-    readOptions: [
-      { value: 'all_users', label: 'All Users' },
-      { value: 'paid_users', label: 'Paid Users' }
-    ],
-    writeOptions: [
-      { value: 'paid_users', label: 'Paid Users' }
-    ],
-    allowsFreeTiers: false,
-    requiresNpubManagement: false
+  'invite-only': {
+    readOptions: ['all_users', 'allowed_users'],
+    writeOptions: ['allowed_users'],
+    forcedWrite: 'allowed_users',
+    description: 'Private community relay'
   },
-  exclusive: {
-    readOptions: [
-      { value: 'allowed_users', label: 'Allowed Users' },
-      { value: 'all_users', label: 'All Users' }
-    ],
-    writeOptions: [
-      { value: 'allowed_users', label: 'Allowed Users' },
-      { value: 'all_users', label: 'All Users' }
-    ],
-    allowsFreeTiers: true,
-    requiresNpubManagement: true
+  'public': {
+    readOptions: ['all_users'],
+    writeOptions: ['all_users'],
+    forcedRead: 'all_users',
+    forcedWrite: 'all_users',
+    description: 'Public relay with no restrictions'
   },
-  personal: {
-    readOptions: [
-      { value: 'allowed_users', label: 'Only Me' }
-    ],
-    writeOptions: [
-      { value: 'allowed_users', label: 'Only Me' }
-    ],
-    allowsFreeTiers: true,
-    requiresNpubManagement: true
+  'subscription': {
+    readOptions: ['all_users', 'paid_users'],
+    writeOptions: ['paid_users'],
+    forcedWrite: 'paid_users',
+    description: 'Commercial relay with subscription tiers'
   }
 };
 
 // Default tier configurations for each mode
 export const DEFAULT_TIERS: Record<AllowedUsersMode, AllowedUsersTier[]> = {
-  free: [
-    { name: 'Basic', price_sats: 0, monthly_limit_bytes: 104857600, unlimited: false, active: false }, // 100 MB
-    { name: 'Standard', price_sats: 0, monthly_limit_bytes: 524288000, unlimited: false, active: true }, // 500 MB - default active
-    { name: 'Plus', price_sats: 0, monthly_limit_bytes: 1073741824, unlimited: false, active: false } // 1 GB
+  'only-me': [
+    { name: 'Personal', price_sats: 0, monthly_limit_bytes: 0, unlimited: true }
   ],
-  paid: [
-    { name: 'Starter', price_sats: 1000, monthly_limit_bytes: 1073741824, unlimited: false }, // 1 GB
-    { name: 'Professional', price_sats: 5000, monthly_limit_bytes: 5368709120, unlimited: false }, // 5 GB
-    { name: 'Business', price_sats: 10000, monthly_limit_bytes: 10737418240, unlimited: false } // 10 GB
-  ],
-  exclusive: [
+  'invite-only': [
     { name: 'Member', price_sats: 0, monthly_limit_bytes: 5368709120, unlimited: false }, // 5 GB
     { name: 'VIP', price_sats: 0, monthly_limit_bytes: 53687091200, unlimited: false }, // 50 GB
     { name: 'Unlimited', price_sats: 0, monthly_limit_bytes: 0, unlimited: true }
   ],
-  personal: [
-    { name: 'Personal', price_sats: 0, monthly_limit_bytes: 0, unlimited: true, active: true } // Unlimited and free
+  'public': [
+    { name: 'Basic', price_sats: 0, monthly_limit_bytes: 104857600, unlimited: false, active: true }, // 100 MB - default active
+    { name: 'Standard', price_sats: 0, monthly_limit_bytes: 524288000, unlimited: false }, // 500 MB
+    { name: 'Plus', price_sats: 0, monthly_limit_bytes: 1073741824, unlimited: false } // 1 GB
+  ],
+  'subscription': [
+    { name: 'Starter', price_sats: 1000, monthly_limit_bytes: 1073741824, unlimited: false }, // 1 GB
+    { name: 'Professional', price_sats: 5000, monthly_limit_bytes: 5368709120, unlimited: false }, // 5 GB
+    { name: 'Business', price_sats: 10000, monthly_limit_bytes: 10737418240, unlimited: false } // 10 GB
   ]
+};
+
+// Helper function to get permission label
+export const getPermissionLabel = (permission: PermissionType): string => {
+  switch (permission) {
+    case 'all_users':
+      return 'All Users';
+    case 'paid_users':
+      return 'Paid Users';
+    case 'allowed_users':
+      return 'Allowed Users';
+    case 'only_me':
+      return 'Only Me';
+    default:
+      return permission;
+  }
 };

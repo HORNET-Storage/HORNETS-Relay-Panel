@@ -1,160 +1,119 @@
 import React from 'react';
-import { Switch, Select, Row, Col, Alert } from 'antd';
-import { AllowedUsersSettings, AllowedUsersMode, MODE_CONFIGURATIONS } from '@app/types/allowedUsers.types';
+import { Form, Select, Card, Space, Alert } from 'antd';
+import { AllowedUsersSettings, AllowedUsersMode, PermissionType, MODE_CONFIGURATIONS, getPermissionLabel } from '@app/types/allowedUsers.types';
 import * as S from './PermissionsConfig.styles';
 
 interface PermissionsConfigProps {
   settings: AllowedUsersSettings;
-  mode: AllowedUsersMode;
   onSettingsChange: (settings: AllowedUsersSettings) => void;
   disabled?: boolean;
 }
 
 export const PermissionsConfig: React.FC<PermissionsConfigProps> = ({
   settings,
-  mode,
   onSettingsChange,
   disabled = false
 }) => {
-  const modeConfig = MODE_CONFIGURATIONS[mode];
+  const modeConfig = MODE_CONFIGURATIONS[settings.mode];
 
-  const handleReadEnabledChange = (enabled: boolean) => {
-    const updatedSettings = {
+  // Safety check for undefined modeConfig
+  if (!modeConfig) {
+    return (
+      <S.Container>
+        <Alert
+          message="Invalid Mode"
+          description={`Unknown mode: ${settings.mode}. Please select a valid mode.`}
+          type="error"
+          showIcon
+        />
+      </S.Container>
+    );
+  }
+
+  const handleReadPermissionChange = (value: PermissionType) => {
+    onSettingsChange({
       ...settings,
-      read_access: {
-        ...settings.read_access,
-        enabled
-      }
-    };
-    onSettingsChange(updatedSettings);
+      read: value
+    });
   };
 
-  const handleReadScopeChange = (scope: string) => {
-    const updatedSettings = {
+  const handleWritePermissionChange = (value: PermissionType) => {
+    onSettingsChange({
       ...settings,
-      read_access: {
-        ...settings.read_access,
-        scope: scope as any
-      }
-    };
-    onSettingsChange(updatedSettings);
+      write: value
+    });
   };
 
-  const handleWriteEnabledChange = (enabled: boolean) => {
-    const updatedSettings = {
-      ...settings,
-      write_access: {
-        ...settings.write_access,
-        enabled
-      }
-    };
-    onSettingsChange(updatedSettings);
-  };
+  // Create options for read permissions
+  const readOptions = modeConfig.readOptions.map(permission => ({
+    value: permission,
+    label: getPermissionLabel(permission)
+  }));
 
-  const handleWriteScopeChange = (scope: string) => {
-    const updatedSettings = {
-      ...settings,
-      write_access: {
-        ...settings.write_access,
-        scope: scope as any
-      }
-    };
-    onSettingsChange(updatedSettings);
-  };
+  // Create options for write permissions
+  const writeOptions = modeConfig.writeOptions.map(permission => ({
+    value: permission,
+    label: getPermissionLabel(permission)
+  }));
 
-  const showPublicReadWarning = settings.read_access.enabled && settings.read_access.scope === 'all_users';
+  // Check if permissions are forced by mode
+  const isReadForced = !!modeConfig.forcedRead;
+  const isWriteForced = !!modeConfig.forcedWrite;
 
   return (
     <S.Container>
-      {showPublicReadWarning && (
-        <Alert
-          message="Public Read Access Enabled"
-          description="Your relay is configured to allow read access to all users. This means anyone can read events from your relay."
-          type="warning"
-          showIcon
-          style={{ 
-            marginBottom: '1rem',
-            backgroundColor: '#25284B',
-            border: '1px solid #d9d9d9',
-            color: '#d9d9d9'
-          }}
-        />
-      )}
+      <Card title="Global Access Permissions" size="small">
+        <Space direction="vertical" style={{ width: '100%' }}>
+          {/* Mode description */}
+          <Alert
+            message={`${settings.mode.charAt(0).toUpperCase() + settings.mode.slice(1)} Mode`}
+            description={modeConfig.description}
+            type="info"
+            showIcon
+          />
 
-      <Row gutter={[24, 16]}>
-        <Col span={24}>
-          <S.PermissionRow>
-            <S.PermissionLabel>Read:</S.PermissionLabel>
-            <S.PermissionControls>
-              <Switch
-                checked={settings.read_access.enabled}
-                onChange={handleReadEnabledChange}
-                disabled={disabled}
+          <Form layout="vertical">
+            {/* Read Permission */}
+            <Form.Item
+              label="Read Permission"
+              help={isReadForced ? "This permission is automatically set based on the selected mode" : "Who can read from this relay"}
+            >
+              <Select
+                value={settings.read}
+                onChange={handleReadPermissionChange}
+                options={readOptions}
+                disabled={disabled || isReadForced}
+                placeholder="Select read permission"
               />
-              {settings.read_access.enabled && (
-                <Select
-                  value={settings.read_access.scope}
-                  onChange={handleReadScopeChange}
-                  disabled={disabled}
-                  style={{ minWidth: 150 }}
-                >
-                  {modeConfig.readOptions.map(option => (
-                    <Select.Option key={option.value} value={option.value}>
-                      {option.label}
-                    </Select.Option>
-                  ))}
-                </Select>
-              )}
-            </S.PermissionControls>
-          </S.PermissionRow>
-        </Col>
+            </Form.Item>
 
-        <Col span={24}>
-          <S.PermissionRow>
-            <S.PermissionLabel>Write:</S.PermissionLabel>
-            <S.PermissionControls>
-              <Switch
-                checked={settings.write_access.enabled}
-                onChange={handleWriteEnabledChange}
-                disabled={disabled}
+            {/* Write Permission */}
+            <Form.Item
+              label="Write Permission"
+              help={isWriteForced ? "This permission is automatically set based on the selected mode" : "Who can write to this relay"}
+            >
+              <Select
+                value={settings.write}
+                onChange={handleWritePermissionChange}
+                options={writeOptions}
+                disabled={disabled || isWriteForced}
+                placeholder="Select write permission"
               />
-              {settings.write_access.enabled && (
-                <Select
-                  value={settings.write_access.scope}
-                  onChange={handleWriteScopeChange}
-                  disabled={disabled}
-                  style={{ minWidth: 150 }}
-                >
-                  {modeConfig.writeOptions.map(option => (
-                    <Select.Option key={option.value} value={option.value}>
-                      {option.label}
-                    </Select.Option>
-                  ))}
-                </Select>
-              )}
-            </S.PermissionControls>
-          </S.PermissionRow>
-        </Col>
-      </Row>
+            </Form.Item>
+          </Form>
 
-      <S.PermissionNotes>
-        <S.NoteItem>
-          <strong>Read Access:</strong> Controls who can read events from your relay
-        </S.NoteItem>
-        <S.NoteItem>
-          <strong>Write Access:</strong> Controls who can publish events to your relay
-        </S.NoteItem>
-        {mode === 'paid' && (
-          <S.NoteItem>
-            <strong>Paid Mode:</strong> Write access is automatically limited to paid users
-          </S.NoteItem>
-        )}
-        {mode === 'exclusive' && (
-          <S.NoteItem>
-            <strong>Exclusive Mode:</strong> Write access is automatically limited to allowed users
-          </S.NoteItem>
-        )}
-      </S.PermissionNotes>
+          {/* Permission explanations */}
+          <S.PermissionExplanations>
+            <h4>Permission Types:</h4>
+            <ul>
+              <li><strong>All Users:</strong> Everyone can access (no restrictions)</li>
+              <li><strong>Paid Users:</strong> Only users with active paid subscriptions</li>
+              <li><strong>Allowed Users:</strong> Only users in the allowed users list</li>
+              <li><strong>Only Me:</strong> Only the relay owner can access</li>
+            </ul>
+          </S.PermissionExplanations>
+        </Space>
+      </Card>
     </S.Container>
   );
 };
