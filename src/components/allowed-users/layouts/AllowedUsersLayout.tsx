@@ -77,6 +77,16 @@ export const AllowedUsersLayout: React.FC = () => {
     try {
       await updateSettings(localSettings);
       setHasChanges(false);
+    } catch (error) {
+      // If save fails due to wallet service, reset to previous mode
+      if (localSettings.mode === 'subscription' && 
+          error instanceof Error && 
+          error.message.includes('wallet service')) {
+        console.log('Reverting to previous mode due to wallet service error');
+        setLocalSettings(settings);
+        setCurrentMode(settings.mode);
+        setHasChanges(false);
+      }
     } finally {
       setSaving(false);
     }

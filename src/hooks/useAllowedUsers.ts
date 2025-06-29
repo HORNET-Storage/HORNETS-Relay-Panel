@@ -50,8 +50,19 @@ export const useAllowedUsersSettings = () => {
       message.success('Settings updated successfully');
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to update settings';
-      setError(errorMessage);
-      message.error(errorMessage);
+      
+      // Handle specific wallet service error for subscription mode
+      if (errorMessage.includes('wallet service is not available') || 
+          errorMessage.includes('cannot switch to subscription mode')) {
+        setError('Subscription mode requires active wallet service');
+        message.error({
+          content: 'Subscription mode requires Bitcoin payments, but the relay wallet service is not running. Please start the wallet service to generate Bitcoin addresses for user payments before enabling subscription mode.',
+          duration: 8
+        });
+      } else {
+        setError(errorMessage);
+        message.error(errorMessage);
+      }
       throw err;
     } finally {
       setLoading(false);
