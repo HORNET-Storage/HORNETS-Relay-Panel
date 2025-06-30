@@ -196,7 +196,7 @@ export const RelayOwnerConfig: React.FC<RelayOwnerConfigProps> = ({
 
         {npubValue && !isValid && (
           <S.ErrorText>
-            Invalid NPUB format. Must start with "npub1" and be 63 characters long.
+            Invalid NPUB format. Must start with &quot;npub1&quot; and be 63 characters long.
           </S.ErrorText>
         )}
       </S.NpubSection>
