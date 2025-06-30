@@ -272,7 +272,12 @@ export const TiersConfig: React.FC<TiersConfigProps> = ({
             description="Choose one tier that will be applied to all free users on your public relay."
             type="info"
             showIcon
-            style={{ marginBottom: '1rem' }}
+            style={{ 
+              marginBottom: '1rem',
+              backgroundColor: '#25284B',
+              border: '1px solid #d9d9d9',
+              color: '#d9d9d9'
+            }}
           />
           
           <Radio.Group
@@ -285,15 +290,17 @@ export const TiersConfig: React.FC<TiersConfigProps> = ({
           >
             <Space direction="vertical" style={{ width: '100%' }}>
               {settings.tiers.map((tier, index) => (
-                <Radio key={index} value={index} style={{ width: '100%' }}>
+                <div key={index} style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+                  <Radio value={index} style={{ alignSelf: 'center', marginRight: '12px', flexShrink: 0 }} />
                   <Card
                     size="small"
                     style={{
-                      marginLeft: '24px',
-                      width: 'calc(100% - 24px)',
+                      flex: 1,
                       backgroundColor: tier.active ? '#f6ffed' : 'transparent',
-                      border: tier.active ? '1px solid #b7eb8f' : '1px solid var(--border-color-base)'
+                      border: tier.active ? '1px solid #b7eb8f' : '1px solid var(--border-color-base)',
+                      cursor: 'pointer'
                     }}
+                    onClick={() => handleSelectActiveTier(index)}
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <div>
@@ -306,7 +313,10 @@ export const TiersConfig: React.FC<TiersConfigProps> = ({
                         <Button
                           type="text"
                           icon={<EditOutlined />}
-                          onClick={() => handleEditTier(index)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEditTier(index);
+                          }}
                           disabled={disabled}
                           size="small"
                         />
@@ -320,6 +330,7 @@ export const TiersConfig: React.FC<TiersConfigProps> = ({
                               type="text"
                               danger
                               icon={<DeleteOutlined />}
+                              onClick={(e) => e.stopPropagation()}
                               disabled={disabled}
                               size="small"
                             />
@@ -328,7 +339,7 @@ export const TiersConfig: React.FC<TiersConfigProps> = ({
                       </div>
                     </div>
                   </Card>
-                </Radio>
+                </div>
               ))}
             </Space>
           </Radio.Group>
@@ -368,9 +379,9 @@ export const TiersConfig: React.FC<TiersConfigProps> = ({
             showIcon
             style={{
               marginTop: 16,
-              backgroundColor: '#fafafa',
+              backgroundColor: '#25284B',
               border: '1px solid #d9d9d9',
-              color: '#262626'
+              color: '#d9d9d9'
             }}
           />
         )}
@@ -382,9 +393,9 @@ export const TiersConfig: React.FC<TiersConfigProps> = ({
             showIcon
             style={{
               marginTop: 16,
-              backgroundColor: '#fafafa',
+              backgroundColor: '#25284B',
               border: '1px solid #d9d9d9',
-              color: '#262626'
+              color: '#d9d9d9'
             }}
           />
         )}
@@ -396,9 +407,9 @@ export const TiersConfig: React.FC<TiersConfigProps> = ({
             showIcon
             style={{
               marginTop: 16,
-              backgroundColor: '#fafafa',
+              backgroundColor: '#25284B',
               border: '1px solid #d9d9d9',
-              color: '#262626'
+              color: '#d9d9d9'
             }}
           />
         )}

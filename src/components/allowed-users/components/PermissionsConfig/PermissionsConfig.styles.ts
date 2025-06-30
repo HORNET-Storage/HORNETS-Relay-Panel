@@ -96,3 +96,30 @@ export const PermissionExplanations = styled.div`
     }
   }
 `;
+
+export const ForcedSelectWrapper = styled.div<{ $isForced: boolean }>`
+  .ant-select {
+    width: 100%;
+    
+    .ant-select-selector {
+      background-color: ${props => props.$isForced ? '#1a1d35' : '#25284B'} !important;
+      border: ${props => props.$isForced ? '1px solid #434343' : '1px solid #d9d9d9'} !important;
+      color: ${props => props.$isForced ? '#8c8c8c' : '#d9d9d9'} !important;
+    }
+    
+    .ant-select-selection-item {
+      color: ${props => props.$isForced ? '#8c8c8c' : '#d9d9d9'} !important;
+    }
+    
+    &.ant-select-disabled {
+      .ant-select-selector {
+        background-color: ${props => props.$isForced ? '#1a1d35' : '#25284B'} !important;
+        border: ${props => props.$isForced ? '1px solid #434343' : '1px solid #d9d9d9'} !important;
+      }
+      
+      .ant-select-selection-item {
+        color: ${props => props.$isForced ? '#8c8c8c' : '#d9d9d9'} !important;
+      }
+    }
+  }
+`;
