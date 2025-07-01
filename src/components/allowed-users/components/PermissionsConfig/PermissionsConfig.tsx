@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Select, Card, Space, Alert } from 'antd';
+import { Form, Select, Space, Alert } from 'antd';
 import { AllowedUsersSettings, AllowedUsersMode, PermissionType, MODE_CONFIGURATIONS, getPermissionLabel } from '@app/types/allowedUsers.types';
 import * as S from './PermissionsConfig.styles';
 
@@ -62,67 +62,54 @@ export const PermissionsConfig: React.FC<PermissionsConfigProps> = ({
 
   return (
     <S.Container>
-      <Card title="Global Access Permissions" size="small">
-        <Space direction="vertical" style={{ width: '100%' }}>
-          {/* Mode description */}
-          <Alert
-            message={`${settings.mode.charAt(0).toUpperCase() + settings.mode.slice(1)} Mode`}
-            description={modeConfig.description}
-            type="info"
-            showIcon
-            style={{ 
-              backgroundColor: '#25284B',
-              border: '1px solid #d9d9d9',
-              color: '#d9d9d9'
-            }}
-          />
+      <Space direction="vertical" style={{ width: '100%' }}>
+        {/* Mode description */}
+        <Alert
+          message={`${settings.mode.charAt(0).toUpperCase() + settings.mode.slice(1)} Mode`}
+          description={modeConfig.description}
+          type="info"
+          showIcon
+          style={{ 
+            backgroundColor: '#25284B',
+            border: '1px solid #d9d9d9',
+            color: '#d9d9d9'
+          }}
+        />
 
-          <Form layout="vertical">
-            {/* Read Permission */}
-            <Form.Item
-              label={<span style={{ color: '#d9d9d9' }}>Read Permission</span>}
-              help={<span style={{ color: '#d9d9d9' }}>{isReadForced ? "This permission is automatically set based on the selected mode" : "Who can read from this relay"}</span>}
-            >
-              <S.ForcedSelectWrapper $isForced={isReadForced}>
-                <Select
-                  value={settings.read}
-                  onChange={handleReadPermissionChange}
-                  options={readOptions}
-                  disabled={disabled || isReadForced}
-                  placeholder="Select read permission"
-                />
-              </S.ForcedSelectWrapper>
-            </Form.Item>
+        <Form layout="vertical">
+          {/* Read Permission */}
+          <Form.Item
+            label={<span style={{ color: '#d9d9d9' }}>Read Permission</span>}
+            help={<span style={{ color: '#d9d9d9' }}>{isReadForced ? "This permission is automatically set based on the selected mode" : "Who can read from this relay"}</span>}
+          >
+            <S.ForcedSelectWrapper $isForced={isReadForced}>
+              <Select
+                value={settings.read}
+                onChange={handleReadPermissionChange}
+                options={readOptions}
+                disabled={disabled || isReadForced}
+                placeholder="Select read permission"
+              />
+            </S.ForcedSelectWrapper>
+          </Form.Item>
 
-            {/* Write Permission */}
-            <Form.Item
-              label={<span style={{ color: '#d9d9d9' }}>Write Permission</span>}
-              help={<span style={{ color: '#d9d9d9' }}>{isWriteForced ? "This permission is automatically set based on the selected mode" : "Who can write to this relay"}</span>}
-            >
-              <S.ForcedSelectWrapper $isForced={isWriteForced}>
-                <Select
-                  value={settings.write}
-                  onChange={handleWritePermissionChange}
-                  options={writeOptions}
-                  disabled={disabled || isWriteForced}
-                  placeholder="Select write permission"
-                />
-              </S.ForcedSelectWrapper>
-            </Form.Item>
-          </Form>
-
-          {/* Permission explanations */}
-          <S.PermissionExplanations>
-            <h4>Permission Types:</h4>
-            <ul>
-              <li><strong>All Users:</strong> Everyone can access (no restrictions)</li>
-              <li><strong>Paid Users:</strong> Only users with active paid subscriptions</li>
-              <li><strong>Allowed Users:</strong> Only users in the allowed users list</li>
-              <li><strong>Only Me:</strong> Only the relay owner can access</li>
-            </ul>
-          </S.PermissionExplanations>
-        </Space>
-      </Card>
+          {/* Write Permission */}
+          <Form.Item
+            label={<span style={{ color: '#d9d9d9' }}>Write Permission</span>}
+            help={<span style={{ color: '#d9d9d9' }}>{isWriteForced ? "This permission is automatically set based on the selected mode" : "Who can write to this relay"}</span>}
+          >
+            <S.ForcedSelectWrapper $isForced={isWriteForced}>
+              <Select
+                value={settings.write}
+                onChange={handleWritePermissionChange}
+                options={writeOptions}
+                disabled={disabled || isWriteForced}
+                placeholder="Select write permission"
+              />
+            </S.ForcedSelectWrapper>
+          </Form.Item>
+        </Form>
+      </Space>
     </S.Container>
   );
 };

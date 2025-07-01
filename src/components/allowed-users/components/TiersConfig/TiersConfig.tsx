@@ -296,8 +296,8 @@ export const TiersConfig: React.FC<TiersConfigProps> = ({
                     size="small"
                     style={{
                       flex: 1,
-                      backgroundColor: tier.active ? '#f6ffed' : 'transparent',
-                      border: tier.active ? '1px solid #b7eb8f' : '1px solid var(--border-color-base)',
+                      backgroundColor: tier.active ? 'var(--background-color-secondary)' : 'transparent',
+                      border: tier.active ? '1px solid var(--success-color)' : '1px solid var(--border-color-base)',
                       cursor: 'pointer'
                     }}
                     onClick={() => handleSelectActiveTier(index)}
