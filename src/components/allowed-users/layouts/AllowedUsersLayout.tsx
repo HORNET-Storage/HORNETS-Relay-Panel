@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Row, Col, Spin, Alert, Button, Space } from 'antd';
+import { Card, Row, Col, Spin, Alert, Button, Space, message } from 'antd';
 import { SaveOutlined } from '@ant-design/icons';
 import { useAllowedUsersSettings } from '@app/hooks/useAllowedUsers';
 import { ModeSelector } from '../components/ModeSelector/ModeSelector';
@@ -8,6 +8,7 @@ import { TiersConfig } from '../components/TiersConfig/TiersConfig';
 import { NPubManagement } from '../components/NPubManagement/NPubManagement';
 import { RelayOwnerConfig } from '../components/RelayOwnerConfig/RelayOwnerConfig';
 import { AllowedUsersMode, MODE_CONFIGURATIONS, AllowedUsersSettings, DEFAULT_TIERS } from '@app/types/allowedUsers.types';
+import { getRelayOwner } from '@app/api/allowedUsers.api';
 import * as S from './AllowedUsersLayout.styles';
 
 export const AllowedUsersLayout: React.FC = () => {
@@ -72,6 +73,21 @@ export const AllowedUsersLayout: React.FC = () => {
 
   const handleSave = async () => {
     if (!localSettings) return;
+    
+    // Check if owner exists when trying to save "only-me" mode
+    if (localSettings.mode === 'only-me') {
+      try {
+        const ownerResponse = await getRelayOwner();
+        if (!ownerResponse.relay_owner) {
+          message.error('Cannot save "Only Me" mode: Please set a relay owner first.');
+          return;
+        }
+      } catch (error) {
+        console.error('Failed to check relay owner:', error);
+        message.error('Cannot verify relay owner. Please ensure owner is set before saving "Only Me" mode.');
+        return;
+      }
+    }
     
     setSaving(true);
     try {
