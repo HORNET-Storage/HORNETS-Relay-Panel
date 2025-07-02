@@ -13,8 +13,11 @@
   "dependencies": {
     "@ant-design/icons": "^4.6.2",
     "@babel/core": "^7.24.7",
+    "@cashu/cashu-ts": "^2.5.2",
     "@craco/craco": "^6.1.2",
     "@lit-labs/react": "^1.0.2",
+    "@nostr-dev-kit/ndk": "^2.14.32",
+    "@nostr-dev-kit/ndk-hooks": "^1.2.3",
     "@react-google-maps/api": "^2.18.1",
     "@reduxjs/toolkit": "^1.7.1",
     "@splidejs/react-splide": "^0.7.12",
