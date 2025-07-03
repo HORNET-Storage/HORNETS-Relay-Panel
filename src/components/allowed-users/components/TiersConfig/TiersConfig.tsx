@@ -345,13 +345,15 @@ export const TiersConfig: React.FC<TiersConfigProps> = ({
           </Radio.Group>
         </div>
       ) : (
-        <Table
-          columns={columns}
-          dataSource={settings.tiers.map((tier, index) => ({ ...tier, key: index }))}
-          pagination={false}
-          size="small"
-          locale={{ emptyText: 'No tiers configured' }}
-        />
+        <S.TableContainer>
+          <Table
+            columns={columns}
+            dataSource={settings.tiers.map((tier, index) => ({ ...tier, key: index }))}
+            pagination={false}
+            size="small"
+            locale={{ emptyText: 'No tiers configured' }}
+          />
+        </S.TableContainer>
       )}
 
       <Modal
