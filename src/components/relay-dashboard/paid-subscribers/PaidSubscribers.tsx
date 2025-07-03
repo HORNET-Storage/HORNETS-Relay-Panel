@@ -12,7 +12,7 @@ import { BaseCol } from '@app/components/common/BaseCol/BaseCol';
 import { SplideCarousel } from '@app/components/common/SplideCarousel/SplideCarousel';
 import { useResponsive } from '@app/hooks/useResponsive';
 import usePaidSubscribers, { SubscriberProfile } from '@app/hooks/usePaidSubscribers';
-import { Row, Col, Modal, Spin, Typography } from 'antd';
+import { Row, Col, Modal, Typography } from 'antd';
 import { nip19 } from 'nostr-tools';
 import { NDKUserProfile } from '@nostr-dev-kit/ndk-hooks';
 import { useNDK } from '@nostr-dev-kit/ndk-hooks';
@@ -179,19 +179,17 @@ useEffect(() => {
           </BaseRow>
         </NFTCardHeader>
 
-        <Row gutter={[16, 16]} style={{ padding: '0 10px' }}>
+        <S.FlexWrapper>
           {sortedProfiles.map(([pubkey, subscriber], index: number) => (
-            <Col key={`${pubkey}-${index}`} xs={6} sm={4} md={3} lg={3} xl={2}>
-              <S.CardWrapper>
+              <S.CardWrapper key={pubkey}>
                 <SubscriberAvatar
                   onStoryOpen={() => handleOpenSubscriberDetails(subscriber)}
                   img={subscriber.picture || ''}
                   viewed={false}
                 />
               </S.CardWrapper>
-            </Col>
           ))}
-        </Row>
+        </S.FlexWrapper>
 
         <SubscriberDetailModal subscriber={selectedSubscriber} isVisible={isModalVisible} onClose={handleCloseModal} />
 
