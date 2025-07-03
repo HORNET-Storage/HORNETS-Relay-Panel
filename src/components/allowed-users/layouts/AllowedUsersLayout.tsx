@@ -155,40 +155,40 @@ export const AllowedUsersLayout: React.FC = () => {
 
       <Row gutter={[24, 24]}>
         <Col span={24}>
-          <Card title="Relay Mode" loading={loading}>
+          <S.ContentCard title="Relay Mode" loading={loading}>
             <ModeSelector
               currentMode={currentMode}
               onModeChange={handleModeChange}
               disabled={loading || saving}
             />
-          </Card>
+          </S.ContentCard>
         </Col>
 
         <Col span={24}>
-          <Card title="Global Permissions" loading={loading}>
+          <S.ContentCard title="Global Permissions" loading={loading}>
             <PermissionsConfig
               settings={localSettings}
               onSettingsChange={handleSettingsUpdate}
               disabled={loading || saving}
             />
-          </Card>
+          </S.ContentCard>
         </Col>
 
         {showRelayOwnerConfig && (
           <Col span={24}>
-            <Card title="Relay Owner Configuration" loading={loading}>
+            <S.ContentCard title="Relay Owner Configuration" loading={loading}>
               <RelayOwnerConfig
                 settings={localSettings}
                 onSettingsChange={handleSettingsUpdate}
                 disabled={loading || saving}
               />
-            </Card>
+            </S.ContentCard>
           </Col>
         )}
 
         {showTiers && (
           <Col span={24}>
-            <Card title={
+            <S.ContentCard title={
               currentMode === 'public' ? 'Free Tier Configuration' : 
               currentMode === 'only-me' ? 'Only Me Tiers' : 
               'Subscription Tiers'
@@ -199,18 +199,18 @@ export const AllowedUsersLayout: React.FC = () => {
                 onSettingsChange={handleSettingsUpdate}
                 disabled={loading || saving}
               />
-            </Card>
+            </S.ContentCard>
           </Col>
         )}
 
         {showNpubManagement && (
           <Col span={24}>
-            <Card title="Allowed Users Management">
+            <S.ContentCard title="Allowed Users Management">
               <NPubManagement
                 settings={localSettings}
                 mode={currentMode}
               />
-            </Card>
+            </S.ContentCard>
           </Col>
         )}
 

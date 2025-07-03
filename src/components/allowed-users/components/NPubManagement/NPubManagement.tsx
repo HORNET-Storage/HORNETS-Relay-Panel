@@ -4,6 +4,7 @@ import { PlusOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { useAllowedUsersList, useAllowedUsersValidation } from '@app/hooks/useAllowedUsers';
 import { AllowedUsersSettings, AllowedUsersMode, AllowedUser } from '@app/types/allowedUsers.types';
 import * as S from './NPubManagement.styles';
+import { TableContainer } from '../TiersConfig/TiersConfig.styles';
 
 interface NPubManagementProps {
   settings: AllowedUsersSettings;
@@ -158,19 +159,22 @@ export const NPubManagement: React.FC<NPubManagementProps> = ({
         </Space>
       </S.TabHeader>
       
-      <Table
-        columns={columns}
-        dataSource={users}
-        loading={loading}
-        pagination={{
-          current: pagination.page,
-          pageSize: pagination.page_size,
-          total: pagination.total_items,
-          showSizeChanger: false,
-          showTotal: (total) => `Total ${total} users`
-        }}
-        rowKey="npub"
-      />
+      <TableContainer>
+        <Table
+          columns={columns}
+          dataSource={users}
+          loading={loading}
+          
+          pagination={{
+            current: pagination.page,
+            pageSize: pagination.page_size,
+            total: pagination.total_items,
+            showSizeChanger: false,
+            showTotal: (total) => `Total ${total} users`
+          }}
+          rowKey="npub"
+        />
+      </TableContainer>
 
       {/* Add User Modal */}
       <Modal

@@ -79,7 +79,7 @@ export const PermissionExplanations = styled.div`
   ul {
     margin: 0;
     padding-left: 1.25rem;
-    
+
     li {
       margin-bottom: 0.5rem;
       font-size: 13px;
@@ -100,25 +100,27 @@ export const PermissionExplanations = styled.div`
 export const ForcedSelectWrapper = styled.div<{ $isForced: boolean }>`
   .ant-select {
     width: 100%;
-    
+    .ant-select-arrow{
+      color: ${(props) => (!props.$isForced ? `var(--text-main-color)` : `var(--text-light-color)`)};
+    }
     .ant-select-selector {
-      background-color: ${props => props.$isForced ? '#1a1d35' : '#25284B'} !important;
-      border: ${props => props.$isForced ? '1px solid #434343' : '1px solid #d9d9d9'} !important;
-      color: ${props => props.$isForced ? '#8c8c8c' : '#d9d9d9'} !important;
+      background-color: ${(props) => (props.$isForced ? '#1a1d35' : '#25284B')} !important;
+      border: ${(props) => (props.$isForced ? '1px solid #434343' : '1px solid #d9d9d9')} !important;
+      color: ${(props) => (props.$isForced ? '#8c8c8c' : '#d9d9d9')} !important;
     }
-    
+
     .ant-select-selection-item {
-      color: ${props => props.$isForced ? '#8c8c8c' : '#d9d9d9'} !important;
+      color: ${(props) => (props.$isForced ? '#8c8c8c' : '#d9d9d9')} !important;
     }
-    
+
     &.ant-select-disabled {
       .ant-select-selector {
-        background-color: ${props => props.$isForced ? '#1a1d35' : '#25284B'} !important;
-        border: ${props => props.$isForced ? '1px solid #434343' : '1px solid #d9d9d9'} !important;
+        background-color: ${(props) => (props.$isForced ? '#1a1d35' : '#25284B')} !important;
+        border: ${(props) => (props.$isForced ? '1px solid #434343' : '1px solid #d9d9d9')} !important;
       }
-      
+
       .ant-select-selection-item {
-        color: ${props => props.$isForced ? '#8c8c8c' : '#d9d9d9'} !important;
+        color: ${(props) => (props.$isForced ? '#8c8c8c' : '#d9d9d9')} !important;
       }
     }
   }
