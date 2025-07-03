@@ -1,11 +1,23 @@
 import { useEffect, useState } from 'react';
 import { persistWalletToken, readWalletToken, deleteWalletToken } from '@app/services/localStorage.service'; // Import the wallet-specific functions
 import { notificationController } from '@app/controllers/notificationController';
+import config from '@app/config/config';
+
+interface WalletHealth {
+  status: 'healthy' | 'unhealthy';
+  timestamp: string;
+  wallet_locked: boolean;
+  chain_synced: boolean;
+  peer_count: number;
+}
 
 const useWalletAuth = () => {
   const [token, setToken] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [walletHealth, setWalletHealth] = useState<WalletHealth | null>(null);
+  const [healthLoading, setHealthLoading] = useState(false);
+  const [healthCheckInProgress, setHealthCheckInProgress] = useState(false);
 
   // Fetch the wallet token from localStorage on mount
   useEffect(() => {
@@ -31,7 +43,7 @@ const useWalletAuth = () => {
       const npub = await window.nostr.getPublicKey();
 
       // Fetch the challenge from the server
-      const challengeResponse = await fetch('http://localhost:9003/challenge', { method: 'GET' });
+      const challengeResponse = await fetch(`${config.walletBaseURL}/challenge`, { method: 'GET' });
 
       // Check if the response is valid JSON
       if (!challengeResponse.ok) {
@@ -52,7 +64,7 @@ const useWalletAuth = () => {
       });
 
       // Send the signed challenge to the backend for verification
-      const verifyResponse = await fetch('http://localhost:9003/verify', {
+      const verifyResponse = await fetch(`${config.walletBaseURL}/verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -79,11 +91,71 @@ const useWalletAuth = () => {
     }
   };
 
+  // Check wallet health
+  const checkWalletHealth = async () => {
+    if (!isAuthenticated || !token) {
+      console.log('Not authenticated, skipping health check');
+      return null;
+    }
+
+    // Prevent multiple simultaneous health checks
+    if (healthCheckInProgress) {
+      console.log('Health check already in progress, skipping');
+      return walletHealth;
+    }
+
+    setHealthCheckInProgress(true);
+    setHealthLoading(true);
+    try {
+      let response = await fetch(`${config.walletBaseURL}/panel-health`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      // Handle 401 by re-authenticating and retrying (same as calculate-tx-size)
+      if (response.status === 401) {
+        console.log('Health check failed: token expired. Re-authenticating and retrying...');
+        deleteWalletToken();
+        await login();
+        
+        // Retry the request with the new token
+        response = await fetch(`${config.walletBaseURL}/panel-health`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+      }
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const healthData: WalletHealth = await response.json();
+      setWalletHealth(healthData);
+      return healthData;
+    } catch (error) {
+      console.error('Error checking wallet health:', error);
+      setWalletHealth(null);
+      return null;
+    } finally {
+      setHealthLoading(false);
+      setHealthCheckInProgress(false);
+    }
+  };
+
   // Logout and clear wallet token
   const logout = () => {
     deleteWalletToken(); // Use the wallet-specific token deletion
     setToken(null);
     setIsAuthenticated(false);
+    setWalletHealth(null);
   };
 
   return {
@@ -92,6 +164,9 @@ const useWalletAuth = () => {
     login,
     logout,
     loading,
+    checkWalletHealth,
+    walletHealth,
+    healthLoading,
   };
 };
 

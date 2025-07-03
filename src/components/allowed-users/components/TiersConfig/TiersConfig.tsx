@@ -25,8 +25,10 @@ export const TiersConfig: React.FC<TiersConfigProps> = ({
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [currentTier, setCurrentTier] = useState<AllowedUsersTier | null>(null);
 
-  const isPaidMode = mode === 'paid';
-  const isFreeMode = mode === 'free';
+  const isPaidMode = mode === 'subscription';
+  const isPublicMode = mode === 'public';
+  const isInviteMode = mode === 'invite-only';
+  const isOnlyMeMode = mode === 'only-me';
 
   const handleFreeTierChange = (tierName: string) => {
     const updatedTiers = settings.tiers.map(tier => ({
@@ -42,11 +44,27 @@ export const TiersConfig: React.FC<TiersConfigProps> = ({
     onSettingsChange(updatedSettings);
   };
 
+  const handleSelectActiveTier = (tierIndex: number) => {
+    // For public mode, mark the selected tier as active and others as inactive
+    if (isPublicMode) {
+      const updatedTiers = settings.tiers.map((tier, index) => ({
+        ...tier,
+        active: index === tierIndex
+      }));
+      
+      const updatedSettings = {
+        ...settings,
+        tiers: updatedTiers
+      };
+      onSettingsChange(updatedSettings);
+    }
+  };
+
   const handleAddTier = () => {
     setEditingIndex(null);
     setCurrentTier({
       name: '',
-      price_sats: isFreeMode ? 0 : 1000,
+      price_sats: isPublicMode ? 0 : 1000,
       monthly_limit_bytes: 1073741824, // 1 GB default
       unlimited: false
     });
@@ -80,10 +98,10 @@ export const TiersConfig: React.FC<TiersConfigProps> = ({
       return; // TierEditor should show validation error
     }
 
-    // Force price to 0 for free mode
+    // Force price to 0 for public mode and only-me mode (free tiers)
     const finalTier = {
       ...currentTier,
-      price_sats: isFreeMode ? 0 : currentTier.price_sats
+      price_sats: (isPublicMode || isOnlyMeMode) ? 0 : currentTier.price_sats
     };
 
     let newTiers: AllowedUsersTier[];
@@ -171,8 +189,8 @@ export const TiersConfig: React.FC<TiersConfigProps> = ({
     <S.Container>
       {isPaidMode && (
         <Alert
-          message="Paid Mode Active"
-          description="All tiers must have a price greater than 0. Free tiers are not allowed in paid mode."
+          message="Subscription Mode Active"
+          description="All tiers must have a price greater than 0. Free tiers are not allowed in subscription mode."
           type="warning"
           showIcon
           style={{ 
@@ -184,10 +202,10 @@ export const TiersConfig: React.FC<TiersConfigProps> = ({
         />
       )}
       
-      {isFreeMode && (
+      {isPublicMode && (
         <Alert
-          message="Free Mode Active"
-          description="All tiers are automatically set to free (price = 0) regardless of input."
+          message="Public Mode Active"
+          description="Configure free tier storage limits. All tiers will be free (price = 0) in public mode."
           type="success"
           showIcon
           style={{ 
@@ -199,10 +217,25 @@ export const TiersConfig: React.FC<TiersConfigProps> = ({
         />
       )}
       
-      {mode === 'exclusive' && (
+      {isInviteMode && (
         <Alert
-          message="Exclusive Mode Active"
+          message="Invite-Only Mode Active"
           description="Tiers can have any price. Users must be manually added to access lists."
+          type="info"
+          showIcon
+          style={{ 
+            marginBottom: '1rem',
+            backgroundColor: '#25284B',
+            border: '1px solid #d9d9d9',
+            color: '#d9d9d9'
+          }}
+        />
+      )}
+      
+      {isOnlyMeMode && (
+        <Alert
+          message="Only Me Mode Active"
+          description="Personal relay configuration. Only your npub can write to this relay."
           type="info"
           showIcon
           style={{ 
@@ -216,9 +249,11 @@ export const TiersConfig: React.FC<TiersConfigProps> = ({
 
       <S.TiersHeader>
         <S.TiersTitle>
-          {isFreeMode ? 'Free Tier Selection' : 'Subscription Tiers'}
+          {isPublicMode ? 'Free Tier Configuration' : 
+           isOnlyMeMode ? 'Personal Tier' : 
+           'Subscription Tiers'}
         </S.TiersTitle>
-        {!isFreeMode && (
+        {!isOnlyMeMode && (
           <Button
             type="primary"
             icon={<PlusOutlined />}
@@ -230,48 +265,95 @@ export const TiersConfig: React.FC<TiersConfigProps> = ({
         )}
       </S.TiersHeader>
 
-      {isFreeMode ? (
-        <Radio.Group
-          value={settings.tiers.find(tier => tier.active)?.name}
-          onChange={(e) => handleFreeTierChange(e.target.value)}
-          disabled={disabled}
-        >
-          <Space direction="vertical" style={{ width: '100%' }}>
-            {settings.tiers.map((tier, index) => {
-              const display = tier.unlimited 
-                ? { value: 0, unit: 'MB' as const, unlimited: true }
-                : { ...bytesToDisplayFormat(tier.monthly_limit_bytes), unlimited: false };
-              
-              return (
-                <Card
-                  key={index}
-                  size="small"
-                  style={{ 
-                    cursor: disabled ? 'not-allowed' : 'pointer',
-                    border: tier.active ? '2px solid var(--primary-color)' : '1px solid #d9d9d9'
-                  }}
-                  onClick={() => !disabled && handleFreeTierChange(tier.name)}
-                >
-                  <Radio value={tier.name} disabled={disabled}>
-                    <Space>
-                      <S.DataLimit>{tier.name}</S.DataLimit>
-                      <S.DataLimit>{displayToFriendlyString(display)}</S.DataLimit>
-                      <S.Price $isFree={true}>Free</S.Price>
-                    </Space>
-                  </Radio>
-                </Card>
-              );
-            })}
-          </Space>
-        </Radio.Group>
+      {isPublicMode ? (
+        <div>
+          <Alert
+            message="Select Free Tier for Public Users"
+            description="Choose one tier that will be applied to all free users on your public relay."
+            type="info"
+            showIcon
+            style={{ 
+              marginBottom: '1rem',
+              backgroundColor: '#25284B',
+              border: '1px solid #d9d9d9',
+              color: '#d9d9d9'
+            }}
+          />
+          
+          <Radio.Group
+            value={settings.tiers.findIndex(tier => tier.active === true) !== -1 
+              ? settings.tiers.findIndex(tier => tier.active === true) 
+              : 0}
+            onChange={(e) => handleSelectActiveTier(e.target.value)}
+            disabled={disabled}
+            style={{ width: '100%' }}
+          >
+            <Space direction="vertical" style={{ width: '100%' }}>
+              {settings.tiers.map((tier, index) => (
+                <div key={index} style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+                  <Radio value={index} style={{ alignSelf: 'center', marginRight: '12px', flexShrink: 0 }} />
+                  <Card
+                    size="small"
+                    style={{
+                      flex: 1,
+                      backgroundColor: tier.active ? 'var(--background-color-secondary)' : 'transparent',
+                      border: tier.active ? '1px solid var(--success-color)' : '1px solid var(--border-color-base)',
+                      cursor: 'pointer'
+                    }}
+                    onClick={() => handleSelectActiveTier(index)}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div>
+                        <strong>{tier.name}</strong>
+                        <div style={{ color: 'var(--text-secondary-color)', fontSize: '13px' }}>
+                          Data Limit: {tier.unlimited ? 'Unlimited' : displayToFriendlyString(bytesToDisplayFormat(tier.monthly_limit_bytes))}
+                        </div>
+                      </div>
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <Button
+                          type="text"
+                          icon={<EditOutlined />}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEditTier(index);
+                          }}
+                          disabled={disabled}
+                          size="small"
+                        />
+                        {settings.tiers.length > 1 && (
+                          <Popconfirm
+                            title="Are you sure you want to delete this tier?"
+                            onConfirm={() => handleDeleteTier(index)}
+                            disabled={disabled}
+                          >
+                            <Button
+                              type="text"
+                              danger
+                              icon={<DeleteOutlined />}
+                              onClick={(e) => e.stopPropagation()}
+                              disabled={disabled}
+                              size="small"
+                            />
+                          </Popconfirm>
+                        )}
+                      </div>
+                    </div>
+                  </Card>
+                </div>
+              ))}
+            </Space>
+          </Radio.Group>
+        </div>
       ) : (
-        <Table
-          columns={columns}
-          dataSource={settings.tiers.map((tier, index) => ({ ...tier, key: index }))}
-          pagination={false}
-          size="small"
-          locale={{ emptyText: 'No tiers configured' }}
-        />
+        <S.TableContainer>
+          <Table
+            columns={columns}
+            dataSource={settings.tiers.map((tier, index) => ({ ...tier, key: index }))}
+            pagination={false}
+            size="small"
+            locale={{ emptyText: 'No tiers configured' }}
+          />
+        </S.TableContainer>
       )}
 
       <Modal
@@ -294,28 +376,42 @@ export const TiersConfig: React.FC<TiersConfigProps> = ({
 
         {isPaidMode && (
           <Alert
-            message="Note: Free tiers (price = 0) are not allowed in paid mode"
+            message="Note: Free tiers (price = 0) are not allowed in subscription mode"
             type="warning"
             showIcon
             style={{
               marginTop: 16,
-              backgroundColor: '#fafafa',
+              backgroundColor: '#25284B',
               border: '1px solid #d9d9d9',
-              color: '#262626'
+              color: '#d9d9d9'
             }}
           />
         )}
         
-        {isFreeMode && (
+        {isPublicMode && (
           <Alert
-            message="Note: Price will be automatically set to 0 (free) in free mode"
+            message="Note: Price will be automatically set to 0 (free) in public mode"
             type="success"
             showIcon
             style={{
               marginTop: 16,
-              backgroundColor: '#fafafa',
+              backgroundColor: '#25284B',
               border: '1px solid #d9d9d9',
-              color: '#262626'
+              color: '#d9d9d9'
+            }}
+          />
+        )}
+        
+        {isOnlyMeMode && (
+          <Alert
+            message="Note: Personal tier is always free and unlimited for relay owner"
+            type="success"
+            showIcon
+            style={{
+              marginTop: 16,
+              backgroundColor: '#25284B',
+              border: '1px solid #d9d9d9',
+              color: '#d9d9d9'
             }}
           />
         )}

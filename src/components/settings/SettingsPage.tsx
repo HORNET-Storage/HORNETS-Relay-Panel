@@ -121,9 +121,7 @@ const SettingsWrapper = styled.div`
   }
   
   .ant-input, .ant-input-number, .ant-select-selector {
-    background-color: rgba(0, 0, 0, 0.2) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    border-radius: 4px !important;
+    background-color: var(--input-bg-color) !important;
   }
 `;
 

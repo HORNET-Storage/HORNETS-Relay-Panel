@@ -90,7 +90,7 @@
     "build": "NODE_OPTIONS=--openssl-legacy-provider yarn buildThemes && NODE_OPTIONS=--openssl-legacy-provider craco build",
     "test": "NODE_OPTIONS=--openssl-legacy-provider craco test",
     "eject": "NODE_OPTIONS=--openssl-legacy-provider craco eject",
-    "lint": "eslint \"*/**/*.{js,ts,tsx}\" --fix",
+    "lint": "eslint \"src/**/*.{js,ts,tsx}\" --fix",
     "lint:styles": "stylelint '*/**/*.{js,ts,tsx}'",
     "prepare": "husky install",
     "update-browserslist": "npx update-browserslist-db@latest",
