@@ -18,6 +18,29 @@ export const TiersHeader = styled.div`
   }
 `;
 
+export const TableContainer = styled.div`
+  border-radius: 12px;
+  margin: 0 2px;
+  padding-bottom: 1.5rem;
+  background-color: var(--background-color);
+  .ant-table {
+    border-radius: 12px;
+  }
+  .ant-table-tbody {
+    background-color: var(--layout-sider-bg-color);
+  }
+  .ant-table-placeholder .ant-table-cell {
+    background-color: var(--layout-sider-bg-color);
+    transition: none;
+  }
+  .ant-table-placeholder .ant-table-cell:hover {
+    background-color: var(--layout-sider-bg-color);
+  }
+  .ant-empty-description {
+    color: var(--text-light-color);
+  }
+`;
+
 export const TiersTitle = styled.h3`
   margin: 0;
   color: var(--text-main-color);
@@ -36,5 +59,5 @@ interface PriceProps {
 
 export const Price = styled.span<PriceProps>`
   font-weight: 600;
-  color: ${({ $isFree }) => $isFree ? 'var(--success-color)' : 'var(--primary-color)'};
+  color: ${({ $isFree }) => ($isFree ? 'var(--success-color)' : 'var(--primary-color)')};
 `;

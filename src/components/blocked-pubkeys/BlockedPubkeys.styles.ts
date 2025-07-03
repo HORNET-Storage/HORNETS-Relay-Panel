@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 import Card from 'antd/lib/card/Card';
-import { Table, TableProps } from 'antd';
 import { Input } from 'antd';
 import { BaseCol } from '../common/BaseCol/BaseCol';
 export const InputRoot = styled(Input)`
