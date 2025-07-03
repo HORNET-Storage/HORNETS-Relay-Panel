@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { FONT_SIZE, FONT_WEIGHT, media } from '@app/styles/themes/constants';
+import { Card } from 'antd';
 
 export const Container = styled.div`
   padding: 1.5rem;
@@ -64,4 +65,9 @@ export const ChangesIndicator = styled.span`
   color: var(--warning-color);
   font-size: 14px;
   font-style: italic;
+`;
+export const ContentCard = styled(Card)`
+  background: var(--secondary-background-color);
+  border-color: var(--border-base-color);
+
 `;
