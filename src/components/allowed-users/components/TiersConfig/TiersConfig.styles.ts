@@ -23,6 +23,7 @@ export const TableContainer = styled.div`
   margin: 0 2px;
   padding-bottom: 1.5rem;
   background-color: var(--background-color);
+  border: 1px solid var(--border-base-color);
   .ant-table {
     border-radius: 12px;
   }
