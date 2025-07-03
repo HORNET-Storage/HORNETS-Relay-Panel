@@ -165,11 +165,77 @@ yarn build            # Linux/macOS
 ```
 
 #### Step 2: Configure Nginx
-Use the provided configuration as a starting point:
+Create an nginx configuration file:
 ```bash
-# Copy the configuration file
-sudo cp hornet_services_updated.conf /etc/nginx/sites-available/hornets-relay
+# Create the configuration file
+sudo nano /etc/nginx/sites-available/hornets-relay
+```
+
+Add this configuration (adjust domains and paths as needed):
+```nginx
+# WebSocket connection upgrade mapping
+map $http_upgrade $connection_upgrade {
+    default upgrade;
+    '' close;
+}
+
+server {
+    listen 80;
+    server_name your-domain.com;  # Replace with your domain
+
+    # Forward client IP and protocol
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+
+    # Panel API
+    location /panel/ {
+        rewrite ^/panel/(.*)$ /$1 break;
+        proxy_pass http://127.0.0.1:9002;
+    }
+
+    # Wallet service
+    location /wallet/ {
+        rewrite ^/wallet/(.*)$ /$1 break;
+        proxy_pass http://127.0.0.1:9003;
+    }
+
+    # Frontend React app
+    location /front/ {
+        rewrite ^/front/(.*)$ /$1 break;
+        proxy_pass http://127.0.0.1:3000;  # Or serve static files
+    }
+
+    # Default location - Relay service with WebSocket support
+    location / {
+        proxy_pass http://127.0.0.1:9001;
+        
+        # WebSocket headers
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+        
+        # Extended timeouts for WebSocket connections
+        proxy_read_timeout 86400s;
+        proxy_send_timeout 86400s;
+        proxy_connect_timeout 60s;
+    }
+
+    # Health check endpoint
+    location /health {
+        access_log off;
+        return 200 "healthy\n";
+        add_header Content-Type text/plain;
+    }
+}
+```
+
+Enable the configuration:
+```bash
 sudo ln -s /etc/nginx/sites-available/hornets-relay /etc/nginx/sites-enabled/
+sudo nginx -t  # Test configuration
 ```
 
 #### Step 3: Serve Built Files
