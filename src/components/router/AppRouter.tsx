@@ -143,7 +143,7 @@ const LogoutFallback = withLoading(Logout);
 
 export const AppRouter: React.FC = () => {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={process.env.REACT_APP_BASENAME || undefined}>
       <Routes>
         {/* Public routes */}
         <Route path="/auth" element={<AuthLayoutFallback>{/* children if any */}</AuthLayoutFallback>}>
