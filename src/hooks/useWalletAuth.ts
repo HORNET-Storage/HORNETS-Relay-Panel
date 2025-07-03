@@ -43,7 +43,7 @@ const useWalletAuth = () => {
       const npub = await window.nostr.getPublicKey();
 
       // Fetch the challenge from the server
-      const challengeResponse = await fetch('http://localhost:9003/challenge', { method: 'GET' });
+      const challengeResponse = await fetch(`${config.walletBaseURL}/challenge`, { method: 'GET' });
 
       // Check if the response is valid JSON
       if (!challengeResponse.ok) {
@@ -64,7 +64,7 @@ const useWalletAuth = () => {
       });
 
       // Send the signed challenge to the backend for verification
-      const verifyResponse = await fetch('http://localhost:9003/verify', {
+      const verifyResponse = await fetch(`${config.walletBaseURL}/verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
