@@ -245,7 +245,7 @@ export const usePaymentNotifications = (initialParams?: PaymentNotificationParam
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: pubkey ? JSON.stringify({ pubkey }) : undefined,
+        body: JSON.stringify(pubkey ? { pubkey } : {}),
       });
       
       if (!response.ok) {

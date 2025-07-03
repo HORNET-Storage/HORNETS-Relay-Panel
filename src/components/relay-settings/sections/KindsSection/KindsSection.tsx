@@ -5,7 +5,6 @@ import { BaseSwitch } from '@app/components/common/BaseSwitch/BaseSwitch';
 import * as S from '@app/pages/uiComponentsPages/UIComponentsPage.styles';
 import { CollapsibleSection } from '../../shared/CollapsibleSection/CollapsibleSection';
 import { KindsList } from './components/KindsList';
-import { AddKindForm } from './components/AddKindForm';
 import { DynamicKindsList } from './components/DynamicKindsList';
 
 export interface KindsSectionProps {
@@ -17,7 +16,6 @@ export interface KindsSectionProps {
   onKindsActiveChange: (active: boolean) => void;
   onKindsChange: (values: string[]) => void;
   onDynamicKindsChange: (values: string[]) => void;
-  onAddKind: (kind: string) => void;
   onRemoveKind: (kind: string) => void;
 }
 
@@ -30,7 +28,6 @@ export const KindsSection: React.FC<KindsSectionProps> = ({
   onKindsActiveChange,
   onKindsChange,
   onDynamicKindsChange,
-  onAddKind,
   onRemoveKind,
 }) => {
   const header = mode !== 'whitelist' ? 'Blacklisted Kind Numbers' : 'Kind Numbers';
@@ -55,11 +52,6 @@ export const KindsSection: React.FC<KindsSectionProps> = ({
             selectedKinds={selectedKinds}
             isKindsActive={isKindsActive}
             onKindsChange={onKindsChange}
-          />
-
-          <AddKindForm 
-            mode={mode}
-            onAddKind={onAddKind}
           />
 
           <DynamicKindsList
