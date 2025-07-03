@@ -3,9 +3,11 @@ import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
 import { media } from '@app/styles/themes/constants';
 import { BaseDivider } from '@app/components/common/BaseDivider/BaseDivider';
 import { BaseTypography } from '@app/components/common/BaseTypography/BaseTypography';
+import { BaseNotification } from '@app/components/common/BaseNotification/BaseNotification';
+import { BaseSpace } from '@app/components/common/BaseSpace/BaseSpace';
 
 export const NoticesOverlayMenu = styled.div`
-  max-width: 15rem;
+  max-width: 100%;
 
   @media only screen and ${media.md} {
     max-width: 25rem;
@@ -53,4 +55,27 @@ export const Btn = styled(BaseButton)`
 export const Text = styled(BaseTypography.Text)`
   display: block;
   text-align: center;
+`;
+export const TransactionWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-top: .5rem;
+  margin-bottom: .5rem;
+  gap: 3rem;
+`;
+export const RootNotification = styled(BaseNotification)`
+width: 100%;
+
+`;
+export const NotificationsWrapper = styled(BaseSpace)`
+   .ant-space.ant-space-horizontal {
+    width: 100%;
+  }
+`;
+export const ActionRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 `;

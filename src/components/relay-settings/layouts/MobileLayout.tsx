@@ -94,7 +94,6 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({
     onKindsActiveChange,
     onKindsChange,
     onDynamicKindsChange,
-    onAddKind,
     onRemoveKind,
     // Media props
     photos,
@@ -163,7 +162,6 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({
                     onKindsActiveChange={onKindsActiveChange}
                     onKindsChange={onKindsChange}
                     onDynamicKindsChange={onDynamicKindsChange}
-                    onAddKind={onAddKind}
                     onRemoveKind={onRemoveKind}
                 />
 

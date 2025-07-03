@@ -1,22 +1,24 @@
-import React, { useState } from 'react';
-import { Card, Row, Col, Spin, Alert, Button, Space } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Card, Row, Col, Spin, Alert, Button, Space, message } from 'antd';
 import { SaveOutlined } from '@ant-design/icons';
 import { useAllowedUsersSettings } from '@app/hooks/useAllowedUsers';
 import { ModeSelector } from '../components/ModeSelector/ModeSelector';
 import { PermissionsConfig } from '../components/PermissionsConfig/PermissionsConfig';
 import { TiersConfig } from '../components/TiersConfig/TiersConfig';
 import { NPubManagement } from '../components/NPubManagement/NPubManagement';
+import { RelayOwnerConfig } from '../components/RelayOwnerConfig/RelayOwnerConfig';
 import { AllowedUsersMode, MODE_CONFIGURATIONS, AllowedUsersSettings, DEFAULT_TIERS } from '@app/types/allowedUsers.types';
+import { getRelayOwner } from '@app/api/allowedUsers.api';
 import * as S from './AllowedUsersLayout.styles';
 
 export const AllowedUsersLayout: React.FC = () => {
   const { settings, loading, error, updateSettings } = useAllowedUsersSettings();
-  const [currentMode, setCurrentMode] = useState<AllowedUsersMode>('free');
+  const [currentMode, setCurrentMode] = useState<AllowedUsersMode>('public');
   const [localSettings, setLocalSettings] = useState<AllowedUsersSettings | null>(null);
   const [hasChanges, setHasChanges] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (settings) {
       setCurrentMode(settings.mode);
       setLocalSettings(settings);
@@ -29,69 +31,35 @@ export const AllowedUsersLayout: React.FC = () => {
 
     const modeConfig = MODE_CONFIGURATIONS[mode];
     
-    // Use mode-specific default tiers or existing tiers if they're compatible
-    let tiers = localSettings.tiers;
+    // Comprehensive logging for mode changes
+    console.group('🔄 [UI] Mode Change Handler');
+    console.log('🎯 Selected mode:', mode);
+    console.log('⚙️ Mode configuration:', modeConfig);
+    console.log('📋 Current local settings:', localSettings);
+    console.log('🔒 Forced read permission:', modeConfig.forcedRead);
+    console.log('🔒 Forced write permission:', modeConfig.forcedWrite);
+    console.log('📖 Available read options:', modeConfig.readOptions);
+    console.log('✍️ Available write options:', modeConfig.writeOptions);
+    console.log('🏷️ Default tiers for mode:', DEFAULT_TIERS[mode]);
+    console.groupEnd();
     
-    // Check if current tiers are compatible with the new mode
-    const isCompatibleTiers = (currentTiers: typeof tiers, targetMode: AllowedUsersMode): boolean => {
-      if (currentTiers.length === 0) return false;
-      
-      return currentTiers.every(tier => {
-        const hasValidName = tier.name && tier.name.trim() !== '';
-        
-        if (targetMode === 'paid') {
-          // Paid mode requires at least one tier with non-zero price
-          return hasValidName && tier.price_sats > 0;
-        } else if (targetMode === 'free') {
-          // Free mode should have price 0
-          return hasValidName && tier.price_sats === 0;
-        } else if (targetMode === 'exclusive') {
-          // Exclusive mode can have any price
-          return hasValidName;
-        }
-        
-        return hasValidName;
-      });
-    };
-    
-    // Each mode should use its own defaults when switching modes
-    // Only preserve existing tiers if we're already in the target mode (backend data)
-    const currentMode = localSettings.mode;
-    
-    if (currentMode === mode) {
-      // We're already in this mode (from backend), keep existing tiers if compatible
-      if (isCompatibleTiers(localSettings.tiers, mode)) {
-        tiers = localSettings.tiers;
-        if (mode === 'free') {
-          // Ensure all prices are "0" for free mode
-          tiers = tiers.map(tier => ({
-            ...tier,
-            price: '0'
-          }));
-        }
-      } else {
-        // Backend data isn't compatible with mode, use defaults
-        tiers = DEFAULT_TIERS[mode];
-      }
-    } else {
-      // Switching between different modes, always use mode-specific defaults
-      tiers = DEFAULT_TIERS[mode];
-    }
-    
-    const updatedSettings = {
+    // Apply mode-specific forced permissions and defaults
+    const updatedSettings: AllowedUsersSettings = {
       ...localSettings,
       mode,
-      tiers,
-      // Adjust scopes based on mode constraints
-      read_access: {
-        ...localSettings.read_access,
-        scope: modeConfig.readOptions[0].value // Default to first available option
-      },
-      write_access: {
-        ...localSettings.write_access,
-        scope: modeConfig.writeOptions[0].value // Default to first available option
-      }
+      read: modeConfig.forcedRead || modeConfig.readOptions[0],
+      write: modeConfig.forcedWrite || modeConfig.writeOptions[0],
+      tiers: DEFAULT_TIERS[mode]
+      // Note: relay_owner_npub is no longer managed in settings - it's handled via /api/allowed-users
     };
+
+    console.group('📝 [UI] Updated Settings After Mode Change');
+    console.log('🆕 New settings object:', updatedSettings);
+    console.log('🎯 Final mode:', updatedSettings.mode);
+    console.log('📖 Final read permission:', updatedSettings.read);
+    console.log('✍️ Final write permission:', updatedSettings.write);
+    console.log('🏷️ Final tiers:', updatedSettings.tiers);
+    console.groupEnd();
 
     setLocalSettings(updatedSettings);
     setCurrentMode(mode);
@@ -106,10 +74,35 @@ export const AllowedUsersLayout: React.FC = () => {
   const handleSave = async () => {
     if (!localSettings) return;
     
+    // Check if owner exists when trying to save "only-me" mode
+    if (localSettings.mode === 'only-me') {
+      try {
+        const ownerResponse = await getRelayOwner();
+        if (!ownerResponse.relay_owner) {
+          message.error('Cannot save "Only Me" mode: Please set a relay owner first.');
+          return;
+        }
+      } catch (error) {
+        console.error('Failed to check relay owner:', error);
+        message.error('Cannot verify relay owner. Please ensure owner is set before saving "Only Me" mode.');
+        return;
+      }
+    }
+    
     setSaving(true);
     try {
       await updateSettings(localSettings);
       setHasChanges(false);
+    } catch (error) {
+      // If save fails due to wallet service, reset to previous mode
+      if (localSettings.mode === 'subscription' && 
+          error instanceof Error && 
+          error.message.includes('wallet service')) {
+        console.log('Reverting to previous mode due to wallet service error');
+        setLocalSettings(settings);
+        setCurrentMode(settings.mode);
+        setHasChanges(false);
+      }
     } finally {
       setSaving(false);
     }
@@ -148,10 +141,10 @@ export const AllowedUsersLayout: React.FC = () => {
     return null;
   }
 
-  const modeConfig = MODE_CONFIGURATIONS[currentMode];
-  const showNpubManagement = modeConfig.requiresNpubManagement ||
-    (localSettings.read_access.scope === 'allowed_users' || localSettings.write_access.scope === 'allowed_users');
-  const showTiers = currentMode === 'paid' || currentMode === 'free' || currentMode === 'exclusive';
+  // Determine what sections to show based on mode and permissions
+  const showNpubManagement = localSettings.read === 'allowed_users' || localSettings.write === 'allowed_users';
+  const showTiers = currentMode === 'subscription' || currentMode === 'invite-only' || currentMode === 'public' || currentMode === 'only-me';
+  const showRelayOwnerConfig = currentMode === 'only-me';
 
   return (
     <S.Container>
@@ -172,19 +165,34 @@ export const AllowedUsersLayout: React.FC = () => {
         </Col>
 
         <Col span={24}>
-          <Card title="Permissions Configuration" loading={loading}>
+          <Card title="Global Permissions" loading={loading}>
             <PermissionsConfig
               settings={localSettings}
-              mode={currentMode}
               onSettingsChange={handleSettingsUpdate}
               disabled={loading || saving}
             />
           </Card>
         </Col>
 
+        {showRelayOwnerConfig && (
+          <Col span={24}>
+            <Card title="Relay Owner Configuration" loading={loading}>
+              <RelayOwnerConfig
+                settings={localSettings}
+                onSettingsChange={handleSettingsUpdate}
+                disabled={loading || saving}
+              />
+            </Card>
+          </Col>
+        )}
+
         {showTiers && (
           <Col span={24}>
-            <Card title="Tiers Configuration" loading={loading}>
+            <Card title={
+              currentMode === 'public' ? 'Free Tier Configuration' : 
+              currentMode === 'only-me' ? 'Only Me Tiers' : 
+              'Subscription Tiers'
+            } loading={loading}>
               <TiersConfig
                 settings={localSettings}
                 mode={currentMode}
@@ -197,7 +205,7 @@ export const AllowedUsersLayout: React.FC = () => {
 
         {showNpubManagement && (
           <Col span={24}>
-            <Card title="User Lists Management">
+            <Card title="Allowed Users Management">
               <NPubManagement
                 settings={localSettings}
                 mode={currentMode}

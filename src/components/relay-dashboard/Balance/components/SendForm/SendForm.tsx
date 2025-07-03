@@ -3,6 +3,7 @@ import { BaseInput } from '@app/components/common/inputs/BaseInput/BaseInput';
 import { BaseRow } from '@app/components/common/BaseRow/BaseRow';
 import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
 import { BaseSpin } from '@app/components/common/BaseSpin/BaseSpin';
+import { Alert } from 'antd';
 import * as S from './SendForm.styles';
 import { truncateString } from '@app/utils/utils';
 import useBalanceData from '@app/hooks/useBalanceData';
@@ -29,7 +30,7 @@ export type tiers = 'low' | 'med' | 'high';
 
 const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
   const { balanceData, isLoading } = useBalanceData();
-  const { isAuthenticated, login, token, loading: authLoading } = useWalletAuth(); // Use the auth hook
+  const { isAuthenticated, login, token, loading: authLoading, checkWalletHealth, walletHealth, healthLoading } = useWalletAuth(); // Use the auth hook
 
   const [loading, setLoading] = useState(false);
 
@@ -48,6 +49,7 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
   });
 
   const [txSize, setTxSize] = useState<number | null>(null);
+  const [txSizeCalculating, setTxSizeCalculating] = useState(false);
 
   const [enableRBF, setEnableRBF] = useState(false); // Default to false
 
@@ -59,18 +61,42 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
     return validateBech32Address(address);
   }, []);
 
+  // Health check when component mounts or when authentication status changes
+  useEffect(() => {
+    if (isAuthenticated) {
+      checkWalletHealth();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated]); // Only depend on isAuthenticated to prevent excessive calls
+
   // First useEffect - Transaction size calculation
   useEffect(() => {
     const debounceTimeout = setTimeout(() => {
       const fetchTransactionSize = async () => {
         if (isValidAddress(formData.address) && isDetailsOpen) {
+          // Prevent multiple simultaneous transaction size calculations
+          if (txSizeCalculating) {
+            console.log('Transaction size calculation already in progress, skipping');
+            return;
+          }
+
           try {
+            setTxSizeCalculating(true);
+            
             if (!isAuthenticated) {
               console.log('Not Authenticated.');
               await login();
+              return;
             }
 
-            const response = await fetch(`${config.walletBaseURL}/calculate-tx-size`, {
+            // Check wallet health before making transaction calculations
+            const health = await checkWalletHealth();
+            if (!health || health.status !== 'healthy' || !health.chain_synced) {
+              console.log('Wallet not ready (unhealthy or not synced), skipping transaction calculation');
+              return;
+            }
+
+            let response = await fetch(`${config.walletBaseURL}/calculate-tx-size`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -83,14 +109,34 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
               }),
             });
 
+            // Handle 401 by re-authenticating and retrying
             if (response.status === 401) {
               const errorText = await response.text();
               if (errorText.includes('Token expired') || errorText.includes('Unauthorized: Invalid token')) {
-                console.log('Session expired. Please log in again.');
+                console.log('Session expired. Re-authenticating and retrying...');
                 deleteWalletToken();
                 await login();
+                
+                // Retry the request with the new token
+                response = await fetch(`${config.walletBaseURL}/calculate-tx-size`, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                  },
+                  body: JSON.stringify({
+                    recipient_address: formData.address,
+                    spend_amount: parseInt(formData.amount),
+                    priority_rate: feeRate,
+                  }),
+                });
+                
+                if (!response.ok) {
+                  throw new Error(`HTTP error! status: ${response.status}`);
+                }
+              } else {
+                throw new Error(errorText);
               }
-              throw new Error(errorText);
             }
 
             const result = await response.json();
@@ -98,6 +144,8 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
           } catch (error) {
             console.error('Error fetching transaction size:', error);
             setTxSize(null);
+          } finally {
+            setTxSizeCalculating(false);
           }
         }
       };
@@ -106,7 +154,8 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
     }, 500);
 
     return () => clearTimeout(debounceTimeout);
-  }, [formData.address, formData.amount, feeRate, isAuthenticated, login, token, isDetailsOpen, isValidAddress]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData.address, formData.amount, feeRate, isDetailsOpen]); // Only depend on actual form changes
 
   // Second useEffect - Fee calculation
   useEffect(() => {
@@ -171,6 +220,12 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
 
   const handleSend = async () => {
     if (loading || inValidAmount) return;
+
+    // Check wallet health before allowing transaction
+    if (!isAuthenticated || !walletHealth || walletHealth.status !== 'healthy' || 
+        !walletHealth.chain_synced) {
+      return; // Don't proceed if wallet is not ready
+    }
 
     setLoading(true);
 
@@ -308,7 +363,7 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
       </S.TiersContainer>
       <BaseRow justify={'center'}>
         <S.SendFormButton
-          disabled={loading || isLoading || inValidAmount || authLoading || addressError}
+          disabled={loading || isLoading || inValidAmount || authLoading || addressError || !isWalletReady}
           onClick={handleSend}
           size="large"
           type="primary"
@@ -319,11 +374,119 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
     </S.FormSpacer>
   );
 
+  // Check if wallet is ready for transactions (healthy + synced = ready)
+  const isWalletReady = isAuthenticated && walletHealth && walletHealth.status === 'healthy' && 
+                       walletHealth.chain_synced;
+
+  // Render wallet status indicator
+  const renderWalletStatus = () => {
+    if (!isAuthenticated) {
+      return (
+        <Alert
+          message="Wallet Not Connected"
+          description="Please authenticate with your wallet to access transaction features."
+          type="warning"
+          showIcon
+          style={{ 
+            marginBottom: '1rem',
+            backgroundColor: 'var(--background-color-secondary)',
+            border: '1px solid var(--border-color-base)',
+            color: 'var(--text-main-color)'
+          }}
+        />
+      );
+    }
+
+    if (healthLoading) {
+      return (
+        <Alert
+          message="Checking Wallet Status..."
+          type="info"
+          showIcon
+          style={{ 
+            marginBottom: '1rem',
+            backgroundColor: 'var(--background-color-secondary)',
+            border: '1px solid var(--border-color-base)',
+            color: 'var(--text-main-color)'
+          }}
+        />
+      );
+    }
+
+    if (!walletHealth) {
+      return (
+        <Alert
+          message="Wallet Status Unknown"
+          description="Unable to connect to wallet service. Please check if the wallet is running."
+          type="error"
+          showIcon
+          style={{ 
+            marginBottom: '1rem',
+            backgroundColor: 'var(--background-color-secondary)',
+            border: '1px solid var(--border-color-base)',
+            color: 'var(--text-main-color)'
+          }}
+        />
+      );
+    }
+
+    if (walletHealth.status !== 'healthy') {
+      return (
+        <Alert
+          message="Wallet Unhealthy"
+          description="The wallet service is not functioning properly."
+          type="error"
+          showIcon
+          style={{ 
+            marginBottom: '1rem',
+            backgroundColor: 'var(--background-color-secondary)',
+            border: '1px solid var(--border-color-base)',
+            color: 'var(--text-main-color)'
+          }}
+        />
+      );
+    }
+
+    if (!walletHealth.chain_synced) {
+      return (
+        <Alert
+          message="Blockchain Not Synced"
+          description={`The wallet is still syncing with the blockchain. Connected to ${walletHealth.peer_count} peers. Please wait for sync to complete before sending transactions.`}
+          type="warning"
+          showIcon
+          style={{ 
+            marginBottom: '1rem',
+            backgroundColor: 'var(--background-color-secondary)',
+            border: '1px solid var(--border-color-base)',
+            color: 'var(--text-main-color)'
+          }}
+        />
+      );
+    }
+
+    // Wallet is healthy and synced
+    return (
+      <Alert
+        message="Wallet Ready"
+        description={`Wallet is online and synced. Connected to ${walletHealth.peer_count} peers.`}
+        type="success"
+        showIcon
+        style={{ 
+          marginBottom: '1rem',
+          backgroundColor: 'var(--background-color-secondary)',
+          border: '1px solid var(--border-color-base)',
+          color: 'var(--text-main-color)'
+        }}
+      />
+    );
+  };
+
   return (
     <BaseSpin spinning={isLoading || loading || authLoading}>
       <S.SendBody justify={'center'}>
         <S.FormSpacer>
           <S.FormHeader>Send</S.FormHeader>
+          {renderWalletStatus()}
           {isDetailsOpen ? (
             <>
               <S.Recipient>

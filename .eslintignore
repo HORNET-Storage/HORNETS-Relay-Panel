@@ -1,0 +1,9 @@
+build/
+dist/
+node_modules/
+coverage/
+public/themes/
+*.min.js
+*.config.js
+craco.config.js
+reportWebVitals.ts
