@@ -31,7 +31,11 @@ const PreviewTextWrapper = styled.div`
     color: var(--text-main-color);
   }
 `;
-
+const SelectWrapper = styled.div`
+.ant-select-arrow {
+  color: var(--text-main-color);
+}
+`
 export const TierEditor: React.FC<TierEditorProps> = ({
   tier,
   onTierChange,
@@ -163,11 +167,13 @@ export const TierEditor: React.FC<TierEditorProps> = ({
               min={TIER_VALIDATION.MIN_VALUE}
               style={{ flex: 1 }}
             />
-            <Select value={displayFormat.unit} onChange={handleUnitChange} disabled={disabled} style={{ width: 80 }}>
-              <Option value="MB">MB</Option>
-              <Option value="GB">GB</Option>
-              <Option value="TB">TB</Option>
-            </Select>
+            <SelectWrapper>
+              <Select value={displayFormat.unit} onChange={handleUnitChange} disabled={disabled} style={{ width: 80 }}>
+                <Option value="MB">MB</Option>
+                <Option value="GB">GB</Option>
+                <Option value="TB">TB</Option>
+              </Select>
+            </SelectWrapper>
           </Space.Compact>
         )}
 
