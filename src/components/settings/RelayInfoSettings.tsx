@@ -32,10 +32,10 @@ const RelayInfoSettings: React.FC = () => {
     updateSettings(changedValues);
   };
 
-  const onUploadIcon = (url: string) => {
-    // use as onUploadIcon prop in Upload Component
-    setImage(url);
-  };
+  // const onUploadIcon = (url: string) => {
+  //   // use as onUploadIcon prop in Upload Component
+  //   setImage(url);
+  // };
 
   // Common NIPs that relays might support
   const nipOptions = [
@@ -196,47 +196,47 @@ const RelayInfoSettings: React.FC = () => {
         >
           <S.InputField placeholder="1.0.0" />
         </Form.Item>
-
-        <Form.Item
-          name="relaysupportednips"
-          label={
-            <span>
-              Supported NIPs&nbsp;
-              <Tooltip title="Nostr Implementation Possibilities (NIPs) supported by this relay">
-                <QuestionCircleOutlined />
-              </Tooltip>
-            </span>
-          }
-        >
-          <Select
-            mode="tags"
-            placeholder="Select or type custom NIP numbers (e.g. 1, 42, 999)"
-            style={{ width: '100%' }}
-            tokenSeparators={[',', ' ']}
-            filterOption={(input, option) => {
-              if (!option?.children) return false;
-              return option.children.toString().toLowerCase().includes(input.toLowerCase());
-            }}
-            onChange={(values: (string | number)[]) => {
-              // Convert all values to numbers, filtering out invalid ones
-              const numberValues = values
-                .map((val: string | number) => {
-                  const num = Number(val);
-                  return isNaN(num) ? null : num;
-                })
-                .filter((val: number | null): val is number => val !== null);
-
-              // Update the form field with number values
-              form.setFieldsValue({ relaysupportednips: numberValues });
-            }}
+        <S.StyledOption>
+          <Form.Item
+            name="relaysupportednips"
+            label={
+              <span>
+                Supported NIPs&nbsp;
+                <Tooltip title="Nostr Implementation Possibilities (NIPs) supported by this relay">
+                  <QuestionCircleOutlined />
+                </Tooltip>
+              </span>
+            }
           >
-            {nipOptions.map((option) => (
-              <Option key={option.value} value={option.value}>
-                {option.label}
-              </Option>
-            ))}
-          </Select>
-        </Form.Item>
+            <Select
+              mode="tags"
+              placeholder="Select or type custom NIP numbers (e.g. 1, 42, 999)"
+              style={{ width: '100%' }}
+              tokenSeparators={[',', ' ']}
+              filterOption={(input, option) => {
+                if (!option?.children) return false;
+                return option.children.toString().toLowerCase().includes(input.toLowerCase());
+              }}
+              onChange={(values: (string | number)[]) => {
+                // Convert all values to numbers, filtering out invalid ones
+                const numberValues = values
+                  .map((val: string | number) => {
+                    const num = Number(val);
+                    return isNaN(num) ? null : num;
+                  })
+                  .filter((val: number | null): val is number => val !== null);
+                // Update the form field with number values
+                form.setFieldsValue({ relaysupportednips: numberValues });
+              }}
+            >
+              {nipOptions.map((option) => (
+                <Option key={option.value} value={option.value}>
+                  {option.label}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </S.StyledOption>
 
         <Form.Item>
           <p

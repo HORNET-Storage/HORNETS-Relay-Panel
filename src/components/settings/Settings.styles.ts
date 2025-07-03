@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 import { Input, InputNumber, Select, Button } from 'antd';
-
 export const InputField = styled(Input)`
   border-radius: 7px !important;
   padding: 0.7rem !important;
@@ -85,4 +84,8 @@ export const UploadedImageWrapper = styled.div`
     object-fit: cover;
     display: block;
   }
+`;
+export const StyledOption = styled.div`
+  .ant-select-selection-item-remove{
+  color: var(--text-light-color);
 `;
