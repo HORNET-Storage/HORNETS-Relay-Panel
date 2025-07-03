@@ -13,7 +13,9 @@ export const CreatorButton = styled.button<StoriesInternalProps>`
   border: 0;
   cursor: pointer;
   border-radius: 50%;
-  padding: 2px;
+  height: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
 
   border: 3px solid ${(props) => (!props.$viewed ? 'var(--primary-color)' : 'var(--text-superLight-color)')};
 `;
@@ -23,5 +25,6 @@ export const Avatar = styled.img`
   height: auto;
   max-height: 100%;
   object-fit: cover;
+  aspect-ratio: 1 / 1;
   border-radius: 50%;
 `;
