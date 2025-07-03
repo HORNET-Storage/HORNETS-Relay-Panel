@@ -1,16 +1,23 @@
-import React, { useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import { Form, Input, Select, Tooltip } from 'antd';
-import { QuestionCircleOutlined, InfoCircleOutlined, UserOutlined, KeyOutlined, UploadOutlined } from '@ant-design/icons';
+import {
+  QuestionCircleOutlined,
+  InfoCircleOutlined,
+  UserOutlined,
+  KeyOutlined,
+  UploadOutlined,
+} from '@ant-design/icons';
 import useGenericSettings from '@app/hooks/useGenericSettings';
 import { SettingsGroupType } from '@app/types/settings.types';
 import BaseSettingsForm from './BaseSettingsForm';
 import * as S from './Settings.styles';
+import { ComingSoonWrapper } from '@app/styles/themes/reusableComponentStyles';
 const { Option } = Select;
 const { TextArea } = Input;
 
 const RelayInfoSettings: React.FC = () => {
   const { settings, loading, error, fetchSettings, updateSettings, saveSettings } = useGenericSettings('relay_info');
-  const [image, setImage] = useState<string  | null>(null); 
+  const [image, setImage] = useState<string | null>(null);
   const [form] = Form.useForm();
 
   // Update form values when settings change
@@ -25,7 +32,8 @@ const RelayInfoSettings: React.FC = () => {
     updateSettings(changedValues);
   };
 
-  const onUploadIcon = (url: string) => { // use as onUploadIcon prop in Upload Component
+  const onUploadIcon = (url: string) => {
+    // use as onUploadIcon prop in Upload Component
     setImage(url);
   };
 
@@ -76,24 +84,34 @@ const RelayInfoSettings: React.FC = () => {
         >
           <S.InputFieldWithPrefix prefix={<InfoCircleOutlined />} placeholder="My Nostr Relay" />
         </Form.Item>
-        <Form.Item
-        name = "relayIcon"
-        label={
-          <span>
-            Relay Icon&nbsp;
-            <Tooltip title="An icon representing your relay">
-              <QuestionCircleOutlined />
-            </Tooltip>
-          </span>
-        }
-        >
-          <S.InputFieldWithPrefix
-            suffix={<S.UploadButton size='small' aria-label='Upload Relay Icon' icon={<UploadOutlined />}  > Upload Relay Icon</S.UploadButton>}
-          />
-          {image && (
-            <S.UploadedImageWrapper><img src={image} alt="" /></S.UploadedImageWrapper>
-          )}
-        </Form.Item>
+        <ComingSoonWrapper>
+          <Form.Item
+            name="relayIcon"
+            label={
+              <span>
+                Relay Icon&nbsp;
+                <Tooltip title="An icon representing your relay">
+                  <QuestionCircleOutlined />
+                </Tooltip>
+                &nbsp;(Coming Soon)
+              </span>
+            }
+          >
+            {
+              <S.InputFieldWithPrefix
+                disabled={true}
+                placeholder="https://example.com/relay-icon.png"
+                // suffix={<S.UploadButton size='small' aria-label='Upload Relay Icon' icon={<UploadOutlined />}
+                // > Upload Relay Icon</S.UploadButton>}
+              />
+            }
+            {image && (
+              <S.UploadedImageWrapper>
+                <img src={image} alt="" />
+              </S.UploadedImageWrapper>
+            )}
+          </Form.Item>
+        </ComingSoonWrapper>
         <Form.Item
           name="relaydescription"
           label={
