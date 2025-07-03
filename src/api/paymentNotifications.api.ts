@@ -70,7 +70,7 @@ export const markNotificationAsRead = async (id: number): Promise<void> => {
 
 // Mark all notifications as read for a user
 export const markAllNotificationsAsRead = async (pubkey?: string): Promise<void> => {
-  await httpApi.post('/api/payment/notifications/read-all', pubkey ? { pubkey } : undefined);
+  await httpApi.post('/api/payment/notifications/read-all', pubkey ? { pubkey } : {});
 };
 
 // Get payment statistics
