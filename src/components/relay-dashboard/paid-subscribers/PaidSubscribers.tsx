@@ -47,7 +47,7 @@ export const PaidSubscribers: React.FC = () => {
     setAllSubscribers([...subscribers]); // Start with current subscribers
     
     // Fetch more subscribers if available
-    let currentSubscribers = [...subscribers];
+    const currentSubscribers = [...subscribers];
     let canFetchMore = hasMore;
     
     while (canFetchMore) {

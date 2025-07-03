@@ -10,25 +10,25 @@ interface ModeSelectorProps {
 }
 
 const MODE_INFO = {
-  personal: {
+  'only-me': {
     label: 'Only Me',
     subtitle: '[Free]',
     description: 'Personal relay for single user with unlimited access',
     color: '#fa541c'
   },
-  exclusive: {
+  'invite-only': {
     label: 'Invite Only',
     subtitle: '[Free]',
     description: 'Invite-only access with manual NPUB management',
     color: '#722ed1'
   },
-  free: {
+  'public': {
     label: 'Public Relay',
     subtitle: '[Free]',
     description: 'Open access with optional free tiers',
     color: '#1890ff'
   },
-  paid: {
+  'subscription': {
     label: 'Subscription',
     subtitle: '[Paid]',
     description: 'Subscription-based access control',
@@ -44,7 +44,7 @@ export const ModeSelector: React.FC<ModeSelectorProps> = ({
   return (
     <S.Container>
       <S.ModeGrid>
-        {(['personal', 'exclusive', 'free', 'paid'] as AllowedUsersMode[]).map((mode) => {
+        {(['only-me', 'invite-only', 'public', 'subscription'] as AllowedUsersMode[]).map((mode) => {
           const info = MODE_INFO[mode];
           const isActive = currentMode === mode;
           
@@ -76,7 +76,7 @@ export const ModeSelector: React.FC<ModeSelectorProps> = ({
       
       <S.ModeDescription>
         <S.DescriptionText>
-          <strong>{MODE_INFO[currentMode].label}:</strong> {MODE_INFO[currentMode].description}
+          <strong>{MODE_INFO[currentMode]?.label || 'Unknown Mode'}:</strong> {MODE_INFO[currentMode]?.description || 'No description available'}
         </S.DescriptionText>
       </S.ModeDescription>
     </S.Container>

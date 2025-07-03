@@ -3,23 +3,26 @@ import { message } from 'antd';
 import {
   getAllowedUsersSettings,
   updateAllowedUsersSettings,
-  getReadNpubs,
-  getWriteNpubs,
-  addReadNpub,
-  addWriteNpub,
-  removeReadNpub,
-  removeWriteNpub,
-  bulkImportNpubs
+  getAllowedUsers,
+  addAllowedUser,
+  removeAllowedUser
 } from '@app/api/allowedUsers.api';
 import {
   AllowedUsersSettings,
-  AllowedUsersNpub,
   AllowedUsersMode,
-  BulkImportRequest
+  AllowedUser,
+  AllowedUsersResponse,
+  DEFAULT_TIERS
 } from '@app/types/allowedUsers.types';
 
+// Hook for managing allowed users settings
 export const useAllowedUsersSettings = () => {
-  const [settings, setSettings] = useState<AllowedUsersSettings | null>(null);
+  const [settings, setSettings] = useState<AllowedUsersSettings>({
+    mode: 'public',
+    read: 'all_users',
+    write: 'all_users',
+    tiers: DEFAULT_TIERS['public']
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -32,27 +35,7 @@ export const useAllowedUsersSettings = () => {
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch settings';
       setError(errorMessage);
-      
-      // Don't show error message if it's just that the endpoint doesn't exist yet
-      if (!errorMessage.includes('404') && !errorMessage.includes('not valid JSON')) {
-        message.error(errorMessage);
-      }
-      
-      // Set default settings if API is not available yet
-      setSettings({
-        mode: 'free',
-        read_access: {
-          enabled: true,
-          scope: 'all_users'
-        },
-        write_access: {
-          enabled: true,
-          scope: 'all_users'
-        },
-        tiers: [
-          { name: 'Basic', price_sats: 0, monthly_limit_bytes: 1073741824, unlimited: false }
-        ]
-      });
+      message.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -62,21 +45,25 @@ export const useAllowedUsersSettings = () => {
     setLoading(true);
     setError(null);
     try {
-      const result = await updateAllowedUsersSettings(newSettings);
-      if (result.success) {
-        setSettings(newSettings);
-        message.success('Settings updated successfully');
-      } else {
-        throw new Error(result.message);
-      }
+      await updateAllowedUsersSettings(newSettings);
+      setSettings(newSettings);
+      message.success('Settings updated successfully');
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to update settings';
-      setError(errorMessage);
-      if (errorMessage.includes('access control not initialized')) {
-        message.error('Please restart the relay after configuration changes');
+      
+      // Handle specific wallet service error for subscription mode
+      if (errorMessage.includes('wallet service is not available') || 
+          errorMessage.includes('cannot switch to subscription mode')) {
+        setError('Subscription mode requires active wallet service');
+        message.error({
+          content: 'Subscription mode requires Bitcoin payments, but the relay wallet service is not running. Please start the wallet service to generate Bitcoin addresses for user payments before enabling subscription mode.',
+          duration: 8
+        });
       } else {
+        setError(errorMessage);
         message.error(errorMessage);
       }
+      throw err;
     } finally {
       setLoading(false);
     }
@@ -95,167 +82,104 @@ export const useAllowedUsersSettings = () => {
   };
 };
 
-export const useAllowedUsersNpubs = (type: 'read' | 'write') => {
-  const [npubs, setNpubs] = useState<AllowedUsersNpub[]>([]);
-  const [total, setTotal] = useState(0);
+// Hook for managing allowed users list
+export const useAllowedUsersList = () => {
+  const [users, setUsers] = useState<AllowedUser[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [page, setPage] = useState(1);
-  const [pageSize] = useState(20);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    page_size: 20,
+    total_pages: 1,
+    total_items: 0
+  });
 
-  const fetchNpubs = useCallback(async (pageNum: number = page) => {
+  const fetchUsers = useCallback(async (page = 1, pageSize = 20) => {
     setLoading(true);
     setError(null);
     try {
-      const data = type === 'read'
-        ? await getReadNpubs(pageNum, pageSize)
-        : await getWriteNpubs(pageNum, pageSize);
-      
-      setNpubs(data.npubs);
-      setTotal(data.total);
-      setPage(data.page);
+      const response: AllowedUsersResponse = await getAllowedUsers(page, pageSize);
+      setUsers(response.allowed_users);
+      setPagination(response.pagination);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : `Failed to fetch ${type} NPUBs`;
+      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch users';
       setError(errorMessage);
-      
-      // Don't show error message if it's just that the endpoint doesn't exist yet
-      if (!errorMessage.includes('404') && !errorMessage.includes('not valid JSON')) {
-        message.error(errorMessage);
-      }
-      
-      // Set empty data if API is not available yet
-      setNpubs([]);
-      setTotal(0);
-      setPage(1);
-    } finally {
-      setLoading(false);
-    }
-  }, [type, page, pageSize]);
-
-  const addNpub = useCallback(async (npub: string, tier: string) => {
-    setLoading(true);
-    try {
-      const result = type === 'read' 
-        ? await addReadNpub(npub, tier)
-        : await addWriteNpub(npub, tier);
-      
-      if (result.success) {
-        message.success(`NPUB added to ${type} list successfully`);
-        await fetchNpubs(1); // Refresh the list
-      } else {
-        throw new Error(result.message);
-      }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : `Failed to add NPUB to ${type} list`;
       message.error(errorMessage);
     } finally {
       setLoading(false);
     }
-  }, [type, fetchNpubs]);
+  }, []);
 
-  const removeNpub = useCallback(async (npub: string) => {
+  const addUser = useCallback(async (npub: string, tier: string) => {
     setLoading(true);
+    setError(null);
     try {
-      const result = type === 'read' 
-        ? await removeReadNpub(npub)
-        : await removeWriteNpub(npub);
-      
-      if (result.success) {
-        message.success(`NPUB removed from ${type} list successfully`);
-        await fetchNpubs(page); // Refresh current page
-      } else {
-        throw new Error(result.message);
-      }
+      await addAllowedUser({ npub, tier });
+      message.success('User added successfully');
+      // Refresh the list
+      await fetchUsers(pagination.page, pagination.page_size);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : `Failed to remove NPUB from ${type} list`;
+      const errorMessage = err instanceof Error ? err.message : 'Failed to add user';
+      setError(errorMessage);
       message.error(errorMessage);
+      throw err;
     } finally {
       setLoading(false);
     }
-  }, [type, page, fetchNpubs]);
+  }, [fetchUsers, pagination.page, pagination.page_size]);
 
-  const bulkImport = useCallback(async (npubsData: string[]) => {
+  const removeUser = useCallback(async (npub: string) => {
     setLoading(true);
+    setError(null);
     try {
-      const importData: BulkImportRequest = {
-        type,
-        npubs: npubsData
-      };
-      
-      const result = await bulkImportNpubs(importData);
-      if (result.success) {
-        message.success(`Bulk import completed: ${result.imported} imported, ${result.failed} failed`);
-        await fetchNpubs(1); // Refresh the list
-      } else {
-        throw new Error(result.message);
-      }
+      await removeAllowedUser({ npub });
+      message.success('User removed successfully');
+      // Refresh the list
+      await fetchUsers(pagination.page, pagination.page_size);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Bulk import failed';
+      const errorMessage = err instanceof Error ? err.message : 'Failed to remove user';
+      setError(errorMessage);
       message.error(errorMessage);
+      throw err;
     } finally {
       setLoading(false);
     }
-  }, [type, fetchNpubs]);
-
-  const changePage = useCallback((newPage: number) => {
-    setPage(newPage);
-    fetchNpubs(newPage);
-  }, [fetchNpubs]);
+  }, [fetchUsers, pagination.page, pagination.page_size]);
 
   useEffect(() => {
-    fetchNpubs();
-  }, [fetchNpubs]);
+    fetchUsers();
+  }, [fetchUsers]);
 
   return {
-    npubs,
-    total,
+    users,
     loading,
     error,
-    page,
-    pageSize,
-    addNpub,
-    removeNpub,
-    bulkImport,
-    changePage,
-    refetch: fetchNpubs
+    pagination,
+    addUser,
+    removeUser,
+    refetch: fetchUsers
+  };
+};
+
+// Legacy hook for backward compatibility - will be removed
+export const useAllowedUsersNpubs = (type: 'read' | 'write') => {
+  const { users, loading, error, addUser, removeUser, refetch } = useAllowedUsersList();
+  
+  return {
+    npubs: users,
+    loading,
+    error,
+    addNpub: addUser,
+    removeNpub: removeUser,
+    refetch
   };
 };
 
 // Validation hook
 export const useAllowedUsersValidation = () => {
-  const validateSettings = useCallback((settings: AllowedUsersSettings): string[] => {
-    const errors: string[] = [];
-    
-    // Mode validation
-    if (!['free', 'paid', 'exclusive'].includes(settings.mode)) {
-      errors.push('Invalid mode selected');
-    }
-    
-    // Tier validation
-    if (settings.mode === 'paid' && settings.tiers.some(t => t.price_sats === 0)) {
-      errors.push('Paid mode cannot have free tiers');
-    }
-    
-    // Scope validation
-    if (settings.mode === 'paid' && settings.write_access.scope !== 'paid_users') {
-      errors.push('Paid mode write access must be limited to paid users');
-    }
-    
-    if (settings.mode === 'exclusive' && settings.write_access.scope !== 'allowed_users') {
-      errors.push('Exclusive mode write access must be limited to allowed users');
-    }
-    
-    // Tiers validation
-    if (settings.tiers.length === 0) {
-      errors.push('At least one tier must be configured');
-    }
-    
-    return errors;
-  }, []);
-
   const validateNpub = useCallback((npub: string): string | null => {
-    if (!npub.trim()) {
-      return 'NPUB cannot be empty';
+    if (!npub) {
+      return 'NPUB is required';
     }
     
     if (!npub.startsWith('npub1')) {
@@ -266,11 +190,30 @@ export const useAllowedUsersValidation = () => {
       return 'NPUB must be 63 characters long';
     }
     
+    // Basic bech32 validation
+    const validChars = /^[a-z0-9]+$/;
+    const npubWithoutPrefix = npub.slice(5);
+    if (!validChars.test(npubWithoutPrefix)) {
+      return 'NPUB contains invalid characters';
+    }
+    
     return null;
   }, []);
 
   return {
-    validateSettings,
     validateNpub
+  };
+};
+
+// Main hook that combines settings and users
+export const useAllowedUsers = () => {
+  const settingsHook = useAllowedUsersSettings();
+  const usersHook = useAllowedUsersList();
+  const validation = useAllowedUsersValidation();
+
+  return {
+    ...settingsHook,
+    ...usersHook,
+    ...validation
   };
 };
