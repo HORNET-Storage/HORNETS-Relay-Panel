@@ -17,7 +17,7 @@ export default styled(BaseLayout.Content)<HeaderProps>`
   ${(props) =>
     props?.$isDesktop &&
     css`
-      z-index: 105;
+      z-index: 0;
     `}
 
   @media only screen and ${media.md} {
