@@ -14,6 +14,7 @@ export const CreatorButton = styled.button<StoriesInternalProps>`
   cursor: pointer;
   border-radius: 50%;
   height: 100%;
+  min-width: 5rem;
   aspect-ratio: 1 / 1;
   overflow: hidden;
 
