@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, message } from 'antd';
+import { Modal, message, Spin, Typography } from 'antd';
 import {
   KeyOutlined,
   CalendarOutlined,
@@ -10,15 +10,43 @@ import {
 } from '@ant-design/icons';
 import { SubscriberProfile } from '@app/hooks/usePaidSubscribers';
 import * as S from './SubscriberDetailModal.styles';
+
 interface SubscriberDetailModalProps {
   subscriber: SubscriberProfile | null;
+  loading?: boolean;
+  fetchFailed?: boolean;
   isVisible: boolean;
   onClose: () => void;
 }
 
-export const SubscriberDetailModal: React.FC<SubscriberDetailModalProps> = ({ subscriber, isVisible, onClose }) => {
+export const SubscriberDetailModal: React.FC<SubscriberDetailModalProps> = ({ subscriber, isVisible, onClose, loading = false, fetchFailed = false }) => {
   const [copied, setCopied] = useState(false);
+  // Loading state
+  if (!subscriber && loading && !fetchFailed) {
+    return (
+      <Modal open={isVisible} footer={null} onCancel={onClose} centered>
+        <Spin tip="Loading..." />
+      </Modal>
+    );
+  }
 
+  // Error state
+  if (!subscriber && !loading && fetchFailed) {
+    return (
+      <Modal open={isVisible} footer={null} onCancel={onClose} centered>
+        <Typography.Text type="danger">Failed to fetch subscriber profile. Please try again.</Typography.Text>
+      </Modal>
+    );
+  }
+
+  // Not found state
+  if (!subscriber && !loading &&  !fetchFailed) {
+    return (
+      <Modal open={isVisible} footer={null} onCancel={onClose} centered>
+        <Typography.Text type="secondary">Couldn't find this subscriber profile.</Typography.Text>
+      </Modal>
+    );
+  }
   if (!subscriber) {
     return null;
   }
