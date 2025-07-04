@@ -8,6 +8,17 @@ const config = {
   isDemoMode: process.env.REACT_APP_DEMO_MODE === 'true',
   walletBaseURL: process.env.REACT_APP_WALLET_BASE_URL?.trim() || 'http://localhost:9003',
   
+  // Nostr relay configuration
+  nostrRelayUrls: process.env.REACT_APP_NOSTR_RELAY_URLS?.split(',').map(url => url.trim()) || [
+    'wss://relay.damus.io',
+    'wss://relay.nostr.band', 
+    'wss://relay.snort.social',
+    'wss://vault.iris.to'
+  ],
+  
+  // User's own relay URL (primary relay for profile fetching)
+  ownRelayUrl: process.env.REACT_APP_OWN_RELAY_URL?.trim() || null,
+  
   // Notification settings
   notifications: {
     // 5 minutes in milliseconds

@@ -43,7 +43,7 @@ export const SubscriberDetailModal: React.FC<SubscriberDetailModalProps> = ({ su
   if (!subscriber && !loading &&  !fetchFailed) {
     return (
       <S.StateModal open={isVisible} footer={null} onCancel={onClose} centered>
-        <Typography.Text type="secondary">Couldn't find this subscriber profile.</Typography.Text>
+        <Typography.Text type="secondary">Couldn&apos;t find this subscriber profile.</Typography.Text>
       </S.StateModal>
     );
   }

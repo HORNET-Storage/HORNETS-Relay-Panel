@@ -23,9 +23,14 @@ export const getSatsCurrency = (price: number | string, currency: CurrencyTypeEn
   return isIcon ? `${currencySymbol}${formattedPrice}` : `${formattedPrice} ${currency}`;
 };
  export const convertNDKUserProfileToSubscriberProfile = (pubkey: string, user: NDKUserProfile): SubscriberProfile => {
+    // Handle display_name from the profile data since NDK sometimes uses different field names
+    const displayName = user.name || 
+                       ('display_name' in user ? user.display_name : '') || 
+                       ('displayName' in user ? user.displayName : '') || '';
+    
     return {
       pubkey,
-      name: user.name || '',
+      name: typeof displayName === 'string' ? displayName : '',
       picture: user.picture || '',
       about: user.about || '',
     };

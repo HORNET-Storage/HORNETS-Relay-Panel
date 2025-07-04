@@ -54,14 +54,17 @@ const useWalletAuth = () => {
 
       console.log(challenge)
 
-      // Sign the challenge using Nostr
-      const signedEvent = await window.nostr.signEvent({
+      // Create the event to sign
+      const event = {
         pubkey: npub,
         content: challenge,
         created_at: Math.floor(Date.now() / 1000),
         kind: 1,
         tags: [],
-      });
+      };
+
+      // Sign the challenge using Nostr
+      const signedEvent = await window.nostr.signEvent(event);
 
       // Send the signed challenge to the backend for verification
       const verifyResponse = await fetch(`${config.walletBaseURL}/verify`, {
@@ -70,7 +73,7 @@ const useWalletAuth = () => {
         body: JSON.stringify({
           challenge,
           signature: signedEvent.sig,
-          messageHash: signedEvent.id,
+          messageHash: event.content,
           event: signedEvent,
         }),
       });

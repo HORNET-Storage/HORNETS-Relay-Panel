@@ -146,15 +146,14 @@ const usePaidSubscribers = (pageSize = 20) => {
       console.log(`[usePaidSubscribers] Normalized data:`, data);
       console.log(`[usePaidSubscribers] Data length: ${data?.length}, typeof data: ${typeof data}, Array.isArray(data): ${Array.isArray(data)}`);
       
-      // *** NEW DIRECT CHECK FOR DATA WITHOUT NESTED CONDITIONS ***
+      // If we have backend data, use it as the primary source and return subscribers for NDK enhancement
       if (data && Array.isArray(data) && data.length > 0) {
-        console.log(`[usePaidSubscribers] **** REAL DATA DETECTED! Bypassing all other logic ****`);
+        console.log(`[usePaidSubscribers] Backend data detected, using as primary source`);
           
         try {
           // Process the profiles to replace placeholder avatar URLs
           const processedProfiles: SubscriberProfile[] = [];
           
-          // Attempt to directly parse one of the data elements to verify it's structured correctly
           console.log(`[usePaidSubscribers] First item pubkey:`, data[0]?.pubkey);
           console.log(`[usePaidSubscribers] First item picture:`, data[0]?.picture);
           
@@ -182,31 +181,26 @@ const usePaidSubscribers = (pageSize = 20) => {
             });
           }
           
-          console.log('[usePaidSubscribers] DIRECT STATE UPDATES WITH REAL DATA');
+          console.log('[usePaidSubscribers] Backend data processed successfully');
           console.log('[usePaidSubscribers] Processed profiles count:', processedProfiles.length);
           
-          // Force a state update for useDummyData first
+          // Update state with backend data
           setUseDummyData(false);
-          
-          // Then update all other state with real data
-          if (processedProfiles.length > 0) {
-            setSubscribers(processedProfiles);
-          }
-          
+          setSubscribers(processedProfiles);
           setHasMore(data.length === pageSize);
           setCurrentPage(page + 1);
           
-          console.log('[usePaidSubscribers] State updates with real data complete!');
-          return; // Exit early after processing real data
+          console.log('[usePaidSubscribers] Backend data set as primary source');
+          return; // Exit early after processing backend data
         } catch (processingError) {
-          console.error('[usePaidSubscribers] Error processing profiles:', processingError);
+          console.error('[usePaidSubscribers] Error processing backend profiles:', processingError);
           // Continue to fallback logic below if processing fails
         }
       }
       
-      // Fallback logic if the direct approach failed
+      // Fallback logic if no backend data
       if (isMounted.current) {
-        console.log('[usePaidSubscribers] Using fallback logic - probably no valid data');
+        console.log('[usePaidSubscribers] No backend data found, using dummy data');
         setUseDummyData(true);
         setSubscribers(dummyProfiles);
         setHasMore(false);

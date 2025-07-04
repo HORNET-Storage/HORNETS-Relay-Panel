@@ -93,48 +93,94 @@ export const PaidSubscribers: React.FC = () => {
   };
  
   useEffect(() => {
-    // Fetch profiles for test subscribers
+    // Implement hybrid profile fetching: NDK first, fallback to backend data
     if (useDummyData) {
       console.warn('[PaidSubscribers] Using dummy data, skipping profile fetch');
       setLoadingProfiles(false);
       return;
     }
+
     const fetchProfiles = async () => {
       if (!ndkInstance || !ndkInstance.ndk) {
-        console.error('NDK instance is not initialized');
+        console.error('[PaidSubscribers] NDK instance is not initialized, using backend data only');
+        setLoadingProfiles(false);
         return;
       }
-      //1. map through subscribers and fetch profiles. skip profile if already on map
+
+      console.log('[PaidSubscribers] Starting hybrid profile fetch for', subscribers.length, 'subscribers');
+
+      // Process each subscriber with hybrid approach
       await Promise.all(
         subscribers.map(async (subscriber) => {
-          if (
-            subscriberProfiles.has(subscriber.pubkey) &&
-            subscriberProfiles.get(subscriber.pubkey)?.picture &&
-            subscriberProfiles.get(subscriber.pubkey)?.about
-          ) {
-            return subscriberProfiles.get(subscriber.pubkey);
+          // Skip if we already have a complete profile in our map
+          const existingProfile = subscriberProfiles.get(subscriber.pubkey);
+          const hasValidProfile = existingProfile && (
+            (existingProfile.name && existingProfile.name !== 'Anonymous Subscriber') ||
+            existingProfile.picture ||
+            existingProfile.about
+          );
+          
+          if (hasValidProfile) {
+            console.log(`[PaidSubscribers] Profile already cached for ${subscriber.pubkey}:`, {
+              name: existingProfile.name,
+              picture: !!existingProfile.picture,
+              about: !!existingProfile.about
+            });
+            return;
           }
-          try {
-            if (!ndkInstance.ndk) {
-              console.error('NDK instance is not available');
-              return null;
-            }
-            const user = await ndkInstance.ndk?.getUser({ pubkey: subscriber.pubkey }).fetchProfile();
-            if (user) {
-              // Convert NDKUserProfile to SubscriberProfile and add to map
-              const covertedNDKUserProfile = convertNDKUserProfileToSubscriberProfile(subscriber.pubkey, user);
-              updateSubscriberProfile(subscriber.pubkey, covertedNDKUserProfile);
 
-              return user;
+          try {
+            console.log(`[PaidSubscribers] Fetching NDK profile for ${subscriber.pubkey}`);
+            
+            // Try to fetch profile from NDK (user's relay + other relays)
+            const user = await ndkInstance.ndk?.getUser({ pubkey: subscriber.pubkey }).fetchProfile();
+            
+            if (user && (user.name || user.picture || user.about)) {
+              // NDK returned a profile - use it as the primary source
+              console.log(`[PaidSubscribers] NDK profile found for ${subscriber.pubkey}:`, {
+                name: user.name,
+                picture: user.picture,
+                about: user.about
+              });
+              
+              const ndkProfile = convertNDKUserProfileToSubscriberProfile(subscriber.pubkey, user);
+              updateSubscriberProfile(subscriber.pubkey, ndkProfile);
+            } else {
+              // NDK came up empty - fallback to backend data
+              console.log(`[PaidSubscribers] NDK profile empty for ${subscriber.pubkey}, falling back to backend data:`, {
+                name: subscriber.name,
+                picture: subscriber.picture,
+                about: subscriber.about
+              });
+              
+              // Use the backend data as-is since NDK had no better information
+              updateSubscriberProfile(subscriber.pubkey, {
+                ...subscriber,
+                // Ensure we have fallback values if backend data is also incomplete
+                name: subscriber.name || 'Anonymous Subscriber',
+                picture: subscriber.picture || '',
+                about: subscriber.about || ''
+              });
             }
           } catch (error) {
-            console.error(`Error fetching profile for ${subscriber.pubkey}:`, error);
+            console.error(`[PaidSubscribers] Error fetching NDK profile for ${subscriber.pubkey}:`, error);
+            
+            // Error occurred - fallback to backend data
+            console.log(`[PaidSubscribers] NDK error for ${subscriber.pubkey}, using backend data`);
+            updateSubscriberProfile(subscriber.pubkey, {
+              ...subscriber,
+              name: subscriber.name || 'Anonymous Subscriber',
+              picture: subscriber.picture || '',
+              about: subscriber.about || ''
+            });
           }
-          return null;
         }),
       );
+
+      console.log('[PaidSubscribers] Hybrid profile fetch completed');
       setLoadingProfiles(false);
     };
+
     fetchProfiles();
   }, [subscribers, ndkInstance]);
 
