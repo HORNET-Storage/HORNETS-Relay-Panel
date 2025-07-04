@@ -23,7 +23,7 @@ const { Text } = Typography;
 export const PaidSubscribers: React.FC = () => {
   console.log('[PaidSubscribers] Component rendering...');
   const hookResult = usePaidSubscribers(12);
-  const { subscribers, fetchMore, hasMore, loading } = hookResult;
+  const { subscribers, fetchMore, hasMore, loading, useDummyData } = hookResult;
   const ndkInstance = useNDK();
 
   // Modal state for subscriber details
@@ -94,6 +94,11 @@ export const PaidSubscribers: React.FC = () => {
  
   useEffect(() => {
     // Fetch profiles for test subscribers
+    if (useDummyData) {
+      console.warn('[PaidSubscribers] Using dummy data, skipping profile fetch');
+      setLoadingProfiles(false);
+      return;
+    }
     const fetchProfiles = async () => {
       if (!ndkInstance || !ndkInstance.ndk) {
         console.error('NDK instance is not initialized');
@@ -191,7 +196,7 @@ export const PaidSubscribers: React.FC = () => {
           ))}
         </S.FlexWrapper>
 
-        <SubscriberDetailModal subscriber={selectedSubscriber} isVisible={isModalVisible} onClose={handleCloseModal} />
+        <SubscriberDetailModal  loading={loading} subscriber={selectedSubscriber} isVisible={isModalVisible} onClose={handleCloseModal} />
 
         {/* View All Subscribers Modal */}
         <Modal
@@ -371,7 +376,7 @@ export const PaidSubscribers: React.FC = () => {
       </SplideCarousel>
 
       {isModalVisible && (
-        <SubscriberDetailModal subscriber={selectedSubscriber} isVisible={isModalVisible} onClose={handleCloseModal} />
+        <SubscriberDetailModal loading={loading} subscriber={selectedSubscriber} isVisible={isModalVisible} onClose={handleCloseModal} />
       )}
 
       {/* View All Subscribers Modal */}

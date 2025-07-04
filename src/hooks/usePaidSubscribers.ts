@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { message } from 'antd';
 import config from '@app/config/config';
 import { readToken } from '@app/services/localStorage.service';
 import { useHandleLogout } from './authUtils';
@@ -21,7 +20,7 @@ import adminDefaultAvatar from '@app/assets/admin-default-avatar.png';
 
 export interface SubscriberProfile {
   pubkey: string;
-  picture: string;
+  picture?: string;
   name?: string;
   about?: string;
   metadata?: {
@@ -29,7 +28,16 @@ export interface SubscriberProfile {
     subscribedSince?: string;
   };
 }
+const testSubscribers: SubscriberProfile[] = [ 
+  { pubkey: '91dfb08db37712e74d892adbbf63abab43cb6aa3806950548f3146347d29b6ae' },
+  { pubkey: '59cacbd83ad5c54ad91dacf51a49c06e0bef730ac0e7c235a6f6fa29b9230f02' },
+  { pubkey: '32e1827635450ebb3c5a7d12c1f8e7b2b514439ac10a67eef3d9fd9c5c68e245' },
+  { pubkey: '78a317586cbc30d20f8aa94d8450eb0cd58b312bad94fc76139c72eb2e5c81d2' },
+  { pubkey: '4657dfe8965be8980a93072bcfb5e59a65124406db0f819215ee78ba47934b3e' },
+  { pubkey: '6e75f7972397ca3295e0f4ca0fbc6eb9cc79be85bafdd56bd378220ca8eee74e' },
+  { pubkey: '7b991f776d04d87cb5d4259688187a520f6afc16b2b9ad26dac6b8ee76c2840d'}
 
+];
 // Define dummy profiles using the imported images
 const dummyProfiles: SubscriberProfile[] = [
   { pubkey: 'dummy-1', picture: profile1 },
@@ -45,6 +53,7 @@ const dummyProfiles: SubscriberProfile[] = [
   { pubkey: 'dummy-11', picture: profile9 },
   { pubkey: 'dummy-12', picture: profile11 },
 ];
+
 
 // URL of the placeholder avatar that comes from the API
 const PLACEHOLDER_AVATAR_URL = 'http://localhost:3000/placeholder-avatar.png';

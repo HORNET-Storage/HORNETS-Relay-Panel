@@ -130,7 +130,7 @@ export const SearchDropdown: React.FC<SearchOverlayProps> = ({
           <InputSearch
             width="100%"
             value={query}
-            placeholder={t('header.search') + ' pubkey'}
+            placeholder={t('header.search') + ' hex pubkey'}
             filter={
               <Btn
                 size="small"
