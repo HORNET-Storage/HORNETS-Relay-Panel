@@ -16,7 +16,8 @@ import { Row, Col, Modal, Typography } from 'antd';
 import { nip19 } from 'nostr-tools';
 import { NDKUserProfile } from '@nostr-dev-kit/ndk-hooks';
 import { useNDK } from '@nostr-dev-kit/ndk-hooks';
-
+import { UserOutlined } from '@ant-design/icons';
+import { CreatorButton } from './avatar/SubscriberAvatar.styles';
 const { Text } = Typography;
 
 export const PaidSubscribers: React.FC = () => {
@@ -38,20 +39,19 @@ export const PaidSubscribers: React.FC = () => {
     () => new Map(subscribers.map((s) => [s.pubkey, s])),
   );
   const sortedProfiles = useMemo(() => {
-  return Array.from(subscriberProfiles.entries()).sort(([a], [b]) => a.localeCompare(b));
-}, [subscriberProfiles]);
-useEffect(() => {
-  setSubscriberProfiles(prev => {
-    const map = new Map(prev);
-    for (const s of subscribers) {
-      if (!map.has(s.pubkey)) {
-        map.set(s.pubkey, s);
+    return Array.from(subscriberProfiles.entries()).sort(([a], [b]) => a.localeCompare(b));
+  }, [subscriberProfiles]);
+  useEffect(() => {
+    setSubscriberProfiles((prev) => {
+      const map = new Map(prev);
+      for (const s of subscribers) {
+        if (!map.has(s.pubkey)) {
+          map.set(s.pubkey, s);
+        }
       }
-    }
-    return map;
-  });
-}, [subscribers]);
-
+      return map;
+    });
+  }, [subscribers]);
 
   // Handle opening subscriber detail modal
   const handleOpenSubscriberDetails = (subscriber: SubscriberProfile) => {
@@ -180,14 +180,20 @@ useEffect(() => {
         </NFTCardHeader>
 
         <S.FlexWrapper>
-          {sortedProfiles.map(([pubkey, subscriber], index: number) => (
-              <S.CardWrapper key={pubkey}>
+          {sortedProfiles.map(([pubkey, subscriber]) => (
+            <S.CardWrapper key={pubkey}>
+              {subscriber.picture ? (
                 <SubscriberAvatar
                   onStoryOpen={() => handleOpenSubscriberDetails(subscriber)}
                   img={subscriber.picture || ''}
                   viewed={false}
                 />
-              </S.CardWrapper>
+              ) : (
+                <CreatorButton $viewed={false}>
+                  <UserOutlined style={{ fontSize: '5rem', color: 'var(--text-light-color)' }} />
+                </CreatorButton>
+              )}
+            </S.CardWrapper>
           ))}
         </S.FlexWrapper>
 
@@ -349,20 +355,27 @@ useEffect(() => {
           </BaseRow>
         </NFTCardHeader>
         <SplideTrack>
-          {!loadingProfiles && sortedProfiles.map(([pubkey, subscriber] ) => (
-            <SplideSlide key={pubkey}>
-              <S.CardWrapper>
-                <SubscriberAvatar
-                  onStoryOpen={() => handleOpenSubscriberDetails(subscriber)}
-                  img={subscriber.picture || ""}
-                  viewed={false}
-                />
-              </S.CardWrapper>
-            </SplideSlide>
-          ))}
+          {!loadingProfiles &&
+            sortedProfiles.map(([pubkey, subscriber]) => (
+              <SplideSlide key={pubkey}>
+                <S.CardWrapper key={pubkey}>
+                  {subscriber.picture ? (
+                    <SubscriberAvatar
+                      onStoryOpen={() => handleOpenSubscriberDetails(subscriber)}
+                      img={subscriber.picture || ''}
+                      viewed={false}
+                    />
+                  ) : (
+                    <CreatorButton $viewed={false}>
+                      <UserOutlined style={{ fontSize: '5rem', color: 'var(--text-light-color)' }} />
+                    </CreatorButton>
+                  )}
+                </S.CardWrapper>
+              </SplideSlide>
+            ))}
         </SplideTrack>
       </SplideCarousel>
- 
+
       {isModalVisible && (
         <SubscriberDetailModal subscriber={selectedSubscriber} isVisible={isModalVisible} onClose={handleCloseModal} />
       )}
