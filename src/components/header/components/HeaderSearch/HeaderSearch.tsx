@@ -59,7 +59,7 @@ export const HeaderSearch: React.FC = () => {
               query={query}
               setQuery={setQuery}
               data={sortedResults}
-              isOverlayOpen={isOverlayOpen}
+              isOverlayOpen={false}
               setOverlayOpen={setOverlayOpen}
             />
           </S.SearchModal>
@@ -71,7 +71,7 @@ export const HeaderSearch: React.FC = () => {
           query={query}
           setQuery={setQuery}
           data={sortedResults}
-          isOverlayOpen={isOverlayOpen}
+          isOverlayOpen={false}
           setOverlayOpen={setOverlayOpen}
         />
       )}
