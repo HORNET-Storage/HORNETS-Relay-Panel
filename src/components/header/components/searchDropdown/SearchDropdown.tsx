@@ -124,7 +124,7 @@ export const SearchDropdown: React.FC<SearchOverlayProps> = ({
         <HeaderActionWrapper>
           {invalidPubkey && (
             <InvalidPubkey>
-              {"Invalid pubkey. Please enter a hexadecimal string."}
+              {"Invalid pubkey."}
             </InvalidPubkey>
           )}
           <InputSearch
