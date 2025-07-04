@@ -6,7 +6,8 @@ import maestro from '@app/assets/images/card-issuers/maestro.png';
 import { CurrencyTypeEnum, Severity } from '@app/interfaces/interfaces';
 import { BaseBadgeProps } from '@app/components/common/BaseBadge/BaseBadge';
 import { currencies } from '@app/constants/config/currencies';
-
+import { NDKUserProfile } from '@nostr-dev-kit/ndk';
+import { SubscriberProfile } from '@app/hooks/usePaidSubscribers';
 export const camelize = (string: string): string => {
   return string
     .split(' ')
@@ -21,7 +22,14 @@ export const getSatsCurrency = (price: number | string, currency: CurrencyTypeEn
   // Handle potential negative sign placement
   return isIcon ? `${currencySymbol}${formattedPrice}` : `${formattedPrice} ${currency}`;
 };
-
+ export const convertNDKUserProfileToSubscriberProfile = (pubkey: string, user: NDKUserProfile): SubscriberProfile => {
+    return {
+      pubkey,
+      name: user.name || '',
+      picture: user.picture || '',
+      about: user.about || '',
+    };
+  };
 
 export const getCurrencyPrice = (price: number | string, currency: CurrencyTypeEnum, isIcon = true): string => {
   const currencySymbol = currencies[currency][isIcon ? 'icon' : 'text'];
