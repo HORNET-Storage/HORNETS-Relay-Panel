@@ -14,8 +14,8 @@ import { useResponsive } from '@app/hooks/useResponsive';
 import usePaidSubscribers, { SubscriberProfile } from '@app/hooks/usePaidSubscribers';
 import { Row, Col, Modal, Typography } from 'antd';
 import { nip19 } from 'nostr-tools';
-import { NDKUserProfile } from '@nostr-dev-kit/ndk-hooks';
 import { useNDK } from '@nostr-dev-kit/ndk-hooks';
+import { convertNDKUserProfileToSubscriberProfile } from '@app/utils/utils';
 import { UserOutlined } from '@ant-design/icons';
 import { CreatorButton } from './avatar/SubscriberAvatar.styles';
 const { Text } = Typography;
@@ -91,14 +91,7 @@ export const PaidSubscribers: React.FC = () => {
       }
     }
   };
-  const convertNDKUserProfileToSubscriberProfile = (pubkey: string, user: NDKUserProfile): SubscriberProfile => {
-    return {
-      pubkey,
-      name: user.name || '',
-      picture: user.picture || '',
-      about: user.about || '',
-    };
-  };
+ 
   useEffect(() => {
     // Fetch profiles for test subscribers
     const fetchProfiles = async () => {
