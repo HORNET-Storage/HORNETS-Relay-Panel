@@ -59,12 +59,12 @@ const dummyProfiles: SubscriberProfile[] = [
 const PLACEHOLDER_AVATAR_URL = 'http://localhost:3000/placeholder-avatar.png';
 
 const usePaidSubscribers = (pageSize = 20) => {
-  const [subscribers, setSubscribers] = useState<SubscriberProfile[]>(dummyProfiles);
+  const [subscribers, setSubscribers] = useState<SubscriberProfile[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [useDummyData, setUseDummyData] = useState(true);
+  const [useDummyData, setUseDummyData] = useState(false);
 
   const isMounted = useRef(true);
   const handleLogout = useHandleLogout();
@@ -198,21 +198,34 @@ const usePaidSubscribers = (pageSize = 20) => {
         }
       }
       
-      // Fallback logic if no backend data
+      // Fallback logic if no backend data - only use dummy data when truly no data available
       if (isMounted.current) {
-        console.log('[usePaidSubscribers] No backend data found, using dummy data');
-        setUseDummyData(true);
-        setSubscribers(dummyProfiles);
+        console.log('[usePaidSubscribers] No backend data found');
+        // Only use dummy data if we have absolutely nothing and no existing real subscribers
+        if (subscribers.length === 0 && !subscribers.some(s => !s.pubkey.startsWith('dummy-'))) {
+          console.log('[usePaidSubscribers] No existing subscribers, using dummy data as fallback');
+          setUseDummyData(true);
+          setSubscribers(dummyProfiles);
+        } else {
+          console.log('[usePaidSubscribers] Keeping existing subscribers data or have real subscribers');
+          setUseDummyData(false);
+        }
         setHasMore(false);
-        console.log('[usePaidSubscribers] Fallback to dummy data complete');
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch subscribers';
       setError(errorMessage);
       console.error(`[usePaidSubscribers] Error fetching subscribers:`, err);
-      console.log(`[usePaidSubscribers] ${errorMessage}, using dummy data`);
-      setUseDummyData(true);
-      setSubscribers(dummyProfiles);
+      
+      // Only use dummy data if we don't have any real subscribers
+      if (subscribers.length === 0 || subscribers.every(s => s.pubkey.startsWith('dummy-'))) {
+        console.log(`[usePaidSubscribers] ${errorMessage}, using dummy data`);
+        setUseDummyData(true);
+        setSubscribers(dummyProfiles);
+      } else {
+        console.log(`[usePaidSubscribers] ${errorMessage}, keeping existing real subscribers`);
+        setUseDummyData(false);
+      }
       setHasMore(false);
     } finally {
       if (isMounted.current) {
