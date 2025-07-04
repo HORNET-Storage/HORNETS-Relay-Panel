@@ -142,6 +142,7 @@ export const PaidSubscribers: React.FC = () => {
 
   // Handle closing view all modal
   const handleCloseViewAllModal = () => {
+    setSelectedSubscriber(null);
     setIsViewAllModalVisible(false);
   };
 
@@ -180,13 +181,13 @@ export const PaidSubscribers: React.FC = () => {
         </NFTCardHeader>
 
         <S.FlexWrapper>
-          {sortedProfiles.map(([pubkey, subscriber]) => (
-            <S.CardWrapper key={pubkey}>
+          {sortedProfiles.map(([pubkey, subscriber], index) => (
+            <S.CardWrapper key={`${pubkey}-${index}`}>
               {subscriber.picture ? (
                 <SubscriberAvatar
-                  onStoryOpen={() => handleOpenSubscriberDetails(subscriber)}
                   img={subscriber.picture || ''}
                   viewed={false}
+                  onStoryOpen={() => handleOpenSubscriberDetails(subscriber)}
                 />
               ) : (
                 <CreatorButton $viewed={false}>
@@ -356,9 +357,9 @@ export const PaidSubscribers: React.FC = () => {
         </NFTCardHeader>
         <SplideTrack>
           {!loadingProfiles &&
-            sortedProfiles.map(([pubkey, subscriber]) => (
+            sortedProfiles.map(([pubkey, subscriber], index) => (
               <SplideSlide key={pubkey}>
-                <S.CardWrapper key={pubkey}>
+              <S.CardWrapper key={`${pubkey}-${index}`}>
                   {subscriber.picture ? (
                     <SubscriberAvatar
                       onStoryOpen={() => handleOpenSubscriberDetails(subscriber)}
