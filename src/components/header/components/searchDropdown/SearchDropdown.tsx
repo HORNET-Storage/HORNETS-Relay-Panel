@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { FilterIcon } from 'components/common/icons/FilterIcon';
 import { SearchOverlay } from './searchOverlay/SearchOverlay/SearchOverlay';
 import { HeaderActionWrapper } from '@app/components/header/Header.styles';
 import { CategoryComponents } from '@app/components/header/components/HeaderSearch/HeaderSearch';
@@ -52,7 +51,6 @@ export const SearchDropdown: React.FC<SearchOverlayProps> = ({
                 size="small"
                 type={isFilterOpen ? 'ghost' : 'text'}
                 aria-label="Filter"
-                icon={<FilterIcon />}
                 onClick={() => setFilterOpen(!isFilterOpen)}
               />
             }

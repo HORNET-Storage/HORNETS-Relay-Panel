@@ -1,4 +1,4 @@
-import React, {  useState } from 'react';
+import React, { useState } from 'react';
 import { Modal, message } from 'antd';
 import {
   KeyOutlined,
@@ -46,6 +46,8 @@ export const SubscriberDetailModal: React.FC<SubscriberDetailModalProps> = ({ su
     if (key.length <= 16) return key;
     return `${key.substring(0, 8)}...${key.substring(key.length - 8)}`;
   };
+  const subscribed: boolean = !!subscriber.metadata?.subscriptionTier && !!subscriber.metadata?.subscribedSince;
+  const subscribedLabel = subscribed ? 'Subscribed' : 'Not Subscribed';
 
   return (
     <Modal
@@ -65,10 +67,12 @@ export const SubscriberDetailModal: React.FC<SubscriberDetailModalProps> = ({ su
 
       {/* Avatar section with profile picture and name */}
       <S.AvatarSection>
-        <S.AvatarContainer>
-          <img src={subscriber.picture} alt={subscriber.name || 'Subscriber'} />
-        </S.AvatarContainer>
-        <S.UserName level={3}>{subscriber.name || 'Anonymous Subscriber'}</S.UserName>
+        <S.SubscriptionBadge subscribed={subscribed} text={subscribedLabel}>
+          <S.AvatarContainer>
+            <img src={subscriber.picture} alt={subscriber.name || 'Subscriber'} />
+          </S.AvatarContainer>
+        </S.SubscriptionBadge>
+          <S.UserName level={3}>{subscriber.name || 'Anonymous Subscriber'}</S.UserName>
 
         {subscriber.about && <S.AboutText>{subscriber.about}</S.AboutText>}
       </S.AvatarSection>

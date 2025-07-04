@@ -1,7 +1,7 @@
 import styled from 'styled-components';
-import { Card, Typography, Button, Space } from 'antd';
-import { BORDER_RADIUS, FONT_SIZE, FONT_WEIGHT, FONT_FAMILY, LAYOUT } from '@app/styles/themes/constants';
-
+import { Card, Typography, Button, Badge } from 'antd';
+import { BORDER_RADIUS, FONT_SIZE, FONT_WEIGHT, FONT_FAMILY } from '@app/styles/themes/constants';
+import { BaseBadge } from '@app/components/common/BaseBadge/BaseBadge';
 const { Title, Text, Paragraph } = Typography;
 
 export const StyledModal = styled(Card)`
@@ -12,22 +12,22 @@ export const StyledModal = styled(Card)`
   overflow: hidden;
   max-width: 500px;
   margin: 0 auto;
-  
+
   .ant-modal-content {
     background-color: var(--background-color);
     border-radius: ${BORDER_RADIUS};
   }
-  
+
   .ant-modal-header {
     background-color: transparent;
     border-bottom: none;
     padding-bottom: 0;
   }
-  
+
   .ant-modal-body {
     padding: 0;
   }
-  
+
   .ant-modal-footer {
     border-top: none;
     padding-top: 0;
@@ -52,7 +52,7 @@ export const CloseButton = styled(Button)`
   border: none;
   background: transparent;
   box-shadow: none;
-  
+
   &:hover {
     color: var(--primary-color);
     background: transparent;
@@ -66,11 +66,13 @@ export const AvatarSection = styled.div`
   align-items: center;
   justify-content: center;
   padding: 2rem 1rem;
-  background: linear-gradient(180deg, rgba(24,44,89,0.3) 0%, rgba(33,64,125,0.1) 100%);
+  background: linear-gradient(180deg, rgba(24, 44, 89, 0.3) 0%, rgba(33, 64, 125, 0.1) 100%);
 `;
 
 export const AvatarContainer = styled.div`
   position: relative;
+  margin-top: 0.5rem;
+
   width: 140px;
   height: 140px;
   margin-bottom: 1.5rem;
@@ -78,7 +80,7 @@ export const AvatarContainer = styled.div`
   overflow: hidden;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
   border: 4px solid var(--background-color);
-  
+
   img {
     width: 100%;
     height: 100%;
@@ -110,11 +112,11 @@ export const InfoCard = styled(Card)`
   border-radius: ${BORDER_RADIUS};
   background-color: var(--secondary-background-color);
   border: 1px solid var(--border-color);
-  
+
   .ant-card-body {
     padding: 1rem;
   }
-  
+
   &:last-child {
     margin-bottom: 0;
   }
@@ -124,7 +126,7 @@ export const InfoHeader = styled.div`
   display: flex;
   align-items: center;
   margin-bottom: 0.75rem;
-  
+
   & > *:first-child {
     margin-right: 0.5rem;
     color: var(--primary-color);
@@ -164,7 +166,7 @@ export const CopyButton = styled(Button)`
   height: auto;
   border: none;
   background: transparent;
-  
+
   &:hover {
     color: var(--primary-light-color);
     background: transparent;
@@ -190,4 +192,20 @@ export const IconWrapper = styled.div`
   height: 28px;
   border-radius: 50%;
   background-color: rgba(var(--primary-rgb-color), 0.1);
+`;
+export const UsernameWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  width: max-content;
+`;
+
+interface SubscriptionBadgeProps {
+  subscribed: boolean;
+}
+
+export const SubscriptionBadge = styled(Badge.Ribbon)<SubscriptionBadgeProps>`
+  margin-top: 1rem;
+  margin-right:.3rem;
+  background: ${({ subscribed }) => (subscribed ? 'var(--ant-primary-color)' : 'var(--error-color)')};
+  color: var(--text-main-color);
 `;
