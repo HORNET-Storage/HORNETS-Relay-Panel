@@ -14,23 +14,21 @@ export const AddKindForm: React.FC<AddKindFormProps> = ({ onAddKind, mode }) => 
 
   const handleAddKind = () => {
     if (newKind) {
-      onAddKind(newKind);
+      // Ensure the kind is in the correct format
+      const formattedKind = newKind.startsWith('kind') ? newKind : `kind${newKind}`;
+      onAddKind(formattedKind);
       setNewKind('');
     }
   };
 
-  if (mode === 'whitelist') {
-    return null;
-  }
-
   return (
     <div style={{ padding: '1.5rem 0rem 0rem 0rem', display: 'flex', flexDirection: 'column', gap: '.5rem' }}>
-      <h3>{'Add to Blacklist'}</h3>
+      <h3>{mode === 'blacklist' ? 'Add Custom Kind to Whitelist' : 'Add Custom Kind'}</h3>
       <div style={{ display: 'flex' }} className="custom-checkbox-group grid-checkbox-group large-label">
         <Input
           value={newKind}
           onChange={(e) => setNewKind(e.target.value)}
-          placeholder="Enter new kind"
+          placeholder="Enter kind number (e.g., 12345)"
         />
         <BaseButton onClick={handleAddKind}>
           Add Kind

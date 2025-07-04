@@ -116,22 +116,35 @@ const useRelaySettings = () => {
       // Handle kinds based on mode
       const backendKinds = backendData.event_filtering.kind_whitelist || [];
       
+      // Get all stored dynamic kinds from localStorage
+      const allStoredDynamicKinds = JSON.parse(localStorage.getItem('dynamicKinds') || '[]');
+      
       if (settings.mode === 'blacklist') {
         // In blacklist mode: backend sends allowed kinds, we need to calculate blocked kinds
         const allPossibleKinds = getAllPossibleKinds();
         const backendKindsSet = new Set(backendKinds);
         const allKindsSet = new Set(allPossibleKinds);
         
-        // Calculate blocked kinds: all possible kinds minus backend allowed kinds
-        const blockedKinds = Array.from(allKindsSet).filter(kind => !backendKindsSet.has(kind));
+        // Calculate blocked predefined kinds: all possible kinds minus backend allowed kinds
+        const blockedPredefinedKinds = Array.from(allKindsSet).filter(kind => !backendKindsSet.has(kind));
         // Only show non-core kinds as blocked (core kinds can't be blocked)
-        settings.kinds = blockedKinds.filter(kind => !isCoreKind(kind));
+        settings.kinds = blockedPredefinedKinds.filter(kind => !isCoreKind(kind));
+        
+        // Calculate blocked dynamic kinds: stored dynamic kinds that are NOT in backend allowed kinds
+        settings.dynamicKinds = allStoredDynamicKinds.filter((kind: string) => !backendKindsSet.has(kind));
         
         console.log('[useRelaySettings] Blacklist mode - Backend allowed kinds:', backendKinds);
-        console.log('[useRelaySettings] Blacklist mode - Calculated blocked kinds:', settings.kinds);
+        console.log('[useRelaySettings] Blacklist mode - Calculated blocked predefined kinds:', settings.kinds);
+        console.log('[useRelaySettings] Blacklist mode - Calculated blocked dynamic kinds:', settings.dynamicKinds);
       } else {
         // In whitelist mode: backend sends allowed kinds directly
-        settings.kinds = ensureCoreKinds(backendKinds);
+        // Separate predefined kinds from dynamic kinds
+        const allPossibleKinds = getAllPossibleKinds();
+        const predefinedKinds = backendKinds.filter((kind: string) => allPossibleKinds.includes(kind));
+        const dynamicKinds = backendKinds.filter((kind: string) => !allPossibleKinds.includes(kind) && allStoredDynamicKinds.includes(kind));
+        
+        settings.kinds = ensureCoreKinds(predefinedKinds);
+        settings.dynamicKinds = dynamicKinds;
       }
       
       // Extract mime types and file sizes from actual backend format
@@ -242,9 +255,20 @@ const useRelaySettings = () => {
         event_filtering: {
           mode: settings.mode,
           moderation_mode: settings.moderationMode,
-          kind_whitelist: settings.mode === 'blacklist' 
-            ? calculateInverseKinds(settings.kinds) // For blacklist: send inverse (all kinds except blocked ones)
-            : ensureCoreKinds(settings.kinds), // For whitelist: send selected kinds directly
+          kind_whitelist: (() => {
+            if (settings.mode === 'blacklist') {
+              // For blacklist: get all predefined allowed kinds, then add unblocked dynamic kinds
+              const predefinedAllowed = calculateInverseKinds(settings.kinds);
+              // Get all stored dynamic kinds from localStorage
+              const allStoredDynamicKinds = JSON.parse(localStorage.getItem('dynamicKinds') || '[]');
+              // Add dynamic kinds that are NOT blocked (not in settings.dynamicKinds)
+              const allowedDynamicKinds = allStoredDynamicKinds.filter((kind: string) => !settings.dynamicKinds.includes(kind));
+              return [...predefinedAllowed, ...allowedDynamicKinds];
+            } else {
+              // For whitelist: send all selected kinds (including dynamic)
+              return ensureCoreKinds([...settings.kinds, ...settings.dynamicKinds]);
+            }
+          })(),
           media_definitions: mediaDefinitions,
           dynamic_kinds: {
             enabled: false,
