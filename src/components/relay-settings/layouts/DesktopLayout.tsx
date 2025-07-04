@@ -9,7 +9,6 @@ import { TotalEarning } from '@app/components/relay-dashboard/totalEarning/Total
 import { ActivityStory } from '@app/components/relay-dashboard/transactions/Transactions';
 import * as S from '@app/pages/uiComponentsPages/UIComponentsPage.styles';
 import { NetworkSection } from '@app/components/relay-settings/sections/NetworkSection';
-import { AppBucketsSection } from '@app/components/relay-settings/sections/AppBucketsSection';
 import { KindsSection } from '@app/components/relay-settings/sections/KindsSection';
 import { MediaSection } from '@app/components/relay-settings/sections/MediaSection';
 import { ModerationSection } from '@app/components/relay-settings/sections/ModerationSection';
@@ -25,13 +24,6 @@ interface DesktopLayoutProps {
     isFileStorageActive: boolean;
     onProtocolsChange: (protocols: string[]) => void;
     onFileStorageChange: (active: boolean) => void;
-    // App buckets section props
-    appBuckets: string[];
-    dynamicAppBuckets: string[];
-    onAppBucketsChange: (values: string[]) => void;
-    onDynamicAppBucketsChange: (values: string[]) => void;
-    onAddBucket: (bucket: string) => void;
-    onRemoveBucket: (bucket: string) => void;
     // Kinds section props
     isKindsActive: boolean;
     selectedKinds: string[];
@@ -82,13 +74,6 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({
     isFileStorageActive,
     onProtocolsChange,
     onFileStorageChange,
-    // App buckets props
-    appBuckets,
-    dynamicAppBuckets,
-    onAppBucketsChange,
-    onDynamicAppBucketsChange,
-    onAddBucket,
-    onRemoveBucket,
     // Kinds props
     isKindsActive,
     selectedKinds,
@@ -125,14 +110,6 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({
                             onFileStorageChange={onFileStorageChange}
                         />
 
-                        <AppBucketsSection
-                            appBuckets={appBuckets}
-                            dynamicAppBuckets={dynamicAppBuckets}
-                            onAppBucketsChange={onAppBucketsChange}
-                            onDynamicAppBucketsChange={onDynamicAppBucketsChange}
-                            onAddBucket={onAddBucket}
-                            onRemoveBucket={onRemoveBucket}
-                        />
 
 
                         <ModerationSection

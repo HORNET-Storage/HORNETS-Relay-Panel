@@ -3,7 +3,7 @@ import config from '@app/config/config';
 import { readToken } from '@app/services/localStorage.service';
 import { useHandleLogout } from './authUtils';
 import { Settings } from '@app/constants/relaySettings';
-import { CORE_KINDS, ensureCoreKinds, calculateInverseKinds, getAllPossibleKinds, isCoreKind } from '@app/constants/coreKinds';
+import { CORE_KINDS, ensureCoreKinds, calculateInverseKinds, getAllPossibleKinds, isCoreKind, getAllPossibleMediaTypes, calculateInverseMediaTypes } from '@app/constants/coreKinds';
 
 // Legacy interface - no longer used with new API
 // interface BackendRelaySettings { ... }
@@ -17,8 +17,6 @@ const getInitialSettings = (): Settings => ({
   videos: [],
   gitNestr: [],
   audio: [],
-  appBuckets: [],
-  dynamicAppBuckets: [],
   isKindsActive: true,
   isPhotosActive: true,
   isVideosActive: true,
@@ -45,40 +43,42 @@ const useRelaySettings = () => {
   const token = readToken();
   
   // Keep track of the last mode to prevent unnecessary updates
-  const lastMode = useRef(relaySettings.mode);
+  const lastMode = useRef<string | null>(null);
 
   /* eslint-disable react-hooks/exhaustive-deps */
-  // Effect to handle mode changes
+  // Effect to handle mode changes - only for manual user mode switches, not initial load
   useEffect(() => {
+    // Skip if this is the initial load (lastMode is undefined/null)
+    if (lastMode.current === undefined || lastMode.current === null) {
+      lastMode.current = relaySettings.mode;
+      return;
+    }
+
+    // Skip if mode hasn't actually changed
     if (relaySettings.mode === lastMode.current) {
       return;
     }
 
-    // Only clear arrays when user manually switches TO blacklist mode
-    // Don't clear if we're in blacklist mode and already have blocked items (loaded from backend)
-    if (relaySettings.mode === 'blacklist' && lastMode.current === 'whitelist') {
-      // Only clear if we don't have any blocked items (user switching, not loading from backend)
-      const hasBlockedItems = relaySettings.kinds.length > 0 || relaySettings.photos.length > 0 || 
-                             relaySettings.videos.length > 0 || relaySettings.audio.length > 0;
-      
-      if (!hasBlockedItems) {
-        // Store current settings before clearing
-        setPreviousSmartSettings({
-          kinds: relaySettings.kinds,
-          photos: relaySettings.photos,
-          videos: relaySettings.videos,
-          audio: relaySettings.audio,
-        });
+    console.log(`[useRelaySettings] Mode change detected: ${lastMode.current} -> ${relaySettings.mode}`);
 
-        // Clear selections in blacklist mode - user starts fresh and selects what to block
-        setRelaySettings(prev => ({
-          ...prev,
-          kinds: [],
-          photos: [],
-          videos: [],
-          audio: [],
-        }));
-      }
+    // When user manually switches TO blacklist mode from whitelist mode
+    if (relaySettings.mode === 'blacklist' && lastMode.current === 'whitelist') {
+      // Store current whitelist settings before clearing
+      setPreviousSmartSettings({
+        kinds: relaySettings.kinds,
+        photos: relaySettings.photos,
+        videos: relaySettings.videos,
+        audio: relaySettings.audio,
+      });
+
+      // Always clear selections when switching to blacklist mode - user starts fresh
+      setRelaySettings(prev => ({
+        ...prev,
+        kinds: [],
+        photos: [],
+        videos: [],
+        audio: [],
+      }));
     } else if (relaySettings.mode === 'whitelist' && lastMode.current === 'blacklist' && previousSmartSettings) {
       // Restore previous whitelist mode settings
       setRelaySettings(prev => ({
@@ -103,6 +103,12 @@ const useRelaySettings = () => {
     console.log('Raw backend settings:', backendData);
     const settings = getInitialSettings();
     
+    // Set the mode first to avoid triggering mode change logic during initial load
+    if (backendData.event_filtering?.mode) {
+      console.log(`[useRelaySettings] Setting lastMode to ${backendData.event_filtering.mode} during data load`);
+      lastMode.current = backendData.event_filtering.mode;
+    }
+    
     // Map from actual backend structure
     if (backendData.event_filtering) {
       settings.mode = backendData.event_filtering.mode || 'whitelist';
@@ -113,9 +119,16 @@ const useRelaySettings = () => {
       if (settings.mode === 'blacklist') {
         // In blacklist mode: backend sends allowed kinds, we need to calculate blocked kinds
         const allPossibleKinds = getAllPossibleKinds();
-        const blockedKinds = allPossibleKinds.filter(kind => !backendKinds.includes(kind));
+        const backendKindsSet = new Set(backendKinds);
+        const allKindsSet = new Set(allPossibleKinds);
+        
+        // Calculate blocked kinds: all possible kinds minus backend allowed kinds
+        const blockedKinds = Array.from(allKindsSet).filter(kind => !backendKindsSet.has(kind));
         // Only show non-core kinds as blocked (core kinds can't be blocked)
         settings.kinds = blockedKinds.filter(kind => !isCoreKind(kind));
+        
+        console.log('[useRelaySettings] Blacklist mode - Backend allowed kinds:', backendKinds);
+        console.log('[useRelaySettings] Blacklist mode - Calculated blocked kinds:', settings.kinds);
       } else {
         // In whitelist mode: backend sends allowed kinds directly
         settings.kinds = ensureCoreKinds(backendKinds);
@@ -124,9 +137,38 @@ const useRelaySettings = () => {
       // Extract mime types and file sizes from actual backend format
       const mediaDefinitions = backendData.event_filtering.media_definitions || {};
       // Handle both old and new field names for backward compatibility
-      settings.photos = mediaDefinitions.image?.mime_patterns || mediaDefinitions.image?.mimepatterns || [];
-      settings.videos = mediaDefinitions.video?.mime_patterns || mediaDefinitions.video?.mimepatterns || [];
-      settings.audio = mediaDefinitions.audio?.mime_patterns || mediaDefinitions.audio?.mimepatterns || [];
+      const backendPhotos = mediaDefinitions.image?.mime_patterns || mediaDefinitions.image?.mimepatterns || [];
+      const backendVideos = mediaDefinitions.video?.mime_patterns || mediaDefinitions.video?.mimepatterns || [];
+      const backendAudio = mediaDefinitions.audio?.mime_patterns || mediaDefinitions.audio?.mimepatterns || [];
+      
+      // Handle media types based on mode (same logic as kinds)
+      if (settings.mode === 'blacklist') {
+        // In blacklist mode: backend sends allowed media types, we need to calculate blocked types
+        const allPossiblePhotos = getAllPossibleMediaTypes('photos');
+        const allPossibleVideos = getAllPossibleMediaTypes('videos');
+        const allPossibleAudio = getAllPossibleMediaTypes('audio');
+        
+        // Use Sets for more reliable comparison
+        const backendPhotosSet = new Set(backendPhotos);
+        const backendVideosSet = new Set(backendVideos);
+        const backendAudioSet = new Set(backendAudio);
+        
+        settings.photos = allPossiblePhotos.filter(type => !backendPhotosSet.has(type));
+        settings.videos = allPossibleVideos.filter(type => !backendVideosSet.has(type));
+        settings.audio = allPossibleAudio.filter(type => !backendAudioSet.has(type));
+        
+        console.log('[useRelaySettings] Blacklist mode - Backend allowed photos:', backendPhotos);
+        console.log('[useRelaySettings] Blacklist mode - Calculated blocked photos:', settings.photos);
+        console.log('[useRelaySettings] Blacklist mode - Backend allowed videos:', backendVideos);
+        console.log('[useRelaySettings] Blacklist mode - Calculated blocked videos:', settings.videos);
+        console.log('[useRelaySettings] Blacklist mode - Backend allowed audio:', backendAudio);
+        console.log('[useRelaySettings] Blacklist mode - Calculated blocked audio:', settings.audio);
+      } else {
+        // In whitelist mode: backend sends allowed media types directly
+        settings.photos = backendPhotos;
+        settings.videos = backendVideos;
+        settings.audio = backendAudio;
+      }
       
       // Extract file size limits (handle both old and new field names)
       settings.photoMaxSizeMB = mediaDefinitions.image?.max_size_mb || mediaDefinitions.image?.maxsizemb || 100;
@@ -141,7 +183,8 @@ const useRelaySettings = () => {
       }
     }
 
-    // Store these as the previous whitelist settings if in whitelist mode
+    // Store these as the previous whitelist settings ONLY if in whitelist mode
+    // In blacklist mode, settings.kinds/photos/etc contain blocked items, not allowed items
     if (settings.mode === 'whitelist') {
       setPreviousSmartSettings({
         kinds: settings.kinds,
@@ -162,20 +205,33 @@ const useRelaySettings = () => {
   }, []);
 
   const transformToBackendSettings = useCallback((settings: Settings) => {
+    // Handle media types based on mode - same logic as kinds
+    const photoMimePatterns = settings.mode === 'blacklist' 
+      ? calculateInverseMediaTypes(settings.photos, 'photos') // For blacklist: send inverse (all types except blocked ones)
+      : settings.photos; // For whitelist: send selected types directly
+      
+    const videoMimePatterns = settings.mode === 'blacklist'
+      ? calculateInverseMediaTypes(settings.videos, 'videos') // For blacklist: send inverse (all types except blocked ones)
+      : settings.videos; // For whitelist: send selected types directly
+      
+    const audioMimePatterns = settings.mode === 'blacklist'
+      ? calculateInverseMediaTypes(settings.audio, 'audio') // For blacklist: send inverse (all types except blocked ones)
+      : settings.audio; // For whitelist: send selected types directly
+
     // Always create media definitions with correct field names to avoid backend conflicts
     const mediaDefinitions = {
       image: {
-        mime_patterns: settings.photos, // Only send correct field name
+        mime_patterns: photoMimePatterns, // Send processed mime patterns based on mode
         extensions: [".jpg", ".jpeg", ".png", ".gif", ".webp"],
         max_size_mb: settings.photoMaxSizeMB // Only send correct field name
       },
       video: {
-        mime_patterns: settings.videos, // Only send correct field name
+        mime_patterns: videoMimePatterns, // Send processed mime patterns based on mode
         extensions: [".mp4", ".webm", ".avi", ".mov"],
         max_size_mb: settings.videoMaxSizeMB // Only send correct field name
       },
       audio: {
-        mime_patterns: settings.audio, // Only send correct field name
+        mime_patterns: audioMimePatterns, // Send processed mime patterns based on mode
         extensions: [".mp3", ".wav", ".ogg", ".flac"],
         max_size_mb: settings.audioMaxSizeMB // Only send correct field name
       }
