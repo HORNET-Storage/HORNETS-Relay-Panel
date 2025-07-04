@@ -209,8 +209,8 @@ export const PaidSubscribers: React.FC = () => {
           style={{ top: 20 }}
         >
           <Row gutter={[16, 16]} style={{ padding: '16px 0' }}>
-            {(allSubscribers.length > 0 ? allSubscribers : subscribers).map((subscriber: SubscriberProfile) => (
-              <Col key={subscriber.pubkey} xs={24} sm={24} md={24} lg={24} xl={24}>
+            {sortedProfiles.map(([pubkey, subscriber]) => (
+              <Col key={pubkey} xs={24} sm={24} md={24} lg={24} xl={24}>
                 <div
                   style={{
                     display: 'flex',
@@ -390,8 +390,8 @@ export const PaidSubscribers: React.FC = () => {
         style={{ top: 20 }}
       >
         <Row gutter={[16, 16]} style={{ padding: '16px 0' }}>
-          {(allSubscribers.length > 0 ? allSubscribers : subscribers).map((subscriber: SubscriberProfile) => (
-            <Col key={subscriber.pubkey} xs={24} sm={24} md={24} lg={24} xl={24}>
+          {sortedProfiles.map(([pubkey, subscriber]) => (
+            <Col key={pubkey} xs={24} sm={24} md={24} lg={24} xl={24}>
               <div
                 style={{
                   display: 'flex',
