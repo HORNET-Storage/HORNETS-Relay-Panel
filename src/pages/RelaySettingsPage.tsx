@@ -10,7 +10,7 @@ import { useResponsive } from '@app/hooks/useResponsive';
 import useRelaySettings from '@app/hooks/useRelaySettings';
 import { DesktopLayout } from '@app/components/relay-settings/layouts/DesktopLayout';
 import { MobileLayout } from '@app/components/relay-settings/layouts/MobileLayout';
-import { Settings, Category } from '@app/constants/relaySettings';
+import { Settings } from '@app/constants/relaySettings';
 
 const RelaySettingsPage: React.FC = () => {
   const { t } = useTranslation();
@@ -33,8 +33,6 @@ const RelaySettingsPage: React.FC = () => {
     videos: [],
     gitNestr: [],
     audio: [],
-    appBuckets: [],
-    dynamicAppBuckets: [],
     isKindsActive: true,
     isPhotosActive: true,
     isVideosActive: true,
@@ -53,19 +51,6 @@ const RelaySettingsPage: React.FC = () => {
     JSON.parse(localStorage.getItem('dynamicKinds') || '[]'),
   );
 
-  const [dynamicAppBuckets, setDynamicAppBuckets] = useState<string[]>(
-    JSON.parse(localStorage.getItem('dynamicAppBuckets') || '[]'),
-  );
-
-  // Blacklist state
-  const [blacklist, setBlacklist] = useState({
-    kinds: [],
-    photos: [],
-    videos: [],
-    gitNestr: [],
-    audio: [],
-  });
-
   // Fetch initial settings
   useEffect(() => {
     fetchSettings();
@@ -74,27 +59,12 @@ const RelaySettingsPage: React.FC = () => {
   // Sync settings with relay settings
   useEffect(() => {
     if (relaySettings) {
-      console.log('Raw relay settings:', relaySettings); // For debugging
-
-      setSettings(prev => ({
+      setSettings({
         ...relaySettings,
         protocol: Array.isArray(relaySettings.protocol) ? relaySettings.protocol : [relaySettings.protocol]
-      }));
-      setDynamicAppBuckets(relaySettings.dynamicAppBuckets);
+      });
     }
   }, [relaySettings]);
-
-  // Reset blacklist when mode changes
-  useEffect(() => {
-    if (settings.mode === 'blacklist') return;
-    setBlacklist({
-      kinds: [],
-      photos: [],
-      videos: [],
-      gitNestr: [],
-      audio: [],
-    });
-  }, [settings.mode]);
 
   const handleModeChange = (checked: boolean) => {
     const newMode = checked ? 'whitelist' : 'blacklist';
@@ -127,8 +97,6 @@ const RelaySettingsPage: React.FC = () => {
         updateSettings('audio', settings.isAudioActive ? settings.audio : []),
         updateSettings('protocol', settings.protocol),
         updateSettings('isFileStorageActive', settings.isFileStorageActive),
-        updateSettings('appBuckets', settings.appBuckets),
-        updateSettings('dynamicAppBuckets', settings.dynamicAppBuckets),
         updateSettings('moderationMode', settings.moderationMode),
       ]);
 
@@ -151,35 +119,6 @@ const RelaySettingsPage: React.FC = () => {
   const handleFileStorageChange = (active: boolean) => {
     setSettings(prev => ({ ...prev, isFileStorageActive: active }));
     updateSettings('isFileStorageActive', active);
-  };
-
-  // App buckets handlers
-  const handleAppBucketsChange = (values: string[]) => {
-    setSettings(prev => ({ ...prev, appBuckets: values }));
-    updateSettings('appBuckets', values);
-  };
-
-  const handleDynamicAppBucketsChange = (values: string[]) => {
-    setSettings(prev => ({ ...prev, dynamicAppBuckets: values }));
-    updateSettings('dynamicAppBuckets', values);
-  };
-
-  const handleAddBucket = (bucket: string) => {
-    if (!bucket || dynamicAppBuckets.includes(bucket)) return;
-
-    const updatedBuckets = [...dynamicAppBuckets, bucket];
-    setDynamicAppBuckets(updatedBuckets);
-    setSettings(prev => ({ ...prev, dynamicAppBuckets: updatedBuckets }));
-    updateSettings('dynamicAppBuckets', updatedBuckets);
-    localStorage.setItem('dynamicAppBuckets', JSON.stringify(updatedBuckets));
-  };
-
-  const handleRemoveBucket = (bucket: string) => {
-    const updatedBuckets = dynamicAppBuckets.filter(b => b !== bucket);
-    setDynamicAppBuckets(updatedBuckets);
-    setSettings(prev => ({ ...prev, dynamicAppBuckets: updatedBuckets }));
-    updateSettings('dynamicAppBuckets', updatedBuckets);
-    localStorage.setItem('dynamicAppBuckets', JSON.stringify(updatedBuckets));
   };
 
   // Kinds section handlers
@@ -246,13 +185,6 @@ const RelaySettingsPage: React.FC = () => {
     isFileStorageActive: settings.isFileStorageActive,
     onProtocolsChange: handleProtocolChange,
     onFileStorageChange: handleFileStorageChange,
-    // App buckets props
-    appBuckets: settings.appBuckets,
-    dynamicAppBuckets: settings.dynamicAppBuckets,
-    onAppBucketsChange: handleAppBucketsChange,
-    onDynamicAppBucketsChange: handleDynamicAppBucketsChange,
-    onAddBucket: handleAddBucket,
-    onRemoveBucket: handleRemoveBucket,
     // Kinds props
     isKindsActive: settings.isKindsActive,
     selectedKinds: settings.kinds,

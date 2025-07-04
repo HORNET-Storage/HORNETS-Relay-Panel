@@ -7,8 +7,6 @@ export type Settings = {
   videos: string[];
   gitNestr: string[];
   audio: string[];
-  appBuckets: string[];
-  dynamicAppBuckets: string[];
   isKindsActive: boolean;
   isPhotosActive: boolean;
   isVideosActive: boolean;
@@ -22,7 +20,7 @@ export type Settings = {
   audioMaxSizeMB: number;
 }
 
-export type Category = 'kinds' | 'photos' | 'videos' | 'gitNestr' | 'audio' | 'dynamicKinds' | 'appBuckets' | 'dynamicAppBuckets' | 'photoMaxSizeMB' | 'videoMaxSizeMB' | 'audioMaxSizeMB';  
+export type Category = 'kinds' | 'photos' | 'videos' | 'gitNestr' | 'audio' | 'dynamicKinds' | 'photoMaxSizeMB' | 'videoMaxSizeMB' | 'audioMaxSizeMB';  
 export const noteOptions = [
   { kind: 0, kindString: 'kind0', description: 'Metadata', category: 1 },
   { kind: 1, kindString: 'kind1', description: 'Text Note', category: 1 },
@@ -53,17 +51,6 @@ export const noteOptions = [
   { kind: 19841, kindString: 'kind19841', description: 'Storage Manifest', category: 1 },
   { kind: 19842, kindString: 'kind19842', description: 'Storage Metadata', category: 1 },
   { kind: 19843, kindString: 'kind19843', description: 'Storage Delete', category: 1 },
-];
-export const appBuckets = [
-  { id: 'nostr', label: 'Nostr' },
-  {
-    id: 'gitnestr',
-    label: 'GitNestr',
-  },
-  {
-    id: 'NostrBox',
-    label: 'NostrBox',
-  },
 ];
 export const categories = [
   { id: 1, name: 'Basic Nostr Features' },

@@ -58,6 +58,16 @@ const dummyProfiles: SubscriberProfile[] = [
 // URL of the placeholder avatar that comes from the API
 const PLACEHOLDER_AVATAR_URL = 'http://localhost:3000/placeholder-avatar.png';
 
+// Global cache for subscriber data with 10-minute TTL
+interface SubscriberCache {
+  data: SubscriberProfile[];
+  timestamp: number;
+  hasMore: boolean;
+}
+
+const SUBSCRIBER_CACHE_DURATION = 600000; // 10 minutes in milliseconds
+const globalSubscriberCache = new Map<string, SubscriberCache>();
+
 const usePaidSubscribers = (pageSize = 20) => {
   const [subscribers, setSubscribers] = useState<SubscriberProfile[]>([]);
   const [loading, setLoading] = useState(false);
@@ -71,11 +81,9 @@ const usePaidSubscribers = (pageSize = 20) => {
 
   const fetchSubscribers = useCallback(async (reset = false) => {
     try {
-      console.log('[usePaidSubscribers] Starting to fetch subscribers...');
       setLoading(true);
       const token = readToken();
       if (!token) {
-        console.log('[usePaidSubscribers] No authentication token found, using dummy data');
         setUseDummyData(true);
         setSubscribers(dummyProfiles);
         setHasMore(false);
@@ -83,14 +91,24 @@ const usePaidSubscribers = (pageSize = 20) => {
       }
 
       const page = reset ? 1 : currentPage;
+      const cacheKey = `${page}-${pageSize}`;
+      
+      // Check cache first
+      const cached = globalSubscriberCache.get(cacheKey);
+      if (cached && (Date.now() - cached.timestamp) < SUBSCRIBER_CACHE_DURATION) {
+        setSubscribers(cached.data);
+        setHasMore(cached.hasMore);
+        setUseDummyData(false);
+        setCurrentPage(page + 1);
+        return;
+      }
+
       const queryParams = new URLSearchParams({
         page: page.toString(),
         limit: pageSize.toString(),
       });
 
       const requestUrl = `${config.baseURL}/api/paid-subscriber-profiles?${queryParams}`;
-      console.log(`[usePaidSubscribers] Fetching from URL: ${requestUrl}`);
-      console.log(`[usePaidSubscribers] Current baseURL: ${config.baseURL}`);
 
       const response = await fetch(requestUrl, {
         headers: {
@@ -99,31 +117,22 @@ const usePaidSubscribers = (pageSize = 20) => {
         },
       });
 
-      console.log(`[usePaidSubscribers] Response status: ${response.status}`);
       
       if (!response.ok) {
         if (response.status === 401) {
           handleLogout();
-          console.log('[usePaidSubscribers] Authentication failed, using dummy data');
-          return;
+            return;
         }
         throw new Error(`Request failed: ${response.status}`);
       }
 
-      // Clone the response before consuming it with json() so we can log the raw text if needed
-      const responseClone = response.clone();
       let data: SubscriberProfile[] = [];
       
       try {
         data = await response.json();
-        console.log('[usePaidSubscribers] Response data (raw):', data);
-        console.log('[usePaidSubscribers] Data constructor:', data.constructor?.name);
-        console.log('[usePaidSubscribers] Data properties:', Object.getOwnPropertyNames(data));
-        console.log('[usePaidSubscribers] JSON.stringify(data):', JSON.stringify(data));
         
         // Ensure data is always an array
         if (!Array.isArray(data)) {
-          console.warn('[usePaidSubscribers] Data is not an array, forcing to array format');
           if (data && typeof data === 'object') {
             // If data is an object but not an array, try to convert it
             if (Object.keys(data).length > 0) {
@@ -137,25 +146,17 @@ const usePaidSubscribers = (pageSize = 20) => {
         }
       } catch (jsonError) {
         console.error('[usePaidSubscribers] Error parsing JSON response:', jsonError);
-        // Try to get the raw text to see what's being returned
-        const rawText = await responseClone.text();
-        console.log('[usePaidSubscribers] Raw response text:', rawText);
         data = [];
       }
 
-      console.log(`[usePaidSubscribers] Normalized data:`, data);
-      console.log(`[usePaidSubscribers] Data length: ${data?.length}, typeof data: ${typeof data}, Array.isArray(data): ${Array.isArray(data)}`);
       
       // If we have backend data, use it as the primary source and return subscribers for NDK enhancement
       if (data && Array.isArray(data) && data.length > 0) {
-        console.log(`[usePaidSubscribers] Backend data detected, using as primary source`);
           
         try {
           // Process the profiles to replace placeholder avatar URLs
           const processedProfiles: SubscriberProfile[] = [];
           
-          console.log(`[usePaidSubscribers] First item pubkey:`, data[0]?.pubkey);
-          console.log(`[usePaidSubscribers] First item picture:`, data[0]?.picture);
           
           for (const profile of data) {
             if (!profile || !profile.pubkey) {
@@ -168,7 +169,6 @@ const usePaidSubscribers = (pageSize = 20) => {
             let pictureUrl = profile.picture;
             
             if (usesPlaceholder) {
-              console.log(`[usePaidSubscribers] Replacing placeholder for ${profile.pubkey}`);
               pictureUrl = adminDefaultAvatar;
             }
             
@@ -181,8 +181,6 @@ const usePaidSubscribers = (pageSize = 20) => {
             });
           }
           
-          console.log('[usePaidSubscribers] Backend data processed successfully');
-          console.log('[usePaidSubscribers] Processed profiles count:', processedProfiles.length);
           
           // Update state with backend data
           setUseDummyData(false);
@@ -190,7 +188,13 @@ const usePaidSubscribers = (pageSize = 20) => {
           setHasMore(data.length === pageSize);
           setCurrentPage(page + 1);
           
-          console.log('[usePaidSubscribers] Backend data set as primary source');
+          // Cache the successful result
+          globalSubscriberCache.set(cacheKey, {
+            data: processedProfiles,
+            timestamp: Date.now(),
+            hasMore: data.length === pageSize
+          });
+          
           return; // Exit early after processing backend data
         } catch (processingError) {
           console.error('[usePaidSubscribers] Error processing backend profiles:', processingError);
@@ -200,14 +204,11 @@ const usePaidSubscribers = (pageSize = 20) => {
       
       // Fallback logic if no backend data - only use dummy data when truly no data available
       if (isMounted.current) {
-        console.log('[usePaidSubscribers] No backend data found');
         // Only use dummy data if we have absolutely nothing and no existing real subscribers
         if (subscribers.length === 0 && !subscribers.some(s => !s.pubkey.startsWith('dummy-'))) {
-          console.log('[usePaidSubscribers] No existing subscribers, using dummy data as fallback');
           setUseDummyData(true);
           setSubscribers(dummyProfiles);
         } else {
-          console.log('[usePaidSubscribers] Keeping existing subscribers data or have real subscribers');
           setUseDummyData(false);
         }
         setHasMore(false);
@@ -219,11 +220,9 @@ const usePaidSubscribers = (pageSize = 20) => {
       
       // Only use dummy data if we don't have any real subscribers
       if (subscribers.length === 0 || subscribers.every(s => s.pubkey.startsWith('dummy-'))) {
-        console.log(`[usePaidSubscribers] ${errorMessage}, using dummy data`);
         setUseDummyData(true);
         setSubscribers(dummyProfiles);
       } else {
-        console.log(`[usePaidSubscribers] ${errorMessage}, keeping existing real subscribers`);
         setUseDummyData(false);
       }
       setHasMore(false);
@@ -231,20 +230,16 @@ const usePaidSubscribers = (pageSize = 20) => {
       if (isMounted.current) {
         setLoading(false);
       }
-      console.log('[usePaidSubscribers] Fetch operation completed');
     }
-  }, [currentPage, pageSize, handleLogout]);
+  }, [currentPage, pageSize, handleLogout, subscribers]);
 
   useEffect(() => {
-    console.log('[usePaidSubscribers] Hook mounted');
     return () => {
-      console.log('[usePaidSubscribers] Hook unmounting');
       isMounted.current = false;
     };
   }, []);
 
   useEffect(() => {
-    console.log('[usePaidSubscribers] Initial fetch triggered');
     fetchSubscribers(true);
   }, [fetchSubscribers]);
 

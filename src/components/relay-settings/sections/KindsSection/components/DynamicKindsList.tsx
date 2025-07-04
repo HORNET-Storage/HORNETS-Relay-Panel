@@ -21,7 +21,7 @@ export const DynamicKindsList: React.FC<DynamicKindsListProps> = ({
   onRemoveKind,
   mode,
 }) => {
-  if (!dynamicKinds.length || mode === 'whitelist') {
+  if (!dynamicKinds.length) {
     return null;
   }
 
@@ -50,7 +50,7 @@ export const DynamicKindsList: React.FC<DynamicKindsListProps> = ({
               isActive={true}
               style={{ fontSize: '1rem', paddingRight: '.8rem', paddingLeft: '.8rem' }}
             >
-              {`kind` + kind}
+              {kind}
             </S.CheckboxLabel>
           </div>
           <BaseButton

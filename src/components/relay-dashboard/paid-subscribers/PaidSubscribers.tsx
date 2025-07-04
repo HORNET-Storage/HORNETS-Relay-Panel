@@ -20,6 +20,139 @@ import { UserOutlined } from '@ant-design/icons';
 import { CreatorButton } from './avatar/SubscriberAvatar.styles';
 const { Text } = Typography;
 
+// LRU Cache implementation for profile caching
+interface CachedProfile {
+  profile: SubscriberProfile;
+  timestamp: number;
+  accessCount: number;
+  lastAccessed: number;
+}
+
+const PROFILE_CACHE_DURATION = 600000; // 10 minutes in milliseconds
+const MAX_CACHE_SIZE = 5000; // Maximum number of cached profiles
+const CLEANUP_INTERVAL = 300000; // Clean up every 5 minutes
+const MAX_REQUEST_CACHE_SIZE = 100; // Maximum concurrent requests
+
+class ProfileCache {
+  private cache = new Map<string, CachedProfile>();
+  private requestCache = new Map<string, Promise<SubscriberProfile>>();
+  private cleanupTimer: NodeJS.Timeout | null = null;
+
+  constructor() {
+    this.startCleanupTimer();
+  }
+
+  private startCleanupTimer(): void {
+    this.cleanupTimer = setInterval(() => {
+      this.cleanup();
+    }, CLEANUP_INTERVAL);
+  }
+
+  private cleanup(): void {
+    const now = Date.now();
+    const expiredKeys: string[] = [];
+    
+    // Find expired entries - convert to array first to avoid iterator issues
+    const cacheEntries = Array.from(this.cache.entries());
+    for (const [key, cached] of cacheEntries) {
+      if (now - cached.timestamp > PROFILE_CACHE_DURATION) {
+        expiredKeys.push(key);
+      }
+    }
+
+    // Remove expired entries
+    expiredKeys.forEach(key => this.cache.delete(key));
+
+    // If still over capacity, remove least recently used entries
+    if (this.cache.size > MAX_CACHE_SIZE) {
+      const entries = Array.from(this.cache.entries());
+      entries.sort((a, b) => a[1].lastAccessed - b[1].lastAccessed);
+      
+      const toRemove = entries.slice(0, this.cache.size - MAX_CACHE_SIZE);
+      toRemove.forEach(([key]) => this.cache.delete(key));
+    }
+
+    // Cleanup request cache if it gets too large
+    if (this.requestCache.size > MAX_REQUEST_CACHE_SIZE) {
+      this.requestCache.clear();
+    }
+
+  }
+
+  getCachedProfile(pubkey: string): SubscriberProfile | null {
+    const cached = this.cache.get(pubkey);
+    if (!cached) return null;
+    
+    const isExpired = Date.now() - cached.timestamp > PROFILE_CACHE_DURATION;
+    if (isExpired) {
+      this.cache.delete(pubkey);
+      return null;
+    }
+    
+    // Update access statistics
+    cached.accessCount++;
+    cached.lastAccessed = Date.now();
+    
+    return cached.profile;
+  }
+
+  setCachedProfile(pubkey: string, profile: SubscriberProfile): void {
+    const now = Date.now();
+    this.cache.set(pubkey, {
+      profile,
+      timestamp: now,
+      accessCount: 1,
+      lastAccessed: now
+    });
+
+    // Trigger cleanup if cache is getting too large
+    if (this.cache.size > MAX_CACHE_SIZE * 1.1) {
+      this.cleanup();
+    }
+  }
+
+  getRequestPromise(pubkey: string): Promise<SubscriberProfile> | null {
+    return this.requestCache.get(pubkey) || null;
+  }
+
+  setRequestPromise(pubkey: string, promise: Promise<SubscriberProfile>): void {
+    this.requestCache.set(pubkey, promise);
+    
+    // Clean up when promise completes
+    promise.finally(() => {
+      this.requestCache.delete(pubkey);
+    });
+  }
+
+  getCacheStats(): { size: number; requestCacheSize: number } {
+    return {
+      size: this.cache.size,
+      requestCacheSize: this.requestCache.size
+    };
+  }
+
+  destroy(): void {
+    if (this.cleanupTimer) {
+      clearInterval(this.cleanupTimer);
+      this.cleanupTimer = null;
+    }
+    this.cache.clear();
+    this.requestCache.clear();
+  }
+}
+
+// Global profile cache instance
+const globalProfileCache = new ProfileCache();
+
+// Helper functions for backward compatibility
+const getCachedProfile = (pubkey: string): SubscriberProfile | null => {
+  return globalProfileCache.getCachedProfile(pubkey);
+};
+
+const setCachedProfile = (pubkey: string, profile: SubscriberProfile): void => {
+  globalProfileCache.setCachedProfile(pubkey, profile);
+};
+
 export const PaidSubscribers: React.FC = () => {
   const hookResult = usePaidSubscribers(12);
   const { subscribers, fetchMore, hasMore, loading, useDummyData } = hookResult;
@@ -31,7 +164,6 @@ export const PaidSubscribers: React.FC = () => {
 
   // Modal state for view all subscribers
   const [isViewAllModalVisible, setIsViewAllModalVisible] = useState(false);
-  const [allSubscribers, setAllSubscribers] = useState<SubscriberProfile[]>([]);
   const [loadingProfiles, setLoadingProfiles] = useState(true);
 
   const [subscriberProfiles, setSubscriberProfiles] = useState<Map<string, SubscriberProfile>>(
@@ -68,11 +200,12 @@ export const PaidSubscribers: React.FC = () => {
       newMap.set(pubkey, profile);
       return newMap;
     });
+    // Cache the profile globally
+    setCachedProfile(pubkey, profile);
   };
   // Handle opening view all modal
   const handleViewAll = async () => {
     setIsViewAllModalVisible(true);
-    setAllSubscribers([...subscribers]); // Start with current subscribers
 
     // Fetch more subscribers if available
     let canFetchMore = hasMore;
@@ -90,23 +223,77 @@ export const PaidSubscribers: React.FC = () => {
   };
  
   useEffect(() => {
-    // Implement hybrid profile fetching: NDK first, fallback to backend data
+    // Implement hybrid profile fetching with 10-minute caching
     if (useDummyData) {
       setLoadingProfiles(false);
       return;
     }
 
-    const fetchProfiles = async () => {
-      if (!ndkInstance || !ndkInstance.ndk) {
-        setLoadingProfiles(false);
-        return;
+    const fetchSingleProfile = async (subscriber: SubscriberProfile): Promise<SubscriberProfile> => {
+      // Check if we already have a cached profile that's still valid
+      const cachedProfile = getCachedProfile(subscriber.pubkey);
+      if (cachedProfile) {
+        return cachedProfile;
       }
 
+      // Check if there's already a request in progress for this profile
+      const existingRequest = globalProfileCache.getRequestPromise(subscriber.pubkey);
+      if (existingRequest) {
+        return existingRequest;
+      }
 
-      // Process each subscriber with hybrid approach
+      // Create new request
+      const profileRequest = (async (): Promise<SubscriberProfile> => {
+        try {
+          
+          if (!ndkInstance || !ndkInstance.ndk) {
+            // No NDK available, return backend data
+            return {
+              ...subscriber,
+              name: subscriber.name || 'Anonymous Subscriber',
+              picture: subscriber.picture || '',
+              about: subscriber.about || ''
+            };
+          }
+
+          // Try to fetch profile from NDK (user's relay + other relays)
+          const user = await ndkInstance.ndk?.getUser({ pubkey: subscriber.pubkey }).fetchProfile();
+          
+          if (user && (user.name || user.picture || user.about)) {
+            // NDK returned a profile - use it as the primary source
+            const ndkProfile = convertNDKUserProfileToSubscriberProfile(subscriber.pubkey, user);
+            return ndkProfile;
+          } else {
+            // NDK came up empty - fallback to backend data
+            return {
+              ...subscriber,
+              name: subscriber.name || 'Anonymous Subscriber',
+              picture: subscriber.picture || '',
+              about: subscriber.about || ''
+            };
+          }
+        } catch (error) {
+          // Error occurred - fallback to backend data
+          return {
+            ...subscriber,
+            name: subscriber.name || 'Anonymous Subscriber',
+            picture: subscriber.picture || '',
+            about: subscriber.about || ''
+          };
+        }
+      })();
+
+      // Store the promise in cache
+      globalProfileCache.setRequestPromise(subscriber.pubkey, profileRequest);
+
+      return profileRequest;
+    };
+
+    const fetchProfiles = async () => {
+      // Process each subscriber with cached hybrid approach
       await Promise.all(
         subscribers.map(async (subscriber) => {
-          // Skip if we already have a complete profile in our map
+          // Skip if we already have a complete profile in our local map
           const existingProfile = subscriberProfiles.get(subscriber.pubkey);
           const hasValidProfile = existingProfile && (
             (existingProfile.name && existingProfile.name !== 'Anonymous Subscriber') ||
@@ -119,30 +306,10 @@ export const PaidSubscribers: React.FC = () => {
           }
 
           try {
-            
-            // Try to fetch profile from NDK (user's relay + other relays)
-            const user = await ndkInstance.ndk?.getUser({ pubkey: subscriber.pubkey }).fetchProfile();
-            
-            if (user && (user.name || user.picture || user.about)) {
-              // NDK returned a profile - use it as the primary source
-              
-              const ndkProfile = convertNDKUserProfileToSubscriberProfile(subscriber.pubkey, user);
-              updateSubscriberProfile(subscriber.pubkey, ndkProfile);
-            } else {
-              // NDK came up empty - fallback to backend data
-              
-              // Use the backend data as-is since NDK had no better information
-              updateSubscriberProfile(subscriber.pubkey, {
-                ...subscriber,
-                // Ensure we have fallback values if backend data is also incomplete
-                name: subscriber.name || 'Anonymous Subscriber',
-                picture: subscriber.picture || '',
-                about: subscriber.about || ''
-              });
-            }
+            const profile = await fetchSingleProfile(subscriber);
+            updateSubscriberProfile(subscriber.pubkey, profile);
           } catch (error) {
-            
-            // Error occurred - fallback to backend data
+            // Use fallback profile
             updateSubscriberProfile(subscriber.pubkey, {
               ...subscriber,
               name: subscriber.name || 'Anonymous Subscriber',
@@ -157,7 +324,7 @@ export const PaidSubscribers: React.FC = () => {
     };
 
     fetchProfiles();
-  }, [subscribers, ndkInstance]);
+  }, [subscribers, ndkInstance, useDummyData, subscriberProfiles]);
 
   // Handle closing view all modal
   const handleCloseViewAllModal = () => {
