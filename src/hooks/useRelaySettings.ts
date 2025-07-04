@@ -3,7 +3,7 @@ import config from '@app/config/config';
 import { readToken } from '@app/services/localStorage.service';
 import { useHandleLogout } from './authUtils';
 import { Settings } from '@app/constants/relaySettings';
-import { CORE_KINDS, ensureCoreKinds } from '@app/constants/coreKinds';
+import { CORE_KINDS, ensureCoreKinds, calculateInverseKinds, getAllPossibleKinds, isCoreKind } from '@app/constants/coreKinds';
 
 // Legacy interface - no longer used with new API
 // interface BackendRelaySettings { ... }
@@ -54,25 +54,32 @@ const useRelaySettings = () => {
       return;
     }
 
-    lastMode.current = relaySettings.mode;
+    // Only clear arrays when user manually switches TO blacklist mode
+    // Don't clear if we're in blacklist mode and already have blocked items (loaded from backend)
+    if (relaySettings.mode === 'blacklist' && lastMode.current === 'whitelist') {
+      // Only clear if we don't have any blocked items (user switching, not loading from backend)
+      const hasBlockedItems = relaySettings.kinds.length > 0 || relaySettings.photos.length > 0 || 
+                             relaySettings.videos.length > 0 || relaySettings.audio.length > 0;
+      
+      if (!hasBlockedItems) {
+        // Store current settings before clearing
+        setPreviousSmartSettings({
+          kinds: relaySettings.kinds,
+          photos: relaySettings.photos,
+          videos: relaySettings.videos,
+          audio: relaySettings.audio,
+        });
 
-    if (relaySettings.mode === 'blacklist') {
-      // Store current settings before clearing
-      setPreviousSmartSettings({
-        kinds: relaySettings.kinds,
-        photos: relaySettings.photos,
-        videos: relaySettings.videos,
-        audio: relaySettings.audio,
-      });
-
-      setRelaySettings(prev => ({
-        ...prev,
-        kinds: [],
-        photos: [],
-        videos: [],
-        audio: [],
-      }));
-    } else if (relaySettings.mode === 'whitelist' && previousSmartSettings) {
+        // Clear selections in blacklist mode - user starts fresh and selects what to block
+        setRelaySettings(prev => ({
+          ...prev,
+          kinds: [],
+          photos: [],
+          videos: [],
+          audio: [],
+        }));
+      }
+    } else if (relaySettings.mode === 'whitelist' && lastMode.current === 'blacklist' && previousSmartSettings) {
       // Restore previous whitelist mode settings
       setRelaySettings(prev => ({
         ...prev,
@@ -82,6 +89,9 @@ const useRelaySettings = () => {
         audio: previousSmartSettings.audio,
       }));
     }
+
+    // Update lastMode after processing
+    lastMode.current = relaySettings.mode;
   }, [relaySettings.mode, previousSmartSettings]);
   /* eslint-enable react-hooks/exhaustive-deps */
 
@@ -97,9 +107,19 @@ const useRelaySettings = () => {
     if (backendData.event_filtering) {
       settings.mode = backendData.event_filtering.mode || 'whitelist';
       settings.moderationMode = backendData.event_filtering.moderation_mode || 'strict';
-      // Always ensure core kinds are included from backend data
+      // Handle kinds based on mode
       const backendKinds = backendData.event_filtering.kind_whitelist || [];
-      settings.kinds = ensureCoreKinds(backendKinds);
+      
+      if (settings.mode === 'blacklist') {
+        // In blacklist mode: backend sends allowed kinds, we need to calculate blocked kinds
+        const allPossibleKinds = getAllPossibleKinds();
+        const blockedKinds = allPossibleKinds.filter(kind => !backendKinds.includes(kind));
+        // Only show non-core kinds as blocked (core kinds can't be blocked)
+        settings.kinds = blockedKinds.filter(kind => !isCoreKind(kind));
+      } else {
+        // In whitelist mode: backend sends allowed kinds directly
+        settings.kinds = ensureCoreKinds(backendKinds);
+      }
       
       // Extract mime types and file sizes from actual backend format
       const mediaDefinitions = backendData.event_filtering.media_definitions || {};
@@ -166,7 +186,9 @@ const useRelaySettings = () => {
         event_filtering: {
           mode: settings.mode,
           moderation_mode: settings.moderationMode,
-          kind_whitelist: ensureCoreKinds(settings.kinds), // Always include core kinds
+          kind_whitelist: settings.mode === 'blacklist' 
+            ? calculateInverseKinds(settings.kinds) // For blacklist: send inverse (all kinds except blocked ones)
+            : ensureCoreKinds(settings.kinds), // For whitelist: send selected kinds directly
           media_definitions: mediaDefinitions,
           dynamic_kinds: {
             enabled: false,

@@ -97,6 +97,7 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({
     onKindsActiveChange,
     onKindsChange,
     onDynamicKindsChange,
+    onAddKind,
     onRemoveKind,
     // Media props
     photos,
@@ -171,6 +172,7 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({
                         onKindsActiveChange={onKindsActiveChange}
                         onKindsChange={onKindsChange}
                         onDynamicKindsChange={onDynamicKindsChange}
+                        onAddKind={onAddKind}
                         onRemoveKind={onRemoveKind}
                     />
 

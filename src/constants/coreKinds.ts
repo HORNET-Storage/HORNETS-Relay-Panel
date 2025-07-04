@@ -23,3 +23,21 @@ export const ensureCoreKinds = (kindList: string[]): string[] => {
 export const isCoreKind = (kind: string): boolean => {
   return CORE_KINDS.includes(kind);
 };
+
+// Helper function to get all possible kinds from noteOptions
+export const getAllPossibleKinds = (): string[] => {
+  // Import noteOptions dynamically to avoid circular dependency
+  const { noteOptions } = require('../constants/relaySettings');
+  return noteOptions.map((option: any) => option.kindString);
+};
+
+// Helper function to calculate inverse for blacklist mode
+export const calculateInverseKinds = (selectedKinds: string[]): string[] => {
+  const allPossibleKinds = getAllPossibleKinds();
+  // In blacklist mode: selected = blocked, so remove selected from all possible kinds
+  // Core kinds can never be blocked, so they're always in the whitelist
+  const allowedKinds = allPossibleKinds.filter(kind => 
+    !selectedKinds.includes(kind) || isCoreKind(kind)
+  );
+  return allowedKinds;
+};
