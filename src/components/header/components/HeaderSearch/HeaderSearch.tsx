@@ -37,7 +37,7 @@ export const HeaderSearch: React.FC = () => {
 
   useEffect(() => {
     setModalOpen(false);
-    setOverlayOpen(false);
+    //setOverlayOpen(false);
   }, [pathname]);
 
   return (

@@ -7,6 +7,7 @@ import { BaseCol } from '../common/BaseCol/BaseCol';
 
 export const HeaderActionWrapper = styled.div`
   cursor: pointer;
+  position: relative;
 
   & > .ant-btn > span[role='img'],
   .ant-badge {
@@ -20,6 +21,18 @@ export const HeaderActionWrapper = styled.div`
   & .ant-badge {
     display: inline-block;
   }
+`;
+
+export const InvalidPubkey = styled.div`
+  position: absolute;
+  top: 3rem;
+  left: 2rem;
+  width: 100%;
+  color: var(--error-color);
+  height: 100%;
+  display: flex;
+  align-items: center;
+  font-weight: bold;
 `;
 
 export const DropdownCollapse = styled(BaseCollapse)`

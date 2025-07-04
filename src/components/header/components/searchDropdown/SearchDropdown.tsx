@@ -8,6 +8,8 @@ import { BasePopover } from '@app/components/common/BasePopover/BasePopover';
 import { NDKUserProfile, useNDK } from '@nostr-dev-kit/ndk-hooks';
 import usePaidSubscribers from '@app/hooks/usePaidSubscribers';
 import { convertNDKUserProfileToSubscriberProfile } from '@app/utils/utils';
+import { InvalidPubkey } from '../../Header.styles';
+
 import { SubscriberProfile } from '@app/hooks/usePaidSubscribers';
 import { SubscriberDetailModal } from '@app/components/relay-dashboard/paid-subscribers/SubscriberDetailModal';
 interface SearchOverlayProps {
@@ -30,6 +32,7 @@ export const SearchDropdown: React.FC<SearchOverlayProps> = ({
   const [fetchingProfile, setFetchingProfile] = useState(false);
   const [fetchingFailed, setFetchingFailed] = useState(false);
   const [subscriberProfile, setSubscriberProfile] = useState<SubscriberProfile | null>(null);
+  const [invalidPubkey, setInvalidPubkey] = useState(false);
   const { subscribers } = usePaidSubscribers();
   const ndkInstance = useNDK();
   const { t } = useTranslation();
@@ -95,12 +98,20 @@ export const SearchDropdown: React.FC<SearchOverlayProps> = ({
           setSubscriberProfile(subscriberProfile);
         }
       }
+    }else{
+      setInvalidPubkey(true);
     }
   };
   const onCloseSubscriberDetailModal = () => {
     setSubscriberDetailModalOpen(false);
     setSubscriberProfile(null);
   };
+
+  useEffect(() => {
+    if(query.length === 0) {
+      setInvalidPubkey(false);
+    }
+  }, [query]);
   return (
     <>
       <BasePopover
@@ -111,6 +122,11 @@ export const SearchDropdown: React.FC<SearchOverlayProps> = ({
         getPopupContainer={() => ref.current}
       >
         <HeaderActionWrapper>
+          {invalidPubkey && (
+            <InvalidPubkey>
+              {"Invalid pubkey. Please enter a hexadecimal string."}
+            </InvalidPubkey>
+          )}
           <InputSearch
             width="100%"
             value={query}
