@@ -40,8 +40,6 @@ export const getUserActivities = (handleLogout: () => void): Promise<WalletTrans
       return [];
     }
     // Assuming your backend response matches the WalletTransaction interface
-    // eslint-disable-next-line
-    console.log("User Activity Data: ", data)
     return data.map((item: any) => ({
       id: item.ID,
       witness_tx_id: item.Address,

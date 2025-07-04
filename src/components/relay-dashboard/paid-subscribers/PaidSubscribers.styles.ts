@@ -29,7 +29,7 @@ export const ArrowBtn = styled(BaseButton)`
 
 export const CardWrapper = styled.div`
   margin: 0 0.40625rem;
-
+  width: min-content;
   @media only screen and ${media.xl} {
     margin: 0 0.625rem;
   }
@@ -42,4 +42,17 @@ export const EmptyState = styled.div`
   padding: 2rem;
   color: var(--text-light-color);
   font-size: 1rem;
+`;
+export const FlexWrapper = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  width: 90%;
+  margin: 0 auto;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+
+  @media only screen and ${media.xl} {
+    gap: 0.625rem;
+  }
 `;

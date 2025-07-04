@@ -33,8 +33,6 @@ export const TotalEarning: React.FC = () => {
   const isIncreased = latestRate && previousRate ? latestRate > previousRate : false;
   const rateDifference = latestRate && previousRate ? ((latestRate - previousRate) / previousRate) * 100 : 0;
 
-  console.log(`latestRate: ${latestRate} previousRate: ${previousRate}`);
-  console.log(`Rate difference: ${rateDifference}`);
 
   if (isLoading) {
     return <div>{t('common.loading')}</div>;

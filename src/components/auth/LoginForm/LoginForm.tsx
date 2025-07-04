@@ -70,9 +70,9 @@ export const LoginForm: React.FC = () => {
         console.log('Signed event:', signedEvent);
   
         const response = await verifyChallenge({
-          challenge: signedEvent.content,
+          challenge: event.content,
           signature: signedEvent.sig,
-          messageHash: signedEvent.id,
+          messageHash: event.id,
           event: signedEvent,
         });
   

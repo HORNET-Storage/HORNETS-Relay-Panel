@@ -11,6 +11,11 @@ module.exports = {
       webpackConfig.plugins = webpackConfig.plugins.filter(plugin => 
         !(plugin.constructor && plugin.constructor.name === 'PrettierPlugin')
       );
+      webpackConfig.module.rules.push({
+        test: /\.mjs$/,
+        include: /node_modules/,
+        type: 'javascript/auto',
+      });
       return webpackConfig;
     },
     plugins: [
