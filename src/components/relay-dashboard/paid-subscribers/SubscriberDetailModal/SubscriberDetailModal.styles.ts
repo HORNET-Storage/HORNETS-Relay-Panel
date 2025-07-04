@@ -1,7 +1,6 @@
 import styled from 'styled-components';
-import { Card, Typography, Button, Badge } from 'antd';
+import { Card, Typography, Button, Badge, Modal } from 'antd';
 import { BORDER_RADIUS, FONT_SIZE, FONT_WEIGHT, FONT_FAMILY } from '@app/styles/themes/constants';
-import { BaseBadge } from '@app/components/common/BaseBadge/BaseBadge';
 const { Title, Text, Paragraph } = Typography;
 
 export const StyledModal = styled(Card)`
@@ -209,3 +208,15 @@ export const SubscriptionBadge = styled(Badge.Ribbon)<SubscriptionBadgeProps>`
   background: ${({ subscribed }) => (subscribed ? 'var(--ant-primary-color)' : 'var(--error-color)')};
   color: var(--text-main-color);
 `;
+
+export const StateModal = styled(Modal)`
+
+  .ant-modal-body {
+    height: 50vh;
+    flex-direction: column;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+`

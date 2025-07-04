@@ -24,27 +24,27 @@ export const SubscriberDetailModal: React.FC<SubscriberDetailModalProps> = ({ su
   // Loading state
   if (!subscriber && loading && !fetchFailed) {
     return (
-      <Modal open={isVisible} footer={null} onCancel={onClose} centered>
+      <S.StateModal open={isVisible} footer={null} onCancel={onClose} centered>
         <Spin tip="Loading..." />
-      </Modal>
+      </S.StateModal>
     );
   }
 
   // Error state
   if (!subscriber && !loading && fetchFailed) {
     return (
-      <Modal open={isVisible} footer={null} onCancel={onClose} centered>
+      <S.StateModal open={isVisible} footer={null} onCancel={onClose} centered>
         <Typography.Text type="danger">Failed to fetch subscriber profile. Please try again.</Typography.Text>
-      </Modal>
+      </S.StateModal>
     );
   }
 
   // Not found state
   if (!subscriber && !loading &&  !fetchFailed) {
     return (
-      <Modal open={isVisible} footer={null} onCancel={onClose} centered>
+      <S.StateModal open={isVisible} footer={null} onCancel={onClose} centered>
         <Typography.Text type="secondary">Couldn't find this subscriber profile.</Typography.Text>
-      </Modal>
+      </S.StateModal>
     );
   }
   if (!subscriber) {
