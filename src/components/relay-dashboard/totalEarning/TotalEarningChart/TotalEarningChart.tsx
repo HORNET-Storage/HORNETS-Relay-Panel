@@ -20,8 +20,6 @@ export const TotalEarningChart: React.FC<TotalEarningChartProps> = ({ xAxisData,
   const theme = useAppSelector((state) => state.theme.theme);
   const { t } = useTranslation();
 
-  console.log('xAxisData:', xAxisData);
-  console.log('earningData:', earningData);
 
   // Ensure all values are numbers and handle empty arrays
   const numericData = earningData.data.map(val => Number(val)).filter(val => !isNaN(val));

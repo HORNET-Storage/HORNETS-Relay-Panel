@@ -46,28 +46,19 @@ const useChartData = () => {
 
         const data: FileCountResponse = await response.json();
         
-        // Log the complete backend response for debugging
-        console.log('=== CHART DATA BACKEND RESPONSE ===');
-        console.log('Full response:', JSON.stringify(data, null, 2));
-        console.log('Response keys:', Object.keys(data));
-        console.log('==============================');
 
         // Process the data into chartDataItems using translated names
         // Handle dynamic media types while maintaining UI compatibility
         const newChartData: ChartDataItem[] = [];
         
         // Always include kinds first
-        console.log('Adding kinds data:', { value: data.kinds, name: t('categories.kinds') });
         newChartData.push({ value: data.kinds, name: t('categories.kinds') });
         
         // Destructure to separate kinds from media types
         const { kinds, ...mediaCounts } = data;
-        console.log('Media counts after destructuring:', mediaCounts);
-        console.log('Media count entries:', Object.entries(mediaCounts));
         
         // Map dynamic media types to chart data with fallback translations
         Object.entries(mediaCounts).forEach(([mediaType, count]) => {
-          console.log(`Processing media type: ${mediaType} with count: ${count}`);
           let translationKey = '';
           let fallbackName = '';
           
@@ -99,14 +90,9 @@ const useChartData = () => {
           // Use translation if available, otherwise use fallback
           const displayName = t(translationKey, { defaultValue: fallbackName });
           const chartItem = { value: count, name: displayName };
-          console.log(`Adding chart item:`, chartItem);
           newChartData.push(chartItem);
         });
 
-        console.log('=== FINAL CHART DATA ===');
-        console.log('Final chart data:', newChartData);
-        console.log('Chart data length:', newChartData.length);
-        console.log('========================');
         
         setChartData(newChartData);
       } catch (error) {

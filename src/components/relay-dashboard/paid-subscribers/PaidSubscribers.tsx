@@ -21,7 +21,6 @@ import { CreatorButton } from './avatar/SubscriberAvatar.styles';
 const { Text } = Typography;
 
 export const PaidSubscribers: React.FC = () => {
-  console.log('[PaidSubscribers] Component rendering...');
   const hookResult = usePaidSubscribers(12);
   const { subscribers, fetchMore, hasMore, loading, useDummyData } = hookResult;
   const ndkInstance = useNDK();
@@ -76,7 +75,6 @@ export const PaidSubscribers: React.FC = () => {
     setAllSubscribers([...subscribers]); // Start with current subscribers
 
     // Fetch more subscribers if available
-    const currentSubscribers = [...subscribers];
     let canFetchMore = hasMore;
 
     while (canFetchMore) {
@@ -86,7 +84,6 @@ export const PaidSubscribers: React.FC = () => {
         // track the updated state properly or use a separate hook for fetching all
         canFetchMore = false; // For now, just fetch once more
       } catch (error) {
-        console.error('Error fetching more subscribers:', error);
         break;
       }
     }
@@ -95,19 +92,16 @@ export const PaidSubscribers: React.FC = () => {
   useEffect(() => {
     // Implement hybrid profile fetching: NDK first, fallback to backend data
     if (useDummyData) {
-      console.warn('[PaidSubscribers] Using dummy data, skipping profile fetch');
       setLoadingProfiles(false);
       return;
     }
 
     const fetchProfiles = async () => {
       if (!ndkInstance || !ndkInstance.ndk) {
-        console.error('[PaidSubscribers] NDK instance is not initialized, using backend data only');
         setLoadingProfiles(false);
         return;
       }
 
-      console.log('[PaidSubscribers] Starting hybrid profile fetch for', subscribers.length, 'subscribers');
 
       // Process each subscriber with hybrid approach
       await Promise.all(
@@ -121,37 +115,21 @@ export const PaidSubscribers: React.FC = () => {
           );
           
           if (hasValidProfile) {
-            console.log(`[PaidSubscribers] Profile already cached for ${subscriber.pubkey}:`, {
-              name: existingProfile.name,
-              picture: !!existingProfile.picture,
-              about: !!existingProfile.about
-            });
             return;
           }
 
           try {
-            console.log(`[PaidSubscribers] Fetching NDK profile for ${subscriber.pubkey}`);
             
             // Try to fetch profile from NDK (user's relay + other relays)
             const user = await ndkInstance.ndk?.getUser({ pubkey: subscriber.pubkey }).fetchProfile();
             
             if (user && (user.name || user.picture || user.about)) {
               // NDK returned a profile - use it as the primary source
-              console.log(`[PaidSubscribers] NDK profile found for ${subscriber.pubkey}:`, {
-                name: user.name,
-                picture: user.picture,
-                about: user.about
-              });
               
               const ndkProfile = convertNDKUserProfileToSubscriberProfile(subscriber.pubkey, user);
               updateSubscriberProfile(subscriber.pubkey, ndkProfile);
             } else {
               // NDK came up empty - fallback to backend data
-              console.log(`[PaidSubscribers] NDK profile empty for ${subscriber.pubkey}, falling back to backend data:`, {
-                name: subscriber.name,
-                picture: subscriber.picture,
-                about: subscriber.about
-              });
               
               // Use the backend data as-is since NDK had no better information
               updateSubscriberProfile(subscriber.pubkey, {
@@ -163,10 +141,8 @@ export const PaidSubscribers: React.FC = () => {
               });
             }
           } catch (error) {
-            console.error(`[PaidSubscribers] Error fetching NDK profile for ${subscriber.pubkey}:`, error);
             
             // Error occurred - fallback to backend data
-            console.log(`[PaidSubscribers] NDK error for ${subscriber.pubkey}, using backend data`);
             updateSubscriberProfile(subscriber.pubkey, {
               ...subscriber,
               name: subscriber.name || 'Anonymous Subscriber',
@@ -177,7 +153,6 @@ export const PaidSubscribers: React.FC = () => {
         }),
       );
 
-      console.log('[PaidSubscribers] Hybrid profile fetch completed');
       setLoadingProfiles(false);
     };
 
@@ -190,8 +165,6 @@ export const PaidSubscribers: React.FC = () => {
     setIsViewAllModalVisible(false);
   };
 
-  console.log('[PaidSubscribers] Received subscribers:', subscribers);
-  console.log('[PaidSubscribers] Complete hook result:', hookResult);
 
   const sliderRef = useRef<Splide>(null);
   const { isTablet: isTabletOrHigher } = useResponsive();
