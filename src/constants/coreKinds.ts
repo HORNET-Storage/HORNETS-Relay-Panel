@@ -3,6 +3,7 @@ export const CORE_KINDS = [
   'kind0',    // User profiles - Required for user management (CRITICAL - relay unusable without)
   'kind22242', // Auth events - Required for NIP-42 authentication
   'kind10010', // Mute list - Required for content filtering/mute words
+  'kind117',  // Blossom file metadata - Required for file uploads (relay icons, media uploads)
   'kind19841', // Storage manifest - Required for file tracking
   'kind19842', // Storage metadata - Required for file info  
   'kind19843', // Storage delete - Required for file cleanup
