@@ -1,23 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Form, Input, Select, Tooltip } from 'antd';
 import {
   QuestionCircleOutlined,
   InfoCircleOutlined,
   UserOutlined,
   KeyOutlined,
-  UploadOutlined,
 } from '@ant-design/icons';
+import IconUpload from '@app/components/common/IconUpload';
 import useGenericSettings from '@app/hooks/useGenericSettings';
 import { SettingsGroupType } from '@app/types/settings.types';
 import BaseSettingsForm from './BaseSettingsForm';
 import * as S from './Settings.styles';
-import { ComingSoonWrapper } from '@app/styles/themes/reusableComponentStyles';
 const { Option } = Select;
 const { TextArea } = Input;
 
 const RelayInfoSettings: React.FC = () => {
   const { settings, loading, error, fetchSettings, updateSettings, saveSettings } = useGenericSettings('relay_info');
-  const [image, setImage] = useState<string | null>(null);
   const [form] = Form.useForm();
 
   // Update form values when settings change
@@ -84,34 +82,22 @@ const RelayInfoSettings: React.FC = () => {
         >
           <S.InputFieldWithPrefix prefix={<InfoCircleOutlined />} placeholder="My Nostr Relay" />
         </Form.Item>
-        <ComingSoonWrapper>
-          <Form.Item
-            name="relayIcon"
-            label={
-              <span>
-                Relay Icon&nbsp;
-                <Tooltip title="An icon representing your relay">
-                  <QuestionCircleOutlined />
-                </Tooltip>
-                &nbsp;(Coming Soon)
-              </span>
-            }
-          >
-            {
-              <S.InputFieldWithPrefix
-                disabled={true}
-                placeholder="https://example.com/relay-icon.png"
-                // suffix={<S.UploadButton size='small' aria-label='Upload Relay Icon' icon={<UploadOutlined />}
-                // > Upload Relay Icon</S.UploadButton>}
-              />
-            }
-            {image && (
-              <S.UploadedImageWrapper>
-                <img src={image} alt="" />
-              </S.UploadedImageWrapper>
-            )}
-          </Form.Item>
-        </ComingSoonWrapper>
+        <Form.Item
+          name="relayicon"
+          label={
+            <span>
+              Relay Icon&nbsp;
+              <Tooltip title="URL to an icon representing your relay (will be shown in relay lists). You can paste a URL or upload an image file.">
+                <QuestionCircleOutlined />
+              </Tooltip>
+            </span>
+          }
+        >
+          <IconUpload
+            placeholder="https://example.com/relay-icon.png"
+            maxSize={5}
+          />
+        </Form.Item>
         <Form.Item
           name="relaydescription"
           label={
@@ -174,13 +160,14 @@ const RelayInfoSettings: React.FC = () => {
           label={
             <span>
               Relay Software&nbsp;
-              <Tooltip title="The software used to run the relay">
+              <Tooltip title="The software used to run the relay (read-only)">
                 <QuestionCircleOutlined />
               </Tooltip>
+              &nbsp;(Read-only)
             </span>
           }
         >
-          <S.InputField placeholder="HORNETS Relay" />
+          <S.InputField placeholder="HORNETS Relay" disabled />
         </Form.Item>
 
         <Form.Item
@@ -188,13 +175,14 @@ const RelayInfoSettings: React.FC = () => {
           label={
             <span>
               Version&nbsp;
-              <Tooltip title="The version of the relay software">
+              <Tooltip title="The version of the relay software (read-only)">
                 <QuestionCircleOutlined />
               </Tooltip>
+              &nbsp;(Read-only)
             </span>
           }
         >
-          <S.InputField placeholder="1.0.0" />
+          <S.InputField placeholder="1.0.0" disabled />
         </Form.Item>
         <S.StyledOption>
           <Form.Item

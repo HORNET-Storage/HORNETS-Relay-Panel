@@ -170,6 +170,7 @@ const extractSettingsForGroup = (settings: any, groupName: string) => {
       'relayname': 'name',
       'relaydescription': 'description', 
       'relaycontact': 'contact',
+      'relayicon': 'icon',
       'relaypubkey': 'public_key', // Backend sends 'public_key'
       'relaydhtkey': 'dht_key',
       'relaysoftware': 'software',
@@ -181,10 +182,16 @@ const extractSettingsForGroup = (settings: any, groupName: string) => {
     Object.entries(relayInfoMappings).forEach(([frontendKey, backendKey]) => {
       if (rawData[backendKey] !== undefined) {
         processedData[frontendKey] = rawData[backendKey];
+        if (frontendKey === 'relayicon') {
+          console.log(`Icon mapping: ${frontendKey} = ${rawData[backendKey]}`);
+        }
       } else {
         // Set default values for missing fields
         if (frontendKey === 'relaysupportednips') {
           processedData[frontendKey] = []; // Default empty array
+        }
+        if (frontendKey === 'relayicon') {
+          console.log(`Icon field '${backendKey}' not found in rawData:`, Object.keys(rawData));
         }
       }
     });
@@ -255,7 +262,8 @@ const buildNestedUpdate = (groupName: string, data: any) => {
       const relayFieldMappings: Record<string, string> = {
         'name': 'relayname',
         'description': 'relaydescription',
-        'contact': 'relaycontact', 
+        'contact': 'relaycontact',
+        'icon': 'relayicon',
         'public_key': 'relaypubkey', // Frontend 'relaypubkey' -> backend 'public_key'
         'dht_key': 'relaydhtkey',
         'software': 'relaysoftware',
