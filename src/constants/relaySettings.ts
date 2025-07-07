@@ -48,6 +48,7 @@ export const noteOptions = [
   // Core kinds essential for relay operation
   { kind: 10010, kindString: 'kind10010', description: 'Content Filtering', category: 1 },
   { kind: 22242, kindString: 'kind22242', description: 'NIP-42 Auth Events', category: 1 },
+  { kind: 117, kindString: 'kind117', description: 'Blossom File Metadata', category: 1 },
   { kind: 19841, kindString: 'kind19841', description: 'Storage Manifest', category: 1 },
   { kind: 19842, kindString: 'kind19842', description: 'Storage Metadata', category: 1 },
   { kind: 19843, kindString: 'kind19843', description: 'Storage Delete', category: 1 },

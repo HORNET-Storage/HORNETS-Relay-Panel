@@ -120,6 +120,7 @@ export interface RelayConfig {
   relay_description: string;
   relay_pubkey: string;
   relay_contact: string;
+  relay_icon: string;
   relay_software: string;
   relay_version: string;
   relay_supported_nips: number[];

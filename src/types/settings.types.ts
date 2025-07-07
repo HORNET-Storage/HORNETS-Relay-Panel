@@ -64,6 +64,7 @@ export interface RelayInfoSettings {
   relaycontact: string;
   relaydescription: string;
   relaydhtkey: string;
+  relayicon: string;
   relayname: string;
   relaypubkey: string;
   relaysoftware: string;

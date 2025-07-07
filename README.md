@@ -4,6 +4,15 @@
 
 This repository is home to the hornet storage panel which is a typescript / react web application designed for managing a hornet storage nostr multimedia relay which can be found here: https://github.com/HORNET-Storage/HORNETS-Nostr-Relay
 
+## ⚡ What You Need Before Starting
+
+**Before installing, ensure you have:**
+1. **A Nostr browser extension** ([Alby](https://getalby.com/), [nos2x](https://github.com/fiatjaf/nos2x), etc.) - **REQUIRED**
+2. **Node.js 16+** and **yarn** installed
+3. **The HORNETS relay service** running (see [here](https://github.com/HORNET-Storage/HORNETS-Nostr-Relay))
+
+**Without these, the panel will not function.**
+
 ### Live Demo
 We have a live demo that can be found at http://hornetstorage.net for anyone that wants to see what the panel looks like.
 
@@ -14,6 +23,36 @@ We have a live demo that can be found at http://hornetstorage.net for anyone tha
 - Choose which supported transport protocols to enable such as libp2p and websockets
 - Enable / disable which media extensions are accepted by the relay such as png and mp4
 - View statistics about stored notes and media
+- Upload relay icons with integrated Blossom server support
+
+## 🔑 Important Prerequisites
+
+### NIP-07 Browser Extension Required
+**The HORNETS Relay Panel requires a NIP-07 compatible Nostr browser extension to function.**
+
+You must install one of these browser extensions before using the panel:
+- **[Alby](https://getalby.com/)** - Bitcoin Lightning & Nostr browser extension
+- **[nos2x](https://github.com/fiatjaf/nos2x)** - Simple Nostr browser extension
+- **[Flamingo](https://flamingo.me/)** - Nostr browser extension
+- **[Horse](https://github.com/freakonometrics/horse)** - Nostr browser extension
+
+The panel uses **NIP-07** ([window.nostr capability](https://nostr-nips.com/nip-07)) for:
+- User authentication and login
+- Event signing for relay configuration
+- File uploads with cryptographic verification
+
+**📖 Learn more about NIP-07**: [https://nostr-nips.com/nip-07](https://nostr-nips.com/nip-07)
+
+## 🚀 Quick Start
+
+**Essential steps to get running:**
+
+1. **Install a NIP-07 browser extension** (required - see above)
+2. **Install dependencies**: `npm install -g serve` and `yarn install` 
+3. **Start development**: `yarn start`
+4. **For production**: `yarn build` then `serve -s build`
+
+**For full deployment with reverse proxy, see the detailed setup guide below.**
 
 ## Previews
 *All preview images are taken from the live demo*
@@ -32,18 +71,18 @@ We have a live demo that can be found at http://hornetstorage.net for anyone tha
 
 The HORNETS Relay Panel is built with a microservices architecture comprising:
 
-### Services
+### Services & Dependencies
 - **Frontend (React App)**: Port 3000 (dev) - The admin dashboard interface
 - **Panel API**: Port 9002 - Backend service for panel operations
-- **Relay Service**: Port 9001 - WebSocket service for Nostr relay functionality
-- **Wallet Service**: Port 9003 - Backend service for wallet operations
-- **Transcribe API**: Port 8000 - Service for transcription features
+- **[Relay Service](https://github.com/HORNET-Storage/HORNETS-Nostr-Relay)**: Port 9001 - WebSocket service for Nostr relay functionality
+- **[Wallet Service](https://github.com/HORNET-Storage/Super-Neutrino-Wallet)**: Port 9003 - Backend service for wallet operations
+- **[Media Moderation](https://github.com/HORNET-Storage/NestShield)**: Port 8000 - Content moderation and filtering service
 
 ### Reverse Proxy Architecture
 ```
 Client Request
      ↓
-Nginx (Port 80/443)
+Nginx (Port 80/443) 
      ↓
 ┌─────────────────────────────────────────────────────────────┐
 │  Route Distribution:                                        │
@@ -52,8 +91,8 @@ Nginx (Port 80/443)
 │  │  (Port 9001)    │ │ (Port 3000)     │ │ (Port 9002)  │   │
 │  └─────────────────┘ └─────────────────┘ └──────────────┘   │
 │  ┌─────────────────┐ ┌─────────────────┐                    │
-│  │ /wallet/ → Wallet│ │/transcribe/ → API│                   │
-│  │ (Port 9003)     │ │ (Port 8000)     │                    │
+│  │ /wallet/ → Wallet│ │/moderate/ → Media│                  │
+│  │ (Port 9003)     │ │ (Port 8000)     │                   │
 │  └─────────────────┘ └─────────────────┘                    │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -82,11 +121,15 @@ While possible, direct port access has limitations:
 - [Node.js](https://nodejs.org/en/) version **>=16.0.0**
 - [Yarn](https://yarnpkg.com/) package manager
 - [Git](https://git-scm.com/) for version control
+- **[serve](https://www.npmjs.com/package/serve)** for production builds: `npm install -g serve`
 
 ### Optional (For Production)
-- [Nginx](https://nginx.org/) for reverse proxy
+- [Nginx](https://nginx.org/) for reverse proxy *(Linux server configuration)*
 - SSL certificate (Let's Encrypt recommended)
 - Domain name
+
+### Browser Requirements
+- **NIP-07 compatible browser extension** (see Important Prerequisites section above)
 
 ## 🛠️ Installation & Setup
 
@@ -113,27 +156,33 @@ REACT_APP_DEMO_MODE=false
 ```
 
 #### Production Setup
-Copy the example environment file and customize:
+For production, minimal environment configuration is needed thanks to **dynamic URL detection**:
+
 ```bash
 cp .env.production.example .env.production
 ```
 
-Edit `.env.production` with your actual values:
+Edit `.env.production` (most values are now auto-detected):
 ```env
-# Production Environment Configuration
-REACT_APP_BASE_URL=https://your-domain.com/panel
-REACT_APP_WALLET_BASE_URL=https://your-domain.com/wallet
-REACT_APP_ASSETS_BUCKET=https://your-domain.com
-REACT_APP_DEMO_MODE=false
-
 # Router configuration for reverse proxy
 REACT_APP_BASENAME=/front
 PUBLIC_URL=/front
+
+# Optional: Demo mode (defaults to false)
+REACT_APP_DEMO_MODE=false
+
+# Optional: Custom Nostr relay URLs (defaults to popular relays)
+# REACT_APP_NOSTR_RELAY_URLS=wss://relay.damus.io,wss://relay.nostr.band
 
 # Development optimizations
 ESLINT_NO_DEV_ERRORS=true
 TSC_COMPILE_ON_ERROR=true
 ```
+
+**🎯 Key Improvement**: The panel now **automatically detects** API URLs from `window.location.origin`, meaning:
+- ✅ **No need to specify `REACT_APP_BASE_URL` or `REACT_APP_WALLET_BASE_URL`**
+- ✅ **Same build works on ANY domain** (localhost, your-domain.com, ngrok tunnels, etc.)
+- ✅ **No environment-specific rebuilds required**
 
 ### 4. Start Development Server
 
@@ -200,10 +249,20 @@ server {
         proxy_pass http://127.0.0.1:9003;
     }
 
+    # Media moderation service (optional)
+    location /moderate/ {
+        rewrite ^/moderate/(.*)$ /$1 break;
+        proxy_pass http://127.0.0.1:8000;
+    }
+
     # Frontend React app
     location /front/ {
         rewrite ^/front/(.*)$ /$1 break;
-        proxy_pass http://127.0.0.1:3000;  # Or serve static files
+        proxy_pass http://127.0.0.1:3000;  # Development: proxy to dev server
+        
+        # Production: Serve static files instead (uncomment and comment above)
+        # try_files $uri $uri/ /front/index.html;
+        # root /var/www/html;  # Path to your built files
     }
 
     # Default location - Relay service with WebSocket support
@@ -249,10 +308,10 @@ sudo cp -r build/* /var/www/html/front/
 Ensure all backend services are running:
 ```bash
 # Start in order of dependency
-./relay-service &      # Port 9001
-./panel-api &          # Port 9002  
-./wallet-service &     # Port 9003
-./transcribe-api &     # Port 8000
+./relay-service &        # Port 9001
+./panel-api &            # Port 9002  
+./wallet-service &       # Port 9003
+./media-moderation &     # Port 8000 (optional)
 ```
 
 #### Step 5: Start Nginx
@@ -268,8 +327,7 @@ Update `.env.production`:
 ```env
 REACT_APP_BASENAME=
 PUBLIC_URL=
-REACT_APP_BASE_URL=http://localhost:9002
-REACT_APP_WALLET_BASE_URL=http://localhost:9003
+# Note: API URLs are now auto-detected, no need to specify them!
 ```
 
 #### Step 2: Build and Serve
@@ -303,13 +361,17 @@ ngrok http 3000
 ```
 
 ### Environment Variables for Tunneling
-When using tunnels, update your `.env.production`:
-```env
-REACT_APP_BASE_URL=https://your-tunnel-url.com/panel
-REACT_APP_WALLET_BASE_URL=https://your-tunnel-url.com/wallet
-```
+**Great news!** Thanks to dynamic URL detection, **no environment variable changes are needed** when using tunnels. The panel automatically adapts to any domain:
+
+- ✅ `ngrok http 80` → Panel works immediately at `https://abc123.ngrok.io/front/`
+- ✅ Custom domain tunnel → Panel works immediately  
+- ✅ Any hosting provider → Panel works immediately
+
+**No rebuilds or environment changes required!**
 
 ## 🔧 Configuration Options
+
+> **🚀 Major Improvement**: The panel now uses **dynamic URL detection** instead of hardcoded environment variables. This means **one build works everywhere** - no more environment-specific builds or complex URL configuration!
 
 ### REACT_APP_BASENAME
 Controls where the React app is served from:
@@ -318,9 +380,15 @@ Controls where the React app is served from:
 - `` (empty) - App accessible at `https://domain.com/`
 
 ### Service URLs
-- **REACT_APP_BASE_URL**: Panel API endpoint
-- **REACT_APP_WALLET_BASE_URL**: Wallet service endpoint
-- **REACT_APP_ASSETS_BUCKET**: Static assets URL
+**🎯 Auto-Detection**: Service URLs are now automatically detected in production:
+- **Panel API**: `${window.location.origin}/panel` (auto-detected)
+- **Wallet Service**: `${window.location.origin}/wallet` (auto-detected)  
+- **Relay WebSocket**: `wss://${window.location.host}` (auto-detected)
+
+**Manual Override** (development only):
+- **REACT_APP_BASE_URL**: Panel API endpoint (dev mode only)
+- **REACT_APP_WALLET_BASE_URL**: Wallet service endpoint (dev mode only)
+- **REACT_APP_NOSTR_RELAY_URLS**: Additional Nostr relays (optional)
 
 ### Demo Mode
 Set `REACT_APP_DEMO_MODE=true` to enable demo functionality with mock data.
@@ -344,6 +412,27 @@ export NODE_OPTIONS="--openssl-legacy-provider --max-old-space-size=4096"
 **Error**: Network errors or 404s
 **Solution**: Verify service URLs in environment variables and ensure backend services are running.
 
+#### 3.1. CORS Configuration Issues
+**Error**: `Access to fetch at 'X' from origin 'Y' has been blocked by CORS policy`
+**Solution**: Ensure your backend services are configured to accept requests from your frontend origin:
+
+For development with direct access:
+```env
+# Frontend running on http://localhost:3000
+# Backend services must allow this origin in their CORS configuration
+REACT_APP_BASE_URL=http://localhost:9002
+REACT_APP_WALLET_BASE_URL=http://localhost:9003
+```
+
+For production with reverse proxy (recommended):
+```env
+# All services behind same domain - no CORS issues
+REACT_APP_BASE_URL=https://your-domain.com/panel
+REACT_APP_WALLET_BASE_URL=https://your-domain.com/wallet
+```
+
+**Note**: When using direct port access, each backend service must be configured to allow your frontend's origin in their CORS settings. Using a reverse proxy eliminates CORS issues entirely.
+
 #### 4. Routing Issues with Reverse Proxy
 **Error**: 404 on refresh or direct URL access
 **Solution**: Configure nginx to handle React Router:
@@ -366,7 +455,7 @@ Start services in this order:
 1. Relay Service (Port 9001) - Core WebSocket functionality
 2. Panel API (Port 9002) - Main backend
 3. Wallet Service (Port 9003) - Payment processing
-4. Transcribe API (Port 8000) - Additional features
+4. Media Moderation (Port 8000) - Content filtering (optional)
 5. Frontend (Port 3000) - User interface
 
 ### Health Checks
@@ -454,4 +543,9 @@ For issues and support:
 
 ---
 
-**Note**: This panel is designed to work with the [HORNETS Nostr Relay](https://github.com/HORNET-Storage/HORNETS-Nostr-Relay). Ensure you have the relay service running for full functionality.
+**Note**: This panel is designed to work with the HORNETS Storage ecosystem:
+- **[HORNETS Nostr Relay](https://github.com/HORNET-Storage/HORNETS-Nostr-Relay)** - Core relay service (required)
+- **[Super Neutrino Wallet](https://github.com/HORNET-Storage/Super-Neutrino-Wallet)** - Payment processing (required for paid features)
+- **[NestShield](https://github.com/HORNET-Storage/NestShield)** - Media moderation service (optional)
+
+Ensure you have at minimum the relay service running for basic functionality.
