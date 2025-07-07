@@ -13,7 +13,7 @@ import { usePWA } from './hooks/usePWA';
 import { useThemeWatcher } from './hooks/useThemeWatcher';
 import { useAppSelector } from './hooks/reduxHooks';
 import { themeObject } from './styles/themes/themeVariables';
-import NDK, { NDKEvent, NDKNip07Signer, NDKRelayAuthPolicies } from '@nostr-dev-kit/ndk';
+import NDK, { NDKNip07Signer, NDKRelayAuthPolicies } from '@nostr-dev-kit/ndk';
 import { useNDKInit } from '@nostr-dev-kit/ndk-hooks';
 import config from './config/config';
 
