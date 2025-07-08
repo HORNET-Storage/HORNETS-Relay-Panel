@@ -169,16 +169,16 @@ TSC_COMPILE_ON_ERROR=true
 #### Production Setup
 For production, minimal environment configuration is needed thanks to **dynamic URL detection**:
 
-##### For Production Deployment
+##### For Production Deployment  
 Create `.env.production` for production builds:
 
 ```env
 # Demo mode (set to false for production)
 REACT_APP_DEMO_MODE=false
 
-# Router configuration (empty for root path serving)
-REACT_APP_BASENAME=
-PUBLIC_URL=
+# Router configuration for /panel/ path
+REACT_APP_BASENAME=/panel
+PUBLIC_URL=/panel
 
 # Optional: Custom Nostr relay URLs (comma-separated list)
 # REACT_APP_NOSTR_RELAY_URLS=wss://your-relay1.com,wss://your-relay2.com
@@ -282,6 +282,22 @@ server {
         proxy_pass http://127.0.0.1:8000;
     }
 
+    # Panel access - Admin dashboard
+    location /panel {
+        return 301 /panel/;
+    }
+    
+    location /panel/ {
+        proxy_pass http://127.0.0.1:9002/;
+        
+        # Handle React Router (SPA routing)
+        proxy_intercept_errors on;
+        error_page 404 = @panel_fallback;
+    }
+    
+    location @panel_fallback {
+        proxy_pass http://127.0.0.1:9002/;
+    }
 
     # Default location - Relay service with WebSocket support
     location / {
