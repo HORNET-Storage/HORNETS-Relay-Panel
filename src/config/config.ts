@@ -18,8 +18,12 @@ const getWalletURL = (): string => {
     return 'http://localhost:9003';
   }
   
-  // For both development and production, wallet API is at /wallet path
-  return process.env.REACT_APP_WALLET_BASE_URL || `${window.location.origin}/wallet`;
+  // Always require explicit wallet URL configuration
+  if (!process.env.REACT_APP_WALLET_BASE_URL) {
+    throw new Error('REACT_APP_WALLET_BASE_URL must be explicitly configured in environment variables');
+  }
+  
+  return process.env.REACT_APP_WALLET_BASE_URL;
 };
 
 const config = {
