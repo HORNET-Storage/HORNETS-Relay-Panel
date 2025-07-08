@@ -147,12 +147,21 @@ yarn install
 ### 3. Environment Configuration
 
 #### Development Setup
-For development, you can use the default configuration or create `.env.development`:
-```bash
-# Optional - defaults work for local development
+For development, create `.env.development` with your local service URLs:
+```env
 REACT_APP_BASE_URL=http://localhost:9002
 REACT_APP_WALLET_BASE_URL=http://localhost:9003
+REACT_APP_ASSETS_BUCKET=http://localhost
 REACT_APP_DEMO_MODE=false
+REACT_APP_BASENAME=
+
+# Nostr relay configuration for profile fetching
+REACT_APP_OWN_RELAY_URL=ws://localhost:9001
+REACT_APP_NOSTR_RELAY_URLS=wss://relay.damus.io,wss://relay.nostr.band,wss://relay.snort.social,wss://vault.iris.to
+
+# More info https://create-react-app.dev/docs/advanced-configuration
+ESLINT_NO_DEV_ERRORS=true
+TSC_COMPILE_ON_ERROR=true
 ```
 
 #### Production Setup
@@ -201,15 +210,15 @@ REACT_APP_DEMO_MODE=false
 
 ### 4. Start Development Server
 
-#### Using yarn (standard)
-```bash
-yarn start
-```
-
-#### Using provided script (handles Node.js compatibility)
+#### Using provided script (recommended - handles Node.js compatibility)
 ```bash
 ./start-app.sh        # Linux/macOS
 start.bat             # Windows
+```
+
+#### Using yarn directly
+```bash
+yarn start
 ```
 
 The development server will start on `http://localhost:3000`
