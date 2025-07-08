@@ -262,7 +262,7 @@ map $http_upgrade $connection_upgrade {
 
 server {
     listen 80;
-    server_name your-domain.com;  # Replace with your domain
+    server_name _;  # Accept all hostnames (localhost, ngrok, custom domains, etc.)
 
     # Forward client IP and protocol
     proxy_set_header X-Real-IP $remote_addr;
