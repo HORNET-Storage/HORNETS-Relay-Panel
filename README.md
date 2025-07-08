@@ -157,7 +157,7 @@ REACT_APP_BASENAME=
 
 # Nostr relay configuration for profile fetching
 REACT_APP_OWN_RELAY_URL=ws://localhost:9001
-REACT_APP_NOSTR_RELAY_URLS=wss://relay.damus.io,wss://relay.nostr.band,wss://relay.snort.social,wss://vault.iris.to
+# REACT_APP_NOSTR_RELAY_URLS=wss://your-relay1.com,wss://your-relay2.com,wss://your-relay3.com
 
 # More info https://create-react-app.dev/docs/advanced-configuration
 ESLINT_NO_DEV_ERRORS=true
@@ -181,8 +181,8 @@ PUBLIC_URL=/front
 # Optional: Demo mode (defaults to false)
 REACT_APP_DEMO_MODE=false
 
-# Optional: Custom Nostr relay URLs (defaults to popular relays)
-# REACT_APP_NOSTR_RELAY_URLS=wss://relay.damus.io,wss://relay.nostr.band
+# Optional: Custom Nostr relay URLs (comma-separated list)
+# REACT_APP_NOSTR_RELAY_URLS=wss://your-relay1.com,wss://your-relay2.com
 
 # Development optimizations
 ESLINT_NO_DEV_ERRORS=true
