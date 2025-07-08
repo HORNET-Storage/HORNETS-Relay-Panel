@@ -65,6 +65,7 @@
     "react-slick": "^0.28.1",
     "react-verification-input": "^2.0.3",
     "round-slider": "altence/round-slider#refactor/slider",
+    "serve": "^14.2.4",
     "slick-carousel": "^1.8.1",
     "styled-components": "^5.3.0",
     "typeface-lato": "^1.1.13",

@@ -158,6 +158,7 @@ REACT_APP_DEMO_MODE=false
 #### Production Setup
 For production, minimal environment configuration is needed thanks to **dynamic URL detection**:
 
+##### For Deployment with Reverse Proxy
 ```bash
 cp .env.production.example .env.production
 ```
@@ -179,10 +180,24 @@ ESLINT_NO_DEV_ERRORS=true
 TSC_COMPILE_ON_ERROR=true
 ```
 
+##### For Local Production Testing
+If you want to test the production build locally with your localhost services:
+
+```env
+# For localhost production testing
+REACT_APP_BASE_URL=http://localhost:9002
+REACT_APP_WALLET_BASE_URL=http://localhost:9003
+REACT_APP_OWN_RELAY_URL=ws://localhost:9001
+REACT_APP_BASENAME=
+
+PUBLIC_URL=
+REACT_APP_DEMO_MODE=false
+```
+
 **🎯 Key Improvement**: The panel now **automatically detects** API URLs from `window.location.origin`, meaning:
-- ✅ **No need to specify `REACT_APP_BASE_URL` or `REACT_APP_WALLET_BASE_URL`**
+- ✅ **No need to specify URLs for deployment** (auto-detects from domain)
 - ✅ **Same build works on ANY domain** (localhost, your-domain.com, ngrok tunnels, etc.)
-- ✅ **No environment-specific rebuilds required**
+- ✅ **Environment overrides available** for localhost testing
 
 ### 4. Start Development Server
 
@@ -212,6 +227,17 @@ yarn build
 ./build.bat           # Windows
 yarn build            # Linux/macOS
 ```
+
+#### Step 1.5: Test Production Build Locally (Optional)
+Before deploying, you can test the production build locally:
+```bash
+# Install serve globally if not already installed
+npm install -g serve
+
+# Serve the production build
+npx serve -s build
+```
+The production build will be available at `http://localhost:3000`
 
 #### Step 2: Configure Nginx
 Create an nginx configuration file:

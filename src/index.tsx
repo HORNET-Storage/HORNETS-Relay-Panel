@@ -27,18 +27,24 @@ root.render(
   // </React.StrictMode>
 );
 
-serviceWorkerRegistration.register({
-  onUpdate: (registration) => {
-    const waitingServiceWorker = registration.waiting;
+// Disable service worker for localhost testing to avoid caching issues
+if (window.location.hostname !== 'localhost') {
+  serviceWorkerRegistration.register({
+    onUpdate: (registration) => {
+      const waitingServiceWorker = registration.waiting;
 
-    if (waitingServiceWorker) {
-      waitingServiceWorker.addEventListener('statechange', (event) => {
-        if ((event.target as EventTarget).state === 'activated') window.location.reload();
-      });
-      waitingServiceWorker.postMessage({ type: 'SKIP_WAITING' });
-    }
-  },
-});
+      if (waitingServiceWorker) {
+        waitingServiceWorker.addEventListener('statechange', (event) => {
+          if ((event.target as EventTarget).state === 'activated') window.location.reload();
+        });
+        waitingServiceWorker.postMessage({ type: 'SKIP_WAITING' });
+      }
+    },
+  });
+} else {
+  // Unregister service worker on localhost to prevent caching conflicts
+  serviceWorkerRegistration.unregister();
+}
 
 reportWebVitals();
 

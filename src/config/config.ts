@@ -12,9 +12,9 @@ const getBaseURL = (): string => {
     return process.env.REACT_APP_BASE_URL || 'http://localhost:9002';
   }
   
-  // Production - use current origin + /panel path
-  // This makes the panel work from ANY domain without rebuilding
-  return `${window.location.origin}/panel`;
+  // Production - check for environment override first (for localhost testing)
+  // Otherwise use current origin + /panel path for deployment
+  return process.env.REACT_APP_BASE_URL || `${window.location.origin}/panel`;
 };
 
 const getWalletURL = (): string => {
@@ -28,8 +28,9 @@ const getWalletURL = (): string => {
     return process.env.REACT_APP_WALLET_BASE_URL?.trim() || 'http://localhost:9003';
   }
   
-  // Production - use current origin + /wallet path
-  return `${window.location.origin}/wallet`;
+  // Production - check for environment override first (for localhost testing)
+  // Otherwise use current origin + /wallet path for deployment
+  return process.env.REACT_APP_WALLET_BASE_URL || `${window.location.origin}/wallet`;
 };
 
 const config = {
