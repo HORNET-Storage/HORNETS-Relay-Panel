@@ -282,21 +282,13 @@ server {
         proxy_pass http://127.0.0.1:8000;
     }
 
-    # Panel access - Admin dashboard
+    # Panel access - Admin dashboard (integrated server handles React Router)
     location /panel {
         return 301 /panel/;
     }
     
     location /panel/ {
-        proxy_pass http://127.0.0.1:9002/;
-        
-        # Handle React Router (SPA routing)
-        proxy_intercept_errors on;
-        error_page 404 = @panel_fallback;
-    }
-    
-    location @panel_fallback {
-        proxy_pass http://127.0.0.1:9002/;
+        proxy_pass http://127.0.0.1:9002;
     }
 
     # Default location - Relay service with WebSocket support
