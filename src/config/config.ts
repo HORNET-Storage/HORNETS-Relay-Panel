@@ -1,20 +1,15 @@
 // config.ts
 
-// Dynamic URL detection - panel works from anywhere!
+// Dynamic URL detection - panel and API run from same origin
 const getBaseURL = (): string => {
   // Demo mode override for testing
   if (process.env.REACT_APP_DEMO_MODE === 'true') {
     return 'http://localhost:10002';
   }
   
-  // Development mode - use localhost
-  if (process.env.NODE_ENV === 'development') {
-    return process.env.REACT_APP_BASE_URL || 'http://localhost:9002';
-  }
-  
-  // Production - check for environment override first (for localhost testing)
-  // Otherwise use current origin + /panel path for deployment
-  return process.env.REACT_APP_BASE_URL || `${window.location.origin}/panel`;
+  // For both development and production, panel and API are served from same origin
+  // API routes are at /api/* while panel is served from root
+  return process.env.REACT_APP_BASE_URL || window.location.origin;
 };
 
 const getWalletURL = (): string => {
@@ -23,13 +18,7 @@ const getWalletURL = (): string => {
     return 'http://localhost:9003';
   }
   
-  // Development mode - use localhost
-  if (process.env.NODE_ENV === 'development') {
-    return process.env.REACT_APP_WALLET_BASE_URL?.trim() || 'http://localhost:9003';
-  }
-  
-  // Production - check for environment override first (for localhost testing)
-  // Otherwise use current origin + /wallet path for deployment
+  // For both development and production, wallet API is at /wallet path
   return process.env.REACT_APP_WALLET_BASE_URL || `${window.location.origin}/wallet`;
 };
 
@@ -47,11 +36,9 @@ const config = {
   ],
   
   // User's own relay URL (primary relay for profile fetching)
-  // In production, use the current domain as the relay WebSocket URL
+  // Auto-detect WebSocket URL based on current domain (relay runs on same host, different port or path)
   ownRelayUrl: process.env.REACT_APP_OWN_RELAY_URL?.trim() || 
-    (process.env.NODE_ENV === 'production' 
-      ? `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}`
-      : null),
+    `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}`,
   
   // Notification settings
   notifications: {

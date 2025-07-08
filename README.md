@@ -71,49 +71,51 @@ The panel uses **NIP-07** ([window.nostr capability](https://nostr-nips.com/nip-
 
 The HORNETS Relay Panel is built with a microservices architecture comprising:
 
-### Services & Dependencies
-- **Frontend (React App)**: Port 3000 (dev) - The admin dashboard interface
-- **Panel API**: Port 9002 - Backend service for panel operations
-- **[Relay Service](https://github.com/HORNET-Storage/HORNETS-Nostr-Relay)**: Port 9001 - WebSocket service for Nostr relay functionality
+### Integrated Architecture
+The panel is now **integrated directly into the relay server** for simplified deployment:
+
+- **Relay + Panel Server**: Port 9002 - Serves both the React app (static files) and panel API
+- **[Relay WebSocket](https://github.com/HORNET-Storage/HORNETS-Nostr-Relay)**: Port 9001 - WebSocket service for Nostr relay functionality  
 - **[Wallet Service](https://github.com/HORNET-Storage/Super-Neutrino-Wallet)**: Port 9003 - Backend service for wallet operations
 - **[Media Moderation](https://github.com/HORNET-Storage/NestShield)**: Port 8000 - Content moderation and filtering service
 
-### Reverse Proxy Architecture
+### Single Server Architecture
 ```
-Client Request
+Client Request (http://localhost:9002)
      ↓
-Nginx (Port 80/443) 
+Go Fiber Server (Port 9002)
      ↓
-┌─────────────────────────────────────────────────────────────┐
-│  Route Distribution:                                        │
-│  ┌─────────────────┐ ┌─────────────────┐ ┌──────────────┐   │
-│  │  / → Relay      │ │ /front/ → React │ │ /panel/ → API│   │
-│  │  (Port 9001)    │ │ (Port 3000)     │ │ (Port 9002)  │   │
-│  └─────────────────┘ └─────────────────┘ └──────────────┘   │
-│  ┌─────────────────┐ ┌─────────────────┐                    │
-│  │ /wallet/ → Wallet│ │/moderate/ → Media│                  │
-│  │ (Port 9003)     │ │ (Port 8000)     │                   │
-│  └─────────────────┘ └─────────────────┘                    │
-└─────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────┐
+│  Route Handling:                            │
+│  ┌─────────────────┐ ┌─────────────────┐     │
+│  │ /api/* → API    │ │ /* → React App  │     │
+│  │ Endpoints       │ │ (Static Files)  │     │
+│  └─────────────────┘ └─────────────────┘     │
+│                                             │
+│  Connected Services:                        │
+│  ┌─────────────────┐ ┌─────────────────┐     │
+│  │ WebSocket       │ │ Wallet API      │     │
+│  │ (Port 9001)     │ │ (Port 9003)     │     │
+│  └─────────────────┘ └─────────────────┘     │
+└─────────────────────────────────────────────┘
 ```
 
-## 🔧 Why Use a Reverse Proxy?
+## 🔧 Deployment Options
 
-### Benefits of Reverse Proxy Setup (Recommended)
-1. **Security**: Single entry point with centralized security headers
-2. **SSL/TLS Termination**: Handle HTTPS certificates at the proxy level
-3. **Load Balancing**: Distribute traffic across service instances
-4. **Clean URLs**: User-friendly paths (`/front/`, `/panel/`) instead of ports
-5. **Single Domain**: All services accessible from one domain
-6. **WebSocket Support**: Proper handling of WebSocket connections for the relay
-7. **Tunnel Compatibility**: Works seamlessly with ngrok and other tunneling services
+### Integrated Server (Default)
+The panel is now **built into the relay server** providing:
+1. **Simplified Deployment**: Single server handles everything
+2. **No CORS Issues**: Panel and API share the same origin
+3. **Unified SSL**: One certificate for the entire application
+4. **Clean Architecture**: `/api/*` for API, `/*` for panel
+5. **Easy Development**: Same setup for dev and production
 
-### Direct Access (Development Only)
-While possible, direct port access has limitations:
-- Multiple ports to manage
-- CORS issues between services
-- No unified SSL certificate
-- Poor user experience with port numbers in URLs
+### Optional Reverse Proxy
+You can still use a reverse proxy for:
+- **Load Balancing**: Multiple relay instances
+- **SSL Termination**: Centralized certificate management  
+- **Custom Routing**: Advanced traffic distribution
+- **Static Assets**: CDN integration
 
 ## 📋 Prerequisites
 
@@ -167,19 +169,16 @@ TSC_COMPILE_ON_ERROR=true
 #### Production Setup
 For production, minimal environment configuration is needed thanks to **dynamic URL detection**:
 
-##### For Deployment with Reverse Proxy
-```bash
-cp .env.production.example .env.production
-```
+##### For Production Deployment
+Create `.env.production` for production builds:
 
-Edit `.env.production` (most values are now auto-detected):
 ```env
-# Router configuration for reverse proxy
-REACT_APP_BASENAME=/front
-PUBLIC_URL=/front
-
-# Optional: Demo mode (defaults to false)
+# Demo mode (set to false for production)
 REACT_APP_DEMO_MODE=false
+
+# Router configuration (empty for root path serving)
+REACT_APP_BASENAME=
+PUBLIC_URL=
 
 # Optional: Custom Nostr relay URLs (comma-separated list)
 # REACT_APP_NOSTR_RELAY_URLS=wss://your-relay1.com,wss://your-relay2.com
@@ -189,24 +188,22 @@ ESLINT_NO_DEV_ERRORS=true
 TSC_COMPILE_ON_ERROR=true
 ```
 
-##### For Local Production Testing
-If you want to test the production build locally with your localhost services:
+##### For Development with Separate Services
+If you're running services on different ports during development:
 
 ```env
-# For localhost production testing
+# Development with separate services
 REACT_APP_BASE_URL=http://localhost:9002
 REACT_APP_WALLET_BASE_URL=http://localhost:9003
 REACT_APP_OWN_RELAY_URL=ws://localhost:9001
-REACT_APP_BASENAME=
-
-PUBLIC_URL=
 REACT_APP_DEMO_MODE=false
 ```
 
-**🎯 Key Improvement**: The panel now **automatically detects** API URLs from `window.location.origin`, meaning:
-- ✅ **No need to specify URLs for deployment** (auto-detects from domain)
-- ✅ **Same build works on ANY domain** (localhost, your-domain.com, ngrok tunnels, etc.)
-- ✅ **Environment overrides available** for localhost testing
+**🎯 Key Improvement**: The panel now runs **integrated with the relay server**, meaning:
+- ✅ **Single origin serving** - Panel and API from same host:port
+- ✅ **No reverse proxy needed** - Go server handles both static files and API
+- ✅ **Automatic URL detection** - Works on any domain without configuration
+- ✅ **Simplified deployment** - Build once, deploy anywhere
 
 ### 4. Start Development Server
 
