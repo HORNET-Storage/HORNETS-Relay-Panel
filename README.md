@@ -282,13 +282,10 @@ server {
         proxy_pass http://127.0.0.1:8000;
     }
 
-    # Panel access - Admin dashboard (integrated server handles React Router)
-    location /panel {
-        return 301 /panel/;
-    }
-    
+    # Panel access - Admin dashboard
     location /panel/ {
-        proxy_pass http://127.0.0.1:9002/;
+        rewrite ^/panel/(.*)$ /$1 break;
+        proxy_pass http://127.0.0.1:9002;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
