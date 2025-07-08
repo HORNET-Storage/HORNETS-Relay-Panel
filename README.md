@@ -79,43 +79,43 @@ The panel is now **integrated directly into the relay server** for simplified de
 - **[Wallet Service](https://github.com/HORNET-Storage/Super-Neutrino-Wallet)**: Port 9003 - Backend service for wallet operations
 - **[Media Moderation](https://github.com/HORNET-Storage/NestShield)**: Port 8000 - Content moderation and filtering service
 
-### Single Server Architecture
+### Hybrid Architecture
 ```
-Client Request (http://localhost:9002)
+Client Request (http://localhost or your-domain.com)
      ↓
-Go Fiber Server (Port 9002)
+Nginx Proxy (Port 80/443) - Optional but recommended for production
      ↓
-┌─────────────────────────────────────────────┐
-│  Route Handling:                            │
-│  ┌─────────────────┐ ┌─────────────────┐     │
-│  │ /api/* → API    │ │ /* → React App  │     │
-│  │ Endpoints       │ │ (Static Files)  │     │
-│  └─────────────────┘ └─────────────────┘     │
-│                                             │
-│  Connected Services:                        │
-│  ┌─────────────────┐ ┌─────────────────┐     │
-│  │ WebSocket       │ │ Wallet API      │     │
-│  │ (Port 9001)     │ │ (Port 9003)     │     │
-│  └─────────────────┘ └─────────────────┘     │
-└─────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────┐
+│  Route Distribution:                                    │
+│  ┌─────────────────────────┐ ┌─────────────────────────┐ │
+│  │ / → Relay + Panel       │ │ /wallet/ → Wallet API   │ │
+│  │ (Port 9002)             │ │ (Port 9003)             │ │
+│  │ ├── /api/* → Panel API  │ │                         │ │
+│  │ └── /* → React App      │ │                         │ │
+│  └─────────────────────────┘ └─────────────────────────┘ │
+│                                                         │
+│  WebSocket Connection:                                  │
+│  ┌─────────────────────────┐                           │
+│  │ ws:// → Relay WebSocket │                           │
+│  │ (Port 9001)             │                           │
+│  └─────────────────────────┘                           │
+└─────────────────────────────────────────────────────────┘
 ```
 
 ## 🔧 Deployment Options
 
-### Integrated Server (Default)
-The panel is now **built into the relay server** providing:
-1. **Simplified Deployment**: Single server handles everything
-2. **No CORS Issues**: Panel and API share the same origin
-3. **Unified SSL**: One certificate for the entire application
-4. **Clean Architecture**: `/api/*` for API, `/*` for panel
-5. **Easy Development**: Same setup for dev and production
+### Direct Access (Development)
+For development, you can run services directly:
+- **Relay + Panel**: `http://localhost:9002` (no proxy needed)
+- **Wallet Service**: `http://localhost:9003` (direct API calls)
 
-### Optional Reverse Proxy
-You can still use a reverse proxy for:
-- **Load Balancing**: Multiple relay instances
-- **SSL Termination**: Centralized certificate management  
-- **Custom Routing**: Advanced traffic distribution
-- **Static Assets**: CDN integration
+### Nginx Proxy (Production Recommended)
+For production deployment, nginx handles:
+1. **Wallet Service Proxying**: `/wallet/*` → `localhost:9003`
+2. **SSL Termination**: Single certificate for entire application
+3. **WebSocket Proxying**: Proper upgrade headers for relay WebSocket
+4. **Static Asset Caching**: Optimal performance for React app
+5. **Security Headers**: CORS, CSP, and other protections
 
 ## 📋 Prerequisites
 
@@ -268,14 +268,9 @@ server {
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header Host $host;
 
-    # Panel API
-    location /panel/ {
-        rewrite ^/panel/(.*)$ /$1 break;
-        proxy_pass http://127.0.0.1:9002;
-    }
-
-    # Wallet service
+    # Wallet service proxying
     location /wallet/ {
         rewrite ^/wallet/(.*)$ /$1 break;
         proxy_pass http://127.0.0.1:9003;
@@ -287,15 +282,6 @@ server {
         proxy_pass http://127.0.0.1:8000;
     }
 
-    # Frontend React app
-    location /front/ {
-        rewrite ^/front/(.*)$ /$1 break;
-        proxy_pass http://127.0.0.1:3000;  # Development: proxy to dev server
-        
-        # Production: Serve static files instead (uncomment and comment above)
-        # try_files $uri $uri/ /front/index.html;
-        # root /var/www/html;  # Path to your built files
-    }
 
     # Default location - Relay service with WebSocket support
     location / {
