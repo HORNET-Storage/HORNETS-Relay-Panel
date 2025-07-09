@@ -40,9 +40,13 @@ const config = {
   ],
   
   // User's own relay URL (primary relay for profile fetching)
-  // Auto-detect WebSocket URL based on current domain (relay runs on same host, different port or path)
-  ownRelayUrl: process.env.REACT_APP_OWN_RELAY_URL?.trim() || 
-    `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}`,
+  // Always require explicit relay URL configuration
+  ownRelayUrl: (() => {
+    if (!process.env.REACT_APP_OWN_RELAY_URL?.trim()) {
+      throw new Error('REACT_APP_OWN_RELAY_URL must be explicitly configured in environment variables');
+    }
+    return process.env.REACT_APP_OWN_RELAY_URL.trim();
+  })(),
   
   // Notification settings
   notifications: {
