@@ -12,24 +12,21 @@ const getBaseURL = (): string => {
   return process.env.REACT_APP_BASE_URL || window.location.origin;
 };
 
-const getWalletURL = (): string => {
+const getWalletURL = (): string | null => {
   // Demo mode override for testing
   if (process.env.REACT_APP_DEMO_MODE === 'true') {
     return 'http://localhost:9003';
   }
   
-  // Always require explicit wallet URL configuration
-  if (!process.env.REACT_APP_WALLET_BASE_URL) {
-    throw new Error('REACT_APP_WALLET_BASE_URL must be explicitly configured in environment variables');
-  }
-  
-  return process.env.REACT_APP_WALLET_BASE_URL;
+  // Wallet URL is optional - return null if not configured
+  return process.env.REACT_APP_WALLET_BASE_URL || null;
 };
 
 const config = {
   baseURL: getBaseURL(),
   isDemoMode: process.env.REACT_APP_DEMO_MODE === 'true',
   walletBaseURL: getWalletURL(),
+  isWalletEnabled: getWalletURL() !== null,
   
   // Nostr relay configuration
   nostrRelayUrls: process.env.REACT_APP_NOSTR_RELAY_URLS?.split(',').map(url => url.trim()) || [
