@@ -175,9 +175,9 @@ Create `.env.production` for production builds:
 # Demo mode (set to false for production)
 REACT_APP_DEMO_MODE=false
 
-# Explicit service URLs (required)
-REACT_APP_WALLET_BASE_URL=http://localhost:9003
-REACT_APP_OWN_RELAY_URL=ws://localhost:9001
+# Service URLs
+REACT_APP_WALLET_BASE_URL=http://localhost:9003  # Optional - leave empty to disable wallet features
+REACT_APP_OWN_RELAY_URL=ws://localhost:9001       # Required for profile fetching
 
 # Router configuration (empty for direct access)
 REACT_APP_BASENAME=
@@ -193,7 +193,8 @@ TSC_COMPILE_ON_ERROR=true
 
 
 **🎯 Key Requirements**:
-- ✅ **Explicit Service URLs Required** - Wallet and relay URLs must be configured in environment variables
+- ✅ **Relay URL Required** - REACT_APP_OWN_RELAY_URL must be configured for profile fetching
+- ✅ **Wallet URL Optional** - REACT_APP_WALLET_BASE_URL can be empty to disable wallet features
 - ✅ **Panel Routing Auto-Detection** - Panel paths (REACT_APP_BASENAME/PUBLIC_URL) can be auto-detected
 - ✅ **Build-Time Configuration** - Service URLs are baked into the JavaScript bundle during build
 - ✅ **Simple Deployment** - No reverse proxy needed for basic functionality
@@ -262,10 +263,12 @@ Controls the React app's routing base path:
 **Note**: For the current working setup, leave this empty (`REACT_APP_BASENAME=`) since the panel is served from the root path.
 
 ### Service URLs
-**🎯 Explicit Configuration Required**: Service URLs must be explicitly configured:
-- **Wallet Service**: `REACT_APP_WALLET_BASE_URL=http://localhost:9003` (required)
-- **Relay WebSocket**: `REACT_APP_OWN_RELAY_URL=ws://localhost:9001` (required)
+**🎯 Configuration Requirements**:
+- **Wallet Service**: `REACT_APP_WALLET_BASE_URL=http://localhost:9003` (optional - leave empty to disable wallet features)
+- **Relay WebSocket**: `REACT_APP_OWN_RELAY_URL=ws://localhost:9001` (required for profile fetching)
 - **Panel API**: Auto-detected from current origin (no configuration needed)
+
+**Note**: When wallet URL is not configured, send/receive buttons will show a helpful message about rebuilding with wallet configuration.
 
 **Manual Override** (development only):
 - **REACT_APP_BASE_URL**: Panel API endpoint (dev mode only)
