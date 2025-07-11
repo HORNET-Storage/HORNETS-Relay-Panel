@@ -71,49 +71,51 @@ The panel uses **NIP-07** ([window.nostr capability](https://nostr-nips.com/nip-
 
 The HORNETS Relay Panel is built with a microservices architecture comprising:
 
-### Services & Dependencies
-- **Frontend (React App)**: Port 3000 (dev) - The admin dashboard interface
-- **Panel API**: Port 9002 - Backend service for panel operations
-- **[Relay Service](https://github.com/HORNET-Storage/HORNETS-Nostr-Relay)**: Port 9001 - WebSocket service for Nostr relay functionality
+### Integrated Architecture
+The panel is now **integrated directly into the relay server** for simplified deployment:
+
+- **Relay + Panel Server**: Port 9002 - Serves both the React app (static files) and panel API
+- **[Relay WebSocket](https://github.com/HORNET-Storage/HORNETS-Nostr-Relay)**: Port 9001 - WebSocket service for Nostr relay functionality  
 - **[Wallet Service](https://github.com/HORNET-Storage/Super-Neutrino-Wallet)**: Port 9003 - Backend service for wallet operations
 - **[Media Moderation](https://github.com/HORNET-Storage/NestShield)**: Port 8000 - Content moderation and filtering service
 
-### Reverse Proxy Architecture
+### Hybrid Architecture
 ```
-Client Request
+Client Request (http://localhost or your-domain.com)
      ↓
-Nginx (Port 80/443) 
+Nginx Proxy (Port 80/443) - Optional but recommended for production
      ↓
-┌─────────────────────────────────────────────────────────────┐
-│  Route Distribution:                                        │
-│  ┌─────────────────┐ ┌─────────────────┐ ┌──────────────┐   │
-│  │  / → Relay      │ │ /front/ → React │ │ /panel/ → API│   │
-│  │  (Port 9001)    │ │ (Port 3000)     │ │ (Port 9002)  │   │
-│  └─────────────────┘ └─────────────────┘ └──────────────┘   │
-│  ┌─────────────────┐ ┌─────────────────┐                    │
-│  │ /wallet/ → Wallet│ │/moderate/ → Media│                  │
-│  │ (Port 9003)     │ │ (Port 8000)     │                   │
-│  └─────────────────┘ └─────────────────┘                    │
-└─────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────┐
+│  Route Distribution:                                    │
+│  ┌─────────────────────────┐ ┌─────────────────────────┐ │
+│  │ / → Relay + Panel       │ │ /wallet/ → Wallet API   │ │
+│  │ (Port 9002)             │ │ (Port 9003)             │ │
+│  │ ├── /api/* → Panel API  │ │                         │ │
+│  │ └── /* → React App      │ │                         │ │
+│  └─────────────────────────┘ └─────────────────────────┘ │
+│                                                         │
+│  WebSocket Connection:                                  │
+│  ┌─────────────────────────┐                           │
+│  │ ws:// → Relay WebSocket │                           │
+│  │ (Port 9001)             │                           │
+│  └─────────────────────────┘                           │
+└─────────────────────────────────────────────────────────┘
 ```
 
-## 🔧 Why Use a Reverse Proxy?
+## 🔧 Deployment Options
 
-### Benefits of Reverse Proxy Setup (Recommended)
-1. **Security**: Single entry point with centralized security headers
-2. **SSL/TLS Termination**: Handle HTTPS certificates at the proxy level
-3. **Load Balancing**: Distribute traffic across service instances
-4. **Clean URLs**: User-friendly paths (`/front/`, `/panel/`) instead of ports
-5. **Single Domain**: All services accessible from one domain
-6. **WebSocket Support**: Proper handling of WebSocket connections for the relay
-7. **Tunnel Compatibility**: Works seamlessly with ngrok and other tunneling services
+### Direct Access (Development)
+For development, you can run services directly:
+- **Relay + Panel**: `http://localhost:9002` (no proxy needed)
+- **Wallet Service**: `http://localhost:9003` (direct API calls)
 
-### Direct Access (Development Only)
-While possible, direct port access has limitations:
-- Multiple ports to manage
-- CORS issues between services
-- No unified SSL certificate
-- Poor user experience with port numbers in URLs
+### Nginx Proxy (Production Recommended)
+For production deployment, nginx handles:
+1. **Wallet Service Proxying**: `/wallet/*` → `localhost:9003`
+2. **SSL Termination**: Single certificate for entire application
+3. **WebSocket Proxying**: Proper upgrade headers for relay WebSocket
+4. **Static Asset Caching**: Optimal performance for React app
+5. **Security Headers**: CORS, CSP, and other protections
 
 ## 📋 Prerequisites
 
@@ -147,61 +149,73 @@ yarn install
 ### 3. Environment Configuration
 
 #### Development Setup
-For development, you can use the default configuration or create `.env.development`:
-```bash
-# Optional - defaults work for local development
+For development, create `.env.development` with your local service URLs:
+```env
 REACT_APP_BASE_URL=http://localhost:9002
 REACT_APP_WALLET_BASE_URL=http://localhost:9003
+REACT_APP_ASSETS_BUCKET=http://localhost
 REACT_APP_DEMO_MODE=false
+REACT_APP_BASENAME=
+
+# Nostr relay configuration for profile fetching
+REACT_APP_OWN_RELAY_URL=ws://localhost:9001
+# REACT_APP_NOSTR_RELAY_URLS=wss://your-relay1.com,wss://your-relay2.com,wss://your-relay3.com
+
+# More info https://create-react-app.dev/docs/advanced-configuration
+ESLINT_NO_DEV_ERRORS=true
+TSC_COMPILE_ON_ERROR=true
 ```
 
 #### Production Setup
-For production, minimal environment configuration is needed thanks to **dynamic URL detection**:
+For production deployment, you need explicit service URL configuration:
 
-```bash
-cp .env.production.example .env.production
-```
+Create `.env.production` for production builds:
 
-Edit `.env.production` (most values are now auto-detected):
 ```env
-# Router configuration for reverse proxy
-REACT_APP_BASENAME=/front
-PUBLIC_URL=/front
-
-# Optional: Demo mode (defaults to false)
+# Demo mode (set to false for production)
 REACT_APP_DEMO_MODE=false
 
-# Optional: Custom Nostr relay URLs (defaults to popular relays)
-# REACT_APP_NOSTR_RELAY_URLS=wss://relay.damus.io,wss://relay.nostr.band
+# Explicit service URLs (required)
+REACT_APP_WALLET_BASE_URL=http://localhost:9003
+REACT_APP_OWN_RELAY_URL=ws://localhost:9001
+
+# Router configuration (empty for direct access)
+REACT_APP_BASENAME=
+PUBLIC_URL=
+
+# Optional: Custom Nostr relay URLs (comma-separated list)
+# REACT_APP_NOSTR_RELAY_URLS=wss://your-relay1.com,wss://your-relay2.com
 
 # Development optimizations
 ESLINT_NO_DEV_ERRORS=true
 TSC_COMPILE_ON_ERROR=true
 ```
 
-**🎯 Key Improvement**: The panel now **automatically detects** API URLs from `window.location.origin`, meaning:
-- ✅ **No need to specify `REACT_APP_BASE_URL` or `REACT_APP_WALLET_BASE_URL`**
-- ✅ **Same build works on ANY domain** (localhost, your-domain.com, ngrok tunnels, etc.)
-- ✅ **No environment-specific rebuilds required**
+
+**🎯 Key Requirements**:
+- ✅ **Explicit Service URLs Required** - Wallet and relay URLs must be configured in environment variables
+- ✅ **Panel Routing Auto-Detection** - Panel paths (REACT_APP_BASENAME/PUBLIC_URL) can be auto-detected
+- ✅ **Build-Time Configuration** - Service URLs are baked into the JavaScript bundle during build
+- ✅ **Simple Deployment** - No reverse proxy needed for basic functionality
 
 ### 4. Start Development Server
 
-#### Using yarn (standard)
-```bash
-yarn start
-```
-
-#### Using provided script (handles Node.js compatibility)
+#### Using provided script (recommended - handles Node.js compatibility)
 ```bash
 ./start-app.sh        # Linux/macOS
 start.bat             # Windows
+```
+
+#### Using yarn directly
+```bash
+yarn start
 ```
 
 The development server will start on `http://localhost:3000`
 
 ## 🚀 Deployment
 
-### Scenario 1: With Reverse Proxy (Recommended)
+### Production Deployment
 
 #### Step 1: Build the Application
 ```bash
@@ -213,177 +227,45 @@ yarn build
 yarn build            # Linux/macOS
 ```
 
-#### Step 2: Configure Nginx
-Create an nginx configuration file:
+#### Step 2: Deploy to Relay Server
+Copy the built files to your relay server's web directory and start the services:
+
 ```bash
-# Create the configuration file
-sudo nano /etc/nginx/sites-available/hornets-relay
+# Copy build files to relay server web directory
+cp -r build/* /path/to/relay/web/
+
+# Start services (adjust ports as needed)
+./relay-websocket-service &     # Port 9001
+./relay-server-with-panel &     # Port 9002 (serves both API and panel)
+./wallet-service &              # Port 9003
 ```
 
-Add this configuration (adjust domains and paths as needed):
-```nginx
-# WebSocket connection upgrade mapping
-map $http_upgrade $connection_upgrade {
-    default upgrade;
-    '' close;
-}
+#### Step 3: Access the Panel
+- **Panel**: `http://localhost:9002/` (or your configured domain)
+- **Wallet Service**: `http://localhost:9003/` (direct access)
+- **Relay WebSocket**: `ws://localhost:9001/` (WebSocket connection)
 
-server {
-    listen 80;
-    server_name your-domain.com;  # Replace with your domain
+**✅ This setup works without any reverse proxy configuration!**
 
-    # Forward client IP and protocol
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_set_header X-Forwarded-Proto $scheme;
+> **Note**: Reverse proxy setup with nginx is possible but currently requires additional configuration. The direct access method above is the recommended approach for most users.
 
-    # Panel API
-    location /panel/ {
-        rewrite ^/panel/(.*)$ /$1 break;
-        proxy_pass http://127.0.0.1:9002;
-    }
-
-    # Wallet service
-    location /wallet/ {
-        rewrite ^/wallet/(.*)$ /$1 break;
-        proxy_pass http://127.0.0.1:9003;
-    }
-
-    # Media moderation service (optional)
-    location /moderate/ {
-        rewrite ^/moderate/(.*)$ /$1 break;
-        proxy_pass http://127.0.0.1:8000;
-    }
-
-    # Frontend React app
-    location /front/ {
-        rewrite ^/front/(.*)$ /$1 break;
-        proxy_pass http://127.0.0.1:3000;  # Development: proxy to dev server
-        
-        # Production: Serve static files instead (uncomment and comment above)
-        # try_files $uri $uri/ /front/index.html;
-        # root /var/www/html;  # Path to your built files
-    }
-
-    # Default location - Relay service with WebSocket support
-    location / {
-        proxy_pass http://127.0.0.1:9001;
-        
-        # WebSocket headers
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection $connection_upgrade;
-        proxy_set_header Host $host;
-        proxy_cache_bypass $http_upgrade;
-        
-        # Extended timeouts for WebSocket connections
-        proxy_read_timeout 86400s;
-        proxy_send_timeout 86400s;
-        proxy_connect_timeout 60s;
-    }
-
-    # Health check endpoint
-    location /health {
-        access_log off;
-        return 200 "healthy\n";
-        add_header Content-Type text/plain;
-    }
-}
-```
-
-Enable the configuration:
-```bash
-sudo ln -s /etc/nginx/sites-available/hornets-relay /etc/nginx/sites-enabled/
-sudo nginx -t  # Test configuration
-```
-
-#### Step 3: Serve Built Files
-Copy the built files to your web server:
-```bash
-# Example for nginx
-sudo cp -r build/* /var/www/html/front/
-```
-
-#### Step 4: Start Services
-Ensure all backend services are running:
-```bash
-# Start in order of dependency
-./relay-service &        # Port 9001
-./panel-api &            # Port 9002  
-./wallet-service &       # Port 9003
-./media-moderation &     # Port 8000 (optional)
-```
-
-#### Step 5: Start Nginx
-```bash
-sudo systemctl start nginx
-sudo systemctl enable nginx
-```
-
-### Scenario 2: Direct Access (Development/Testing)
-
-#### Step 1: Build with Root Path
-Update `.env.production`:
-```env
-REACT_APP_BASENAME=
-PUBLIC_URL=
-# Note: API URLs are now auto-detected, no need to specify them!
-```
-
-#### Step 2: Build and Serve
-```bash
-yarn build
-# Serve the build folder (default port 3000)
-serve -s build
-```
-
-#### Step 3: Configure CORS
-Ensure your backend services accept requests from the frontend origin.
-
-## 🌐 Tunneling & Remote Access
-
-### Using ngrok
-```bash
-# Install ngrok
-npm install -g ngrok
-
-# With reverse proxy setup (random domain)
-ngrok http 80
-
-# With reverse proxy setup (custom domain - requires ngrok pro)
-ngrok http --url=your-domain.ngrok.io 80
-
-# Direct access to React app (without reverse proxy)
-ngrok http 3000
-
-# Example output:
-# Forwarding https://abc123.ngrok.io -> http://localhost:80
-```
-
-### Environment Variables for Tunneling
-**Great news!** Thanks to dynamic URL detection, **no environment variable changes are needed** when using tunnels. The panel automatically adapts to any domain:
-
-- ✅ `ngrok http 80` → Panel works immediately at `https://abc123.ngrok.io/front/`
-- ✅ Custom domain tunnel → Panel works immediately  
-- ✅ Any hosting provider → Panel works immediately
-
-**No rebuilds or environment changes required!**
 
 ## 🔧 Configuration Options
 
 > **🚀 Major Improvement**: The panel now uses **dynamic URL detection** instead of hardcoded environment variables. This means **one build works everywhere** - no more environment-specific builds or complex URL configuration!
 
 ### REACT_APP_BASENAME
-Controls where the React app is served from:
-- `/front` - App accessible at `https://domain.com/front/`
-- `/admin` - App accessible at `https://domain.com/admin/`
-- `` (empty) - App accessible at `https://domain.com/`
+Controls the React app's routing base path:
+- `` (empty) - App accessible at `https://domain.com/` (recommended for direct access)
+- `/panel` - App accessible at `https://domain.com/panel/` (for reverse proxy setups)
+
+**Note**: For the current working setup, leave this empty (`REACT_APP_BASENAME=`) since the panel is served from the root path.
 
 ### Service URLs
-**🎯 Auto-Detection**: Service URLs are now automatically detected in production:
-- **Panel API**: `${window.location.origin}/panel` (auto-detected)
-- **Wallet Service**: `${window.location.origin}/wallet` (auto-detected)  
-- **Relay WebSocket**: `wss://${window.location.host}` (auto-detected)
+**🎯 Explicit Configuration Required**: Service URLs must be explicitly configured:
+- **Wallet Service**: `REACT_APP_WALLET_BASE_URL=http://localhost:9003` (required)
+- **Relay WebSocket**: `REACT_APP_OWN_RELAY_URL=ws://localhost:9001` (required)
+- **Panel API**: Auto-detected from current origin (no configuration needed)
 
 **Manual Override** (development only):
 - **REACT_APP_BASE_URL**: Panel API endpoint (dev mode only)

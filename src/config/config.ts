@@ -1,20 +1,15 @@
 // config.ts
 
-// Dynamic URL detection - panel works from anywhere!
+// Dynamic URL detection - panel and API run from same origin
 const getBaseURL = (): string => {
   // Demo mode override for testing
   if (process.env.REACT_APP_DEMO_MODE === 'true') {
     return 'http://localhost:10002';
   }
   
-  // Development mode - use localhost
-  if (process.env.NODE_ENV === 'development') {
-    return process.env.REACT_APP_BASE_URL || 'http://localhost:9002';
-  }
-  
-  // Production - use current origin + /panel path
-  // This makes the panel work from ANY domain without rebuilding
-  return `${window.location.origin}/panel`;
+  // For both development and production, panel and API are served from same origin
+  // API routes are at /api/* while panel is served from root
+  return process.env.REACT_APP_BASE_URL || window.location.origin;
 };
 
 const getWalletURL = (): string => {
@@ -23,13 +18,12 @@ const getWalletURL = (): string => {
     return 'http://localhost:9003';
   }
   
-  // Development mode - use localhost
-  if (process.env.NODE_ENV === 'development') {
-    return process.env.REACT_APP_WALLET_BASE_URL?.trim() || 'http://localhost:9003';
+  // Always require explicit wallet URL configuration
+  if (!process.env.REACT_APP_WALLET_BASE_URL) {
+    throw new Error('REACT_APP_WALLET_BASE_URL must be explicitly configured in environment variables');
   }
   
-  // Production - use current origin + /wallet path
-  return `${window.location.origin}/wallet`;
+  return process.env.REACT_APP_WALLET_BASE_URL;
 };
 
 const config = {
@@ -46,11 +40,13 @@ const config = {
   ],
   
   // User's own relay URL (primary relay for profile fetching)
-  // In production, use the current domain as the relay WebSocket URL
-  ownRelayUrl: process.env.REACT_APP_OWN_RELAY_URL?.trim() || 
-    (process.env.NODE_ENV === 'production' 
-      ? `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}`
-      : null),
+  // Always require explicit relay URL configuration
+  ownRelayUrl: (() => {
+    if (!process.env.REACT_APP_OWN_RELAY_URL?.trim()) {
+      throw new Error('REACT_APP_OWN_RELAY_URL must be explicitly configured in environment variables');
+    }
+    return process.env.REACT_APP_OWN_RELAY_URL.trim();
+  })(),
   
   // Notification settings
   notifications: {

@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Input, Upload, Button, message, Tabs, Avatar } from 'antd';
 import { UploadOutlined, LinkOutlined, LoadingOutlined } from '@ant-design/icons';
-import { uploadToBlossom, isValidUrl, isImageUrl } from '@app/utils/blossomUpload';
+import { isValidUrl, isImageUrl } from '@app/utils/blossomUpload';
+import { readToken } from '@app/services/localStorage.service';
+import config from '@app/config/config';
 import type { RcFile } from 'antd/es/upload/interface';
 
 interface IconUploadProps {
@@ -38,7 +40,7 @@ const IconUpload: React.FC<IconUploadProps> = ({
     }
   };
 
-  // Handle file upload
+  // Handle file upload using new simplified API
   const handleFileUpload = async (file: RcFile): Promise<boolean> => {
     try {
       setUploading(true);
@@ -55,10 +57,35 @@ const IconUpload: React.FC<IconUploadProps> = ({
         return false;
       }
 
-      // Upload to Blossom server
-      const result = await uploadToBlossom(file);
+      // Get JWT token for authentication
+      const token = readToken();
+      if (!token) {
+        message.error('Authentication required. Please log in.');
+        return false;
+      }
+
+      // Create form data for the API
+      const formData = new FormData();
+      formData.append('image', file);
+      formData.append('panel_url', window.location.origin); // Auto-detect current panel URL
+
+      // Upload using panel API
+      const response = await fetch(`${config.baseURL}/api/relay/icon`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        body: formData
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Upload failed' }));
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
       
-      // Update URL input and parent component
+      // Update URL input and parent component with the returned URL
       setUrlInput(result.url);
       onChange?.(result.url);
       

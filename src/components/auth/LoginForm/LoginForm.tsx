@@ -7,6 +7,7 @@ import { useLogin } from '@app/hooks/useLogin';
 import { setUser } from '@app/store/slices/userSlice';
 import { persistToken } from '@app/services/localStorage.service';
 import { notificationController } from '@app/controllers/notificationController';
+import { NostrExtensionCheck } from '@app/components/auth/NostrExtensionCheck';
 import * as S from './LoginForm.styles';
 import * as Auth from '@app/components/layouts/AuthLayout/AuthLayout.styles';
 import { NostrProvider } from '@app/types/nostr';
@@ -28,6 +29,8 @@ export const LoginForm: React.FC = () => {
   const dispatch = useDispatch();
 
   const [form] = Form.useForm();
+  const [hasNostrExtension, setHasNostrExtension] = useState(!!window.nostr); // Initialize with current state
+  const [isCheckingExtension, setIsCheckingExtension] = useState(!window.nostr); // Only check if not already available
 
   useEffect(() => {
     const fetchPublicKey = async () => {
@@ -35,22 +38,38 @@ export const LoginForm: React.FC = () => {
         if (window.nostr) {
           const pubkey = await window.nostr.getPublicKey();
           form.setFieldsValue({ npub: pubkey });
-        } else {
-          console.warn('Nostr extension is not available');
+          setHasNostrExtension(true);
+          setIsCheckingExtension(false);
         }
       } catch (error) {
         console.error('Failed to get public key:', error);
       }
     };
   
+    // If extension is already available, fetch immediately
+    if (window.nostr) {
+      fetchPublicKey();
+      return;
+    }
+  
+    // Only start polling if no extension is detected initially
     const intervalId = setInterval(() => {
       if (window.nostr) {
         fetchPublicKey();
         clearInterval(intervalId);
       }
-    }, 1000); // Retry every 1 second
+    }, 1000);
   
-    return () => clearInterval(intervalId); // Clear the interval on component unmount
+    // Stop checking after 5 seconds to avoid infinite polling
+    const timeoutId = setTimeout(() => {
+      setIsCheckingExtension(false);
+      clearInterval(intervalId);
+    }, 5000);
+  
+    return () => {
+      clearInterval(intervalId);
+      clearTimeout(timeoutId);
+    };
   }, [form]);
   
 
@@ -96,6 +115,19 @@ export const LoginForm: React.FC = () => {
   };
   
 
+  // Show extension check only if we've finished checking and no extension was found
+  if (!isCheckingExtension && !hasNostrExtension) {
+    return (
+      <Auth.FormWrapper>
+        <NostrExtensionCheck onExtensionReady={() => {
+          setHasNostrExtension(true);
+          setIsCheckingExtension(false);
+        }} />
+      </Auth.FormWrapper>
+    );
+  }
+
+  // Show login form (either extension is available or we're still checking in background)
   return (
     <Auth.FormWrapper>
       <Form form={form} layout="vertical" onFinish={handleSubmit} initialValues={initValues}>

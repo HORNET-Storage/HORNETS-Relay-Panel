@@ -25,6 +25,7 @@ const kindMapping: { [key: number]: { description: string; nip: string } } = {
   1022: { description: 'Bid confirmation', nip: '15' },
   1040: { description: 'OpenTimestamps', nip: '03' },
   1059: { description: 'Gift Wrap', nip: '59' },
+  1060: { description: 'Double Ratchet DM', nip: '117' },
   1063: { description: 'File Metadata', nip: '94' },
   1311: { description: 'Live Chat Message', nip: '53' },
   1617: { description: 'Patches', nip: '34' },
