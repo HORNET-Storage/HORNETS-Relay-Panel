@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { message } from 'antd';
 import { useAppSelector } from '@app/hooks/reduxHooks';
 import { TopUpBalanceModal } from '../TopUpBalanceModal/TopUpBalanceModal';
-import config from '@app/config/config';
 import * as S from './TopUpBalanceButton.styles';
 
 export const TopUpBalanceButton: React.FC = () => {
@@ -12,10 +10,6 @@ export const TopUpBalanceButton: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleButtonClick = () => {
-    if (!config.isWalletEnabled) {
-      message.warning('Wallet functionality is not available. Please rebuild the panel with REACT_APP_WALLET_BASE_URL configured in your environment file.');
-      return;
-    }
     setIsModalOpen(true);
   };
 

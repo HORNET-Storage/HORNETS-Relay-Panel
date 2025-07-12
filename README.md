@@ -176,7 +176,7 @@ Create `.env.production` for production builds:
 REACT_APP_DEMO_MODE=false
 
 # Service URLs
-REACT_APP_WALLET_BASE_URL=http://localhost:9003  # Optional - leave empty to disable wallet features
+# REACT_APP_WALLET_BASE_URL - No longer needed! Wallet operations routed through panel API
 REACT_APP_OWN_RELAY_URL=ws://localhost:9001       # Required for profile fetching
 
 # Router configuration (empty for direct access)
@@ -194,9 +194,9 @@ TSC_COMPILE_ON_ERROR=true
 
 **🎯 Key Requirements**:
 - ✅ **Relay URL Required** - REACT_APP_OWN_RELAY_URL must be configured for profile fetching
-- ✅ **Wallet URL Optional** - REACT_APP_WALLET_BASE_URL can be empty to disable wallet features
+- ✅ **Wallet Always Available** - Wallet operations routed through panel API, no configuration needed
 - ✅ **Panel Routing Auto-Detection** - Panel paths (REACT_APP_BASENAME/PUBLIC_URL) can be auto-detected
-- ✅ **Build-Time Configuration** - Service URLs are baked into the JavaScript bundle during build
+- ✅ **Simplified Configuration** - Only relay URL needs to be configured
 - ✅ **Simple Deployment** - No reverse proxy needed for basic functionality
 
 ### 4. Start Development Server
@@ -264,15 +264,14 @@ Controls the React app's routing base path:
 
 ### Service URLs
 **🎯 Configuration Requirements**:
-- **Wallet Service**: `REACT_APP_WALLET_BASE_URL=http://localhost:9003` (optional - leave empty to disable wallet features)
+- **Wallet Service**: No longer requires configuration! Wallet operations are routed through panel API (`/api/wallet-proxy/*`)
 - **Relay WebSocket**: `REACT_APP_OWN_RELAY_URL=ws://localhost:9001` (required for profile fetching)
 - **Panel API**: Auto-detected from current origin (no configuration needed)
 
-**Note**: When wallet URL is not configured, send/receive buttons will show a helpful message about rebuilding with wallet configuration.
+**✅ Simplified**: Wallet functionality is now always available through the panel's backend proxy.
 
 **Manual Override** (development only):
 - **REACT_APP_BASE_URL**: Panel API endpoint (dev mode only)
-- **REACT_APP_WALLET_BASE_URL**: Wallet service endpoint (dev mode only)
 - **REACT_APP_NOSTR_RELAY_URLS**: Additional Nostr relays (optional)
 
 ### Demo Mode

@@ -42,8 +42,8 @@ const useWalletAuth = () => {
       // Fetch the Nostr public key
       const npub = await window.nostr.getPublicKey();
 
-      // Fetch the challenge from the server
-      const challengeResponse = await fetch(`${config.walletBaseURL}/challenge`, { method: 'GET' });
+      // Fetch the challenge from the server via panel API
+      const challengeResponse = await fetch(`${config.baseURL}/api/wallet-proxy/challenge`, { method: 'GET' });
 
       // Check if the response is valid JSON
       if (!challengeResponse.ok) {
@@ -66,8 +66,8 @@ const useWalletAuth = () => {
       // Sign the challenge using Nostr
       const signedEvent = await window.nostr.signEvent(event);
 
-      // Send the signed challenge to the backend for verification
-      const verifyResponse = await fetch(`${config.walletBaseURL}/verify`, {
+      // Send the signed challenge to the backend for verification via panel API
+      const verifyResponse = await fetch(`${config.baseURL}/api/wallet-proxy/verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -110,7 +110,7 @@ const useWalletAuth = () => {
     setHealthCheckInProgress(true);
     setHealthLoading(true);
     try {
-      let response = await fetch(`${config.walletBaseURL}/panel-health`, {
+      let response = await fetch(`${config.baseURL}/api/wallet-proxy/panel-health`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -124,7 +124,7 @@ const useWalletAuth = () => {
         await login();
         
         // Retry the request with the new token
-        response = await fetch(`${config.walletBaseURL}/panel-health`, {
+        response = await fetch(`${config.baseURL}/api/wallet-proxy/panel-health`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,

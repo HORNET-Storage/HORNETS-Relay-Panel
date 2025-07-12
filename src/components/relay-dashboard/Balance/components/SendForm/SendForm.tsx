@@ -96,7 +96,7 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
               return;
             }
 
-            let response = await fetch(`${config.walletBaseURL}/calculate-tx-size`, {
+            let response = await fetch(`${config.baseURL}/api/wallet-proxy/calculate-tx-size`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -118,7 +118,7 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
                 await login();
                 
                 // Retry the request with the new token
-                response = await fetch(`${config.walletBaseURL}/calculate-tx-size`, {
+                response = await fetch(`${config.baseURL}/api/wallet-proxy/calculate-tx-size`, {
                   method: 'POST',
                   headers: {
                     'Content-Type': 'application/json',
@@ -246,8 +246,8 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
       }
 
 
-      // Step 2: Initiate the new transaction with the JWT token
-      const response = await fetch(`${config.walletBaseURL}/transaction`, {
+      // Step 2: Initiate the new transaction with the JWT token via panel API
+      const response = await fetch(`${config.baseURL}/api/wallet-proxy/transaction`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

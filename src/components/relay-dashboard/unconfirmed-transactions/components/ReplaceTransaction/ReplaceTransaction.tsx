@@ -62,7 +62,7 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
           return;
         }
 
-        const response = await fetch(`${config.walletBaseURL}/calculate-tx-size`, {
+        const response = await fetch(`${config.baseURL}/api/wallet-proxy/calculate-tx-size`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -145,7 +145,7 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
         new_fee_rate: newFeeRate, // Send the updated fee rate
       };
 
-      const response = await fetch(`${config.walletBaseURL}/transaction`, {
+      const response = await fetch(`${config.baseURL}/api/wallet-proxy/transaction`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
