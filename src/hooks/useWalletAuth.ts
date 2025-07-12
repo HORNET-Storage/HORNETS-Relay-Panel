@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { persistWalletToken, readWalletToken, deleteWalletToken } from '@app/services/localStorage.service'; // Import the wallet-specific functions
+import { persistWalletToken, readWalletToken, deleteWalletToken, readToken } from '@app/services/localStorage.service'; // Import the wallet-specific functions
 import { notificationController } from '@app/controllers/notificationController';
 import config from '@app/config/config';
 
@@ -42,8 +42,20 @@ const useWalletAuth = () => {
       // Fetch the Nostr public key
       const npub = await window.nostr.getPublicKey();
 
+      // Get panel JWT token for authentication
+      const panelToken = readToken();
+      if (!panelToken) {
+        notificationController.error({ message: 'Panel authentication required' });
+        return;
+      }
+
       // Fetch the challenge from the server via panel API
-      const challengeResponse = await fetch(`${config.baseURL}/api/wallet-proxy/challenge`, { method: 'GET' });
+      const challengeResponse = await fetch(`${config.baseURL}/api/wallet-proxy/challenge`, { 
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${panelToken}`
+        }
+      });
 
       // Check if the response is valid JSON
       if (!challengeResponse.ok) {
@@ -69,7 +81,10 @@ const useWalletAuth = () => {
       // Send the signed challenge to the backend for verification via panel API
       const verifyResponse = await fetch(`${config.baseURL}/api/wallet-proxy/verify`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${panelToken}`
+        },
         body: JSON.stringify({
           challenge,
           signature: signedEvent.sig,
@@ -110,10 +125,17 @@ const useWalletAuth = () => {
     setHealthCheckInProgress(true);
     setHealthLoading(true);
     try {
+      // Get panel JWT token for authentication
+      const panelToken = readToken();
+      if (!panelToken) {
+        console.log('Panel authentication required for health check');
+        return null;
+      }
+
       let response = await fetch(`${config.baseURL}/api/wallet-proxy/panel-health`, {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${panelToken}`,
         },
       });
 
@@ -127,7 +149,7 @@ const useWalletAuth = () => {
         response = await fetch(`${config.baseURL}/api/wallet-proxy/panel-health`, {
           method: 'GET',
           headers: {
-            'Authorization': `Bearer ${token}`,
+            'Authorization': `Bearer ${panelToken}`,
           },
         });
         
