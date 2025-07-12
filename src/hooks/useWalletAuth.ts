@@ -42,19 +42,9 @@ const useWalletAuth = () => {
       // Fetch the Nostr public key
       const npub = await window.nostr.getPublicKey();
 
-      // Get panel JWT token for authentication
-      const panelToken = readToken();
-      if (!panelToken) {
-        notificationController.error({ message: 'Panel authentication required' });
-        return;
-      }
-
-      // Fetch the challenge from the server via panel API
+      // Fetch the challenge from the server via panel API (no authentication required)
       const challengeResponse = await fetch(`${config.baseURL}/api/wallet-proxy/challenge`, { 
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${panelToken}`
-        }
+        method: 'GET'
       });
 
       // Check if the response is valid JSON
@@ -78,12 +68,11 @@ const useWalletAuth = () => {
       // Sign the challenge using Nostr
       const signedEvent = await window.nostr.signEvent(event);
 
-      // Send the signed challenge to the backend for verification via panel API
+      // Send the signed challenge to the backend for verification via panel API (no authentication required)
       const verifyResponse = await fetch(`${config.baseURL}/api/wallet-proxy/verify`, {
         method: 'POST',
         headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${panelToken}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           challenge,
