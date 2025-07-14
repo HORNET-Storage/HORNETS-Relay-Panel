@@ -24,17 +24,23 @@ const RelayInfoSettings: React.FC = () => {
       const currentOrigin = window.location.origin;
       const expectedDefaultIcon = `${currentOrigin}/logo-dark-192.png`;
       
+      console.log('RelayInfoSettings - Current settings:', settings);
+      console.log('RelayInfoSettings - Expected default icon:', expectedDefaultIcon);
+      console.log('RelayInfoSettings - Current relayicon:', settings.relayicon);
+      
       // Check if relay icon is empty and set default bee logo
       const updatedSettings = { ...settings };
       let shouldUpdateBackend = false;
       
       if (!updatedSettings.relayicon || updatedSettings.relayicon.trim() === '') {
+        console.log('RelayInfoSettings - Setting default icon for empty field');
         updatedSettings.relayicon = expectedDefaultIcon;
         shouldUpdateBackend = true;
       } else if (updatedSettings.relayicon.endsWith('/logo-dark-192.png')) {
         // Check if the domain has changed from what's stored
         const storedIcon = updatedSettings.relayicon;
         if (storedIcon !== expectedDefaultIcon) {
+          console.log('RelayInfoSettings - Updating icon for domain change');
           updatedSettings.relayicon = expectedDefaultIcon;
           shouldUpdateBackend = true;
         }
@@ -44,9 +50,11 @@ const RelayInfoSettings: React.FC = () => {
       
       // Automatically update backend if domain changed
       if (shouldUpdateBackend) {
+        console.log('RelayInfoSettings - Updating backend with:', expectedDefaultIcon);
         updateSettings({ relayicon: expectedDefaultIcon });
         // Auto-save the change to persist it
         setTimeout(() => {
+          console.log('RelayInfoSettings - Saving settings to backend');
           saveSettings();
         }, 100);
       }
