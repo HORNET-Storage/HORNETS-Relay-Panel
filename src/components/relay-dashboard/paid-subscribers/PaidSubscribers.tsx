@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useMemo } from 'react';
+import React, { useRef, useState, useMemo } from 'react';
 import { Splide, SplideSlide, SplideTrack } from '@splidejs/react-splide';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
@@ -14,149 +14,13 @@ import { useResponsive } from '@app/hooks/useResponsive';
 import usePaidSubscribers, { SubscriberProfile } from '@app/hooks/usePaidSubscribers';
 import { Row, Col, Modal, Typography } from 'antd';
 import { nip19 } from 'nostr-tools';
-import { useNDK } from '@nostr-dev-kit/ndk-hooks';
-import { convertNDKUserProfileToSubscriberProfile } from '@app/utils/utils';
 import { UserOutlined } from '@ant-design/icons';
 import { CreatorButton } from './avatar/SubscriberAvatar.styles';
+
 const { Text } = Typography;
 
-// LRU Cache implementation for profile caching
-interface CachedProfile {
-  profile: SubscriberProfile;
-  timestamp: number;
-  accessCount: number;
-  lastAccessed: number;
-}
-
-const PROFILE_CACHE_DURATION = 600000; // 10 minutes in milliseconds
-const MAX_CACHE_SIZE = 5000; // Maximum number of cached profiles
-const CLEANUP_INTERVAL = 300000; // Clean up every 5 minutes
-const MAX_REQUEST_CACHE_SIZE = 100; // Maximum concurrent requests
-
-class ProfileCache {
-  private cache = new Map<string, CachedProfile>();
-  private requestCache = new Map<string, Promise<SubscriberProfile>>();
-  private cleanupTimer: NodeJS.Timeout | null = null;
-
-  constructor() {
-    this.startCleanupTimer();
-  }
-
-  private startCleanupTimer(): void {
-    this.cleanupTimer = setInterval(() => {
-      this.cleanup();
-    }, CLEANUP_INTERVAL);
-  }
-
-  private cleanup(): void {
-    const now = Date.now();
-    const expiredKeys: string[] = [];
-    
-    // Find expired entries - convert to array first to avoid iterator issues
-    const cacheEntries = Array.from(this.cache.entries());
-    for (const [key, cached] of cacheEntries) {
-      if (now - cached.timestamp > PROFILE_CACHE_DURATION) {
-        expiredKeys.push(key);
-      }
-    }
-
-    // Remove expired entries
-    expiredKeys.forEach(key => this.cache.delete(key));
-
-    // If still over capacity, remove least recently used entries
-    if (this.cache.size > MAX_CACHE_SIZE) {
-      const entries = Array.from(this.cache.entries());
-      entries.sort((a, b) => a[1].lastAccessed - b[1].lastAccessed);
-      
-      const toRemove = entries.slice(0, this.cache.size - MAX_CACHE_SIZE);
-      toRemove.forEach(([key]) => this.cache.delete(key));
-    }
-
-    // Cleanup request cache if it gets too large
-    if (this.requestCache.size > MAX_REQUEST_CACHE_SIZE) {
-      this.requestCache.clear();
-    }
-
-  }
-
-  getCachedProfile(pubkey: string): SubscriberProfile | null {
-    const cached = this.cache.get(pubkey);
-    if (!cached) return null;
-    
-    const isExpired = Date.now() - cached.timestamp > PROFILE_CACHE_DURATION;
-    if (isExpired) {
-      this.cache.delete(pubkey);
-      return null;
-    }
-    
-    // Update access statistics
-    cached.accessCount++;
-    cached.lastAccessed = Date.now();
-    
-    return cached.profile;
-  }
-
-  setCachedProfile(pubkey: string, profile: SubscriberProfile): void {
-    const now = Date.now();
-    this.cache.set(pubkey, {
-      profile,
-      timestamp: now,
-      accessCount: 1,
-      lastAccessed: now
-    });
-
-    // Trigger cleanup if cache is getting too large
-    if (this.cache.size > MAX_CACHE_SIZE * 1.1) {
-      this.cleanup();
-    }
-  }
-
-  getRequestPromise(pubkey: string): Promise<SubscriberProfile> | null {
-    return this.requestCache.get(pubkey) || null;
-  }
-
-  setRequestPromise(pubkey: string, promise: Promise<SubscriberProfile>): void {
-    this.requestCache.set(pubkey, promise);
-    
-    // Clean up when promise completes
-    promise.finally(() => {
-      this.requestCache.delete(pubkey);
-    });
-  }
-
-  getCacheStats(): { size: number; requestCacheSize: number } {
-    return {
-      size: this.cache.size,
-      requestCacheSize: this.requestCache.size
-    };
-  }
-
-  destroy(): void {
-    if (this.cleanupTimer) {
-      clearInterval(this.cleanupTimer);
-      this.cleanupTimer = null;
-    }
-    this.cache.clear();
-    this.requestCache.clear();
-  }
-}
-
-// Global profile cache instance
-const globalProfileCache = new ProfileCache();
-
-// Helper functions for backward compatibility
-const getCachedProfile = (pubkey: string): SubscriberProfile | null => {
-  return globalProfileCache.getCachedProfile(pubkey);
-};
-
-const setCachedProfile = (pubkey: string, profile: SubscriberProfile): void => {
-  globalProfileCache.setCachedProfile(pubkey, profile);
-};
-
 export const PaidSubscribers: React.FC = () => {
-  const hookResult = usePaidSubscribers(12);
-  const { subscribers, fetchMore, hasMore, loading, useDummyData } = hookResult;
-  const ndkInstance = useNDK();
+  const { subscribers, fetchMore, hasMore, loading, useDummyData } = usePaidSubscribers(12);
 
   // Modal state for subscriber details
   const [selectedSubscriber, setSelectedSubscriber] = useState<SubscriberProfile | null>(null);
@@ -164,24 +28,10 @@ export const PaidSubscribers: React.FC = () => {
 
   // Modal state for view all subscribers
   const [isViewAllModalVisible, setIsViewAllModalVisible] = useState(false);
-  const [loadingProfiles, setLoadingProfiles] = useState(true);
 
-  const [subscriberProfiles, setSubscriberProfiles] = useState<Map<string, SubscriberProfile>>(
-    () => new Map(subscribers.map((s) => [s.pubkey, s])),
-  );
+  // Sort profiles for consistent display
   const sortedProfiles = useMemo(() => {
-    return Array.from(subscriberProfiles.entries()).sort(([a], [b]) => a.localeCompare(b));
-  }, [subscriberProfiles]);
-  useEffect(() => {
-    setSubscriberProfiles((prev) => {
-      const map = new Map(prev);
-      for (const s of subscribers) {
-        if (!map.has(s.pubkey)) {
-          map.set(s.pubkey, s);
-        }
-      }
-      return map;
-    });
+    return [...subscribers].sort((a, b) => a.pubkey.localeCompare(b.pubkey));
   }, [subscribers]);
 
   // Handle opening subscriber detail modal
@@ -193,145 +43,30 @@ export const PaidSubscribers: React.FC = () => {
   // Handle closing subscriber detail modal
   const handleCloseModal = () => {
     setIsModalVisible(false);
+    setSelectedSubscriber(null);
   };
-  const updateSubscriberProfile = (pubkey: string, profile: SubscriberProfile) => {
-    setSubscriberProfiles((prev) => {
-      const newMap = new Map(prev);
-      newMap.set(pubkey, profile);
-      return newMap;
-    });
-    // Cache the profile globally
-    setCachedProfile(pubkey, profile);
-  };
+
   // Handle opening view all modal
   const handleViewAll = async () => {
     setIsViewAllModalVisible(true);
 
     // Fetch more subscribers if available
     let canFetchMore = hasMore;
-
     while (canFetchMore) {
       try {
         await fetchMore();
-        // Note: This is a simplified approach. In a real scenario, you'd want to
-        // track the updated state properly or use a separate hook for fetching all
         canFetchMore = false; // For now, just fetch once more
       } catch (error) {
         break;
       }
     }
   };
- 
-  useEffect(() => {
-    // Implement hybrid profile fetching with 10-minute caching
-    if (useDummyData) {
-      setLoadingProfiles(false);
-      return;
-    }
-
-    const fetchSingleProfile = async (subscriber: SubscriberProfile): Promise<SubscriberProfile> => {
-      // Check if we already have a cached profile that's still valid
-      const cachedProfile = getCachedProfile(subscriber.pubkey);
-      if (cachedProfile) {
-        return cachedProfile;
-      }
-
-      // Check if there's already a request in progress for this profile
-      const existingRequest = globalProfileCache.getRequestPromise(subscriber.pubkey);
-      if (existingRequest) {
-        return existingRequest;
-      }
-
-      // Create new request
-      const profileRequest = (async (): Promise<SubscriberProfile> => {
-        try {
-          
-          if (!ndkInstance || !ndkInstance.ndk) {
-            // No NDK available, return backend data
-            return {
-              ...subscriber,
-              name: subscriber.name || 'Anonymous Subscriber',
-              picture: subscriber.picture || '',
-              about: subscriber.about || ''
-            };
-          }
-
-          // Try to fetch profile from NDK (user's relay + other relays)
-          const user = await ndkInstance.ndk?.getUser({ pubkey: subscriber.pubkey }).fetchProfile();
-          
-          if (user && (user.name || user.picture || user.about)) {
-            // NDK returned a profile - use it as the primary source
-            const ndkProfile = convertNDKUserProfileToSubscriberProfile(subscriber.pubkey, user);
-            return ndkProfile;
-          } else {
-            // NDK came up empty - fallback to backend data
-            return {
-              ...subscriber,
-              name: subscriber.name || 'Anonymous Subscriber',
-              picture: subscriber.picture || '',
-              about: subscriber.about || ''
-            };
-          }
-        } catch (error) {
-          // Error occurred - fallback to backend data
-          return {
-            ...subscriber,
-            name: subscriber.name || 'Anonymous Subscriber',
-            picture: subscriber.picture || '',
-            about: subscriber.about || ''
-          };
-        }
-      })();
-
-      // Store the promise in cache
-      globalProfileCache.setRequestPromise(subscriber.pubkey, profileRequest);
-
-      return profileRequest;
-    };
-
-    const fetchProfiles = async () => {
-      // Process each subscriber with cached hybrid approach
-      await Promise.all(
-        subscribers.map(async (subscriber) => {
-          // Skip if we already have a complete profile in our local map
-          const existingProfile = subscriberProfiles.get(subscriber.pubkey);
-          const hasValidProfile = existingProfile && (
-            (existingProfile.name && existingProfile.name !== 'Anonymous Subscriber') ||
-            existingProfile.picture ||
-            existingProfile.about
-          );
-          
-          if (hasValidProfile) {
-            return;
-          }
-
-          try {
-            const profile = await fetchSingleProfile(subscriber);
-            updateSubscriberProfile(subscriber.pubkey, profile);
-          } catch (error) {
-            // Use fallback profile
-            updateSubscriberProfile(subscriber.pubkey, {
-              ...subscriber,
-              name: subscriber.name || 'Anonymous Subscriber',
-              picture: subscriber.picture || '',
-              about: subscriber.about || ''
-            });
-          }
-        }),
-      );
-
-      setLoadingProfiles(false);
-    };
-
-    fetchProfiles();
-  }, [subscribers, ndkInstance, useDummyData, subscriberProfiles]);
 
   // Handle closing view all modal
   const handleCloseViewAllModal = () => {
     setSelectedSubscriber(null);
     setIsViewAllModalVisible(false);
   };
-
 
   const sliderRef = useRef<Splide>(null);
   const { isTablet: isTabletOrHigher } = useResponsive();
@@ -365,8 +100,8 @@ export const PaidSubscribers: React.FC = () => {
         </NFTCardHeader>
 
         <S.FlexWrapper>
-          {sortedProfiles.map(([pubkey, subscriber], index) => (
-            <S.CardWrapper key={`${pubkey}-${index}`}>
+          {sortedProfiles.map((subscriber, index) => (
+            <S.CardWrapper key={`${subscriber.pubkey}-${index}`}>
               {subscriber.picture ? (
                 <SubscriberAvatar
                   img={subscriber.picture || ''}
@@ -374,7 +109,7 @@ export const PaidSubscribers: React.FC = () => {
                   onStoryOpen={() => handleOpenSubscriberDetails(subscriber)}
                 />
               ) : (
-                <CreatorButton $viewed={false}>
+                <CreatorButton $viewed={false} onClick={() => handleOpenSubscriberDetails(subscriber)}>
                   <UserOutlined style={{ fontSize: '5rem', color: 'var(--text-light-color)' }} />
                 </CreatorButton>
               )}
@@ -382,7 +117,7 @@ export const PaidSubscribers: React.FC = () => {
           ))}
         </S.FlexWrapper>
 
-        <SubscriberDetailModal  loading={loading} subscriber={selectedSubscriber} isVisible={isModalVisible} onClose={handleCloseModal} />
+        <SubscriberDetailModal loading={loading} subscriber={selectedSubscriber} isVisible={isModalVisible} onClose={handleCloseModal} />
 
         {/* View All Subscribers Modal */}
         <Modal
@@ -394,8 +129,8 @@ export const PaidSubscribers: React.FC = () => {
           style={{ top: 20 }}
         >
           <Row gutter={[16, 16]} style={{ padding: '16px 0' }}>
-            {sortedProfiles.map(([pubkey, subscriber]) => (
-              <Col key={pubkey} xs={24} sm={24} md={24} lg={24} xl={24}>
+            {sortedProfiles.map((subscriber) => (
+              <Col key={subscriber.pubkey} xs={24} sm={24} md={24} lg={24} xl={24}>
                 <div
                   style={{
                     display: 'flex',
@@ -427,18 +162,35 @@ export const PaidSubscribers: React.FC = () => {
                   }}
                 >
                   <div style={{ flexShrink: 0 }}>
-                    <img
-                      src={subscriber.picture}
-                      alt={subscriber.name || 'Subscriber'}
-                      style={{
-                        width: '56px',
-                        height: '56px',
-                        borderRadius: '50%',
-                        objectFit: 'cover',
-                        border: '3px solid var(--primary-color)',
-                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-                      }}
-                    />
+                    {subscriber.picture ? (
+                      <img
+                        src={subscriber.picture}
+                        alt={subscriber.name || 'Subscriber'}
+                        style={{
+                          width: '56px',
+                          height: '56px',
+                          borderRadius: '50%',
+                          objectFit: 'cover',
+                          border: '3px solid var(--primary-color)',
+                          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                        }}
+                      />
+                    ) : (
+                      <div
+                        style={{
+                          width: '56px',
+                          height: '56px',
+                          borderRadius: '50%',
+                          backgroundColor: 'var(--background-color-light)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          border: '3px solid var(--primary-color)',
+                        }}
+                      >
+                        <UserOutlined style={{ fontSize: '24px', color: 'var(--text-light-color)' }} />
+                      </div>
+                    )}
                   </div>
                   <div
                     style={{
@@ -540,10 +292,10 @@ export const PaidSubscribers: React.FC = () => {
           </BaseRow>
         </NFTCardHeader>
         <SplideTrack>
-          {!loadingProfiles &&
-            sortedProfiles.map(([pubkey, subscriber], index) => (
-              <SplideSlide key={pubkey}>
-              <S.CardWrapper key={`${pubkey}-${index}`}>
+          {!loading &&
+            sortedProfiles.map((subscriber, index) => (
+              <SplideSlide key={subscriber.pubkey}>
+                <S.CardWrapper key={`${subscriber.pubkey}-${index}`}>
                   {subscriber.picture ? (
                     <SubscriberAvatar
                       onStoryOpen={() => handleOpenSubscriberDetails(subscriber)}
@@ -551,7 +303,7 @@ export const PaidSubscribers: React.FC = () => {
                       viewed={false}
                     />
                   ) : (
-                    <CreatorButton $viewed={false}>
+                    <CreatorButton $viewed={false} onClick={() => handleOpenSubscriberDetails(subscriber)}>
                       <UserOutlined style={{ fontSize: '5rem', color: 'var(--text-light-color)' }} />
                     </CreatorButton>
                   )}
@@ -575,8 +327,8 @@ export const PaidSubscribers: React.FC = () => {
         style={{ top: 20 }}
       >
         <Row gutter={[16, 16]} style={{ padding: '16px 0' }}>
-          {sortedProfiles.map(([pubkey, subscriber]) => (
-            <Col key={pubkey} xs={24} sm={24} md={24} lg={24} xl={24}>
+          {sortedProfiles.map((subscriber) => (
+            <Col key={subscriber.pubkey} xs={24} sm={24} md={24} lg={24} xl={24}>
               <div
                 style={{
                   display: 'flex',
@@ -608,18 +360,35 @@ export const PaidSubscribers: React.FC = () => {
                 }}
               >
                 <div style={{ flexShrink: 0 }}>
-                  <img
-                    src={subscriber.picture}
-                    alt={subscriber.name || 'Subscriber'}
-                    style={{
-                      width: '56px',
-                      height: '56px',
-                      borderRadius: '50%',
-                      objectFit: 'cover',
-                      border: '3px solid var(--primary-color)',
-                      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-                    }}
-                  />
+                  {subscriber.picture ? (
+                    <img
+                      src={subscriber.picture}
+                      alt={subscriber.name || 'Subscriber'}
+                      style={{
+                        width: '56px',
+                        height: '56px',
+                        borderRadius: '50%',
+                        objectFit: 'cover',
+                        border: '3px solid var(--primary-color)',
+                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                      }}
+                    />
+                  ) : (
+                    <div
+                      style={{
+                        width: '56px',
+                        height: '56px',
+                        borderRadius: '50%',
+                        backgroundColor: 'var(--background-color-light)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        border: '3px solid var(--primary-color)',
+                      }}
+                    >
+                      <UserOutlined style={{ fontSize: '24px', color: 'var(--text-light-color)' }} />
+                    </div>
+                  )}
                 </div>
                 <div
                   style={{

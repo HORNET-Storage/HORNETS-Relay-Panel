@@ -158,7 +158,6 @@ REACT_APP_DEMO_MODE=false
 REACT_APP_BASENAME=
 
 # Nostr relay configuration for profile fetching
-REACT_APP_OWN_RELAY_URL=ws://localhost:9001
 # REACT_APP_NOSTR_RELAY_URLS=wss://your-relay1.com,wss://your-relay2.com,wss://your-relay3.com
 
 # More info https://create-react-app.dev/docs/advanced-configuration
@@ -177,7 +176,6 @@ REACT_APP_DEMO_MODE=false
 
 # Service URLs
 # REACT_APP_WALLET_BASE_URL - No longer needed! Wallet operations routed through panel API
-REACT_APP_OWN_RELAY_URL=ws://localhost:9001       # Required for profile fetching
 
 # Router configuration (empty for direct access)
 REACT_APP_BASENAME=
@@ -193,10 +191,9 @@ TSC_COMPILE_ON_ERROR=true
 
 
 **🎯 Key Requirements**:
-- ✅ **Relay URL Required** - REACT_APP_OWN_RELAY_URL must be configured for profile fetching
 - ✅ **Wallet Always Available** - Wallet operations routed through panel API, no configuration needed
 - ✅ **Panel Routing Auto-Detection** - Panel paths (REACT_APP_BASENAME/PUBLIC_URL) can be auto-detected
-- ✅ **Simplified Configuration** - Only relay URL needs to be configured
+- ✅ **Simplified Configuration** - Uses default Nostr relay URLs, no custom configuration needed
 - ✅ **Simple Deployment** - No reverse proxy needed for basic functionality
 
 ### 4. Start Development Server
@@ -265,7 +262,6 @@ Controls the React app's routing base path:
 ### Service URLs
 **🎯 Configuration Requirements**:
 - **Wallet Service**: No longer requires configuration! Wallet operations are routed through panel API (`/api/wallet-proxy/*`)
-- **Relay WebSocket**: `REACT_APP_OWN_RELAY_URL=ws://localhost:9001` (required for profile fetching)
 - **Panel API**: Auto-detected from current origin (no configuration needed)
 
 **✅ Simplified**: Wallet functionality is now always available through the panel's backend proxy.

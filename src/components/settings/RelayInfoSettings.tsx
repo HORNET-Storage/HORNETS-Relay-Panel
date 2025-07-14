@@ -21,12 +21,44 @@ const RelayInfoSettings: React.FC = () => {
   // Update form values when settings change
   useEffect(() => {
     if (settings) {
-      form.setFieldsValue(settings);
+      const currentOrigin = window.location.origin;
+      const expectedDefaultIcon = `${currentOrigin}/logo-dark-192.png`;
+      
+      // Check if relay icon is empty and set default bee logo
+      const updatedSettings = { ...settings };
+      let shouldUpdateBackend = false;
+      
+      if (!updatedSettings.relayicon || updatedSettings.relayicon.trim() === '') {
+        updatedSettings.relayicon = expectedDefaultIcon;
+        shouldUpdateBackend = true;
+      } else if (updatedSettings.relayicon.endsWith('/logo-dark-192.png')) {
+        // Check if the domain has changed from what's stored
+        const storedIcon = updatedSettings.relayicon;
+        if (storedIcon !== expectedDefaultIcon) {
+          updatedSettings.relayicon = expectedDefaultIcon;
+          shouldUpdateBackend = true;
+        }
+      }
+      
+      form.setFieldsValue(updatedSettings);
+      
+      // Automatically update backend if domain changed
+      if (shouldUpdateBackend) {
+        updateSettings({ relayicon: expectedDefaultIcon });
+        // Auto-save the change to persist it
+        setTimeout(() => {
+          saveSettings();
+        }, 100);
+      }
     }
-  }, [settings, form]);
+  }, [settings, form, updateSettings, saveSettings]);
 
   // Handle form value changes
   const handleValuesChange = (changedValues: Partial<SettingsGroupType<'relay_info'>>) => {
+    // If relay icon is being cleared, set it to default
+    if (changedValues.relayicon !== undefined && (!changedValues.relayicon || changedValues.relayicon.trim() === '')) {
+      changedValues.relayicon = `${window.location.origin}/logo-dark-192.png`;
+    }
     updateSettings(changedValues);
   };
 
