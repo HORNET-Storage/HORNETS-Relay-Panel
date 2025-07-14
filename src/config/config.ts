@@ -20,13 +20,7 @@ const config = {
   // Wallet operations now routed through panel API - always enabled
   isWalletEnabled: true,
   
-  // Nostr relay configuration
-  nostrRelayUrls: process.env.REACT_APP_NOSTR_RELAY_URLS?.split(',').map(url => url.trim()) || [
-    'wss://relay.damus.io',
-    'wss://relay.nostr.band', 
-    'wss://relay.snort.social',
-    'wss://vault.iris.to'
-  ],
+  // Nostr relay configuration removed - using panel API for all operations
   
   
   // Notification settings

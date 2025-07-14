@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { ConfigProvider } from 'antd';
 import { HelmetProvider } from 'react-helmet-async';
 import deDe from 'antd/lib/locale/de_DE';
@@ -13,32 +13,11 @@ import { usePWA } from './hooks/usePWA';
 import { useThemeWatcher } from './hooks/useThemeWatcher';
 import { useAppSelector } from './hooks/reduxHooks';
 import { themeObject } from './styles/themes/themeVariables';
-import NDK, { NDKNip07Signer, NDKRelayAuthPolicies } from '@nostr-dev-kit/ndk';
-import { useNDKInit } from '@nostr-dev-kit/ndk-hooks';
-import config from './config/config';
-
-// Configure NDK with user's relay URLs from environment variables
-const ndk = new NDK({
-  explicitRelayUrls: config.nostrRelayUrls,
-  signer: new NDKNip07Signer(),
-});
-
-// Set up NIP-42 authentication policy following the example
-ndk.relayAuthDefaultPolicy = NDKRelayAuthPolicies.signIn({ ndk });
-
-ndk
-  .connect()
-  .then(() => console.log('NDK connected with relay URLs and NIP-42 auth policy:', config.nostrRelayUrls))
-  .catch((error) => console.error('NDK connection error:', error));
+// NDK removed - login uses window.nostr directly, profile API uses panel API
 
 const App: React.FC = () => {
   const { language } = useLanguage();
   const theme = useAppSelector((state) => state.theme.theme);
-  const initializeNDK = useNDKInit();
-
-  useEffect(() => {
-    initializeNDK(ndk);
-  }, [initializeNDK]);
 
   usePWA();
 
