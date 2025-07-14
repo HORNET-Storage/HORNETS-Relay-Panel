@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { Form, Input, Select, Tooltip } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Form, Input, Select, Tooltip, message } from 'antd';
 import {
   QuestionCircleOutlined,
   InfoCircleOutlined,
@@ -11,62 +11,121 @@ import useGenericSettings from '@app/hooks/useGenericSettings';
 import { SettingsGroupType } from '@app/types/settings.types';
 import BaseSettingsForm from './BaseSettingsForm';
 import * as S from './Settings.styles';
+import { readToken } from '@app/services/localStorage.service';
+import config from '@app/config/config';
 const { Option } = Select;
 const { TextArea } = Input;
 
 const RelayInfoSettings: React.FC = () => {
   const { settings, loading, error, fetchSettings, updateSettings, saveSettings } = useGenericSettings('relay_info');
   const [form] = Form.useForm();
+  const [isUploadingDefaultIcon, setIsUploadingDefaultIcon] = useState(false);
+
+  // Function to automatically upload the bee logo
+  const uploadDefaultIcon = async (): Promise<string | null> => {
+    try {
+      setIsUploadingDefaultIcon(true);
+      
+      // Get JWT token for authentication
+      const token = readToken();
+      if (!token) {
+        console.error('No authentication token available');
+        return null;
+      }
+
+      // Fetch the bee logo from the public folder
+      const response = await fetch('/logo-dark-192.png');
+      if (!response.ok) {
+        throw new Error('Failed to fetch bee logo');
+      }
+      
+      const blob = await response.blob();
+      const file = new File([blob], 'logo-dark-192.png', { type: 'image/png' });
+
+      // Create form data for the API
+      const formData = new FormData();
+      formData.append('image', file);
+      formData.append('panel_url', window.location.origin);
+
+      // Upload using panel API
+      const uploadResponse = await fetch(`${config.baseURL}/api/relay/icon`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        body: formData
+      });
+
+      if (!uploadResponse.ok) {
+        const errorData = await uploadResponse.json().catch(() => ({ error: 'Upload failed' }));
+        throw new Error(errorData.error || `HTTP error! status: ${uploadResponse.status}`);
+      }
+
+      const result = await uploadResponse.json();
+      console.log('Default icon uploaded successfully:', result.url);
+      return result.url;
+      
+    } catch (error) {
+      console.error('Failed to upload default icon:', error);
+      return null;
+    } finally {
+      setIsUploadingDefaultIcon(false);
+    }
+  };
 
   // Update form values when settings change
   useEffect(() => {
     if (settings) {
+      form.setFieldsValue(settings);
+      
       const currentOrigin = window.location.origin;
-      const expectedDefaultIcon = `${currentOrigin}/logo-dark-192.png`;
+      const isEmptyIcon = !settings.relayicon || settings.relayicon.trim() === '';
+      const isLocalhostIcon = settings.relayicon && settings.relayicon.includes('localhost');
+      const isProductionDomain = !currentOrigin.includes('localhost');
       
-      console.log('RelayInfoSettings - Current settings:', settings);
-      console.log('RelayInfoSettings - Expected default icon:', expectedDefaultIcon);
-      console.log('RelayInfoSettings - Current relayicon:', settings.relayicon);
-      
-      // Check if relay icon is empty and set default bee logo
-      const updatedSettings = { ...settings };
-      let shouldUpdateBackend = false;
-      
-      if (!updatedSettings.relayicon || updatedSettings.relayicon.trim() === '') {
-        console.log('RelayInfoSettings - Setting default icon for empty field');
-        updatedSettings.relayicon = expectedDefaultIcon;
-        shouldUpdateBackend = true;
-      } else if (updatedSettings.relayicon.endsWith('/logo-dark-192.png')) {
-        // Check if the domain has changed from what's stored
-        const storedIcon = updatedSettings.relayicon;
-        if (storedIcon !== expectedDefaultIcon) {
-          console.log('RelayInfoSettings - Updating icon for domain change');
-          updatedSettings.relayicon = expectedDefaultIcon;
-          shouldUpdateBackend = true;
-        }
-      }
-      
-      form.setFieldsValue(updatedSettings);
-      
-      // Automatically update backend if domain changed
-      if (shouldUpdateBackend) {
-        console.log('RelayInfoSettings - Updating backend with:', expectedDefaultIcon);
-        updateSettings({ relayicon: expectedDefaultIcon });
-        // Auto-save the change to persist it
-        setTimeout(() => {
-          console.log('RelayInfoSettings - Saving settings to backend');
-          saveSettings();
-        }, 100);
+      // Auto-upload default icon if:
+      // 1. Icon is empty, OR
+      // 2. We're on production domain but icon still points to localhost
+      if (isEmptyIcon || (isLocalhostIcon && isProductionDomain)) {
+        console.log('Auto-uploading default icon...', {
+          isEmptyIcon,
+          isLocalhostIcon,
+          isProductionDomain,
+          currentOrigin,
+          currentIcon: settings.relayicon
+        });
+        
+        uploadDefaultIcon().then(uploadedUrl => {
+          if (uploadedUrl) {
+            // Update the settings with the uploaded URL
+            updateSettings({ relayicon: uploadedUrl });
+            form.setFieldsValue({ relayicon: uploadedUrl });
+            
+            if (isEmptyIcon) {
+              message.success('Default bee logo set automatically');
+            } else {
+              message.success('Icon updated for new domain');
+            }
+          }
+        });
       }
     }
-  }, [settings, form, updateSettings, saveSettings]);
+  }, [settings, form, updateSettings]);
 
   // Handle form value changes
   const handleValuesChange = (changedValues: Partial<SettingsGroupType<'relay_info'>>) => {
-    // If relay icon is being cleared, set it to default
+    // If relay icon is being cleared, automatically upload default
     if (changedValues.relayicon !== undefined && (!changedValues.relayicon || changedValues.relayicon.trim() === '')) {
-      changedValues.relayicon = `${window.location.origin}/logo-dark-192.png`;
+      uploadDefaultIcon().then(uploadedUrl => {
+        if (uploadedUrl) {
+          updateSettings({ relayicon: uploadedUrl });
+          form.setFieldsValue({ relayicon: uploadedUrl });
+          message.success('Default bee logo set automatically');
+        }
+      });
+      return; // Don't update with empty value
     }
+    
     updateSettings(changedValues);
   };
 
