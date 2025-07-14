@@ -74,7 +74,26 @@ export const SubscriberDetailModal: React.FC<SubscriberDetailModalProps> = ({ su
     if (key.length <= 16) return key;
     return `${key.substring(0, 8)}...${key.substring(key.length - 8)}`;
   };
-  const subscribed: boolean = !!subscriber.metadata?.subscriptionTier && !!subscriber.metadata?.subscribedSince;
+
+  // Format date for display
+  const formatDate = (dateString: string) => {
+    // Check if it's a zero time value (Go default)
+    if (dateString === '0001-01-01T00:00:00Z' || !dateString) {
+      return 'Not available';
+    }
+    
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    } catch (error) {
+      return 'Invalid date';
+    }
+  };
+  const subscribed: boolean = !!subscriber.metadata?.subscriptionTier && !!subscriber.metadata?.subscribedSince && subscriber.metadata.subscribedSince !== '0001-01-01T00:00:00Z';
   const subscribedLabel = subscribed ? 'Subscribed' : 'Not Subscribed';
 
   return (
@@ -146,7 +165,7 @@ export const SubscriberDetailModal: React.FC<SubscriberDetailModalProps> = ({ su
               </S.IconWrapper>
               <S.InfoTitle>Subscribed Since</S.InfoTitle>
             </S.InfoHeader>
-            <S.InfoContent>{subscriber.metadata.subscribedSince}</S.InfoContent>
+            <S.InfoContent>{formatDate(subscriber.metadata.subscribedSince)}</S.InfoContent>
           </S.InfoCard>
         )}
       </S.InfoSection>
