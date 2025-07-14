@@ -157,8 +157,7 @@ REACT_APP_ASSETS_BUCKET=http://localhost
 REACT_APP_DEMO_MODE=false
 REACT_APP_BASENAME=
 
-# Nostr relay configuration for profile fetching
-# REACT_APP_NOSTR_RELAY_URLS=wss://your-relay1.com,wss://your-relay2.com,wss://your-relay3.com
+# Nostr operations now use panel API - no relay URLs needed
 
 # More info https://create-react-app.dev/docs/advanced-configuration
 ESLINT_NO_DEV_ERRORS=true
@@ -181,8 +180,7 @@ REACT_APP_DEMO_MODE=false
 REACT_APP_BASENAME=
 PUBLIC_URL=
 
-# Optional: Custom Nostr relay URLs (comma-separated list)
-# REACT_APP_NOSTR_RELAY_URLS=wss://your-relay1.com,wss://your-relay2.com
+# Nostr operations now use panel API - no relay URLs needed
 
 # Development optimizations
 ESLINT_NO_DEV_ERRORS=true
@@ -268,7 +266,6 @@ Controls the React app's routing base path:
 
 **Manual Override** (development only):
 - **REACT_APP_BASE_URL**: Panel API endpoint (dev mode only)
-- **REACT_APP_NOSTR_RELAY_URLS**: Additional Nostr relays (optional)
 
 ### Demo Mode
 Set `REACT_APP_DEMO_MODE=true` to enable demo functionality with mock data.
