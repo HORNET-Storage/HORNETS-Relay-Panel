@@ -214,3 +214,27 @@ export const mapBadgeStatus = (status: BaseBadgeProps['status']): Severity => {
 
   return status;
 };
+
+/**
+ * Validate if a string is a valid URL
+ */
+export const isValidUrl = (urlString: string): boolean => {
+  try {
+    new URL(urlString);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+/**
+ * Validate if a URL points to an image
+ */
+export const isImageUrl = (url: string): boolean => {
+  if (!isValidUrl(url)) return false;
+  
+  const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'];
+  const urlPath = new URL(url).pathname.toLowerCase();
+  
+  return imageExtensions.some(ext => urlPath.endsWith(ext));
+};

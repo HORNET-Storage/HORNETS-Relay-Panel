@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Input, Upload, Button, message, Tabs, Avatar } from 'antd';
 import { UploadOutlined, LinkOutlined, LoadingOutlined } from '@ant-design/icons';
-import { isValidUrl, isImageUrl } from '@app/utils/blossomUpload';
+import { isValidUrl, isImageUrl } from '@app/utils/utils';
 import { readToken } from '@app/services/localStorage.service';
 import config from '@app/config/config';
 import type { RcFile } from 'antd/es/upload/interface';
