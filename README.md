@@ -111,11 +111,132 @@ For development, you can run services directly:
 
 ### Nginx Proxy (Production Recommended)
 For production deployment, nginx handles:
-1. **Wallet Service Proxying**: `/wallet/*` → `localhost:9003`
-2. **SSL Termination**: Single certificate for entire application
-3. **WebSocket Proxying**: Proper upgrade headers for relay WebSocket
-4. **Static Asset Caching**: Optimal performance for React app
-5. **Security Headers**: CORS, CSP, and other protections
+1. **Relay WebSocket Proxying**: `/relay` and `/relay/` → `localhost:9001` (strips prefix)
+2. **Wallet Service Proxying**: `/wallet/*` → `localhost:9003`
+3. **SSL Termination**: Single certificate for entire application
+4. **WebSocket Proxying**: Proper upgrade headers for relay WebSocket
+5. **Static Asset Caching**: Optimal performance for React app
+6. **Security Headers**: CORS, CSP, and other protections
+
+#### Complete Working Nginx Configuration
+Here's a complete working nginx configuration for the HORNETS Relay Panel (tested on macOS and Linux):
+
+```nginx
+# Define upstream servers for each service (using explicit IPv4 addresses)
+upstream transcribe_api {
+    server 127.0.0.1:8000;
+}
+
+upstream relay_service {
+    server 127.0.0.1:9001;
+}
+
+upstream panel_service {
+    server 127.0.0.1:9002;
+}
+
+upstream wallet_service {
+    server 127.0.0.1:9003;
+}
+
+# WebSocket connection upgrade mapping
+map $http_upgrade $connection_upgrade {
+    default upgrade;
+    '' close;
+}
+
+# Main server block listening on HTTP
+server {
+    listen 80; # Nginx listens on port 80 locally
+    server_name _; # Accept all hostnames (localhost, ngrok, custom domains, etc.)
+
+    # Basic Security Headers
+    add_header X-Frame-Options "SAMEORIGIN";
+    add_header X-Content-Type-Options "nosniff";
+    add_header X-XSS-Protection "1; mode=block";
+    server_tokens off;
+
+    # Increase buffer sizes for large files
+    client_max_body_size 100M;
+
+    # Forward client IP and protocol
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header Host $host;
+
+    # Health check endpoint - exact match first
+    location = /health {
+        access_log off;
+        return 200 "healthy\n";
+        add_header Content-Type text/plain;
+    }
+
+    # Relay WebSocket service - handle both /relay and /relay/
+    location ~ ^/relay/?$ {
+        # Strip the /relay prefix (with or without trailing slash) when forwarding to the service
+        rewrite ^/relay/?$ / break;
+        
+        proxy_pass http://relay_service;
+        
+        # WebSocket-specific headers
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+        
+        # Extended timeouts for WebSocket connections
+        proxy_read_timeout 86400s;
+        proxy_send_timeout 86400s;
+        proxy_connect_timeout 60s;
+        
+        # Additional headers for tunnel compatibility
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+
+    # Transcribe service
+    location /transcribe/ {
+        rewrite ^/transcribe/(.*)$ /$1 break;
+        proxy_pass http://transcribe_api;
+    }
+
+    # Wallet service
+    location /wallet/ {
+        rewrite ^/wallet/(.*)$ /$1 break;
+        proxy_pass http://wallet_service;
+    }
+
+    # Default location - Panel service (frontend + API) - MUST BE LAST
+    location / {
+        proxy_pass http://panel_service;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        
+        # Handle WebSocket if needed
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+    }
+}
+```
+
+**Key Configuration Details:**
+- **Relay WebSocket**: Uses regex matching `^/relay/?$` to handle both `/relay` and `/relay/` paths
+- **Rewrite Rule**: Strips the `/relay` prefix before forwarding to the relay service at port 9001
+- **WebSocket Support**: Proper upgrade headers and extended timeouts for WebSocket connections
+- **Service Routing**: Panel (root), wallet (`/wallet/`), transcribe (`/transcribe/`), and relay (`/relay`)
+- **Security**: Basic security headers and proper client IP forwarding
+
+**Deployment Steps:**
+1. Save this configuration to `/etc/nginx/sites-available/hornets` (or `/opt/homebrew/etc/nginx/conf.d/hornets.conf` on macOS)
+2. Enable the site: `sudo ln -s /etc/nginx/sites-available/hornets /etc/nginx/sites-enabled/`
+3. Test configuration: `sudo nginx -t`
+4. Reload nginx: `sudo nginx -s reload`
 
 ## 📋 Prerequisites
 
