@@ -20,7 +20,18 @@ export const SiderLogo: React.FC<SiderLogoProps> = ({ isSiderCollapsed, toggleSi
   return (
     <S.SiderLogoDiv>
       <S.SiderLogoLink to="/">
-        <img src={img} alt="Lightence" width={48} height={48} />
+        <img
+          src={img}
+          alt="Lightence"
+          width={56}
+          height={56}
+          style={{
+            maxWidth: '56px',
+            maxHeight: '56px',
+            objectFit: 'contain',
+            flexShrink: 0
+          }}
+        />
         <S.BrandSpan>
           H.O.R.N.E.T.S
           <br />
