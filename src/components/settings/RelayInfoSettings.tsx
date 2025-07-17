@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Form, Input, Select, Tooltip } from 'antd';
+import { Form, Input, Select, Tooltip, message } from 'antd';
 import {
   QuestionCircleOutlined,
   InfoCircleOutlined,
@@ -18,15 +18,60 @@ const RelayInfoSettings: React.FC = () => {
   const { settings, loading, error, fetchSettings, updateSettings, saveSettings } = useGenericSettings('relay_info');
   const [form] = Form.useForm();
 
+  // Function to get the default bee logo URL (no upload needed)
+  const getDefaultIconUrl = (): string => {
+    const currentOrigin = window.location.origin;
+    return `${currentOrigin}/logo-dark-192.png`;
+  };
+
   // Update form values when settings change
   useEffect(() => {
     if (settings) {
-      form.setFieldsValue(settings);
+      const currentOrigin = window.location.origin;
+      const defaultIconUrl = getDefaultIconUrl();
+      const isEmptyIcon = !settings.relayicon || settings.relayicon.trim() === '';
+      const isLocalhostIcon = settings.relayicon && settings.relayicon.includes('localhost');
+      const isProductionDomain = !currentOrigin.includes('localhost');
+      
+      // Auto-set default icon URL if:
+      // 1. Icon is empty, OR
+      // 2. We're on production domain but icon still points to localhost
+      if (isEmptyIcon || (isLocalhostIcon && isProductionDomain)) {
+        console.log('Auto-setting default icon URL...', {
+          isEmptyIcon,
+          isLocalhostIcon,
+          isProductionDomain,
+          currentOrigin,
+          currentIcon: settings.relayicon,
+          defaultIconUrl
+        });
+        
+        // Update the settings with the default icon URL
+        updateSettings({ relayicon: defaultIconUrl });
+        form.setFieldsValue({ relayicon: defaultIconUrl });
+        
+        if (isEmptyIcon) {
+          message.success('Default bee logo set automatically');
+        } else {
+          message.success('Icon updated for new domain');
+        }
+      } else {
+        form.setFieldsValue(settings);
+      }
     }
-  }, [settings, form]);
+  }, [settings, form, updateSettings]);
 
   // Handle form value changes
   const handleValuesChange = (changedValues: Partial<SettingsGroupType<'relay_info'>>) => {
+    // If relay icon is being cleared, automatically set default URL
+    if (changedValues.relayicon !== undefined && (!changedValues.relayicon || changedValues.relayicon.trim() === '')) {
+      const defaultIconUrl = getDefaultIconUrl();
+      updateSettings({ relayicon: defaultIconUrl });
+      form.setFieldsValue({ relayicon: defaultIconUrl });
+      message.success('Default bee logo set automatically');
+      return; // Don't update with empty value
+    }
+    
     updateSettings(changedValues);
   };
 

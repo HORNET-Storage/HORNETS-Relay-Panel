@@ -62,11 +62,19 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
           return;
         }
 
-        const response = await fetch(`${config.walletBaseURL}/calculate-tx-size`, {
+        // Get panel JWT token for authentication
+        const panelToken = readToken();
+        if (!panelToken) {
+          console.log('Panel authentication required for transaction size calculation');
+          setIsLoadingSize(false);
+          return;
+        }
+
+        const response = await fetch(`${config.baseURL}/api/wallet-proxy/calculate-tx-size`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${panelToken}`,
           },
           body: JSON.stringify({
             recipient_address: transaction.recipient_address,
@@ -145,11 +153,17 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
         new_fee_rate: newFeeRate, // Send the updated fee rate
       };
 
-      const response = await fetch(`${config.walletBaseURL}/transaction`, {
+      // Get panel JWT token for authentication
+      const panelToken = readToken();
+      if (!panelToken) {
+        throw new Error('Panel authentication required for transaction replacement');
+      }
+
+      const response = await fetch(`${config.baseURL}/api/wallet-proxy/transaction`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`, // Include JWT token
+          Authorization: `Bearer ${panelToken}`, // Include panel JWT token
         },
         body: JSON.stringify(replaceRequest),
       });

@@ -96,11 +96,18 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
               return;
             }
 
-            let response = await fetch(`${config.walletBaseURL}/calculate-tx-size`, {
+            // Get panel JWT token for authentication
+            const panelToken = readToken();
+            if (!panelToken) {
+              console.log('Panel authentication required for transaction calculation');
+              return;
+            }
+
+            let response = await fetch(`${config.baseURL}/api/wallet-proxy/calculate-tx-size`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`,
+                Authorization: `Bearer ${panelToken}`,
               },
               body: JSON.stringify({
                 recipient_address: formData.address,
@@ -118,11 +125,11 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
                 await login();
                 
                 // Retry the request with the new token
-                response = await fetch(`${config.walletBaseURL}/calculate-tx-size`, {
+                response = await fetch(`${config.baseURL}/api/wallet-proxy/calculate-tx-size`, {
                   method: 'POST',
                   headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`,
+                    Authorization: `Bearer ${panelToken}`,
                   },
                   body: JSON.stringify({
                     recipient_address: formData.address,
@@ -246,12 +253,18 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
       }
 
 
-      // Step 2: Initiate the new transaction with the JWT token
-      const response = await fetch(`${config.walletBaseURL}/transaction`, {
+      // Get panel JWT token for authentication
+      const panelToken = readToken();
+      if (!panelToken) {
+        throw new Error('Panel authentication required for transaction');
+      }
+
+      // Step 2: Initiate the new transaction with the JWT token via panel API
+      const response = await fetch(`${config.baseURL}/api/wallet-proxy/transaction`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`, // Include JWT token in headers
+          Authorization: `Bearer ${panelToken}`, // Include panel JWT token in headers
         },
         body: JSON.stringify(transactionRequest),
       });

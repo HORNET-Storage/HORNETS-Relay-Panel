@@ -111,11 +111,132 @@ For development, you can run services directly:
 
 ### Nginx Proxy (Production Recommended)
 For production deployment, nginx handles:
-1. **Wallet Service Proxying**: `/wallet/*` → `localhost:9003`
-2. **SSL Termination**: Single certificate for entire application
-3. **WebSocket Proxying**: Proper upgrade headers for relay WebSocket
-4. **Static Asset Caching**: Optimal performance for React app
-5. **Security Headers**: CORS, CSP, and other protections
+1. **Relay WebSocket Proxying**: `/relay` and `/relay/` → `localhost:9001` (strips prefix)
+2. **Wallet Service Proxying**: `/wallet/*` → `localhost:9003`
+3. **SSL Termination**: Single certificate for entire application
+4. **WebSocket Proxying**: Proper upgrade headers for relay WebSocket
+5. **Static Asset Caching**: Optimal performance for React app
+6. **Security Headers**: CORS, CSP, and other protections
+
+#### Complete Working Nginx Configuration
+Here's a complete working nginx configuration for the HORNETS Relay Panel (tested on macOS and Linux):
+
+```nginx
+# Define upstream servers for each service (using explicit IPv4 addresses)
+upstream transcribe_api {
+    server 127.0.0.1:8000;
+}
+
+upstream relay_service {
+    server 127.0.0.1:9001;
+}
+
+upstream panel_service {
+    server 127.0.0.1:9002;
+}
+
+upstream wallet_service {
+    server 127.0.0.1:9003;
+}
+
+# WebSocket connection upgrade mapping
+map $http_upgrade $connection_upgrade {
+    default upgrade;
+    '' close;
+}
+
+# Main server block listening on HTTP
+server {
+    listen 80; # Nginx listens on port 80 locally
+    server_name _; # Accept all hostnames (localhost, ngrok, custom domains, etc.)
+
+    # Basic Security Headers
+    add_header X-Frame-Options "SAMEORIGIN";
+    add_header X-Content-Type-Options "nosniff";
+    add_header X-XSS-Protection "1; mode=block";
+    server_tokens off;
+
+    # Increase buffer sizes for large files
+    client_max_body_size 100M;
+
+    # Forward client IP and protocol
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header Host $host;
+
+    # Health check endpoint - exact match first
+    location = /health {
+        access_log off;
+        return 200 "healthy\n";
+        add_header Content-Type text/plain;
+    }
+
+    # Relay WebSocket service - handle both /relay and /relay/
+    location ~ ^/relay/?$ {
+        # Strip the /relay prefix (with or without trailing slash) when forwarding to the service
+        rewrite ^/relay/?$ / break;
+        
+        proxy_pass http://relay_service;
+        
+        # WebSocket-specific headers
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+        
+        # Extended timeouts for WebSocket connections
+        proxy_read_timeout 86400s;
+        proxy_send_timeout 86400s;
+        proxy_connect_timeout 60s;
+        
+        # Additional headers for tunnel compatibility
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+
+    # Transcribe service
+    location /transcribe/ {
+        rewrite ^/transcribe/(.*)$ /$1 break;
+        proxy_pass http://transcribe_api;
+    }
+
+    # Wallet service
+    location /wallet/ {
+        rewrite ^/wallet/(.*)$ /$1 break;
+        proxy_pass http://wallet_service;
+    }
+
+    # Default location - Panel service (frontend + API) - MUST BE LAST
+    location / {
+        proxy_pass http://panel_service;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        
+        # Handle WebSocket if needed
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+    }
+}
+```
+
+**Key Configuration Details:**
+- **Relay WebSocket**: Uses regex matching `^/relay/?$` to handle both `/relay` and `/relay/` paths
+- **Rewrite Rule**: Strips the `/relay` prefix before forwarding to the relay service at port 9001
+- **WebSocket Support**: Proper upgrade headers and extended timeouts for WebSocket connections
+- **Service Routing**: Panel (root), wallet (`/wallet/`), transcribe (`/transcribe/`), and relay (`/relay`)
+- **Security**: Basic security headers and proper client IP forwarding
+
+**Deployment Steps:**
+1. Save this configuration to `/etc/nginx/sites-available/hornets` (or `/opt/homebrew/etc/nginx/conf.d/hornets.conf` on macOS)
+2. Enable the site: `sudo ln -s /etc/nginx/sites-available/hornets /etc/nginx/sites-enabled/`
+3. Test configuration: `sudo nginx -t`
+4. Reload nginx: `sudo nginx -s reload`
 
 ## 📋 Prerequisites
 
@@ -157,9 +278,7 @@ REACT_APP_ASSETS_BUCKET=http://localhost
 REACT_APP_DEMO_MODE=false
 REACT_APP_BASENAME=
 
-# Nostr relay configuration for profile fetching
-REACT_APP_OWN_RELAY_URL=ws://localhost:9001
-# REACT_APP_NOSTR_RELAY_URLS=wss://your-relay1.com,wss://your-relay2.com,wss://your-relay3.com
+# Nostr operations now use panel API - no relay URLs needed
 
 # More info https://create-react-app.dev/docs/advanced-configuration
 ESLINT_NO_DEV_ERRORS=true
@@ -176,15 +295,13 @@ Create `.env.production` for production builds:
 REACT_APP_DEMO_MODE=false
 
 # Service URLs
-REACT_APP_WALLET_BASE_URL=http://localhost:9003  # Optional - leave empty to disable wallet features
-REACT_APP_OWN_RELAY_URL=ws://localhost:9001       # Required for profile fetching
+# REACT_APP_WALLET_BASE_URL - No longer needed! Wallet operations routed through panel API
 
 # Router configuration (empty for direct access)
 REACT_APP_BASENAME=
 PUBLIC_URL=
 
-# Optional: Custom Nostr relay URLs (comma-separated list)
-# REACT_APP_NOSTR_RELAY_URLS=wss://your-relay1.com,wss://your-relay2.com
+# Nostr operations now use panel API - no relay URLs needed
 
 # Development optimizations
 ESLINT_NO_DEV_ERRORS=true
@@ -193,10 +310,9 @@ TSC_COMPILE_ON_ERROR=true
 
 
 **🎯 Key Requirements**:
-- ✅ **Relay URL Required** - REACT_APP_OWN_RELAY_URL must be configured for profile fetching
-- ✅ **Wallet URL Optional** - REACT_APP_WALLET_BASE_URL can be empty to disable wallet features
+- ✅ **Wallet Always Available** - Wallet operations routed through panel API, no configuration needed
 - ✅ **Panel Routing Auto-Detection** - Panel paths (REACT_APP_BASENAME/PUBLIC_URL) can be auto-detected
-- ✅ **Build-Time Configuration** - Service URLs are baked into the JavaScript bundle during build
+- ✅ **Simplified Configuration** - Uses default Nostr relay URLs, no custom configuration needed
 - ✅ **Simple Deployment** - No reverse proxy needed for basic functionality
 
 ### 4. Start Development Server
@@ -264,16 +380,13 @@ Controls the React app's routing base path:
 
 ### Service URLs
 **🎯 Configuration Requirements**:
-- **Wallet Service**: `REACT_APP_WALLET_BASE_URL=http://localhost:9003` (optional - leave empty to disable wallet features)
-- **Relay WebSocket**: `REACT_APP_OWN_RELAY_URL=ws://localhost:9001` (required for profile fetching)
+- **Wallet Service**: No longer requires configuration! Wallet operations are routed through panel API (`/api/wallet-proxy/*`)
 - **Panel API**: Auto-detected from current origin (no configuration needed)
 
-**Note**: When wallet URL is not configured, send/receive buttons will show a helpful message about rebuilding with wallet configuration.
+**✅ Simplified**: Wallet functionality is now always available through the panel's backend proxy.
 
 **Manual Override** (development only):
 - **REACT_APP_BASE_URL**: Panel API endpoint (dev mode only)
-- **REACT_APP_WALLET_BASE_URL**: Wallet service endpoint (dev mode only)
-- **REACT_APP_NOSTR_RELAY_URLS**: Additional Nostr relays (optional)
 
 ### Demo Mode
 Set `REACT_APP_DEMO_MODE=true` to enable demo functionality with mock data.

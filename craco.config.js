@@ -16,6 +16,28 @@ module.exports = {
         include: /node_modules/,
         type: 'javascript/auto',
       });
+      
+      // Split chunks to avoid large files that cause ngrok issues
+      webpackConfig.optimization = {
+        ...webpackConfig.optimization,
+        splitChunks: {
+          chunks: 'all',
+          cacheGroups: {
+            vendor: {
+              test: /[\\/]node_modules[\\/]/,
+              name: 'vendors',
+              chunks: 'all',
+              maxSize: 1024 * 1024, // 1MB max chunk size
+            },
+            common: {
+              minChunks: 2,
+              chunks: 'all',
+              maxSize: 1024 * 1024, // 1MB max chunk size
+            },
+          },
+        },
+      };
+      
       return webpackConfig;
     },
     plugins: [

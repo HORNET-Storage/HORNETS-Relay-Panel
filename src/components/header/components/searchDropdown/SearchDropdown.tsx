@@ -5,9 +5,8 @@ import { CategoryComponents } from '@app/components/header/components/HeaderSear
 import { Btn, InputSearch } from '../HeaderSearch/HeaderSearch.styles';
 import { useTranslation } from 'react-i18next';
 import { BasePopover } from '@app/components/common/BasePopover/BasePopover';
-import { NDKUserProfile, useNDK } from '@nostr-dev-kit/ndk-hooks';
 import usePaidSubscribers from '@app/hooks/usePaidSubscribers';
-import { convertNDKUserProfileToSubscriberProfile } from '@app/utils/utils';
+import { useProfileAPI } from '@app/hooks/useProfileAPI';
 import { InvalidPubkey } from '../../Header.styles';
 
 import { SubscriberProfile } from '@app/hooks/usePaidSubscribers';
@@ -34,7 +33,7 @@ export const SearchDropdown: React.FC<SearchOverlayProps> = ({
   const [subscriberProfile, setSubscriberProfile] = useState<SubscriberProfile | null>(null);
   const [invalidPubkey, setInvalidPubkey] = useState(false);
   const { subscribers } = usePaidSubscribers();
-  const ndkInstance = useNDK();
+  const { fetchSingleProfile, loading: profileAPILoading } = useProfileAPI();
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -44,19 +43,19 @@ export const SearchDropdown: React.FC<SearchOverlayProps> = ({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const ref = useRef<any>(null);
 
-  const fetchProfile = async (pubkey: string): Promise<NDKUserProfile | null> => {
-    if (!ndkInstance) return null;
-
+  const fetchProfile = async (pubkey: string): Promise<SubscriberProfile | null> => {
     try {
       setFetchingProfile(true);
-      const profile = await ndkInstance.ndk?.getUser({ pubkey: pubkey }).fetchProfile();
-
+      setFetchingFailed(false);
+      
+      const profile = await fetchSingleProfile(pubkey);
+      
       if (profile) {
         setFetchingProfile(false);
         setFetchingFailed(false);
         return profile;
       } else {
-        console.error('Profile not found for pubkey:', pubkey);
+        console.log('Profile not found for pubkey:', pubkey);
         setFetchingProfile(false);
         setFetchingFailed(true);
         return null;
@@ -71,34 +70,35 @@ export const SearchDropdown: React.FC<SearchOverlayProps> = ({
 
   const handleSearchProfile = async () => {
     if (!query) return;
-    //verify that it's a pubkey
+    
+    // Verify that it's a valid pubkey (hex format)
     if (/^[a-fA-F0-9]{64}$/.test(query)) {
       setSubscriberDetailModalOpen(true);
+      setInvalidPubkey(false);
 
-      //See if the pubkey exists in the subscribers
       const pubkey = query;
-      const subscriber = subscribers.find((sub) => sub.pubkey === query);
-      // If it exists, open the modal with the subscriber details. If name,picture, or about are not set, fetch profile.
-      //if It doesnt exist, fetch the profile from NDK
-      //once fetched, convert it to SubscriberProfile and open the modal
-      if (subscriber) {
-        if (!subscriber.name || !subscriber.picture || !subscriber.about) {
-          const profile = await fetchProfile(pubkey);
-          if (profile) {
-            const subscriberProfile: SubscriberProfile = convertNDKUserProfileToSubscriberProfile(pubkey, profile);
-            // Open the modal with the fetched subscriber profile
-            setSubscriberProfile(subscriberProfile);
-          }
-        }
+      
+      // First check if the pubkey exists in current subscribers list
+      const existingSubscriber = subscribers.find((sub) => sub.pubkey === pubkey);
+      
+      if (existingSubscriber && existingSubscriber.name && existingSubscriber.picture) {
+        // We already have complete profile data, use it directly
+        setSubscriberProfile(existingSubscriber);
+        setFetchingProfile(false);
+        setFetchingFailed(false);
       } else {
+        // Fetch the profile from API (either new subscriber or incomplete data)
         const profile = await fetchProfile(pubkey);
         if (profile) {
-          const subscriberProfile: SubscriberProfile = convertNDKUserProfileToSubscriberProfile(pubkey, profile);
-          // Open the modal with the fetched subscriber profile
-          setSubscriberProfile(subscriberProfile);
+          setSubscriberProfile(profile);
+        } else {
+          // If API doesn't have the profile, use existing subscriber data if available
+          if (existingSubscriber) {
+            setSubscriberProfile(existingSubscriber);
+          }
         }
       }
-    }else{
+    } else {
       setInvalidPubkey(true);
     }
   };
@@ -152,7 +152,7 @@ export const SearchDropdown: React.FC<SearchOverlayProps> = ({
         </HeaderActionWrapper>
         {isSubscriberDetailModalOpen && (
           <SubscriberDetailModal
-            loading={fetchingProfile}
+            loading={fetchingProfile || profileAPILoading}
             fetchFailed={fetchingFailed}
             isVisible={isSubscriberDetailModalOpen}
             subscriber={subscriberProfile}

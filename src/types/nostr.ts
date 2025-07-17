@@ -13,5 +13,9 @@ export interface NostrProvider {
     };
   }
   
-  // Global Window declaration removed to avoid conflict with NDK types
-  // NDK will provide the window.nostr types automatically
+  // Global Window declaration for Nostr extension
+  declare global {
+    interface Window {
+      nostr?: NostrProvider;
+    }
+  }

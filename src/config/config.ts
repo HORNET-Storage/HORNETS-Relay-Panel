@@ -12,38 +12,16 @@ const getBaseURL = (): string => {
   return process.env.REACT_APP_BASE_URL || window.location.origin;
 };
 
-const getWalletURL = (): string | null => {
-  // Demo mode override for testing
-  if (process.env.REACT_APP_DEMO_MODE === 'true') {
-    return 'http://localhost:9003';
-  }
-  
-  // Wallet URL is optional - return null if not configured
-  return process.env.REACT_APP_WALLET_BASE_URL || null;
-};
+// Wallet operations now go through panel API, no direct URL needed
 
 const config = {
   baseURL: getBaseURL(),
   isDemoMode: process.env.REACT_APP_DEMO_MODE === 'true',
-  walletBaseURL: getWalletURL(),
-  isWalletEnabled: getWalletURL() !== null,
+  // Wallet operations now routed through panel API - always enabled
+  isWalletEnabled: true,
   
-  // Nostr relay configuration
-  nostrRelayUrls: process.env.REACT_APP_NOSTR_RELAY_URLS?.split(',').map(url => url.trim()) || [
-    'wss://relay.damus.io',
-    'wss://relay.nostr.band', 
-    'wss://relay.snort.social',
-    'wss://vault.iris.to'
-  ],
+  // Nostr relay configuration removed - using panel API for all operations
   
-  // User's own relay URL (primary relay for profile fetching)
-  // Always require explicit relay URL configuration
-  ownRelayUrl: (() => {
-    if (!process.env.REACT_APP_OWN_RELAY_URL?.trim()) {
-      throw new Error('REACT_APP_OWN_RELAY_URL must be explicitly configured in environment variables');
-    }
-    return process.env.REACT_APP_OWN_RELAY_URL.trim();
-  })(),
   
   // Notification settings
   notifications: {
