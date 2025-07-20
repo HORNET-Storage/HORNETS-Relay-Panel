@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import * as S from './UnconfirmedTxModal.styles';
 import UnconfirmedTransactions from '../../UnconfirmedTransactions';
 
@@ -8,10 +9,11 @@ interface UnconfirmedTxModalProps {
 }
 
 const UnconfirmedTxModal: React.FC<UnconfirmedTxModalProps> = ({ isOpen, onOpenChange }) => {
-  return (
+  return ReactDOM.createPortal(
     <S.Modal open={isOpen} centered={true} onCancel={onOpenChange} footer={null} destroyOnClose>
       <UnconfirmedTransactions />
-    </S.Modal>
+    </S.Modal>,
+    document.body
   );
 };
 
