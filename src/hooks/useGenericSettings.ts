@@ -535,7 +535,9 @@ const useGenericSettings = <T extends SettingsGroupName>(
           if (groupName === 'content_filter' && key === 'full_text_kinds') {
             prefixedSettings[key] = value;
           } else {
-            prefixedSettings[`${prefix}${key}`] = value;
+            // Skip prefixing if key already has the prefix to avoid double-prefixing
+            const prefixedKey = key.startsWith(prefix) ? key : `${prefix}${key}`;
+            prefixedSettings[prefixedKey] = value;
           }
         });
 
