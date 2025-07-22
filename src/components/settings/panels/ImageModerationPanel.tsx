@@ -113,7 +113,7 @@ const ImageModerationPanel: React.FC = () => {
           >
             <Option value="basic">Basic Mode (Fastest, detects explicit content only)</Option>
             <Option value="strict">Strict Mode (Fast, blocks all buttocks)</Option>
-            <Option value="full">Full Mode (Most accurate, uses Llama Vision)</Option>
+            <Option value="full">Full Mode (Most accurate, uses AI vision analysis)</Option>
           </Select>
         </Form.Item>
 
@@ -128,9 +128,9 @@ const ImageModerationPanel: React.FC = () => {
             marginBottom: '16px'
           }}>
             <h4 style={{ marginTop: 0, color: 'rgba(82, 196, 255, 1)' }}>Moderation Mode Details:</h4>
-            <p><strong>Basic Mode:</strong> Only detects genitals, anus, and exposed breasts. Fastest processing (no Llama Vision used). Best for initial screening in high-volume applications.</p>
-            <p><strong>Strict Mode:</strong> Includes all &quot;basic&quot; detection plus automatic blocking of all detected buttocks with confidence ≥ 0.4. Fast processing (no Llama Vision used). Best for zero-tolerance platforms.</p>
-            <p><strong>Full Mode (Default):</strong> Complete analysis with nuanced context evaluation. Slower due to Llama Vision processing, but most accurate and reduces false positives.</p>
+            <p><strong>Basic Mode:</strong> Only detects genitals, anus, and exposed breasts. Fastest processing (no AI vision analysis). Best for initial screening in high-volume applications.</p>
+            <p><strong>Strict Mode:</strong> Includes all &quot;basic&quot; detection plus automatic blocking of all detected buttocks with confidence ≥ 0.4. Fast processing (no AI vision analysis). Best for zero-tolerance platforms.</p>
+            <p><strong>Full Mode (Default):</strong> Complete analysis with nuanced context evaluation. Slower due to AI vision model processing, but most accurate and reduces false positives.</p>
           </div>
         </Form.Item>
 
