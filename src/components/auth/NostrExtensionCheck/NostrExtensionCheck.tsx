@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Alert, Card, Button, Space, Typography } from 'antd';
 import { ExclamationCircleOutlined, CheckCircleOutlined, ReloadOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
@@ -109,7 +109,7 @@ export const NostrExtensionCheck: React.FC<NostrExtensionCheckProps> = ({ onExte
   const [hasExtension, setHasExtension] = useState(false);
   const [isChecking, setIsChecking] = useState(true);
 
-  const checkExtension = () => {
+  const checkExtension = useCallback(() => {
     setIsChecking(true);
     
     // Check if window.nostr exists
@@ -120,7 +120,7 @@ export const NostrExtensionCheck: React.FC<NostrExtensionCheckProps> = ({ onExte
     if (extensionExists && onExtensionReady) {
       onExtensionReady();
     }
-  };
+  }, [onExtensionReady]);
 
   useEffect(() => {
     // Initial check
@@ -135,7 +135,7 @@ export const NostrExtensionCheck: React.FC<NostrExtensionCheckProps> = ({ onExte
     }, 1000);
 
     return () => clearInterval(pollInterval);
-  }, [hasExtension, onExtensionReady]);
+  }, [hasExtension, checkExtension]);
 
   const extensions = [
     {
