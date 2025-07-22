@@ -49,12 +49,12 @@ const extractSettingsForGroup = (settings: any, groupName: string) => {
     // Map backend fields to prefixed ones that the form expects
     // Based on the actual backend response, backend sends both prefixed and unprefixed versions
     const imageModerationMappings: Record<string, string[]> = {
-      'image_moderation_api': ['image_moderation_api'],
+      'image_moderation_api': ['image_moderation_api', 'api'],
       'image_moderation_check_interval': ['image_moderation_check_interval_seconds', 'check_interval_seconds'],
       'image_moderation_concurrency': ['image_moderation_concurrency', 'concurrency'],
       'image_moderation_enabled': ['image_moderation_enabled', 'enabled'],
       'image_moderation_mode': ['image_moderation_mode', 'mode'],
-      'image_moderation_temp_dir': ['image_moderation_temp_dir'],
+      'image_moderation_temp_dir': ['image_moderation_temp_dir', 'temp_dir'],
       'image_moderation_threshold': ['image_moderation_threshold', 'threshold'],
       'image_moderation_timeout': ['image_moderation_timeout_seconds', 'timeout_seconds']
     };
