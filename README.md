@@ -209,8 +209,43 @@ server {
         proxy_pass http://wallet_service;
     }
 
+    # Blossom file storage routes
+    location /blossom/ {
+        proxy_pass http://panel_service;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        
+        # Disable buffering for file uploads/downloads
+        proxy_buffering off;
+        proxy_request_buffering off;
+        
+        # Set appropriate headers
+        proxy_set_header Accept-Encoding "";
+        
+        # Larger timeouts for file operations
+        proxy_read_timeout 300s;
+        proxy_send_timeout 300s;
+        proxy_connect_timeout 60s;
+    }
+
     # Default location - Panel service (frontend + API) - MUST BE LAST
     location / {
+        # Add CORS headers for the panel service
+        add_header 'Access-Control-Allow-Origin' '*' always;
+        add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS' always;
+        add_header 'Access-Control-Allow-Headers' 'Origin, Content-Type, Accept, Authorization' always;
+
+        # Handle preflight OPTIONS requests
+        if ($request_method = 'OPTIONS') {
+            add_header 'Access-Control-Allow-Origin' '*';
+            add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS';
+            add_header 'Access-Control-Allow-Headers' 'Origin, Content-Type, Accept, Authorization';
+            add_header 'Content-Length' 0;
+            return 204;
+        }
+
         proxy_pass http://panel_service;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
