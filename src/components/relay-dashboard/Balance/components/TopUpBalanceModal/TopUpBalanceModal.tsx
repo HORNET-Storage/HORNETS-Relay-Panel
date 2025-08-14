@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import ReactDOM from 'react-dom';
 import { BaseModal } from '@app/components/common/BaseModal/BaseModal';
 import { TopUpDataProps } from '../../interfaces/interfaces';
 import { BaseSpin } from '@app/components/common/BaseSpin/BaseSpin';
@@ -62,7 +63,7 @@ export const TopUpBalanceModal: React.FC<TopUpBalanceModalProps> = ({
     }
   }, [isOpen, handleLogout]);
 
-  return (
+  return ReactDOM.createPortal(
     <BaseModal centered={true} width={500} open={isOpen} onCancel={onOpenChange} footer={null} destroyOnClose>
       <BaseSpin spinning={isLoading}>
         {error ? (
@@ -73,6 +74,7 @@ export const TopUpBalanceModal: React.FC<TopUpBalanceModalProps> = ({
           <AddressList addresses={addresses} />
         )}
       </BaseSpin>
-    </BaseModal>
+    </BaseModal>,
+    document.body
   );
 };
