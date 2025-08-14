@@ -43,9 +43,20 @@ export const KindsList: React.FC<KindsListProps> = ({
           <div className="custom-checkbox-group grid-checkbox-group large-label">
             {group.notes.map((note) => {
               const isSelected = selectedKinds.includes(note.kindString);
+              const statusIcon = isSelected ? '✅' : '❌';
               
               return (
-                <div className="checkbox-container" style={{ paddingLeft: '1rem' }} key={note.kindString}>
+                <div 
+                  className="checkbox-container" 
+                  style={{ 
+                    paddingLeft: '1rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem'
+                  }} 
+                  key={note.kindString}
+                >
+                  <span style={{ fontSize: '1.2em', minWidth: '1.5rem' }}>{statusIcon}</span>
                   <BaseCheckbox
                     value={note.kindString}
                     disabled={!isKindsActive}

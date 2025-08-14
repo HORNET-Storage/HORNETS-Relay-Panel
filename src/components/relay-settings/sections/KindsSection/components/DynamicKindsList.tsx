@@ -51,7 +51,15 @@ export const DynamicKindsList: React.FC<DynamicKindsListProps> = ({
     >
       {dynamicKinds.map((kind) => {
         const isRegistered = isDynamicKindRegistered(kind);
-        const statusIcon = isRegistered ? '✅' : (allowUnregisteredKinds ? '⚠️' : '🚫');
+        const isSelected = selectedDynamicKinds.includes(kind);
+        
+        // Show status based on registration and selection
+        let statusIcon;
+        if (isSelected) {
+          statusIcon = isRegistered ? '✅' : '⚠️'; // Selected: green check for registered, warning for unregistered
+        } else {
+          statusIcon = '❌'; // Not selected: red X
+        }
         
         return (
           <div

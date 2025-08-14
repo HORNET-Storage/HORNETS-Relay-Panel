@@ -26,19 +26,27 @@ export const MediaTypeList: React.FC<MediaTypeListProps> = ({
 }) => {
   const theme = useAppSelector((state) => state.theme.theme);
 
-  const options = formats.map((format) => ({
-    label: (
-      <S.CheckboxLabel
-        style={{
-          color: themeObject[theme].textMain
-        }}
-        isActive={true}
-      >
-        {format.ext.toUpperCase()}
-      </S.CheckboxLabel>
-    ),
-    value: format.mime
-  }));
+  const options = formats.map((format) => {
+    const isSelected = selectedFormats.includes(format.mime);
+    const statusIcon = isSelected ? '✅' : '❌';
+    
+    return {
+      label: (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <span style={{ fontSize: '1.2em', minWidth: '1.5rem' }}>{statusIcon}</span>
+          <S.CheckboxLabel
+            style={{
+              color: themeObject[theme].textMain
+            }}
+            isActive={true}
+          >
+            {format.ext.toUpperCase()}
+          </S.CheckboxLabel>
+        </div>
+      ),
+      value: format.mime
+    };
+  });
 
   return (
     <BaseCheckbox.Group
