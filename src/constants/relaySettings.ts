@@ -1,5 +1,7 @@
 export type Settings = {
-  mode: string;
+  // Event filtering settings
+  allowUnregisteredKinds: boolean;  // Controls whether unregistered kinds are accepted
+  registeredKinds: number[];         // List of all kinds with specific handlers (from backend)
   protocol: string[];
   kinds: string[];
   dynamicKinds: string[];

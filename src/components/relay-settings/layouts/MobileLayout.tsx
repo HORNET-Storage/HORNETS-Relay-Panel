@@ -12,8 +12,9 @@ import { ModerationSection } from '@app/components/relay-settings/sections/Moder
 import { useTranslation } from 'react-i18next';
 
 interface MobileLayoutProps {
-    mode: string;
-    onModeChange: (checked: boolean) => void;
+    allowUnregisteredKinds: boolean;
+    registeredKinds: number[];
+    onAllowUnregisteredKindsChange: (allowed: boolean) => void;
     onSaveClick: () => void;
     loadings: boolean[];
     // Network section props
@@ -62,8 +63,9 @@ interface MobileLayoutProps {
 }
 
 export const MobileLayout: React.FC<MobileLayoutProps> = ({
-    mode,
-    onModeChange,
+    allowUnregisteredKinds,
+    registeredKinds,
+    onAllowUnregisteredKindsChange,
     onSaveClick,
     loadings,
     // Network props
@@ -115,23 +117,31 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({
                     style={{
                         display: 'grid',
                         paddingTop: '2rem',
-                        gridTemplateColumns: '5rem 6.5rem',
+                        gridTemplateColumns: '8rem 6.5rem',
                         marginBottom: '1.5rem',
                         marginTop: '1rem',
                     }}
                 >
-                    <S.LabelSpan>{t('common.serverSetting')}</S.LabelSpan>
-                        <S.LargeSwitch
-                            className="modeSwitch"
-                            checkedChildren="Whitelist"
-                            unCheckedChildren="Blacklist"
-                            checked={mode === 'whitelist'}
-                            onChange={onModeChange}
-                        />
+                    <S.LabelSpan>
+                        {t('common.allowUnregisteredKinds')}
+                        {allowUnregisteredKinds && (
+                            <span style={{ color: '#ff4d4f', fontSize: '0.8em', display: 'block', marginTop: '0.3rem' }}>
+                                ⚠️ {t('common.allowUnregisteredKindsWarning')}
+                            </span>
+                        )}
+                    </S.LabelSpan>
+                    <S.LargeSwitch
+                        className="allowUnregisteredSwitch"
+                        checkedChildren="ON"
+                        unCheckedChildren="OFF"
+                        checked={allowUnregisteredKinds}
+                        onChange={onAllowUnregisteredKindsChange}
+                    />
                 </S.SwitchContainer>
 
                 <KindsSection
-                    mode={mode}
+                    allowUnregisteredKinds={allowUnregisteredKinds}
+                    registeredKinds={registeredKinds}
                     isKindsActive={isKindsActive}
                     selectedKinds={selectedKinds}
                     dynamicKinds={dynamicKinds}
@@ -144,7 +154,6 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({
                 />
 
                 <MediaSection
-                    mode={mode}
                     photos={photos}
                     videos={videos}
                     audio={audio}

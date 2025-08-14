@@ -16,7 +16,6 @@ interface MediaTypeListProps {
   selectedFormats: string[];
   onChange: (values: string[]) => void;
   isActive: boolean;
-  mode: string;
 }
 
 export const MediaTypeList: React.FC<MediaTypeListProps> = ({
@@ -24,7 +23,6 @@ export const MediaTypeList: React.FC<MediaTypeListProps> = ({
   selectedFormats,
   onChange,
   isActive,
-  mode,
 }) => {
   const theme = useAppSelector((state) => state.theme.theme);
 
@@ -44,11 +42,11 @@ export const MediaTypeList: React.FC<MediaTypeListProps> = ({
 
   return (
     <BaseCheckbox.Group
-      className={`custom-checkbox-group grid-checkbox-group ${mode === 'blacklist' ? 'blacklist-mode-active' : ''}`}
+      className="custom-checkbox-group grid-checkbox-group"
       options={options}
       value={selectedFormats}
       onChange={(checkedValues) => onChange(checkedValues as string[])}
-      disabled={mode !== 'whitelist' ? false : !isActive}
+      disabled={!isActive}
     />
   );
 };

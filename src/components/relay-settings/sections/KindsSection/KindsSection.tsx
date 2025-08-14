@@ -9,7 +9,8 @@ import { AddKindForm } from './components/AddKindForm';
 import { DynamicKindsList } from './components/DynamicKindsList';
 
 export interface KindsSectionProps {
-  mode: string;
+  allowUnregisteredKinds: boolean;
+  registeredKinds: number[];
   isKindsActive: boolean;
   selectedKinds: string[];
   dynamicKinds: string[];
@@ -22,7 +23,8 @@ export interface KindsSectionProps {
 }
 
 export const KindsSection: React.FC<KindsSectionProps> = ({
-  mode,
+  allowUnregisteredKinds,
+  registeredKinds,
   isKindsActive,
   selectedKinds,
   dynamicKinds,
@@ -33,37 +35,36 @@ export const KindsSection: React.FC<KindsSectionProps> = ({
   onAddKind,
   onRemoveKind,
 }) => {
-  const header = mode !== 'whitelist' ? 'Blacklisted Kind Numbers' : 'Kind Numbers';
+  const header = 'Event Kinds Configuration';
 
   return (
     <CollapsibleSection header={header}>
       <S.Card>
         <div className="flex-col w-full">
-          {mode !== 'blacklist' && mode !== '' && (
-            <div className="switch-container">
-              <BaseSwitch
-                checkedChildren="ON"
-                unCheckedChildren="OFF"
-                checked={isKindsActive}
-                onChange={() => onKindsActiveChange(!isKindsActive)}
-              />
-            </div>
-          )}
+          <div className="switch-container">
+            <BaseSwitch
+              checkedChildren="ON"
+              unCheckedChildren="OFF"
+              checked={isKindsActive}
+              onChange={() => onKindsActiveChange(!isKindsActive)}
+            />
+          </div>
 
           <KindsList
-            mode={mode}
+            allowUnregisteredKinds={allowUnregisteredKinds}
+            registeredKinds={registeredKinds}
             selectedKinds={selectedKinds}
             isKindsActive={isKindsActive}
             onKindsChange={onKindsChange}
           />
 
-          <AddKindForm 
-            mode={mode}
+          <AddKindForm
             onAddKind={onAddKind}
           />
 
           <DynamicKindsList
-            mode={mode}
+            allowUnregisteredKinds={allowUnregisteredKinds}
+            registeredKinds={registeredKinds}
             dynamicKinds={dynamicKinds}
             selectedDynamicKinds={selectedDynamicKinds}
             onDynamicKindsChange={onDynamicKindsChange}

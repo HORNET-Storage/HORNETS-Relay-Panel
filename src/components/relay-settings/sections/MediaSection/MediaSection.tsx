@@ -8,7 +8,6 @@ import { MediaToggle } from './components/MediaToggle';
 import { FileSizeLimitInput } from './components/FileSizeLimitInput';
 
 export interface MediaSectionProps {
-  mode: string;
   photos: {
     selected: string[];
     isActive: boolean;
@@ -77,29 +76,23 @@ const audioFormats = [
 ];
 
 export const MediaSection: React.FC<MediaSectionProps> = ({
-  mode,
   photos,
   videos,
   audio,
 }) => {
-  const getHeader = (type: string) => 
-    mode !== 'whitelist' ? `Blacklisted ${type} Extensions` : `${type} Extensions`;
-
   return (
     <>
-      <CollapsibleSection header={getHeader('Photo')}>
+      <CollapsibleSection header="Photo Extensions">
         <S.Card>
           <MediaToggle
             isActive={photos.isActive}
             onChange={photos.onToggle}
-            mode={mode}
           />
           <MediaTypeList
             formats={imageFormats}
             selectedFormats={photos.selected}
             onChange={photos.onChange}
             isActive={photos.isActive}
-            mode={mode}
           />
           <FileSizeLimitInput
             label="Maximum Photo Size"
@@ -112,19 +105,17 @@ export const MediaSection: React.FC<MediaSectionProps> = ({
         </S.Card>
       </CollapsibleSection>
 
-      <CollapsibleSection header={getHeader('Video')}>
+      <CollapsibleSection header="Video Extensions">
         <S.Card>
           <MediaToggle
             isActive={videos.isActive}
             onChange={videos.onToggle}
-            mode={mode}
           />
           <MediaTypeList
             formats={videoFormats}
             selectedFormats={videos.selected}
             onChange={videos.onChange}
             isActive={videos.isActive}
-            mode={mode}
           />
           <FileSizeLimitInput
             label="Maximum Video Size"
@@ -137,19 +128,17 @@ export const MediaSection: React.FC<MediaSectionProps> = ({
         </S.Card>
       </CollapsibleSection>
 
-      <CollapsibleSection header={getHeader('Audio')}>
+      <CollapsibleSection header="Audio Extensions">
         <S.Card>
           <MediaToggle
             isActive={audio.isActive}
             onChange={audio.onToggle}
-            mode={mode}
           />
           <MediaTypeList
             formats={audioFormats}
             selectedFormats={audio.selected}
             onChange={audio.onChange}
             isActive={audio.isActive}
-            mode={mode}
           />
           <FileSizeLimitInput
             label="Maximum Audio Size"

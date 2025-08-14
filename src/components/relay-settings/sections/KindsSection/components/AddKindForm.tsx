@@ -6,10 +6,9 @@ import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
 
 interface AddKindFormProps {
   onAddKind: (kind: string) => void;
-  mode: string;
 }
 
-export const AddKindForm: React.FC<AddKindFormProps> = ({ onAddKind, mode }) => {
+export const AddKindForm: React.FC<AddKindFormProps> = ({ onAddKind }) => {
   const [newKind, setNewKind] = useState('');
 
   const handleAddKind = () => {
@@ -23,7 +22,7 @@ export const AddKindForm: React.FC<AddKindFormProps> = ({ onAddKind, mode }) => 
 
   return (
     <div style={{ padding: '1.5rem 0rem 0rem 0rem', display: 'flex', flexDirection: 'column', gap: '.5rem' }}>
-      <h3>{mode === 'blacklist' ? 'Add Custom Kind to Whitelist' : 'Add Custom Kind'}</h3>
+      <h3>Add Custom Kind</h3>
       <div style={{ display: 'flex' }} className="custom-checkbox-group grid-checkbox-group large-label">
         <Input
           value={newKind}

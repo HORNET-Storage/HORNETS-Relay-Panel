@@ -15,8 +15,9 @@ import { ModerationSection } from '@app/components/relay-settings/sections/Moder
 import { useTranslation } from 'react-i18next';
 
 interface DesktopLayoutProps {
-    mode: string;
-    onModeChange: (checked: boolean) => void;
+    allowUnregisteredKinds: boolean;
+    registeredKinds: number[];
+    onAllowUnregisteredKindsChange: (allowed: boolean) => void;
     onSaveClick: () => void;
     loadings: boolean[];
     // Network section props
@@ -65,8 +66,9 @@ interface DesktopLayoutProps {
 }
 
 export const DesktopLayout: React.FC<DesktopLayoutProps> = ({
-    mode,
-    onModeChange,
+    allowUnregisteredKinds,
+    registeredKinds,
+    onAllowUnregisteredKindsChange,
     onSaveClick,
     loadings,
     // Network props
@@ -122,26 +124,34 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({
                 <BaseCol xs={24}>
                     <S.SwitchContainer
                         style={{
-                            width: '11rem',
+                            width: '20rem',
                             display: 'grid',
                             paddingTop: '3rem',
                             gap: '.5rem',
-                            gridTemplateColumns: '1fr 3fr',
+                            gridTemplateColumns: '2fr 1fr',
                             marginBottom: '1.5rem',
                         }}
                     >
-                        <S.LabelSpan>{t('common.serverSetting')}</S.LabelSpan>
+                        <S.LabelSpan>
+                            {t('common.allowUnregisteredKinds')}
+                            {allowUnregisteredKinds && (
+                                <span style={{ color: '#ff4d4f', fontSize: '0.9em', display: 'block', marginTop: '0.5rem' }}>
+                                    ⚠️ {t('common.allowUnregisteredKindsWarning')}
+                                </span>
+                            )}
+                        </S.LabelSpan>
                         <S.LargeSwitch
-                            className="modeSwitch"
-                            checkedChildren="Whitelist"
-                            unCheckedChildren="Blacklist"
-                            checked={mode === 'whitelist'}
-                            onChange={onModeChange}
+                            className="allowUnregisteredSwitch"
+                            checkedChildren="ON"
+                            unCheckedChildren="OFF"
+                            checked={allowUnregisteredKinds}
+                            onChange={onAllowUnregisteredKindsChange}
                         />
                     </S.SwitchContainer>
 
                     <KindsSection
-                        mode={mode}
+                        allowUnregisteredKinds={allowUnregisteredKinds}
+                        registeredKinds={registeredKinds}
                         isKindsActive={isKindsActive}
                         selectedKinds={selectedKinds}
                         dynamicKinds={dynamicKinds}
@@ -154,7 +164,6 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({
                     />
 
                     <MediaSection
-                        mode={mode}
                         photos={photos}
                         videos={videos}
                         audio={audio}
