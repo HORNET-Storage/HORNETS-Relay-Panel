@@ -51,8 +51,6 @@ export const KindsSection: React.FC<KindsSectionProps> = ({
           </div>
 
           <KindsList
-            allowUnregisteredKinds={allowUnregisteredKinds}
-            registeredKinds={registeredKinds}
             selectedKinds={selectedKinds}
             isKindsActive={isKindsActive}
             onKindsChange={onKindsChange}
