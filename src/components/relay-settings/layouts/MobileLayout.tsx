@@ -124,7 +124,7 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({
                                         {t('common.allowUnregisteredKinds')}
                                     </h4>
                                     <p style={{ margin: 0, fontSize: '0.85rem', color: '#c5d3e0' }}>
-                                        Enable this to allow events with kind numbers that don't have specific handlers in the relay.
+                                        Enable this to allow events with kind numbers that don&apos;t have specific handlers in the relay.
                                     </p>
                                 </div>
                                 

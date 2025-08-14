@@ -133,7 +133,7 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({
                                             {t('common.allowUnregisteredKinds')}
                                         </h4>
                                         <p style={{ margin: 0, fontSize: '0.9rem', color: '#c5d3e0' }}>
-                                            Enable this to allow events with kind numbers that don't have specific handlers in the relay.
+                                            Enable this to allow events with kind numbers that don&apos;t have specific handlers in the relay.
                                         </p>
                                         {allowUnregisteredKinds && (
                                             <div style={{ 
