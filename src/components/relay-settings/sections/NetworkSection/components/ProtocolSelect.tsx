@@ -26,7 +26,7 @@ export const ProtocolSelect: React.FC<ProtocolSelectProps> = ({
           { 
             label: (
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <span style={{ fontSize: '1.2em', minWidth: '1.5rem' }}>
+                <span style={{ fontSize: '0.9em', minWidth: '1.2rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   {selectedProtocols.includes('WebSocket') ? '✅' : '❌'}
                 </span>
                 <span style={{ fontSize: '.85rem' }}>WebSocket</span>
@@ -37,7 +37,7 @@ export const ProtocolSelect: React.FC<ProtocolSelectProps> = ({
           { 
             label: (
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <span style={{ fontSize: '1.2em', minWidth: '1.5rem' }}>
+                <span style={{ fontSize: '0.9em', minWidth: '1.2rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   {selectedProtocols.includes('QUIC') ? '✅' : '❌'}
                 </span>
                 <span style={{ fontSize: '.85rem' }}>Libp2p QUIC</span>
