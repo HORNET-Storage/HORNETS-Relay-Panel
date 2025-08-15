@@ -3,9 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PageTitle } from '@app/components/common/PageTitle/PageTitle';
-import { useDispatch } from 'react-redux';
-import { useAppSelector } from '@app/hooks/reduxHooks';
-import { setMode } from '@app/store/slices/modeSlice';
 import { useResponsive } from '@app/hooks/useResponsive';
 import useRelaySettings from '@app/hooks/useRelaySettings';
 import { DesktopLayout } from '@app/components/relay-settings/layouts/DesktopLayout';
@@ -14,10 +11,7 @@ import { Settings } from '@app/constants/relaySettings';
 
 const RelaySettingsPage: React.FC = () => {
   const { t } = useTranslation();
-  const dispatch = useDispatch();
   const { isDesktop } = useResponsive();
-  const theme = useAppSelector((state) => state.theme.theme);
-  const relaymode = useAppSelector((state) => state.mode.relayMode);
   const { relaySettings, fetchSettings, updateSettings, saveSettings } = useRelaySettings();
 
   // Loading state
@@ -25,7 +19,8 @@ const RelaySettingsPage: React.FC = () => {
 
   // Local state for settings
   const [settings, setSettings] = useState<Settings>({
-    mode: JSON.parse(localStorage.getItem('relaySettings') || '{}').mode || relaymode || 'blacklist',
+    allowUnregisteredKinds: false,
+    registeredKinds: [],
     protocol: ['WebSocket'],
     kinds: [],
     dynamicKinds: [],
@@ -66,18 +61,12 @@ const RelaySettingsPage: React.FC = () => {
     }
   }, [relaySettings]);
 
-  const handleModeChange = (checked: boolean) => {
-    const newMode = checked ? 'whitelist' : 'blacklist';
+  const handleAllowUnregisteredKindsChange = (allowed: boolean) => {
     setSettings(prev => ({
       ...prev,
-      mode: newMode,
-      kinds: newMode === 'blacklist' ? [] : prev.kinds,
-      photos: newMode === 'blacklist' ? [] : prev.photos,
-      videos: newMode === 'blacklist' ? [] : prev.videos,
-      audio: newMode === 'blacklist' ? [] : prev.audio,
+      allowUnregisteredKinds: allowed
     }));
-    updateSettings('mode', newMode);
-    dispatch(setMode(newMode));
+    updateSettings('allowUnregisteredKinds', allowed);
   };
 
   const handleSaveClick = async () => {
@@ -176,8 +165,9 @@ const RelaySettingsPage: React.FC = () => {
   };
 
   const layoutProps = {
-    mode: settings.mode,
-    onModeChange: handleModeChange,
+    allowUnregisteredKinds: settings.allowUnregisteredKinds,
+    registeredKinds: settings.registeredKinds,
+    onAllowUnregisteredKindsChange: handleAllowUnregisteredKindsChange,
     onSaveClick: handleSaveClick,
     loadings,
     // Network props

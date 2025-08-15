@@ -23,8 +23,28 @@ export const ProtocolSelect: React.FC<ProtocolSelectProps> = ({
       </S.LabelSpan>
       <Checkbox.Group
         options={[
-          { label: 'WebSocket', value: 'WebSocket', style: { fontSize: '.85rem' } },
-          { label: 'Libp2p QUIC', value: 'QUIC', style: { fontSize: '.85rem' } },
+          { 
+            label: (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span style={{ fontSize: '0.9em', minWidth: '1.2rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  {selectedProtocols.includes('WebSocket') ? '✅' : '❌'}
+                </span>
+                <span style={{ fontSize: '.85rem' }}>WebSocket</span>
+              </div>
+            ), 
+            value: 'WebSocket' 
+          },
+          { 
+            label: (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span style={{ fontSize: '0.9em', minWidth: '1.2rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  {selectedProtocols.includes('QUIC') ? '✅' : '❌'}
+                </span>
+                <span style={{ fontSize: '.85rem' }}>Libp2p QUIC</span>
+              </div>
+            ), 
+            value: 'QUIC' 
+          },
         ]}
         value={selectedProtocols}
         className="custom-checkbox-group"

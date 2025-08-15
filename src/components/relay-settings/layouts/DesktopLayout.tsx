@@ -12,11 +12,14 @@ import { NetworkSection } from '@app/components/relay-settings/sections/NetworkS
 import { KindsSection } from '@app/components/relay-settings/sections/KindsSection';
 import { MediaSection } from '@app/components/relay-settings/sections/MediaSection';
 import { ModerationSection } from '@app/components/relay-settings/sections/ModerationSection';
+import { CollapsibleSection } from '@app/components/relay-settings/shared/CollapsibleSection/CollapsibleSection';
+import { BaseSwitch } from '@app/components/common/BaseSwitch/BaseSwitch';
 import { useTranslation } from 'react-i18next';
 
 interface DesktopLayoutProps {
-    mode: string;
-    onModeChange: (checked: boolean) => void;
+    allowUnregisteredKinds: boolean;
+    registeredKinds: number[];
+    onAllowUnregisteredKindsChange: (allowed: boolean) => void;
     onSaveClick: () => void;
     loadings: boolean[];
     // Network section props
@@ -65,8 +68,9 @@ interface DesktopLayoutProps {
 }
 
 export const DesktopLayout: React.FC<DesktopLayoutProps> = ({
-    mode,
-    onModeChange,
+    allowUnregisteredKinds,
+    registeredKinds,
+    onAllowUnregisteredKindsChange,
     onSaveClick,
     loadings,
     // Network props
@@ -120,28 +124,46 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({
                 </BaseRow>
 
                 <BaseCol xs={24}>
-                    <S.SwitchContainer
-                        style={{
-                            width: '11rem',
-                            display: 'grid',
-                            paddingTop: '3rem',
-                            gap: '.5rem',
-                            gridTemplateColumns: '1fr 3fr',
-                            marginBottom: '1.5rem',
-                        }}
-                    >
-                        <S.LabelSpan>{t('common.serverSetting')}</S.LabelSpan>
-                        <S.LargeSwitch
-                            className="modeSwitch"
-                            checkedChildren="Whitelist"
-                            unCheckedChildren="Blacklist"
-                            checked={mode === 'whitelist'}
-                            onChange={onModeChange}
-                        />
-                    </S.SwitchContainer>
+                    <CollapsibleSection header="Allow Unregistered Kind Numbers">
+                        <S.Card>
+                            <BaseCol span={24}>
+                                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                                    <div style={{ flex: 1, marginRight: '2rem' }}>
+                                        <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '1rem', fontWeight: 500 }}>
+                                            {t('common.allowUnregisteredKinds')}
+                                        </h4>
+                                        <p style={{ margin: 0, fontSize: '0.9rem', color: '#c5d3e0' }}>
+                                            Enable this to allow events with kind numbers that don&apos;t have specific handlers in the relay.
+                                        </p>
+                                        {allowUnregisteredKinds && (
+                                            <div style={{ 
+                                                marginTop: '1rem', 
+                                                padding: '0.75rem 1rem', 
+                                                backgroundColor: 'rgba(255, 77, 79, 0.1)', 
+                                                borderRadius: '4px',
+                                                border: '1px solid rgba(255, 77, 79, 0.3)'
+                                            }}>
+                                                <span style={{ color: '#ff4d4f', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                    <span style={{ fontSize: '1.2rem' }}>⚠️</span>
+                                                    {t('common.allowUnregisteredKindsWarning')}
+                                                </span>
+                                            </div>
+                                        )}
+                                    </div>
+                                    <BaseSwitch
+                                        checkedChildren="ON"
+                                        unCheckedChildren="OFF"
+                                        checked={allowUnregisteredKinds}
+                                        onChange={onAllowUnregisteredKindsChange}
+                                    />
+                                </div>
+                            </BaseCol>
+                        </S.Card>
+                    </CollapsibleSection>
 
                     <KindsSection
-                        mode={mode}
+                        allowUnregisteredKinds={allowUnregisteredKinds}
+                        registeredKinds={registeredKinds}
                         isKindsActive={isKindsActive}
                         selectedKinds={selectedKinds}
                         dynamicKinds={dynamicKinds}
@@ -154,7 +176,6 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({
                     />
 
                     <MediaSection
-                        mode={mode}
                         photos={photos}
                         videos={videos}
                         audio={audio}

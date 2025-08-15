@@ -6,18 +6,12 @@ import { BaseSwitch } from '@app/components/common/BaseSwitch/BaseSwitch';
 interface MediaToggleProps {
   isActive: boolean;
   onChange: (checked: boolean) => void;
-  mode: string;
 }
 
 export const MediaToggle: React.FC<MediaToggleProps> = ({
   isActive,
   onChange,
-  mode,
 }) => {
-  if (mode === 'blacklist') {
-    return null;
-  }
-
   return (
     <div className="switch-container">
       <BaseSwitch

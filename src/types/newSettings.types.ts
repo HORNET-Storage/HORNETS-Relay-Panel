@@ -44,7 +44,8 @@ export interface ProtocolsConfig {
 }
 
 export interface EventFilteringConfig {
-  mode: "whitelist" | "blacklist";
+  allow_unregistered_kinds: boolean; // Controls whether unregistered kinds are accepted
+  registered_kinds: number[]; // List of all kinds with specific handlers (read-only from frontend)
   moderation_mode: "basic" | "strict" | "full";
   kind_whitelist: string[];
   media_definitions: Record<string, MediaDefinition>;
@@ -172,7 +173,8 @@ export const getDefaultSettings = (): Partial<Settings> => ({
     ]
   },
   event_filtering: {
-    mode: "whitelist",
+    allow_unregistered_kinds: false, // Default to strict mode (only registered kinds)
+    registered_kinds: [], // Will be populated from backend
     moderation_mode: "strict",
     kind_whitelist: [],
     media_definitions: {

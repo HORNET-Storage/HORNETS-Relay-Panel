@@ -16,7 +16,6 @@ interface MediaTypeListProps {
   selectedFormats: string[];
   onChange: (values: string[]) => void;
   isActive: boolean;
-  mode: string;
 }
 
 export const MediaTypeList: React.FC<MediaTypeListProps> = ({
@@ -24,31 +23,38 @@ export const MediaTypeList: React.FC<MediaTypeListProps> = ({
   selectedFormats,
   onChange,
   isActive,
-  mode,
 }) => {
   const theme = useAppSelector((state) => state.theme.theme);
 
-  const options = formats.map((format) => ({
-    label: (
-      <S.CheckboxLabel
-        style={{
-          color: themeObject[theme].textMain
-        }}
-        isActive={true}
-      >
-        {format.ext.toUpperCase()}
-      </S.CheckboxLabel>
-    ),
-    value: format.mime
-  }));
+  const options = formats.map((format) => {
+    const isSelected = selectedFormats.includes(format.mime);
+    const statusIcon = isSelected ? '✅' : '❌';
+    
+    return {
+      label: (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <span style={{ fontSize: '1.2em', minWidth: '1.5rem' }}>{statusIcon}</span>
+          <S.CheckboxLabel
+            style={{
+              color: themeObject[theme].textMain
+            }}
+            isActive={true}
+          >
+            {format.ext.toUpperCase()}
+          </S.CheckboxLabel>
+        </div>
+      ),
+      value: format.mime
+    };
+  });
 
   return (
     <BaseCheckbox.Group
-      className={`custom-checkbox-group grid-checkbox-group ${mode === 'blacklist' ? 'blacklist-mode-active' : ''}`}
+      className="custom-checkbox-group grid-checkbox-group"
       options={options}
       value={selectedFormats}
       onChange={(checkedValues) => onChange(checkedValues as string[])}
-      disabled={mode !== 'whitelist' ? false : !isActive}
+      disabled={!isActive}
     />
   );
 };

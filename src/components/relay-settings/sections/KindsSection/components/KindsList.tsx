@@ -9,14 +9,12 @@ import { useAppSelector } from '@app/hooks/reduxHooks';
 import { useTranslation } from 'react-i18next';
 
 interface KindsListProps {
-  mode: string;
   selectedKinds: string[];
   isKindsActive: boolean;
   onKindsChange: (values: string[]) => void;
 }
 
 export const KindsList: React.FC<KindsListProps> = ({
-  mode,
   selectedKinds,
   isKindsActive,
   onKindsChange,
@@ -29,37 +27,56 @@ export const KindsList: React.FC<KindsListProps> = ({
     notes: noteOptions.filter((note) => note.category === category.id),
   }));
 
+  // All kinds in our list are registered kinds (we know about them)
+  // The checkbox state determines if they're enabled or disabled
+  
   return (
     <BaseCheckbox.Group
       className="large-label"
       value={selectedKinds}
       onChange={(checkedValues) => onKindsChange(checkedValues as string[])}
-      disabled={mode !== 'whitelist' ? false : !isKindsActive}
+      disabled={!isKindsActive}
     >
       {groupedNoteOptions.map((group) => (
         <div key={group.id} style={{ paddingBottom: '2rem' }}>
           <h3 className="checkboxHeader w-full">{group.name}</h3>
           <div className="custom-checkbox-group grid-checkbox-group large-label">
-            {group.notes.map((note) => (
-              <div className="checkbox-container" style={{ paddingLeft: '1rem' }} key={note.kindString}>
-                <BaseCheckbox
-                  value={note.kindString}
-                  className={mode === 'blacklist' ? 'blacklist-mode-active' : ''}
-                  disabled={mode !== 'whitelist' ? false : !isKindsActive}
-                />
-                <S.CheckboxLabel
-                  isActive={mode !== 'whitelist' ? true : isKindsActive}
-                  style={{
-                    paddingRight: '.8rem',
-                    paddingLeft: '.8rem',
-                    color: themeObject[theme].textMain
-                  }}
+            {group.notes.map((note) => {
+              const isSelected = selectedKinds.includes(note.kindString);
+              const statusIcon = isSelected ? '✅' : '❌';
+              
+              return (
+                <div 
+                  className="checkbox-container" 
+                  style={{ 
+                    paddingLeft: '1rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem'
+                  }} 
+                  key={note.kindString}
                 >
-                  {t(`kind${note.kind}`)} - {' '}
-                  <span style={{ fontWeight: 'normal' }}>{note.description}</span>
-                </S.CheckboxLabel>
-              </div>
-            ))}
+                  <span style={{ fontSize: '1.2em', minWidth: '1.5rem' }}>{statusIcon}</span>
+                  <BaseCheckbox
+                    value={note.kindString}
+                    disabled={!isKindsActive}
+                  />
+                  <S.CheckboxLabel
+                    isActive={isKindsActive}
+                    style={{
+                      paddingRight: '.8rem',
+                      paddingLeft: '.8rem',
+                      color: themeObject[theme].textMain
+                    }}
+                  >
+                    {t(`kind${note.kind}`)} - {' '}
+                    <span style={{ fontWeight: 'normal' }}>
+                      {note.description}
+                    </span>
+                  </S.CheckboxLabel>
+                </div>
+              );
+            })}
           </div>
         </div>
       ))}

@@ -7,19 +7,21 @@ import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
 import * as S from '@app/pages/uiComponentsPages/UIComponentsPage.styles';
 
 interface DynamicKindsListProps {
+  allowUnregisteredKinds: boolean;
+  registeredKinds: number[];
   dynamicKinds: string[];
   selectedDynamicKinds: string[];
   onDynamicKindsChange: (values: string[]) => void;
   onRemoveKind: (kind: string) => void;
-  mode: string;
 }
 
 export const DynamicKindsList: React.FC<DynamicKindsListProps> = ({
+  allowUnregisteredKinds,
+  registeredKinds,
   dynamicKinds,
   selectedDynamicKinds,
   onDynamicKindsChange,
   onRemoveKind,
-  mode,
 }) => {
   if (!dynamicKinds.length) {
     return null;
@@ -29,38 +31,69 @@ export const DynamicKindsList: React.FC<DynamicKindsListProps> = ({
     onDynamicKindsChange(checkedValues as string[]);
   };
 
+  // Helper to extract kind number from string like "kind12345"
+  const getKindNumber = (kindStr: string): number => {
+    return parseInt(kindStr.replace('kind', ''), 10);
+  };
+
+  // Check if a dynamic kind is registered
+  const isDynamicKindRegistered = (kindStr: string): boolean => {
+    const kindNumber = getKindNumber(kindStr);
+    return registeredKinds.includes(kindNumber);
+  };
+
   return (
     <BaseCheckbox.Group
       style={{ paddingLeft: '1rem' }}
-      className={`custom-checkbox-group grid-checkbox-group large-label ${dynamicKinds.length ? 'dynamic-group ' : ''}${mode === 'blacklist' ? 'blacklist-mode-active ' : ''}`}
+      className={`custom-checkbox-group grid-checkbox-group large-label ${dynamicKinds.length ? 'dynamic-group ' : ''}`}
       value={selectedDynamicKinds}
       onChange={handleChange}
     >
-      {dynamicKinds.map((kind) => (
-        <div
-          style={{ display: 'flex', flexDirection: 'row', gap: '.5rem', alignItems: 'center' }}
-          key={kind}
-        >
-          <div className="checkbox-container">
-            <BaseCheckbox
-              className={mode === 'blacklist' ? 'blacklist-mode-active' : ''}
-              value={kind}
-            />
-            <S.CheckboxLabel
-              isActive={true}
-              style={{ fontSize: '1rem', paddingRight: '.8rem', paddingLeft: '.8rem' }}
-            >
-              {kind}
-            </S.CheckboxLabel>
-          </div>
-          <BaseButton
-            style={{ height: '2rem', width: '5rem', marginRight: '1rem' }}
-            onClick={() => onRemoveKind(kind)}
+      {dynamicKinds.map((kind) => {
+        const isRegistered = isDynamicKindRegistered(kind);
+        const isSelected = selectedDynamicKinds.includes(kind);
+        
+        // Show status based on registration and selection
+        let statusIcon;
+        if (isSelected) {
+          statusIcon = isRegistered ? '✅' : '⚠️'; // Selected: green check for registered, warning for unregistered
+        } else {
+          statusIcon = '❌'; // Not selected: red X
+        }
+        
+        return (
+          <div
+            style={{ display: 'flex', flexDirection: 'row', gap: '.5rem', alignItems: 'center' }}
+            key={kind}
           >
-            Remove
-          </BaseButton>
-        </div>
-      ))}
+            <span style={{ fontSize: '1.2em' }}>{statusIcon}</span>
+            <div className="checkbox-container">
+              <BaseCheckbox
+                value={kind}
+                disabled={!isRegistered && !allowUnregisteredKinds}
+              />
+              <S.CheckboxLabel
+                isActive={isRegistered || allowUnregisteredKinds}
+                style={{
+                  fontSize: '1rem',
+                  paddingRight: '.8rem',
+                  paddingLeft: '.8rem',
+                  opacity: (isRegistered || allowUnregisteredKinds) ? 1 : 0.6
+                }}
+              >
+                {kind}
+                {!isRegistered && <em> (Unregistered)</em>}
+              </S.CheckboxLabel>
+            </div>
+            <BaseButton
+              style={{ height: '2rem', width: '5rem', marginRight: '1rem' }}
+              onClick={() => onRemoveKind(kind)}
+            >
+              Remove
+            </BaseButton>
+          </div>
+        );
+      })}
     </BaseCheckbox.Group>
   );
 };
