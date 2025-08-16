@@ -8,7 +8,7 @@ import ImageModerationPanel from '../panels/ImageModerationPanel';
 import ContentFilterPanel from '../panels/ContentFilterPanel';
 import OllamaPanel from '../panels/OllamaPanel';
 import WalletPanel from '../panels/WalletPanel';
-import PushNotificationSettings from '../PushNotificationSettings';
+import PushNotificationPanel from '../panels/PushNotificationPanel';
 import useGenericSettings from '@app/hooks/useGenericSettings';
 
 const { Panel } = Collapse;
@@ -152,7 +152,7 @@ const AdvancedSettingsLayout: React.FC<AdvancedSettingsLayoutProps> = ({
             </Panel>
             
             <Panel header="Push Notifications" key="push-notifications">
-              <PushNotificationSettings />
+              <PushNotificationPanel />
             </Panel>
           </Collapse>
         </SettingsContainer>
