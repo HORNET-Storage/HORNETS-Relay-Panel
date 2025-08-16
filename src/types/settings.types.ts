@@ -87,25 +87,49 @@ export interface GeneralSettings {
   relay_stats_db: string;
 }
 
+export interface PushNotificationSettings {
+  enabled: boolean;
+  service: {
+    worker_count: number;
+    queue_size: number;
+    retry_max_attempts: number;
+    retry_base_delay: string;
+  };
+  apns: {
+    enabled: boolean;
+    key_file: string;
+    key_id: string;
+    team_id: string;
+    topic: string;
+    production: boolean;
+  };
+  fcm: {
+    enabled: boolean;
+    credentials_file: string;
+  };
+}
+
 export interface QueryCacheSettings {
   [key: string]: any;
 }
 
-export type SettingsGroupName = 
+export type SettingsGroupName =
   | 'image_moderation'
   | 'content_filter'
   | 'ollama'
   | 'relay_info'
   | 'wallet'
   | 'general'
+  | 'push_notifications'
   | 'relay_settings';
 
-export type SettingsGroupType<T extends SettingsGroupName> = 
+export type SettingsGroupType<T extends SettingsGroupName> =
   T extends 'image_moderation' ? ImageModerationSettings :
   T extends 'content_filter' ? ContentFilterSettings :
   T extends 'ollama' ? OllamaSettings :
   T extends 'relay_info' ? RelayInfoSettings :
   T extends 'wallet' ? WalletSettings :
   T extends 'general' ? GeneralSettings :
+  T extends 'push_notifications' ? PushNotificationSettings :
   T extends 'relay_settings' ? any : // Using any for relay_settings as it's already defined elsewhere
   never;

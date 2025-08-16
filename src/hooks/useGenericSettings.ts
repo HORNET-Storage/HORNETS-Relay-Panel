@@ -36,6 +36,10 @@ const extractSettingsForGroup = (settings: any, groupName: string) => {
       rawData = settings?.server || {};
       break;
     
+    case 'push_notifications':
+      rawData = settings?.push_notifications || {};
+      break;
+    
     default:
       console.warn(`Unknown settings group: ${groupName}`);
       return {};
@@ -330,6 +334,13 @@ const buildNestedUpdate = (groupName: string, data: any) => {
       }
       
       return result;
+    
+    case 'push_notifications':
+      return {
+        settings: {
+          push_notifications: data
+        }
+      };
     
     default:
       console.warn(`Unknown settings group for save: ${groupName}`);
