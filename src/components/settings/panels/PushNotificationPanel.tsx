@@ -21,7 +21,7 @@ const PushNotificationPanel: React.FC = () => {
     loading,
     error,
     updateSettings,
-    saveSettings: savePushNotificationSettings,
+    // saveSettings is not used in panels - they use the global save
   } = useGenericSettings('push_notifications');
 
   const [form] = Form.useForm();
