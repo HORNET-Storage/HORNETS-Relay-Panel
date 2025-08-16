@@ -9,6 +9,7 @@ import {
   InfoCircleOutlined,
   WalletOutlined,
   GlobalOutlined,
+  BellOutlined,
   DownOutlined,
   RightOutlined
 } from '@ant-design/icons';
@@ -18,6 +19,7 @@ import OllamaSettings from './OllamaSettings';
 import WalletSettings from './WalletSettings';
 import GeneralSettings from './GeneralSettings';
 import RelayInfoSettings from './RelayInfoSettings';
+import PushNotificationSettings from './PushNotificationSettings';
 
 const SettingsContainer = styled.div`
   width: 100%;
@@ -159,6 +161,13 @@ const SettingsPage: React.FC = () => {
       label: 'Ollama',
       icon: <RobotOutlined />,
       component: <OllamaSettings />
+    },
+    {
+      key: 'push_notifications',
+      path: '/settings/push-notifications',
+      label: 'Push Notifications',
+      icon: <BellOutlined />,
+      component: <PushNotificationSettings />
     },
     {
       key: 'relay_info',

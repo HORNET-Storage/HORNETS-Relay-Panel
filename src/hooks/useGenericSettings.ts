@@ -204,6 +204,76 @@ const extractSettingsForGroup = (settings: any, groupName: string) => {
     return processedData;
   }
   
+  // Handle push notifications field name mapping
+  if (groupName === 'push_notifications' && rawData) {
+    const processedData: any = {};
+    
+    // Copy top-level fields directly
+    if (rawData.enabled !== undefined) {
+      processedData.enabled = rawData.enabled;
+    }
+    
+    // Flatten service fields
+    if (rawData.service && typeof rawData.service === 'object') {
+      const serviceData = rawData.service;
+      if (serviceData.worker_count !== undefined) {
+        processedData.service_worker_count = serviceData.worker_count;
+      }
+      if (serviceData.queue_size !== undefined) {
+        processedData.service_queue_size = serviceData.queue_size;
+      }
+      if (serviceData.retry_attempts !== undefined) {
+        processedData.service_retry_attempts = serviceData.retry_attempts;
+      }
+      if (serviceData.retry_delay !== undefined) {
+        processedData.service_retry_delay = serviceData.retry_delay;
+      }
+      if (serviceData.batch_size !== undefined) {
+        processedData.service_batch_size = serviceData.batch_size;
+      }
+    }
+    
+    // Flatten APNs fields
+    if (rawData.apns && typeof rawData.apns === 'object') {
+      const apnsData = rawData.apns;
+      if (apnsData.enabled !== undefined) {
+        processedData.apns_enabled = apnsData.enabled;
+      }
+      if (apnsData.key_path !== undefined) {
+        processedData.apns_key_path = apnsData.key_path;
+      }
+      if (apnsData.bundle_id !== undefined) {
+        processedData.apns_bundle_id = apnsData.bundle_id;
+      }
+      if (apnsData.key_id !== undefined) {
+        processedData.apns_key_id = apnsData.key_id;
+      }
+      if (apnsData.team_id !== undefined) {
+        processedData.apns_team_id = apnsData.team_id;
+      }
+      if (apnsData.production !== undefined) {
+        processedData.apns_production = apnsData.production;
+      }
+    }
+    
+    // Flatten FCM fields
+    if (rawData.fcm && typeof rawData.fcm === 'object') {
+      const fcmData = rawData.fcm;
+      if (fcmData.enabled !== undefined) {
+        processedData.fcm_enabled = fcmData.enabled;
+      }
+      if (fcmData.credentials_path !== undefined) {
+        processedData.fcm_credentials_path = fcmData.credentials_path;
+      }
+      if (fcmData.project_id !== undefined) {
+        processedData.fcm_project_id = fcmData.project_id;
+      }
+    }
+    
+    console.log(`Processed ${groupName} data:`, processedData);
+    return processedData;
+  }
+  
   return rawData;
 };
 
@@ -336,9 +406,70 @@ const buildNestedUpdate = (groupName: string, data: any) => {
       return result;
     
     case 'push_notifications':
+      // Transform flat field names back to nested structure for backend
+      const backendPushData: any = {};
+      
+      // Handle top-level fields
+      if (data.enabled !== undefined) {
+        backendPushData.enabled = data.enabled;
+      }
+      
+      // Handle service fields - group them under service object
+      const serviceFields = ['service_worker_count', 'service_queue_size', 'service_retry_attempts', 'service_retry_delay', 'service_batch_size'];
+      const serviceData: any = {};
+      let hasServiceFields = false;
+      
+      serviceFields.forEach(flatFieldName => {
+        if (data[flatFieldName] !== undefined) {
+          const backendFieldName = flatFieldName.replace('service_', '');
+          serviceData[backendFieldName] = data[flatFieldName];
+          hasServiceFields = true;
+        }
+      });
+      
+      if (hasServiceFields) {
+        backendPushData.service = serviceData;
+      }
+      
+      // Handle APNs fields - group them under apns object
+      const apnsFields = ['apns_enabled', 'apns_key_path', 'apns_bundle_id', 'apns_key_id', 'apns_team_id', 'apns_production'];
+      const apnsData: any = {};
+      let hasApnsFields = false;
+      
+      apnsFields.forEach(flatFieldName => {
+        if (data[flatFieldName] !== undefined) {
+          const backendFieldName = flatFieldName.replace('apns_', '');
+          apnsData[backendFieldName] = data[flatFieldName];
+          hasApnsFields = true;
+        }
+      });
+      
+      if (hasApnsFields) {
+        backendPushData.apns = apnsData;
+      }
+      
+      // Handle FCM fields - group them under fcm object
+      const fcmFields = ['fcm_enabled', 'fcm_credentials_path', 'fcm_project_id'];
+      const fcmData: any = {};
+      let hasFcmFields = false;
+      
+      fcmFields.forEach(flatFieldName => {
+        if (data[flatFieldName] !== undefined) {
+          const backendFieldName = flatFieldName.replace('fcm_', '');
+          fcmData[backendFieldName] = data[flatFieldName];
+          hasFcmFields = true;
+        }
+      });
+      
+      if (hasFcmFields) {
+        backendPushData.fcm = fcmData;
+      }
+      
+      console.log('Push notifications: transforming flat data to nested for backend:', { flatData: data, nestedData: backendPushData });
+      
       return {
         settings: {
-          push_notifications: data
+          push_notifications: backendPushData
         }
       };
     

@@ -35,7 +35,7 @@ const AdvancedSettingsLayout: React.FC<AdvancedSettingsLayoutProps> = ({
 }) => {
   const [saveLoading, setSaveLoading] = useState(false);
   const [resetLoading, setResetLoading] = useState(false);
-  const [activeKeys, setActiveKeys] = useState<string[]>(['general', 'image-moderation']);
+  const [activeKeys, setActiveKeys] = useState<string[]>(['general', 'image-moderation', 'push-notifications']);
   
   // Use the generic settings hook to handle saving all settings
   const { 

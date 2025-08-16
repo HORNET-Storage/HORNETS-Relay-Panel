@@ -92,20 +92,20 @@ export interface PushNotificationSettings {
   service: {
     worker_count: number;
     queue_size: number;
-    retry_max_attempts: number;
-    retry_base_delay: string;
+    retry_attempts: number;
+    retry_delay: string;
   };
   apns: {
     enabled: boolean;
-    key_file: string;
+    key_path: string;
     key_id: string;
     team_id: string;
-    topic: string;
+    bundle_id: string;
     production: boolean;
   };
   fcm: {
     enabled: boolean;
-    credentials_file: string;
+    credentials_path: string;
   };
 }
 

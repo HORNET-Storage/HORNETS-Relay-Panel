@@ -113,7 +113,7 @@ const PushNotificationSettings: React.FC = () => {
           style={{ marginBottom: 16 }}
         >
           <Form.Item
-            name={['service', 'worker_count']}
+            name="service_worker_count"
             label={
               <span>
                 Worker Count&nbsp;
@@ -127,8 +127,8 @@ const PushNotificationSettings: React.FC = () => {
               { type: 'number', min: 1, max: 100, message: 'Worker count must be between 1 and 100' }
             ]}
           >
-            <InputNumber 
-              placeholder="Enter worker count" 
+            <InputNumber
+              placeholder="Enter worker count"
               style={{ width: '100%' }}
               min={1}
               max={100}
@@ -136,7 +136,7 @@ const PushNotificationSettings: React.FC = () => {
           </Form.Item>
 
           <Form.Item
-            name={['service', 'queue_size']}
+            name="service_queue_size"
             label={
               <span>
                 Queue Size&nbsp;
@@ -150,8 +150,8 @@ const PushNotificationSettings: React.FC = () => {
               { type: 'number', min: 100, max: 10000, message: 'Queue size must be between 100 and 10000' }
             ]}
           >
-            <InputNumber 
-              placeholder="Enter queue size" 
+            <InputNumber
+              placeholder="Enter queue size"
               style={{ width: '100%' }}
               min={100}
               max={10000}
@@ -159,7 +159,7 @@ const PushNotificationSettings: React.FC = () => {
           </Form.Item>
 
           <Form.Item
-            name={['service', 'retry_max_attempts']}
+            name="service_retry_attempts"
             label={
               <span>
                 Max Retry Attempts&nbsp;
@@ -173,8 +173,8 @@ const PushNotificationSettings: React.FC = () => {
               { type: 'number', min: 1, max: 10, message: 'Max retry attempts must be between 1 and 10' }
             ]}
           >
-            <InputNumber 
-              placeholder="Enter max retry attempts" 
+            <InputNumber
+              placeholder="Enter max retry attempts"
               style={{ width: '100%' }}
               min={1}
               max={10}
@@ -182,7 +182,7 @@ const PushNotificationSettings: React.FC = () => {
           </Form.Item>
 
           <Form.Item
-            name={['service', 'retry_base_delay']}
+            name="service_retry_delay"
             label={
               <span>
                 Retry Base Delay&nbsp;
@@ -193,15 +193,38 @@ const PushNotificationSettings: React.FC = () => {
             }
             rules={[
               { required: true, message: 'Please enter retry base delay' },
-              { 
-                pattern: /^\d+[a-zA-Z]+$/, 
-                message: 'Invalid duration format. Use Go duration format (e.g., "1s", "500ms", "2m")' 
+              {
+                pattern: /^\d+[a-zA-Z]+$/,
+                message: 'Invalid duration format. Use Go duration format (e.g., "1s", "500ms", "2m")'
               }
             ]}
           >
-            <Input 
-              placeholder="e.g., 1s, 500ms, 2m" 
+            <Input
+              placeholder="e.g., 1s, 500ms, 2m"
               prefix={<SettingOutlined />}
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="service_batch_size"
+            label={
+              <span>
+                Batch Size&nbsp;
+                <Tooltip title="Number of notifications to process in each batch (1-1000)">
+                  <QuestionCircleOutlined />
+                </Tooltip>
+              </span>
+            }
+            rules={[
+              { required: true, message: 'Please enter batch size' },
+              { type: 'number', min: 1, max: 1000, message: 'Batch size must be between 1 and 1000' }
+            ]}
+          >
+            <InputNumber
+              placeholder="Enter batch size"
+              style={{ width: '100%' }}
+              min={1}
+              max={1000}
             />
           </Form.Item>
         </Card>
@@ -217,7 +240,7 @@ const PushNotificationSettings: React.FC = () => {
           style={{ marginBottom: 16 }}
         >
           <Form.Item
-            name={['apns', 'enabled']}
+            name="apns_enabled"
             label={
               <span>
                 Enable APNs&nbsp;
@@ -232,7 +255,7 @@ const PushNotificationSettings: React.FC = () => {
           </Form.Item>
 
           <Form.Item
-            name={['apns', 'key_file']}
+            name="apns_key_path"
             label={
               <span>
                 APNs Key File Path&nbsp;
@@ -242,20 +265,20 @@ const PushNotificationSettings: React.FC = () => {
               </span>
             }
             rules={[
-              { 
-                required: form.getFieldValue(['apns', 'enabled']), 
-                message: 'Please enter APNs key file path when APNs is enabled' 
+              {
+                required: form.getFieldValue('apns_enabled'),
+                message: 'Please enter APNs key file path when APNs is enabled'
               }
             ]}
           >
-            <Input 
-              placeholder="path/to/apns-key.p8" 
+            <Input
+              placeholder="path/to/apns-key.p8"
               prefix={<FileTextOutlined />}
             />
           </Form.Item>
 
           <Form.Item
-            name={['apns', 'key_id']}
+            name="apns_key_id"
             label={
               <span>
                 APNs Key ID&nbsp;
@@ -265,22 +288,22 @@ const PushNotificationSettings: React.FC = () => {
               </span>
             }
             rules={[
-              { 
-                required: form.getFieldValue(['apns', 'enabled']), 
-                message: 'Please enter APNs key ID when APNs is enabled' 
+              {
+                required: form.getFieldValue('apns_enabled'),
+                message: 'Please enter APNs key ID when APNs is enabled'
               },
               { len: 10, message: 'APNs Key ID must be exactly 10 characters' }
             ]}
           >
-            <Input 
-              placeholder="YOUR_KEY_ID" 
+            <Input
+              placeholder="YOUR_KEY_ID"
               prefix={<KeyOutlined />}
               maxLength={10}
             />
           </Form.Item>
 
           <Form.Item
-            name={['apns', 'team_id']}
+            name="apns_team_id"
             label={
               <span>
                 Team ID&nbsp;
@@ -290,22 +313,22 @@ const PushNotificationSettings: React.FC = () => {
               </span>
             }
             rules={[
-              { 
-                required: form.getFieldValue(['apns', 'enabled']), 
-                message: 'Please enter Team ID when APNs is enabled' 
+              {
+                required: form.getFieldValue('apns_enabled'),
+                message: 'Please enter Team ID when APNs is enabled'
               },
               { len: 10, message: 'Team ID must be exactly 10 characters' }
             ]}
           >
-            <Input 
-              placeholder="YOUR_TEAM_ID" 
+            <Input
+              placeholder="YOUR_TEAM_ID"
               prefix={<KeyOutlined />}
               maxLength={10}
             />
           </Form.Item>
 
           <Form.Item
-            name={['apns', 'topic']}
+            name="apns_bundle_id"
             label={
               <span>
                 App Bundle Identifier&nbsp;
@@ -315,20 +338,20 @@ const PushNotificationSettings: React.FC = () => {
               </span>
             }
             rules={[
-              { 
-                required: form.getFieldValue(['apns', 'enabled']), 
-                message: 'Please enter app bundle identifier when APNs is enabled' 
+              {
+                required: form.getFieldValue('apns_enabled'),
+                message: 'Please enter app bundle identifier when APNs is enabled'
               }
             ]}
           >
-            <Input 
-              placeholder="com.your.app" 
+            <Input
+              placeholder="com.your.app"
               prefix={<AppleOutlined />}
             />
           </Form.Item>
 
           <Form.Item
-            name={['apns', 'production']}
+            name="apns_production"
             label={
               <span>
                 Production Mode&nbsp;
@@ -354,7 +377,7 @@ const PushNotificationSettings: React.FC = () => {
           style={{ marginBottom: 16 }}
         >
           <Form.Item
-            name={['fcm', 'enabled']}
+            name="fcm_enabled"
             label={
               <span>
                 Enable FCM&nbsp;
@@ -369,7 +392,7 @@ const PushNotificationSettings: React.FC = () => {
           </Form.Item>
 
           <Form.Item
-            name={['fcm', 'credentials_file']}
+            name="fcm_credentials_path"
             label={
               <span>
                 FCM Credentials File Path&nbsp;
@@ -379,14 +402,14 @@ const PushNotificationSettings: React.FC = () => {
               </span>
             }
             rules={[
-              { 
-                required: form.getFieldValue(['fcm', 'enabled']), 
-                message: 'Please enter FCM credentials file path when FCM is enabled' 
+              {
+                required: form.getFieldValue('fcm_enabled'),
+                message: 'Please enter FCM credentials file path when FCM is enabled'
               }
             ]}
           >
-            <Input 
-              placeholder="path/to/fcm-credentials.json" 
+            <Input
+              placeholder="path/to/fcm-credentials.json"
               prefix={<FileTextOutlined />}
             />
           </Form.Item>

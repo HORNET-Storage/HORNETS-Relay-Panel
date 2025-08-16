@@ -122,7 +122,7 @@ const PushNotificationPanel: React.FC = () => {
           size="small"
         >
           <Form.Item
-            name={['service', 'worker_count']}
+            name="service_worker_count"
             label={
               <span>
                 Worker Count&nbsp;
@@ -145,7 +145,7 @@ const PushNotificationPanel: React.FC = () => {
           </Form.Item>
 
           <Form.Item
-            name={['service', 'queue_size']}
+            name="service_queue_size"
             label={
               <span>
                 Queue Size&nbsp;
@@ -168,7 +168,7 @@ const PushNotificationPanel: React.FC = () => {
           </Form.Item>
 
           <Form.Item
-            name={['service', 'retry_max_attempts']}
+            name="service_retry_attempts"
             label={
               <span>
                 Max Retry Attempts&nbsp;
@@ -191,7 +191,7 @@ const PushNotificationPanel: React.FC = () => {
           </Form.Item>
 
           <Form.Item
-            name={['service', 'retry_base_delay']}
+            name="service_retry_delay"
             label={
               <span>
                 Retry Base Delay&nbsp;
@@ -213,6 +213,29 @@ const PushNotificationPanel: React.FC = () => {
               prefix={<SettingOutlined />}
             />
           </Form.Item>
+
+          <Form.Item
+            name="service_batch_size"
+            label={
+              <span>
+                Batch Size&nbsp;
+                <Tooltip title="Number of notifications to process in each batch (1-1000)">
+                  <QuestionCircleOutlined />
+                </Tooltip>
+              </span>
+            }
+            rules={[
+              { required: true, message: 'Please enter batch size' },
+              { type: 'number', min: 1, max: 1000, message: 'Batch size must be between 1 and 1000' }
+            ]}
+          >
+            <InputNumber
+              placeholder="Enter batch size"
+              style={{ width: '100%' }}
+              min={1}
+              max={1000}
+            />
+          </Form.Item>
         </Card>
 
         {/* APNs Configuration */}
@@ -227,11 +250,11 @@ const PushNotificationPanel: React.FC = () => {
           size="small"
         >
           <Form.Item
-            name={['apns', 'enabled']}
+            name="apns_enabled"
             label={
               <span>
                 Enable APNs&nbsp;
-                <Tooltip title="Enable Apple Push Notification service for iOS devices">
+                <Tooltip title="Enable Apple Push Notification Service for iOS devices">
                   <QuestionCircleOutlined />
                 </Tooltip>
               </span>
@@ -242,114 +265,47 @@ const PushNotificationPanel: React.FC = () => {
           </Form.Item>
 
           <Form.Item
-            name={['apns', 'key_file']}
+            name="apns_key_path"
             label={
               <span>
                 APNs Key File Path&nbsp;
-                <Tooltip title="Path to the APNs .p8 key file (required if APNs is enabled)">
+                <Tooltip title="Path to the APNs authentication key file (.p8)">
                   <QuestionCircleOutlined />
                 </Tooltip>
               </span>
             }
             rules={[
+              { required: false, message: 'Please enter the APNs key file path' }
+            ]}
+          >
+            <Input 
+              placeholder="e.g., /path/to/AuthKey_XXXXXXXXXX.p8" 
+              prefix={<KeyOutlined />}
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="apns_bundle_id"
+            label={
+              <span>
+                Bundle ID&nbsp;
+                <Tooltip title="Your app's bundle identifier (e.g., com.yourcompany.yourapp)">
+                  <QuestionCircleOutlined />
+                </Tooltip>
+              </span>
+            }
+            rules={[
+              { required: false, message: 'Please enter the bundle ID' },
               { 
-                required: form.getFieldValue(['apns', 'enabled']), 
-                message: 'Please enter APNs key file path when APNs is enabled' 
+                pattern: /^[a-zA-Z0-9.-]+$/, 
+                message: 'Invalid bundle ID format' 
               }
             ]}
           >
             <Input 
-              placeholder="path/to/apns-key.p8" 
-              prefix={<FileTextOutlined />}
-            />
-          </Form.Item>
-
-          <Form.Item
-            name={['apns', 'key_id']}
-            label={
-              <span>
-                APNs Key ID&nbsp;
-                <Tooltip title="APNs Key ID, exactly 10 characters (required if APNs is enabled)">
-                  <QuestionCircleOutlined />
-                </Tooltip>
-              </span>
-            }
-            rules={[
-              { 
-                required: form.getFieldValue(['apns', 'enabled']), 
-                message: 'Please enter APNs key ID when APNs is enabled' 
-              },
-              { len: 10, message: 'APNs Key ID must be exactly 10 characters' }
-            ]}
-          >
-            <Input 
-              placeholder="YOUR_KEY_ID" 
-              prefix={<KeyOutlined />}
-              maxLength={10}
-            />
-          </Form.Item>
-
-          <Form.Item
-            name={['apns', 'team_id']}
-            label={
-              <span>
-                Team ID&nbsp;
-                <Tooltip title="Apple Developer Team ID, exactly 10 characters (required if APNs is enabled)">
-                  <QuestionCircleOutlined />
-                </Tooltip>
-              </span>
-            }
-            rules={[
-              { 
-                required: form.getFieldValue(['apns', 'enabled']), 
-                message: 'Please enter Team ID when APNs is enabled' 
-              },
-              { len: 10, message: 'Team ID must be exactly 10 characters' }
-            ]}
-          >
-            <Input 
-              placeholder="YOUR_TEAM_ID" 
-              prefix={<KeyOutlined />}
-              maxLength={10}
-            />
-          </Form.Item>
-
-          <Form.Item
-            name={['apns', 'topic']}
-            label={
-              <span>
-                App Bundle Identifier&nbsp;
-                <Tooltip title="App's bundle identifier (required if APNs is enabled)">
-                  <QuestionCircleOutlined />
-                </Tooltip>
-              </span>
-            }
-            rules={[
-              { 
-                required: form.getFieldValue(['apns', 'enabled']), 
-                message: 'Please enter app bundle identifier when APNs is enabled' 
-              }
-            ]}
-          >
-            <Input 
-              placeholder="com.your.app" 
+              placeholder="e.g., com.yourcompany.yourapp" 
               prefix={<AppleOutlined />}
             />
-          </Form.Item>
-
-          <Form.Item
-            name={['apns', 'production']}
-            label={
-              <span>
-                Production Mode&nbsp;
-                <Tooltip title="Use production APNs servers (default: false for sandbox)">
-                  <QuestionCircleOutlined />
-                </Tooltip>
-              </span>
-            }
-            valuePropName="checked"
-          >
-            <Switch />
           </Form.Item>
         </Card>
 
@@ -365,7 +321,7 @@ const PushNotificationPanel: React.FC = () => {
           size="small"
         >
           <Form.Item
-            name={['fcm', 'enabled']}
+            name="fcm_enabled"
             label={
               <span>
                 Enable FCM&nbsp;
@@ -380,41 +336,25 @@ const PushNotificationPanel: React.FC = () => {
           </Form.Item>
 
           <Form.Item
-            name={['fcm', 'credentials_file']}
+            name="fcm_credentials_path"
             label={
               <span>
-                FCM Credentials File Path&nbsp;
-                <Tooltip title="Path to FCM service account JSON file (required if FCM is enabled)">
+                FCM Service Account Key Path&nbsp;
+                <Tooltip title="Path to the Firebase service account credentials JSON file">
                   <QuestionCircleOutlined />
                 </Tooltip>
               </span>
             }
             rules={[
-              { 
-                required: form.getFieldValue(['fcm', 'enabled']), 
-                message: 'Please enter FCM credentials file path when FCM is enabled' 
-              }
+              { required: false, message: 'Please enter the FCM credentials file path' }
             ]}
           >
             <Input 
-              placeholder="path/to/fcm-credentials.json" 
+              placeholder="e.g., /path/to/firebase-service-account.json" 
               prefix={<FileTextOutlined />}
             />
           </Form.Item>
         </Card>
-
-        <Form.Item>
-          <p style={{ 
-            color: 'rgba(255, 255, 255, 0.8)',
-            fontSize: '0.9em',
-            padding: '0.75rem',
-            backgroundColor: 'rgba(0, 0, 0, 0.1)',
-            borderLeft: '3px solid rgba(82, 196, 255, 0.8)',
-            borderRadius: '0 4px 4px 0'
-          }}>
-            <span style={{ color: 'rgba(82, 196, 255, 1)' }}>Note:</span> Push notification settings require appropriate credentials and configuration files to function properly. Ensure you have the necessary APNs or FCM credentials configured on your server.
-          </p>
-        </Form.Item>
       </Form>
     </BaseSettingsPanel>
   );

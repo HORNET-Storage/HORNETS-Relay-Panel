@@ -11,6 +11,7 @@ import {
   InfoCircleOutlined,
   WalletOutlined,
   GlobalOutlined,
+  BellOutlined,
 } from '@ant-design/icons';
 
 const { Panel } = Collapse;
@@ -85,6 +86,12 @@ const settingsTabs: SettingsTab[] = [
     label: 'Ollama',
     icon: <RobotOutlined className="item-icon" />,
     path: '/settings/ollama'
+  },
+  {
+    key: 'push_notifications',
+    label: 'Push Notifications',
+    icon: <BellOutlined className="item-icon" />,
+    path: '/settings/push-notifications'
   },
   {
     key: 'relay_info',
