@@ -14,6 +14,8 @@ import { SettingsGroupType } from '@app/types/settings.types';
 import BaseSettingsPanel from '../BaseSettingsPanel';
 
 const PushNotificationPanel: React.FC = () => {
+  console.log('PushNotificationPanel - Component rendering');
+  
   const {
     settings,
     loading,
@@ -24,6 +26,8 @@ const PushNotificationPanel: React.FC = () => {
 
   const [form] = Form.useForm();
   const [isUserEditing, setIsUserEditing] = useState(false);
+  
+  console.log('PushNotificationPanel - Hook result:', { settings, loading, error });
 
   // Listen for global save event
   useEffect(() => {
