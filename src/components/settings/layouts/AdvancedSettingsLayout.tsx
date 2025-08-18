@@ -8,6 +8,7 @@ import ImageModerationPanel from '../panels/ImageModerationPanel';
 import ContentFilterPanel from '../panels/ContentFilterPanel';
 import OllamaPanel from '../panels/OllamaPanel';
 import WalletPanel from '../panels/WalletPanel';
+import PushNotificationPanel from '../panels/PushNotificationPanel';
 import useGenericSettings from '@app/hooks/useGenericSettings';
 
 const { Panel } = Collapse;
@@ -34,7 +35,7 @@ const AdvancedSettingsLayout: React.FC<AdvancedSettingsLayoutProps> = ({
 }) => {
   const [saveLoading, setSaveLoading] = useState(false);
   const [resetLoading, setResetLoading] = useState(false);
-  const [activeKeys, setActiveKeys] = useState<string[]>(['general', 'image-moderation']);
+  const [activeKeys, setActiveKeys] = useState<string[]>(['general', 'image-moderation', 'push-notifications']);
   
   // Use the generic settings hook to handle saving all settings
   const { 
@@ -148,6 +149,10 @@ const AdvancedSettingsLayout: React.FC<AdvancedSettingsLayoutProps> = ({
             
             <Panel header="Wallet" key="wallet">
               <WalletPanel />
+            </Panel>
+            
+            <Panel header="Push Notifications" key="push-notifications">
+              <PushNotificationPanel />
             </Panel>
           </Collapse>
         </SettingsContainer>

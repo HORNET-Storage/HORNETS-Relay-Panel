@@ -39,6 +39,7 @@ export const noteOptions = [
   { kind: 1060, kindString: 'kind1060', description: 'Double Ratchet DM', category: 1 },
   { kind: 1063, kindString: 'kind1063', description: 'File Metadata', category: 1 },
   { kind: 1808, kindString: 'kind1808', description: 'Audio Transcription', category: 1 },
+  { kind: 1809, kindString: 'kind1809', description: 'Audio Transcription Repost', category: 1 },
   { kind: 1984, kindString: 'kind1984', description: 'Reporting', category: 1 },
   { kind: 30000, kindString: 'kind30000', description: 'Custom Follow List', category: 1 },
   { kind: 30008, kindString: 'kind30008', description: 'Profile Badge', category: 2 },
