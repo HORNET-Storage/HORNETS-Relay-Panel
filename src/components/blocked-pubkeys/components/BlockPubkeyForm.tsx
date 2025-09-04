@@ -17,19 +17,18 @@ const CardRoot = styled(Card)`
   & .ant-card-head {
     border-bottom-color: var(--border-base-color) !important;
   }
-}
+  
+  /* Remove the card body padding and background */
+  & .ant-card-body {
+    padding: 0 !important;
+    background: transparent !important;
+  }
 `;
 const TextArea = styled(Input.TextArea)`
   background-color: var(--layout-sider-bg-color) !important;
 `;
 const InputArea = styled(Input)`
   background-color: var(--layout-sider-bg-color) !important;
-`;
-export const FormItemContainer = styled.div`
-  width: 100%;
-  @media screen and (min-width: ${BREAKPOINTS.md}px) {
-    padding-right: 1.5rem;
-  }
 `;
 
 export const BlockPubkeyForm: React.FC<BlockPubkeyFormProps> = ({ onSubmit, disabled }) => {
@@ -59,25 +58,36 @@ export const BlockPubkeyForm: React.FC<BlockPubkeyFormProps> = ({ onSubmit, disa
 
   return (
     <CardRoot title="Block a Pubkey" size="small">
-      <Form form={form} layout="vertical" onFinish={handleSubmit}>
-        <FormItemContainer>
-          <Form.Item name="pubkey" label="Pubkey to block" rules={[{ validator: validatePubkey }]}>
-            <InputArea placeholder="Enter the 64-character hex pubkey" />
-          </Form.Item>
-        </FormItemContainer>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', padding: '24px' }}>
+        <div>
+          <label style={{ display: 'block', marginBottom: '8px' }}>Pubkey to block</label>
+          <InputArea
+            placeholder="Enter the 64-character hex pubkey"
+            value={form.getFieldValue('pubkey')}
+            onChange={(e) => form.setFieldsValue({ pubkey: e.target.value })}
+          />
+        </div>
 
-        <FormItemContainer>
-          <Form.Item name="reason" label="Reason (optional)">
-            <TextArea placeholder="Enter reason for blocking this pubkey" rows={2} />
-          </Form.Item>
-        </FormItemContainer>
+        <div>
+          <label style={{ display: 'block', marginBottom: '8px' }}>Reason (optional)</label>
+          <TextArea
+            placeholder="Enter reason for blocking this pubkey"
+            rows={2}
+            value={form.getFieldValue('reason')}
+            onChange={(e) => form.setFieldsValue({ reason: e.target.value })}
+          />
+        </div>
 
-        <Form.Item>
-          <Button type="primary" htmlType="submit" icon={<PlusOutlined />} loading={submitting} disabled={disabled}>
-            Block Pubkey
-          </Button>
-        </Form.Item>
-      </Form>
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          loading={submitting}
+          disabled={disabled}
+          onClick={() => handleSubmit(form.getFieldsValue())}
+        >
+          Block Pubkey
+        </Button>
+      </div>
     </CardRoot>
   );
 };
