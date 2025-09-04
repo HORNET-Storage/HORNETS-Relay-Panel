@@ -6,8 +6,8 @@ import { FONT_SIZE, FONT_WEIGHT } from '@app/styles/themes/constants';
 
 export const StyledCollapse = styled(Collapse)`
   /* Liquid Glass Theme Background */
-  padding: 1rem 0;
-  margin: 0 0 1rem 0;
+  padding: 0.5rem 0;
+  margin: 0 0 0.5rem 0;
   background: transparent;
   border: none;
 
@@ -63,13 +63,13 @@ export const StyledCollapse = styled(Collapse)`
   }
 
   .ant-collapse-content-box {
-    padding: 1rem 0 0 0;
+    padding: 0.75rem 0 0 0;
     background: rgba(255, 255, 255, 0.02);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 12px;
-    margin-top: 0.5rem;
+    margin-top: 0.25rem;
   }
 
   &.centered-header {
