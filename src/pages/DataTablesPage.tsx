@@ -8,6 +8,7 @@ import * as S from '@app/pages/uiComponentsPages/UIComponentsPage.styles';
 import { Balance } from '@app/components/relay-dashboard/Balance/Balance';
 import { TotalEarning } from '@app/components/relay-dashboard/totalEarning/TotalEarning';
 import { ActivityStory } from '@app/components/relay-dashboard/transactions/Transactions';
+import { DashboardWrapper } from '@app/pages/DashboardPages/DashboardPage.styles';
 const DataTablesPage: React.FC = () => {
   const { t } = useTranslation();
   const { isDesktop } = useResponsive();
@@ -34,7 +35,7 @@ const DataTablesPage: React.FC = () => {
   );
 
   return (
-    <>
+    <DashboardWrapper>
       <PageTitle>{t('Nostr Statistics')}</PageTitle>
       {isDesktop ? (
         desktopLayout
@@ -43,7 +44,7 @@ const DataTablesPage: React.FC = () => {
           <Tables />
         </>
       )}
-    </>
+    </DashboardWrapper>
   );
 };
 
