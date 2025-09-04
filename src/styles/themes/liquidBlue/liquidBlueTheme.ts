@@ -50,12 +50,12 @@ const chartColors = {
 };
 
 export const liquidBlueTheme: ITheme = {
-  // Primary colors - Bright neon cyan/turquoise
-  primary: '#00FFFF',        // Electric cyan
-  primary1: '#00FFAA',       // Neon turquoise
-  primaryGradient: 'linear-gradient(135deg, #00FFFF 0%, #00FFAA 100%)',
+  // Primary colors - Subdued cyan/turquoise
+  primary: '#06B6D4',        // Muted cyan (less bright)
+  primary1: '#14B8A6',       // Muted turquoise
+  primaryGradient: 'linear-gradient(135deg, #06B6D4 0%, #14B8A6 100%)',
   light: '#5EEAD4',
-  secondary: '#00DDFF',       // Bright teal
+  secondary: '#0891B2',       // Subdued teal
   error: '#EF4444',          // Red for errors
   warning: '#F59E0B',        // Amber warnings
   success: '#06B6D4',        // Cyan success

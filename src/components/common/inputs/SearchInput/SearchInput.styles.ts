@@ -4,40 +4,41 @@ import { BaseInput } from '../BaseInput/BaseInput';
 import { BaseSpace } from '../../BaseSpace/BaseSpace';
 
 export const SearchInput = styled(BaseInput.Search)`
-  /* LIQUID BLUE THEME ROUNDED GLASS CONTAINER - VISIBLE AND PROMINENT */
-  background: rgba(0, 255, 255, 0.10) !important;
-  backdrop-filter: blur(16px) !important;
-  -webkit-backdrop-filter: blur(16px) !important;
-  border: 1.5px solid rgba(0, 255, 255, 0.25) !important;
-  border-radius: 3.125rem !important;
-  padding: 0.5rem !important;
-    /* Ensure visibility */
-  box-shadow: 0 4px 12px rgba(0, 255, 255, 0.1) !important;
+  /* LIQUID BLUE THEME ROUNDED GLASS CONTAINER - MINIMAL SIZE */
+  background: rgba(0, 255, 255, 0.03) !important;
+  backdrop-filter: blur(6px) !important;
+  -webkit-backdrop-filter: blur(6px) !important;
+  border: 1px solid rgba(0, 255, 255, 0.12) !important;
+  border-radius: 1.25rem !important;
+  padding: 0.125rem !important;
+    /* Very subtle shadow */
+  box-shadow: 0 1px 4px rgba(0, 255, 255, 0.03) !important;
 
   /* Mobile adjustments */
   @media only screen and (max-width: ${media.md}) {
-    border-radius: 2.5rem !important;
+    border-radius: 1rem !important;
+    padding: 0.1rem !important;
   }
 
   /* Desktop specific settings */
   @media only screen and ${media.md} {
-    padding: 0.75rem !important;
-    border-radius: 3.125rem !important;
+    padding: 0.15rem !important;
+    border-radius: 1.25rem !important;
   }
 
   /* Liquid Blue Theme - Search prefix icon */
   & .ant-input-prefix {
-    margin: 0.5rem;
-    color: #00DDFF !important; /* Bright neon teal for search icon */
+    margin: 0.2rem;
+    color: #06B6D4 !important; /* Muted cyan for search icon */
   }
 
   & .ant-input-search-button {
-    height: 3.54875rem;
+    height: 2.5rem;
     box-shadow: none;
   }
 
   &.ant-input-search-large .ant-input-search-button {
-    height: 4.36125rem;
+    height: 3rem;
   }
 
   /* Remove ALL internal backgrounds, borders, outlines, and boxes */
@@ -84,17 +85,17 @@ export const SearchInput = styled(BaseInput.Search)`
     outline: none !important;
 
     @media only screen and ${media.md} {
-      border-radius: 3.125rem !important;
-      padding: 0.5625rem 1.25rem !important;
+      border-radius: 1.25rem !important;
+      padding: 0.15rem 0.5rem !important;
     }
   }
 
   /* Liquid Blue Theme - Input group wrapper - NO internal highlighting */
   && .ant-input-group-addon {
-    min-width: 5.5rem;
-    color: #00FFFF !important; /* Electric cyan */
-    font-weight: ${FONT_WEIGHT.semibold};
-    font-size: ${FONT_SIZE.lg};
+    min-width: 4rem;
+    color: #06B6D4 !important; /* Muted cyan */
+    font-weight: ${FONT_WEIGHT.medium};
+    font-size: ${FONT_SIZE.md};
     background: transparent !important;
     background-color: transparent !important;
     border: none !important;
@@ -102,10 +103,10 @@ export const SearchInput = styled(BaseInput.Search)`
     outline: none !important;
   }
 
-  /* Liquid Blue Theme - Search button with electric cyan */
+  /* Liquid Blue Theme - Search button with muted cyan */
   && .ant-input-search-button {
     &.ant-btn .anticon {
-      color: #00FFFF !important; /* Electric cyan */
+      color: #06B6D4 !important; /* Muted cyan */
     }
     width: 100%;
     background: transparent !important;
@@ -113,12 +114,12 @@ export const SearchInput = styled(BaseInput.Search)`
     border: none !important;
     box-shadow: none !important;
     outline: none !important;
-    color: #00FFFF !important; /* Electric cyan */
+    color: #06B6D4 !important; /* Muted cyan */
   }
 
   /* Remove background from main input - restore rounded corners */
   && input {
-    font-weight: 600;
+    font-weight: 500;
     background: transparent !important;
     background-color: transparent !important;
     background-image: none !important;
@@ -127,12 +128,12 @@ export const SearchInput = styled(BaseInput.Search)`
 
     /* Restore rounded corners */
     @media only screen and ${media.md} {
-      border-radius: 3.125rem !important;
-      font-size: 1rem;
+      border-radius: 1.25rem !important;
+      font-size: 0.9rem;
     }
 
     &::placeholder {
-      font-weight: 500;
+      font-weight: 400;
     }
   }
 
@@ -152,7 +153,7 @@ export const SearchInput = styled(BaseInput.Search)`
 
     /* Maintain rounded appearance ONLY on container */
     @media only screen and ${media.md} {
-      border-radius: 3.125rem !important;
+      border-radius: 1.25rem !important;
     }
   }
 
