@@ -8,6 +8,7 @@ import useRelaySettings from '@app/hooks/useRelaySettings';
 import { DesktopLayout } from '@app/components/relay-settings/layouts/DesktopLayout';
 import { MobileLayout } from '@app/components/relay-settings/layouts/MobileLayout';
 import { Settings } from '@app/constants/relaySettings';
+import { DashboardWrapper } from '@app/pages/DashboardPages/DashboardPage.styles';
 
 const RelaySettingsPage: React.FC = () => {
   const { t } = useTranslation();
@@ -216,10 +217,10 @@ const RelaySettingsPage: React.FC = () => {
   };
 
   return (
-    <>
+    <DashboardWrapper>
       <PageTitle>{t('common.customizeRelaySettings')}</PageTitle>
       {isDesktop ? <DesktopLayout {...layoutProps} /> : <MobileLayout {...layoutProps} />}
-    </>
+    </DashboardWrapper>
   );
 };
 

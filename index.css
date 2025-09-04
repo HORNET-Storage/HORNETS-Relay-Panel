@@ -496,6 +496,47 @@ body:has(header:contains("Search")) .fixed.z-50.right-5 .bg-base-300 input {
   color: rgba(255, 255, 255, 0.95);
 }
 
+/* LIQUID BLUE BACKGROUND ANIMATIONS - MATCHING DASHBOARD */
+@keyframes liquidBackground {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1) rotate(0deg);
+  }
+  25% {
+    opacity: 0.8;
+    transform: scale(1.1) rotate(90deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2) rotate(180deg);
+  }
+  75% {
+    opacity: 0.8;
+    transform: scale(1.1) rotate(270deg);
+  }
+}
+
+@keyframes liquidFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 /* Liquid Blue Futuristic Background - Neon Turquoise */
 [data-theme="liquid-blue"] html {
   background: linear-gradient(135deg,
@@ -1861,6 +1902,114 @@ body:has(header:contains("Search")) .fixed.z-50.right-5 .bg-base-300 input {
   transform: translateY(-1px) !important;
 }
 
+
+/* ============================================= */
+/* RELAY SETTINGS - LIQUID GLASS THEME APPLICATION */
+/* ============================================= */
+
+/* Apply liquid glass theme to all relay settings buttons */
+[data-theme="liquid-glass"] .relay-settings-button,
+[data-theme="liquid-glass"] button.btn,
+[data-theme="liquid-glass"] .ant-btn {
+  background: rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.12) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  }
+}
+
+/* Liquid Glass Theme - Switch/Toggle Components in Relay Settings */
+[data-theme="liquid-glass"] .ant-switch,
+[data-theme="liquid-glass"] .ant-switch-checked {
+  background: rgba(138, 43, 226, 0.2) !important; /* Purple tint */
+
+  &.ant-switch-checked {
+    background: linear-gradient(135deg, rgba(138, 43, 226, 0.6), rgba(33, 150, 243, 0.5)) !important;
+    box-shadow: 0 0 8px rgba(138, 43, 226, 0.4);
+  }
+}
+
+/* Liquid Glass Theme - Input fields and selects in relay settings */
+[data-theme="liquid-glass"] .ant-input,
+[data-theme="liquid-glass"] .ant-select-selector,
+[data-theme="liquid-glass"] .ant-select-selection-item,
+[data-theme="liquid-glass"] textarea.ant-input {
+  background: rgba(255, 255, 255, 0.06) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+  }
+
+  &:focus,
+  &:focus-visible {
+    background: rgba(255, 255, 255, 0.12) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1) !important;
+    outline: none !important;
+  }
+}
+
+/* Liquid Glass Theme - Dropdown/Select items in relay settings */
+[data-theme="liquid-glass"] .ant-select-dropdown,
+[data-theme="liquid-glass"] .ant-dropdown-content {
+  background: rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="liquid-glass"] .ant-select-dropdown .ant-select-item,
+[data-theme="liquid-glass"] .ant-dropdown-menu-item {
+  color: rgba(255, 255, 255, 0.9) !important;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+  }
+
+  &.ant-select-item-option-selected,
+  &.ant-select-item-option-active {
+    background: rgba(138, 43, 226, 0.2) !important;
+    color: white !important;
+  }
+}
+
+/* Liquid Glass Theme - Warning/Error elements in relay settings */
+[data-theme="liquid-glass"] .warning-container,
+[data-theme="liquid-glass"] .error-message {
+  background: rgba(255, 77, 79, 0.05) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  border: 1px solid rgba(255, 77, 79, 0.15) !important;
+  border-radius: 8px;
+  color: rgba(255, 77, 79, 0.9) !important;
+}
+
+/* Liquid Glass Theme - Labels and text in relay settings */
+[data-theme="liquid-glass"] .relay-settings-label,
+[data-theme="liquid-glass"] .setting-description,
+[data-theme="liquid-glass"] h4,
+[data-theme="liquid-glass"] p {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+[data-theme="liquid-glass"] .setting-description,
+[data-theme="liquid-glass"] p {
+  color: rgba(255, 255, 255, 0.75) !important;
+}
 
 /* ============================================= */
 /* LIQUID BLUE - COMPONENT-BASED STYLING */
@@ -3619,6 +3768,92 @@ body:has(header:contains("Search")) .fixed.z-50.right-5 .bg-base-300 input {
 /* ============================================= */
 
 /* Sleek professional pulse animation for both themes */
+/* ============================================= */
+/* RELAY SETTINGS PAGE - LIQUID BLUE BACKDROP */
+/* ============================================= */
+
+/* Apply Liquid Blue gradient to Relay Settings page - MATCHING DASHBOARD STYLE */
+[class*="relay-settings"],
+[class*="RelaySettings"],
+[data-*="relay-settings"],
+[data-*="relaysettings"],
+.h-screen.w-full.flex.relative:has(.bg-base-100.overflow-y-auto),
+.h-screen.w-full.flex:has(.bg-base-100.overflow-y-auto) {
+  /* Match the relay dashboard background pattern - start with dark base */
+  background: #000000 !important;
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+
+  /* Multi-layer liquid blue gradient background - MATCHING DASHBOARD */
+  &::before {
+    content: '';
+    position: fixed;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background:
+      radial-gradient(circle at 20% 50%, rgba(0, 255, 255, 0.15) 0%, transparent 40%),
+      radial-gradient(circle at 80% 20%, rgba(0, 255, 170, 0.12) 0%, transparent 45%),
+      radial-gradient(circle at 60% 80%, rgba(20, 184, 166, 0.12) 0%, transparent 45%),
+      radial-gradient(circle at 40% 40%, rgba(0, 221, 255, 0.08) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+    animation: liquidBackground 30s ease infinite, rotate 60s linear infinite;
+  }
+
+  /* Additional animated gradient layer - MATCHING DASHBOARD */
+  &::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg,
+      rgba(0, 255, 255, 0.03) 0%,
+      rgba(0, 255, 170, 0.03) 25%,
+      rgba(20, 184, 166, 0.03) 50%,
+      rgba(0, 221, 255, 0.03) 75%,
+      rgba(0, 255, 255, 0.03) 100%);
+    background-size: 400% 400%;
+    animation: liquidFlow 20s ease infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Ensure content is above background layers */
+  > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  color: rgba(255, 255, 255, 0.95);
+}
+
+/* Make all relay settings content areas transparent to show the gradient */
+[class*="relay-settings"] .bg-base-100,
+[class*="RelaySettings"] .bg-base-100,
+[data-*="relay-settings"] .bg-base-100,
+[data-*="relaysettings"] .bg-base-100,
+.h-screen.w-full.flex.relative .bg-base-100.overflow-y-auto,
+.h-screen.w-full.flex .bg-base-100.overflow-y-auto {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Ensure glass components still look great against the gradient */
+[class*="relay-settings"] [data-theme*="liquid"],
+[class*="RelaySettings"] [data-theme*="liquid"],
+[data-*="relay-settings"] [data-theme*="liquid"],
+[data-*="relaysettings"] [data-theme*="liquid"] {
+  background: transparent !important;
+}
+
+/* The existing relay settings theme overrides are already comprehensive */
+
 @keyframes sleekPulse {
   0%, 60%, 100% {
     opacity: 0.4;

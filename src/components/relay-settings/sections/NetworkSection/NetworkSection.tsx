@@ -29,7 +29,11 @@ export const NetworkSection: React.FC<NetworkSectionProps> = ({
             onChange={onProtocolsChange}
           />
 
-          <div style={{ borderTop: '1px solid #ccc', margin: '1rem 0' }} />
+          <div style={{
+            borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+            margin: '1rem 0',
+            boxShadow: '0 1px 3px rgba(255, 255, 255, 0.05)'
+          }} />
 
           <FileStorageToggle
             isActive={isFileStorageActive}
