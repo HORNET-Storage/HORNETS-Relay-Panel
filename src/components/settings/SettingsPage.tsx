@@ -18,6 +18,7 @@ import OllamaSettings from './OllamaSettings';
 import WalletSettings from './WalletSettings';
 import GeneralSettings from './GeneralSettings';
 import RelayInfoSettings from './RelayInfoSettings';
+import { DashboardWrapper } from '@app/pages/DashboardPages/DashboardPage.styles';
 
 const SettingsContainer = styled.div`
   width: 100%;
@@ -209,13 +210,13 @@ const SettingsPage: React.FC = () => {
   };
   
   return (
-    <>
+    <DashboardWrapper>
       <PageTitle>Advanced Settings</PageTitle>
       
       <SettingsContainer>
         {settingItems.map(item => (
           <SettingSection key={item.key}>
-            <SectionHeader 
+            <SectionHeader
               $isActive={activeKey === item.key}
               onClick={() => handleSectionClick(item)}
             >
@@ -232,7 +233,7 @@ const SettingsPage: React.FC = () => {
           </SettingSection>
         ))}
       </SettingsContainer>
-    </>
+    </DashboardWrapper>
   );
 };
 
