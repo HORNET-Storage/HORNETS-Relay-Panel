@@ -20,39 +20,27 @@ const SettingsPage: React.FC = () => {
       <BaseRow>
         <BaseCol span={24}>
           <CollapsibleSection header="General Settings">
-            <S.Card>
-              <GeneralSettings />
-            </S.Card>
+            <GeneralSettings />
           </CollapsibleSection>
           
           <CollapsibleSection header="Image Moderation">
-            <S.Card>
-              <ImageModerationSettings />
-            </S.Card>
+            <ImageModerationSettings />
           </CollapsibleSection>
           
           <CollapsibleSection header="Content Filter">
-            <S.Card>
-              <ContentFilterSettings />
-            </S.Card>
+            <ContentFilterSettings />
           </CollapsibleSection>
           
           <CollapsibleSection header="Ollama">
-            <S.Card>
-              <OllamaSettings />
-            </S.Card>
+            <OllamaSettings />
           </CollapsibleSection>
           
           <CollapsibleSection header="Relay Info">
-            <S.Card>
-              <RelayInfoSettings />
-            </S.Card>
+            <RelayInfoSettings />
           </CollapsibleSection>
           
           <CollapsibleSection header="Wallet">
-            <S.Card>
-              <WalletSettings />
-            </S.Card>
+            <WalletSettings />
           </CollapsibleSection>
         </BaseCol>
       </BaseRow>
