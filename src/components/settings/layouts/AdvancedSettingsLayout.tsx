@@ -1,27 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { Collapse, Button, Space, Spin } from 'antd';
+import React, { useState } from 'react';
+import { Button, Space, Spin } from 'antd';
 import { BaseRow } from '@app/components/common/BaseRow/BaseRow';
 import { BaseCol } from '@app/components/common/BaseCol/BaseCol';
-import styled from 'styled-components';
 import GeneralSettingsPanel from '../panels/GeneralSettingsPanel';
 import ImageModerationPanel from '../panels/ImageModerationPanel';
 import ContentFilterPanel from '../panels/ContentFilterPanel';
 import OllamaPanel from '../panels/OllamaPanel';
 import WalletPanel from '../panels/WalletPanel';
 import useGenericSettings from '@app/hooks/useGenericSettings';
-
-const { Panel } = Collapse;
-
-const SettingsContainer = styled.div`
-  margin-bottom: 2rem;
-`;
-
-const SaveButtonContainer = styled.div`
-  margin-top: 2rem;
-  margin-bottom: 2rem;
-  display: flex;
-  justify-content: center;
-`;
+import { CollapsibleSection } from '@app/components/relay-settings/shared/CollapsibleSection/CollapsibleSection';
+import * as S from '@app/pages/uiComponentsPages/UIComponentsPage.styles';
+import { DashboardWrapper } from '@app/pages/DashboardPages/DashboardPage.styles';
 
 interface AdvancedSettingsLayoutProps {
   loading?: boolean;
@@ -34,11 +23,10 @@ const AdvancedSettingsLayout: React.FC<AdvancedSettingsLayoutProps> = ({
 }) => {
   const [saveLoading, setSaveLoading] = useState(false);
   const [resetLoading, setResetLoading] = useState(false);
-  const [activeKeys, setActiveKeys] = useState<string[]>(['general', 'image-moderation']);
   
   // Use the generic settings hook to handle saving all settings
-  const { 
-    loading: hookLoading, 
+  const {
+    loading: hookLoading,
     error: hookError,
     saveSettings,
     fetchSettings
@@ -46,20 +34,6 @@ const AdvancedSettingsLayout: React.FC<AdvancedSettingsLayoutProps> = ({
   
   const loading = propLoading || hookLoading;
   const error = propError || (hookError ? hookError.toString() : null);
-
-  // Ensure image-moderation panel is expanded when needed
-  useEffect(() => {
-    // Check URL for any parameters indicating we should expand image moderation
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.has('section') && urlParams.get('section') === 'image-moderation') {
-      if (!activeKeys.includes('image-moderation')) {
-        setActiveKeys([...activeKeys, 'image-moderation']);
-      }
-    }
-    
-    // Log for debugging
-    console.log('AdvancedSettingsLayout - Active panels:', activeKeys);
-  }, [activeKeys]);
 
   const handleSave = async () => {
     console.log('Saving all settings...');
@@ -119,60 +93,61 @@ const AdvancedSettingsLayout: React.FC<AdvancedSettingsLayoutProps> = ({
   }
 
   return (
-    <BaseRow>
-      <BaseCol span={24}>
-        <SettingsContainer>
-          <Collapse 
-            accordion={false} 
-            activeKey={activeKeys} 
-            onChange={(keys) => {
-              console.log('Collapse panels changed:', keys);
-              setActiveKeys(keys as string[]);
-            }}
-          >
-            <Panel header="General Settings" key="general">
+    <DashboardWrapper>
+      <BaseRow>
+        <BaseCol span={24}>
+          <CollapsibleSection header="General Settings">
+            <S.Card>
               <GeneralSettingsPanel />
-            </Panel>
-            
-            <Panel header="Image Moderation" key="image-moderation">
+            </S.Card>
+          </CollapsibleSection>
+          
+          <CollapsibleSection header="Image Moderation">
+            <S.Card>
               <ImageModerationPanel />
-            </Panel>
-            
-            <Panel header="Content Filter" key="content-filter">
+            </S.Card>
+          </CollapsibleSection>
+          
+          <CollapsibleSection header="Content Filter">
+            <S.Card>
               <ContentFilterPanel />
-            </Panel>
-            
-            <Panel header="Ollama" key="ollama">
+            </S.Card>
+          </CollapsibleSection>
+          
+          <CollapsibleSection header="Ollama">
+            <S.Card>
               <OllamaPanel />
-            </Panel>
-            
-            <Panel header="Wallet" key="wallet">
+            </S.Card>
+          </CollapsibleSection>
+          
+          <CollapsibleSection header="Wallet">
+            <S.Card>
               <WalletPanel />
-            </Panel>
-          </Collapse>
-        </SettingsContainer>
-        
-        <SaveButtonContainer>
-          <Space size="middle">
-            <Button 
-              type="primary" 
-              size="large" 
-              onClick={handleSave} 
-              loading={saveLoading}
-            >
-              Save All Settings
-            </Button>
-            <Button 
-              size="large" 
-              onClick={handleReset} 
-              loading={resetLoading}
-            >
-              Reset
-            </Button>
-          </Space>
-        </SaveButtonContainer>
-      </BaseCol>
-    </BaseRow>
+            </S.Card>
+          </CollapsibleSection>
+          
+          <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'center' }}>
+            <Space size="middle">
+              <Button
+                type="primary"
+                size="large"
+                onClick={handleSave}
+                loading={saveLoading}
+              >
+                Save All Settings
+              </Button>
+              <Button
+                size="large"
+                onClick={handleReset}
+                loading={resetLoading}
+              >
+                Reset
+              </Button>
+            </Space>
+          </div>
+        </BaseCol>
+      </BaseRow>
+    </DashboardWrapper>
   );
 };
 
