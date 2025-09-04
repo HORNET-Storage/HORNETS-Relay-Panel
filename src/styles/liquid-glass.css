@@ -1,0 +1,50 @@
+/* Empty State Styling */
+.liquid-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  color: var(--liquid-cyan);
+  text-align: center;
+  gap: 1rem;
+}
+
+.liquid-empty-state .liquid-icon {
+  font-size: 3rem;
+  opacity: 0.6;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* Transaction List Container */
+.liquid-transactions-list {
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 0.5rem;
+}
+
+.liquid-transactions-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.liquid-transactions-list::-webkit-scrollbar-track {
+  background: rgba(0, 255, 255, 0.05);
+  border-radius: 3px;
+}
+
+.liquid-transactions-list::-webkit-scrollbar-thumb {
+  background: var(--liquid-cyan);
+  border-radius: 3px;
+}
+
+/* Button Text Effects */
+.liquid-button-text {
+  transition: all 0.3s ease !important;
+  font-weight: 600 !important;
+}
+
+.liquid-button-text:hover {
+  color: var(--liquid-turquoise) !important;
+  text-shadow: 0 0 8px rgba(0, 255, 255, 0.4) !important;
+  transform: scale(1.02) !important;
+}

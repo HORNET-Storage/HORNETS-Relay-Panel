@@ -8,7 +8,8 @@ export type xData = number[] | string[];
 
 export type LanguageType = 'de' | 'en';
 
-export type ThemeType = 'light' | 'dark';
+// Only liquid-blue theme is supported
+export type ThemeType = 'liquid-blue';
 
 export interface ChartSeries {
   seriesName: string;

@@ -2,8 +2,7 @@ import { createGlobalStyle } from 'styled-components';
 import { resetCss } from './resetCss';
 import { BREAKPOINTS, FONT_SIZE, FONT_WEIGHT, media } from './themes/constants';
 import {
-  lightThemeVariables,
-  darkThemeVariables,
+  liquidBlueThemeVariables,
   commonThemeVariables,
   antOverrideCssVariables,
 } from './themes/themeVariables';
@@ -11,38 +10,123 @@ import {
 export default createGlobalStyle`
   ${resetCss}
 
-  [data-theme='light'],
-  :root {
-    ${lightThemeVariables}
+  // Always use liquid blue theme
+  :root, 
+  [data-theme='liquid-blue'] {
+    ${liquidBlueThemeVariables}
+    ${commonThemeVariables}
+    ${antOverrideCssVariables}
   }
 
-  [data-theme='dark'] {
-    ${darkThemeVariables}
+  // Apply liquid glass effect globally
+  body {
+    position: relative;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #000000 0%, #0a0a0a 50%, #000000 100%);
+    
+    &::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 20% 50%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 80%, rgba(0, 255, 170, 0.08) 0%, transparent 50%),
+                  radial-gradient(circle at 40% 20%, rgba(20, 184, 166, 0.06) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: -1;
+    }
   }
 
-  :root {
-    ${commonThemeVariables};
-    ${antOverrideCssVariables};
-  } 
+  // Glass morphism effect for cards and panels
+  .ant-card,
+  .ant-modal-content,
+  .ant-collapse-item,
+  .ant-table,
+  .ant-form {
+    background: rgba(0, 255, 255, 0.03) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 255, 255, 0.15) !important;
+    box-shadow: 0 8px 32px 0 rgba(0, 255, 255, 0.1) !important;
+  }
+
+  // Hover effects with cyan glow
+  .ant-btn:hover,
+  .ant-menu-item:hover,
+  .ant-card:hover {
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.3) !important;
+    border-color: rgba(0, 255, 255, 0.4) !important;
+  }
+
+  // Input fields with glass effect
+  .ant-input,
+  .ant-input-affix-wrapper,
+  .ant-select-selector,
+  .ant-picker {
+    background: rgba(0, 255, 255, 0.05) !important;
+    border: 1px solid rgba(0, 255, 255, 0.2) !important;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    color: rgba(255, 255, 255, 0.9) !important;
+    
+    &:hover, &:focus {
+      border-color: rgba(0, 255, 255, 0.5) !important;
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.2) !important;
+    }
+  }
+
+  // Sidebar with glass effect
+  .ant-layout-sider {
+    background: rgba(0, 255, 255, 0.06) !important;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-right: 1px solid rgba(0, 255, 255, 0.15);
+  }
+
+  // Header with glass effect
+  .ant-layout-header {
+    background: rgba(0, 255, 255, 0.08) !important;
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-bottom: 1px solid rgba(0, 255, 255, 0.15);
+  }
 
   [data-no-transition] * {
     transition: none !important;
   }
 
   * {
-    scrollbar-width: none; 
-    -ms-overflow-style: none; 
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 255, 255, 0.3) rgba(0, 255, 255, 0.05);
 
     &::-webkit-scrollbar {
-      display: none; 
+      width: 8px;
+      height: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: rgba(0, 255, 255, 0.05);
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba(0, 255, 255, 0.3);
+      border-radius: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background: rgba(0, 255, 255, 0.5);
     }
   }
-    body.no-scroll {
-  overflow: hidden;
-}
+
+  body.no-scroll {
+    overflow: hidden;
+  }
+
   html, body, :root {
-  background-color: var(--layout-body-bg-color);
-}
+    background-color: #000000;
+  }
   
   .range-picker {
     & .ant-picker-panels {
@@ -69,7 +153,8 @@ export default createGlobalStyle`
   a {
     color: var(--primary-color);
     &:hover,:active {
-      color: var(--ant-primary-color-hover);
+      color: var(--primary-color);
+      text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
     }
   }
   
@@ -89,6 +174,10 @@ export default createGlobalStyle`
     width: 36rem;
     padding: 2rem;
     min-height: 6rem;
+    background: rgba(0, 255, 255, 0.05) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 255, 255, 0.2) !important;
     
     .ant-notification-notice-with-icon .ant-notification-notice-message {
       margin-bottom: 0;
@@ -143,15 +232,15 @@ export default createGlobalStyle`
     }
   
     .description {
-      color: #404040;
+      color: rgba(255, 255, 255, 0.8);
       font-size: ${FONT_SIZE.md};
       font-weight: ${FONT_WEIGHT.semibold};
       line-height: 1.375rem;
     }
   
     &.ant-notification-notice-success {
-      border: 1px solid var(--success-color);
-      background: var(--notification-success-color);
+      border: 1px solid var(--success-color) !important;
+      background: rgba(6, 182, 212, 0.1) !important;
       
       .title {
         color: var(--success-color);
@@ -159,8 +248,8 @@ export default createGlobalStyle`
     }
   
     &.ant-notification-notice-info {
-      border: 1px solid var(--primary-color);
-      background: var(--notification-primary-color);
+      border: 1px solid var(--primary-color) !important;
+      background: rgba(0, 255, 255, 0.1) !important;
   
       .title {
         color: var(--primary-color);
@@ -168,8 +257,8 @@ export default createGlobalStyle`
     }
   
     &.ant-notification-notice-warning {
-      border: 1px solid var(--warning-color);
-      background: var(--notification-warning-color);
+      border: 1px solid var(--warning-color) !important;
+      background: rgba(245, 158, 11, 0.1) !important;
   
       .title {
         color: var(--warning-color);
@@ -177,8 +266,8 @@ export default createGlobalStyle`
     }
   
     &.ant-notification-notice-error {
-      border: 1px solid var(--error-color);
-      background: var(--notification-error-color);
+      border: 1px solid var(--error-color) !important;
+      background: rgba(239, 68, 68, 0.1) !important;
   
       .title {
         color: var(--error-color);
@@ -207,30 +296,31 @@ export default createGlobalStyle`
   }
 
   .custom-checkbox-group .ant-checkbox-inner, .protocol-checkbox-group .ant-checkbox-inner  {
-    background-color: white;
-    border-color: themeObject[theme].textMain;
-}
-  .ant-alert-message{
-  color: black
+    background-color: rgba(0, 255, 255, 0.05);
+    border-color: rgba(0, 255, 255, 0.3);
   }
 
-    .custom-checkbox-group .ant-checkbox-checked .ant-checkbox-inner {
-    background-color: #1890ff; 
-    border-color: #1890ff;
-   }
-    .custom-checkbox-group.blacklist-mode-active  .ant-checkbox-checked .ant-checkbox-inner{
-    border-color: red;
-    background-color: red;
-    
-    }
+  .ant-alert-message {
+    color: var(--text-main-color);
+  }
+
+  .custom-checkbox-group .ant-checkbox-checked .ant-checkbox-inner {
+    background-color: var(--primary-color); 
+    border-color: var(--primary-color);
+  }
+
+  .custom-checkbox-group.blacklist-mode-active .ant-checkbox-checked .ant-checkbox-inner{
+    border-color: var(--error-color);
+    background-color: var(--error-color);
+  }
     
   .blacklist-mode-active .ant-checkbox .ant-checkbox-inner::after {
-    content: "X"; /* Replace checkmark with X */
-    background-color:red;
+    content: "X";
+    background-color: var(--error-color);
     font-weight: bold;
-    color: white; /* Example color for the X */
+    color: white;
     position: absolute;
-     top: 50%;
+    top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     border: none;
@@ -240,24 +330,27 @@ export default createGlobalStyle`
     width: 100%; 
     height: 100%; 
     text-align: center; 
-}
-    .custom-checkbox-group .blacklist-mode-active .ant-checkbox-checked .ant-checkbox-inner{
-    background-color: red;
-    border-color:red;
-    
-    }
+  }
+
+  .custom-checkbox-group .blacklist-mode-active .ant-checkbox-checked .ant-checkbox-inner{
+    background-color: var(--error-color);
+    border-color: var(--error-color);
+  }
 
   .custom-checkbox-group .ant-checkbox-group-item span label {
     font-size: .95rem;
   }
+
   .ant-checkbox-disabled .ant-checkbox-inner {
-    background-color:gray;
-    opacity:.75;
+    background-color: rgba(255, 255, 255, 0.1);
+    opacity: .5;
   }
-  .antcheckbox-disabled{
-  opacity:.75;
+
+  .antcheckbox-disabled {
+    opacity: .5;
   }
-  .checkboxHeader{
+
+  .checkboxHeader {
     padding: 0rem 0 .5rem 0;
   }
     
@@ -268,36 +361,38 @@ export default createGlobalStyle`
     column-gap: 1rem;
     row-gap: 1.6rem;
   }
-  .grid-mobile-checkbox-group{
-  display: grid;
-  width:100%;
-  grid-template-columns: repeat(auto-fill, minmax(7.3rem, 1fr));
-  gap: 1.2rem;
 
+  .grid-mobile-checkbox-group {
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(auto-fill, minmax(7.3rem, 1fr));
+    gap: 1.2rem;
   }
-  .checkbox-container{
+
+  .checkbox-container {
     display: flex;
-    align-items: center;  
-    }
-  .checkbox-container{
+    align-items: center;
     white-space: nowrap;  
   }
-  .dynamic-group{
+
+  .dynamic-group {
     padding-top: 1rem; 
     padding-bottom: 0rem;
-    }
+  }
+
   .grid-checkbox-group.large-label {
     grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
   }
-  .switch-container{
+
+  .switch-container {
     padding-bottom: 1rem;
   }
 
-  .w-full{
-    width:100%;
+  .w-full {
+    width: 100%;
   }
 
-  .flex-col{
+  .flex-col {
     display: flex;
     flex-direction: column;
   }
@@ -306,15 +401,19 @@ export default createGlobalStyle`
     justify-content: center;
     padding-top: 10px;  
   }
-    .custom-dropdown .ant-select-arrow{
-    color: var(--text-nft-light-color)
-    }
+
+  .custom-dropdown .ant-select-arrow {
+    color: var(--text-nft-light-color);
+  }
+
   .custom-tooltip-class .ant-tooltip-content .ant-tooltip-inner {
-    background-color: rgba(0, 0, 0, 1);
+    background-color: rgba(0, 0, 0, 0.9);
+    border: 1px solid rgba(0, 255, 255, 0.2);
   }
-    @media only screen and ${media.xs} {
-  .ant-menu-inline-collapsed-tooltip{
-    display: none !important;
+
+  @media only screen and ${media.xs} {
+    .ant-menu-inline-collapsed-tooltip{
+      display: none !important;
+    }
   }
-}
 `;
