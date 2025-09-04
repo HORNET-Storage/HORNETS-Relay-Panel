@@ -2368,13 +2368,72 @@ body:has(header:contains("Search")) .fixed.z-50.right-5 .bg-base-300 input {
   transform: translateY(-1px) !important;
 }
 
-/* Style the UserToolbar search box for liquid glass theme */
-[data-theme="liquid-glass"] .fixed.z-50.right-5 .searchBox,
-[data-theme="liquid-glass"] .fixed.z-50.right-5 input {
+/* Remove any internal boxes or backgrounds from search inputs */
+.fixed.z-50.right-5 input,
+.fixed.z-50.right-5 .searchBox,
+.fixed.z-50.right-5 textarea,
+.fixed.z-50.right-5 select {
+  /* Remove any internal pseudo-elements that might create boxes */
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+  border: none !important;
+  outline: none !important;
+  /* Remove any padding that might create spacing for internal boxes */
+  padding: 0 !important;
+  /* Remove any borders or spacing issues */
+  margin: 0 !important;
+  /* Ensure the input itself is not creating the box effect */
+  position: relative;
+}
+
+/* Remove ALL background styling from UserToolbar search inputs - including focus states */
+.fixed.z-50.right-5 input,
+.fixed.z-50.right-5 textarea,
+.fixed.z-50.right-5 select,
+.fixed.z-50.right-5 .searchBox input {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+}
+
+/* Override ALL input focus states that might show background color */
+.fixed.z-50.right-5 input:focus,
+.fixed.z-50.right-5 input:focus-visible,
+.fixed.z-50.right-5 input:active,
+.fixed.z-50.right-5 input:hover,
+.fixed.z-50.right-5 textarea:focus,
+.fixed.z-50.right-5 textarea:focus-visible,
+.fixed.z-50.right-5 select:focus,
+.fixed.z-50.right-5 select:focus-visible,
+.fixed.z-50.right-5 .searchBox input:focus,
+.fixed.z-50.right-5 .searchBox input:focus-visible {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Style the UserToolbar search box for liquid glass theme - only apply to the container */
+[data-theme="liquid-glass"] .fixed.z-50.right-5 .searchBox {
   background: rgba(255, 255, 255, 0.06) !important;
   backdrop-filter: blur(12px) !important;
   -webkit-backdrop-filter: blur(12px) !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  padding: 0.5rem 1rem !important; /* Restore appropriate padding */
+}
+
+/* Ensure the input itself inside the searchBox has no background */
+[data-theme="liquid-glass"] .fixed.z-50.right-5 .searchBox input {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 /* Style the UserToolbar buttons (wallet, notifications) */

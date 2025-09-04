@@ -9,6 +9,14 @@ export const HeaderActionWrapper = styled.div`
   cursor: pointer;
   position: relative;
 
+  /* Remove any potential background or box behind header buttons */
+  background: transparent !important;
+  background-color: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+  border: none !important;
+
   & > .ant-btn > span[role='img'],
   .ant-badge {
     font-size: 1.25rem;
@@ -88,10 +96,36 @@ export const ProfileColumn = styled(BaseCol)<ProfileColumn>`
     ${(props) =>
       props?.$isTwoColumnsLayout &&
       css`
-        background-color: var(--sider-background-color);
-        padding: ${LAYOUT.desktop.paddingVertical} ${LAYOUT.desktop.paddingHorizontal};
+        /* Remove background and padding that creates unwanted box behind buttons */
+        background-color: transparent !important;
+        /* Remove padding to prevent spacing issues */
+        padding: 0 !important;
+        /* Ensure the buttons are not affected */
+        display: flex;
+        align-items: center;
+        justify-content: flex-end; /* Push buttons to the far right */
+        width: 100%;
       `}
+
+    /* Always prevent background in header column regardless of layout */
+    background-color: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    /* Ensure full width and right alignment */
+    width: 100% !important;
+    display: flex !important;
+    justify-content: flex-end !important;
   }
+
+  /* Additional override for all screen sizes - remove any possible background */
+  background: transparent !important;
+  background-color: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+  border: none !important;
+  /* Ensure right alignment */
+  margin-left: auto !important;
 `;
 
 export const GHButton = styled(GitHubButton)`
@@ -120,5 +154,36 @@ export const MenuItem = styled.div`
   a {
     text-decoration: none;
     color: #333;
+  }
+`;
+
+/* Global header background removal overrides */
+export const HeaderBackgroundOverride = `
+  /* Override any background styling in the header area */
+  .ant-layout-header,
+  [class*="layout-header"],
+  [class*="ant-layout-header"],
+  .header-area,
+  .header-wrapper,
+  .header-container,
+  .header-buttons,
+  .header-controls,
+  .header-actions,
+  .flex.items-center.justify-between[class*="text-white"],
+  [class*="flex"][class*="items-center"][class*="justify-end"] {
+    background: transparent !important;
+    background-color: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  /* Ensure header section containers have no background */
+  section:has(.ant-layout-header),
+  div:has(.ant-layout-header),
+  .relative:has([class*="justify-end"]) {
+    background: transparent !important;
+    background-color: transparent !important;
   }
 `;
