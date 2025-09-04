@@ -53,12 +53,21 @@ export const ErrorContainer = styled.div`
 
 export const SaveSection = styled.div`
   padding: 1.5rem;
-  background: var(--background-color-secondary);
+  background: rgba(0, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border-radius: 8px;
-  border: 1px solid var(--border-color-base);
+  border: 1px solid rgba(0, 255, 255, 0.15);
+  box-shadow: 0 8px 32px 0 rgba(0, 255, 255, 0.1);
   display: flex;
   justify-content: center;
   align-items: center;
+  transition: all 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+    border-color: rgba(0, 255, 255, 0.4);
+  }
 `;
 
 export const ChangesIndicator = styled.span`
@@ -67,7 +76,26 @@ export const ChangesIndicator = styled.span`
   font-style: italic;
 `;
 export const ContentCard = styled(Card)`
-  background: var(--secondary-background-color);
-  border-color: var(--border-base-color);
+  background: rgba(0, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 255, 255, 0.15);
+  box-shadow: 0 8px 32px 0 rgba(0, 255, 255, 0.1);
+  border-radius: 8px;
+  transition: all 0.3s ease;
 
+  &:hover {
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+    border-color: rgba(0, 255, 255, 0.4);
+    transform: translateY(-2px);
+  }
+
+  .ant-card-head {
+    background: transparent;
+    border-bottom: 1px solid rgba(0, 255, 255, 0.1);
+  }
+
+  .ant-card-body {
+    background: transparent;
+  }
 `;

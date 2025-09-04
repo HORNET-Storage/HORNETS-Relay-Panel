@@ -193,10 +193,12 @@ export const TiersConfig: React.FC<TiersConfigProps> = ({
           description="All tiers must have a price greater than 0. Free tiers are not allowed in subscription mode."
           type="warning"
           showIcon
-          style={{ 
+          style={{
             marginBottom: '1rem',
-            backgroundColor: '#25284B',
-            border: '1px solid #d9d9d9',
+            backgroundColor: 'rgba(0, 255, 255, 0.03)',
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)',
+            border: '1px solid rgba(0, 255, 255, 0.15)',
             color: '#d9d9d9'
           }}
         />
@@ -208,10 +210,12 @@ export const TiersConfig: React.FC<TiersConfigProps> = ({
           description="Configure free tier storage limits. All tiers will be free (price = 0) in public mode."
           type="success"
           showIcon
-          style={{ 
+          style={{
             marginBottom: '1rem',
-            backgroundColor: '#25284B',
-            border: '1px solid #d9d9d9',
+            backgroundColor: 'rgba(0, 255, 255, 0.03)',
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)',
+            border: '1px solid rgba(0, 255, 255, 0.15)',
             color: '#d9d9d9'
           }}
         />
@@ -223,10 +227,12 @@ export const TiersConfig: React.FC<TiersConfigProps> = ({
           description="Tiers can have any price. Users must be manually added to access lists."
           type="info"
           showIcon
-          style={{ 
+          style={{
             marginBottom: '1rem',
-            backgroundColor: '#25284B',
-            border: '1px solid #d9d9d9',
+            backgroundColor: 'rgba(0, 255, 255, 0.03)',
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)',
+            border: '1px solid rgba(0, 255, 255, 0.15)',
             color: '#d9d9d9'
           }}
         />
@@ -238,10 +244,12 @@ export const TiersConfig: React.FC<TiersConfigProps> = ({
           description="Personal relay configuration. Only your npub can write to this relay."
           type="info"
           showIcon
-          style={{ 
+          style={{
             marginBottom: '1rem',
-            backgroundColor: '#25284B',
-            border: '1px solid #d9d9d9',
+            backgroundColor: 'rgba(0, 255, 255, 0.03)',
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)',
+            border: '1px solid rgba(0, 255, 255, 0.15)',
             color: '#d9d9d9'
           }}
         />
@@ -272,10 +280,12 @@ export const TiersConfig: React.FC<TiersConfigProps> = ({
             description="Choose one tier that will be applied to all free users on your public relay."
             type="info"
             showIcon
-            style={{ 
+            style={{
               marginBottom: '1rem',
-              backgroundColor: '#25284B',
-              border: '1px solid #d9d9d9',
+              backgroundColor: 'rgba(0, 255, 255, 0.03)',
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)',
+              border: '1px solid rgba(0, 255, 255, 0.15)',
               color: '#d9d9d9'
             }}
           />
@@ -381,8 +391,10 @@ export const TiersConfig: React.FC<TiersConfigProps> = ({
             showIcon
             style={{
               marginTop: 16,
-              backgroundColor: '#25284B',
-              border: '1px solid #d9d9d9',
+              backgroundColor: 'rgba(0, 255, 255, 0.03)',
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)',
+              border: '1px solid rgba(0, 255, 255, 0.15)',
               color: '#d9d9d9'
             }}
           />
@@ -395,8 +407,10 @@ export const TiersConfig: React.FC<TiersConfigProps> = ({
             showIcon
             style={{
               marginTop: 16,
-              backgroundColor: '#25284B',
-              border: '1px solid #d9d9d9',
+              backgroundColor: 'rgba(0, 255, 255, 0.03)',
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)',
+              border: '1px solid rgba(0, 255, 255, 0.15)',
               color: '#d9d9d9'
             }}
           />
@@ -409,8 +423,10 @@ export const TiersConfig: React.FC<TiersConfigProps> = ({
             showIcon
             style={{
               marginTop: 16,
-              backgroundColor: '#25284B',
-              border: '1px solid #d9d9d9',
+              backgroundColor: 'rgba(0, 255, 255, 0.03)',
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)',
+              border: '1px solid rgba(0, 255, 255, 0.15)',
               color: '#d9d9d9'
             }}
           />
