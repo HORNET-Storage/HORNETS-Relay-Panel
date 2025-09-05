@@ -28,7 +28,7 @@ const ButtonsContainer = styled.div`
 `;
 
 interface BaseSettingsFormProps {
-  title: string;
+  title?: string;
   loading: boolean;
   error: Error | null;
   onSave: () => Promise<void>;

@@ -106,7 +106,6 @@ const RelayInfoSettings: React.FC = () => {
 
   return (
     <BaseSettingsForm
-      title="Relay Information Settings"
       loading={loading}
       error={error}
       onSave={saveSettings}

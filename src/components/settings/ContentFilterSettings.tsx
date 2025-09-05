@@ -74,7 +74,6 @@ const ContentFilterSettings: React.FC = () => {
 
   return (
     <BaseSettingsForm
-      title="Content Filter Settings"
       loading={loading}
       error={error}
       onSave={handleSave}

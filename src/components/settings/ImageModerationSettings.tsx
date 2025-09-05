@@ -45,7 +45,6 @@ const ImageModerationSettings: React.FC = () => {
 
   return (
     <BaseSettingsForm
-      title="Image Moderation Settings"
       loading={loading}
       error={error}
       onSave={handleSave}

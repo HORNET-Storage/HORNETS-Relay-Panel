@@ -31,7 +31,7 @@ const SettingsPage: React.FC = () => {
             <ContentFilterSettings />
           </CollapsibleSection>
           
-          <CollapsibleSection header="Ollama">
+          <CollapsibleSection header="Ollama Settings">
             <OllamaSettings />
           </CollapsibleSection>
           
@@ -39,7 +39,7 @@ const SettingsPage: React.FC = () => {
             <RelayInfoSettings />
           </CollapsibleSection>
           
-          <CollapsibleSection header="Wallet">
+          <CollapsibleSection header="Wallet Settings">
             <WalletSettings />
           </CollapsibleSection>
         </BaseCol>
