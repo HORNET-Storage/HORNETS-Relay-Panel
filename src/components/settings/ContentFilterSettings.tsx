@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Switch, Select, Tooltip } from 'antd';
+import { Form, Select, Tooltip } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
+import { LiquidToggle } from '@app/components/common/LiquidToggle';
 import useGenericSettings from '@app/hooks/useGenericSettings';
 import { SettingsGroupType } from '@app/types/settings.types';
 import BaseSettingsForm from './BaseSettingsForm';
@@ -97,7 +98,7 @@ const ContentFilterSettings: React.FC = () => {
           label="Enable Content Filtering"
           valuePropName="checked"
         >
-          <Switch />
+          <LiquidToggle />
         </Form.Item>
 
         <Form.Item

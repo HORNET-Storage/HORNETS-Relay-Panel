@@ -7,7 +7,7 @@ export const Switch = styled(AntdSwitch)`
       linear-gradient(to right, var(--background-color), var(--background-color));
   }
   &.ant-switch[aria-checked='false'].balanceSwitch {
-    background-image: linear-gradient(to right, #f2a900, #f2a900),
+    background-image: linear-gradient(to right, rgba(82, 196, 255, 0.3), rgba(82, 196, 255, 0.3)),
       linear-gradient(to right, var(--background-color), var(--background-color));
   }
   &.ant-switch[aria-checked='false'].modeSwitch {

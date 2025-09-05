@@ -1,6 +1,7 @@
 import React from 'react';
-import { Switch, Tooltip } from 'antd';
+import { Tooltip } from 'antd';
 import { QuestionCircleOutlined, LockOutlined, DatabaseOutlined, TagOutlined } from '@ant-design/icons';
+import { LiquidToggle } from '@app/components/common/LiquidToggle';
 import useGenericSettings from '@app/hooks/useGenericSettings';
 import BaseSettingsForm from './BaseSettingsForm';
 import * as S from './Settings.styles';
@@ -84,7 +85,7 @@ const GeneralSettings: React.FC = () => {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <Switch
+          <LiquidToggle
             checked={settings?.proxy}
             onChange={(checked) => updateSettings({ proxy: checked })}
           />
@@ -97,7 +98,7 @@ const GeneralSettings: React.FC = () => {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <Switch
+          <LiquidToggle
             checked={settings?.demo_mode}
             onChange={(checked) => updateSettings({ demo_mode: checked })}
           />
@@ -110,7 +111,7 @@ const GeneralSettings: React.FC = () => {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <Switch
+          <LiquidToggle
             checked={settings?.web}
             onChange={(checked) => updateSettings({ web: checked })}
           />

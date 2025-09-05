@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Form, InputNumber, Switch, Tooltip, Select, Alert, Spin } from 'antd';
+import { Form, InputNumber, Tooltip, Select, Alert, Spin } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
+import { LiquidToggle } from '@app/components/common/LiquidToggle';
 import useGenericSettings from '@app/hooks/useGenericSettings';
 import { SettingsGroupType } from '@app/types/settings.types';
 
@@ -96,7 +97,7 @@ const ContentFilterPanel: React.FC = () => {
           }
           valuePropName="checked"
         >
-          <Switch />
+          <LiquidToggle />
         </Form.Item>
 
         <Form.Item

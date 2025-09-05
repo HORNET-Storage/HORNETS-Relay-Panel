@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Switch, Tooltip } from 'antd';
+import { Form, Tooltip } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
+import { LiquidToggle } from '@app/components/common/LiquidToggle';
 import useGenericSettings from '@app/hooks/useGenericSettings';
 import { ImageModerationSettings as ImageModerationSettingsType, SettingsGroupType } from '@app/types/settings.types';
 import BaseSettingsForm from './BaseSettingsForm';
@@ -64,7 +65,7 @@ const ImageModerationSettings: React.FC = () => {
         }}
       >
         <Form.Item name="image_moderation_enabled" label="Enable Image Moderation" valuePropName="checked">
-          <Switch />
+          <LiquidToggle />
         </Form.Item>
 
         <Form.Item
