@@ -21,6 +21,18 @@ const StyledCard = styled(Card)`
   }
 `;
 
+const ContentWrapper = styled.div`
+  padding: 50px 60px;
+  
+  @media (max-width: 1199px) {
+    padding: 40px 30px;
+  }
+  
+  @media (max-width: 767px) {
+    padding: 30px 16px;
+  }
+`;
+
 const ButtonsContainer = styled.div`
   display: flex;
   justify-content: flex-end;
@@ -65,12 +77,12 @@ const BaseSettingsForm: React.FC<BaseSettingsFormProps> = ({
           description={error.message}
           type="error"
           showIcon
-          style={{ marginBottom: '1rem', margin: '24px' }}
+          style={{ marginBottom: '1rem', margin: title ? '50px 60px 0' : '0 0 1rem' }}
         />
       )}
       
       <Spin spinning={loading}>
-        <div style={{ padding: '24px' }}>
+        <ContentWrapper>
           {children}
           
           <ButtonsContainer>
@@ -93,7 +105,7 @@ const BaseSettingsForm: React.FC<BaseSettingsFormProps> = ({
               </Button>
             </Space>
           </ButtonsContainer>
-        </div>
+        </ContentWrapper>
       </Spin>
     </StyledCard>
   );
