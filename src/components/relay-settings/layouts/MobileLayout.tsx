@@ -10,7 +10,7 @@ import { KindsSection } from '@app/components/relay-settings/sections/KindsSecti
 import { MediaSection } from '@app/components/relay-settings/sections/MediaSection';
 import { ModerationSection } from '@app/components/relay-settings/sections/ModerationSection';
 import { CollapsibleSection } from '@app/components/relay-settings/shared/CollapsibleSection/CollapsibleSection';
-import { BaseSwitch } from '@app/components/common/BaseSwitch/BaseSwitch';
+import { LiquidToggle } from '@app/components/common/LiquidToggle/LiquidToggle';
 import { useTranslation } from 'react-i18next';
 
 interface MobileLayoutProps {
@@ -129,7 +129,7 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({
                                 </div>
                                 
                                 <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
-                                    <BaseSwitch
+                                    <LiquidToggle
                                         checkedChildren="ON"
                                         unCheckedChildren="OFF"
                                         checked={allowUnregisteredKinds}
