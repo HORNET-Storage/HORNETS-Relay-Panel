@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Form, InputNumber, Switch, Tooltip, Select } from 'antd';
+import { Form, InputNumber, Switch, Tooltip, Select, Alert, Spin } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import useGenericSettings from '@app/hooks/useGenericSettings';
 import { SettingsGroupType } from '@app/types/settings.types';
-import BaseSettingsPanel from '../BaseSettingsPanel';
 
 const { Option } = Select;
 
@@ -56,20 +55,35 @@ const ContentFilterPanel: React.FC = () => {
   };
 
   return (
-    <BaseSettingsPanel
-      loading={loading}
-      error={error}
-    >
-      <Form
-        form={form}
-        layout="vertical"
-        onValuesChange={handleValuesChange}
-        initialValues={settings || {}}
-        onFinish={(values) => {
-          console.log('Form submitted with values:', values);
-          setIsUserEditing(false);
-        }}
-      >
+    <>
+      {error && (
+        <Alert
+          message="Error"
+          description={error.message}
+          type="error"
+          showIcon
+          style={{ marginBottom: '1rem' }}
+        />
+      )}
+      
+      <Spin spinning={loading}>
+        <Form
+          form={form}
+          layout="vertical"
+          onValuesChange={handleValuesChange}
+          initialValues={settings || {}}
+          onFinish={(values) => {
+            console.log('Form submitted with values:', values);
+            setIsUserEditing(false);
+          }}
+          style={{
+            padding: 0,
+            margin: 0,
+            background: 'transparent',
+            border: 'none'
+          }}
+          colon={false}
+        >
         <Form.Item
           name="content_filter_enabled"
           label={
@@ -149,19 +163,18 @@ const ContentFilterPanel: React.FC = () => {
         </Form.Item>
 
         <Form.Item>
-          <p style={{ 
+          <p style={{
             color: 'rgba(255, 255, 255, 0.8)',
             fontSize: '0.9em',
-            padding: '0.75rem',
-            backgroundColor: 'rgba(0, 0, 0, 0.1)',
-            borderLeft: '3px solid rgba(82, 196, 255, 0.8)',
-            borderRadius: '0 4px 4px 0'
+            padding: '0.75rem 0 0.75rem 0.75rem',
+            borderLeft: '3px solid rgba(82, 196, 255, 0.8)'
           }}>
             <span style={{ color: 'rgba(82, 196, 255, 1)' }}>Note:</span> Content filtering helps prevent spam and inappropriate content. The cache improves performance by avoiding repeated analysis of the same content.
           </p>
         </Form.Item>
-      </Form>
-    </BaseSettingsPanel>
+        </Form>
+      </Spin>
+    </>
   );
 };
 

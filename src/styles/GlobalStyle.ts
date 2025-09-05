@@ -39,12 +39,11 @@ export default createGlobalStyle`
     }
   }
 
-  // Glass morphism effect for cards and panels
+  // Glass morphism effect for cards and panels (removed .ant-form to eliminate square containers)
   .ant-card,
   .ant-modal-content,
   .ant-collapse-item,
-  .ant-table,
-  .ant-form {
+  .ant-table {
     background: rgba(0, 255, 255, 0.03) !important;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);

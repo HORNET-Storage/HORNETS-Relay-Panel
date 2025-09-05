@@ -97,33 +97,23 @@ const AdvancedSettingsLayout: React.FC<AdvancedSettingsLayoutProps> = ({
       <BaseRow>
         <BaseCol span={24}>
           <CollapsibleSection header="General Settings">
-            <S.Card>
-              <GeneralSettingsPanel />
-            </S.Card>
+            <GeneralSettingsPanel />
           </CollapsibleSection>
           
           <CollapsibleSection header="Image Moderation">
-            <S.Card>
-              <ImageModerationPanel />
-            </S.Card>
+            <ImageModerationPanel />
           </CollapsibleSection>
           
           <CollapsibleSection header="Content Filter">
-            <S.Card>
-              <ContentFilterPanel />
-            </S.Card>
+            <ContentFilterPanel />
           </CollapsibleSection>
           
           <CollapsibleSection header="Ollama">
-            <S.Card>
-              <OllamaPanel />
-            </S.Card>
+            <OllamaPanel />
           </CollapsibleSection>
           
           <CollapsibleSection header="Wallet">
-            <S.Card>
-              <WalletPanel />
-            </S.Card>
+            <WalletPanel />
           </CollapsibleSection>
           
           <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'center' }}>

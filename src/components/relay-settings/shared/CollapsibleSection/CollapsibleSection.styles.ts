@@ -60,16 +60,19 @@ export const StyledCollapse = styled(Collapse)`
   .ant-collapse-content {
     border-top: none;
     background: transparent;
+    padding: 0 !important;
   }
 
   .ant-collapse-content-box {
-    padding: 0.75rem 0 0 0;
-    background: rgba(255, 255, 255, 0.02);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 12px;
-    margin-top: 0.25rem;
+    /* Completely remove all container styling */
+    padding: 0 !important;
+    margin: 0 !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
   }
 
   &.centered-header {

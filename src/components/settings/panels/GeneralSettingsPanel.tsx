@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Input, Switch, Tooltip } from 'antd';
+import { Form, Input, Switch, Tooltip, Alert, Spin } from 'antd';
 import { QuestionCircleOutlined, LockOutlined, DatabaseOutlined, TagOutlined } from '@ant-design/icons';
 import useGenericSettings from '@app/hooks/useGenericSettings';
 import { SettingsGroupType } from '@app/types/settings.types';
-import BaseSettingsPanel from '../BaseSettingsPanel';
 
 const GeneralSettingsPanel: React.FC = () => {
   const {
@@ -38,16 +37,31 @@ const GeneralSettingsPanel: React.FC = () => {
   };
 
   return (
-    <BaseSettingsPanel
-      loading={loading}
-      error={error}
-    >
-      <Form
-        form={form}
-        layout="vertical"
-        onValuesChange={handleValuesChange}
-        initialValues={settings || {}}
-      >
+    <>
+      {error && (
+        <Alert
+          message="Error"
+          description={error.message}
+          type="error"
+          showIcon
+          style={{ marginBottom: '1rem' }}
+        />
+      )}
+      
+      <Spin spinning={loading}>
+        <Form
+          form={form}
+          layout="vertical"
+          onValuesChange={handleValuesChange}
+          initialValues={settings || {}}
+          style={{
+            padding: 0,
+            margin: 0,
+            background: 'transparent',
+            border: 'none'
+          }}
+          colon={false}
+        >
         <Form.Item
           name="port"
           label={
@@ -166,20 +180,19 @@ const GeneralSettingsPanel: React.FC = () => {
         </Form.Item>
 
         <Form.Item>
-          <p style={{ 
+          <p style={{
             color: 'rgba(255, 255, 255, 0.8)',
             fontSize: '0.9em',
-            padding: '0.75rem',
-            backgroundColor: 'rgba(0, 0, 0, 0.1)',
-            borderLeft: '3px solid rgba(82, 196, 255, 0.8)',
-            borderRadius: '0 4px 4px 0'
+            padding: '0.75rem 0 0.75rem 0.75rem',
+            borderLeft: '3px solid rgba(82, 196, 255, 0.8)'
           }}>
             <span style={{ color: 'rgba(82, 196, 255, 1)' }}>Note:</span> Changing these settings may require a restart of the relay server to take effect.
             The private key should be kept secure and not shared with others.
           </p>
         </Form.Item>
-      </Form>
-    </BaseSettingsPanel>
+        </Form>
+      </Spin>
+    </>
   );
 };
 

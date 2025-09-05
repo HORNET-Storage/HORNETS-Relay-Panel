@@ -1,11 +1,13 @@
 import React from 'react';
-import { Form, Card, Alert, Spin } from 'antd';
+import { Alert, Spin } from 'antd';
 import styled from 'styled-components';
 
-const StyledCard = styled(Card)`
-  margin-bottom: 1rem;
-  border: none;
-  box-shadow: none;
+const Container = styled.div`
+  /* Remove all styling to eliminate the container appearance */
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: 3px solid lime !important;  /* TEMPORARY: Lime border to identify BaseSettingsPanel Container */
 `;
 
 interface BaseSettingsPanelProps {
@@ -24,10 +26,14 @@ const BaseSettingsPanel: React.FC<BaseSettingsPanelProps> = ({
   extra,
 }) => {
   return (
-    <StyledCard 
-      title={title}
-      extra={extra}
-    >
+    <Container>
+      {title && (
+        <div style={{ marginBottom: '1rem' }}>
+          <h3>{title}</h3>
+          {extra}
+        </div>
+      )}
+      
       {error && (
         <Alert
           message="Error"
@@ -41,7 +47,7 @@ const BaseSettingsPanel: React.FC<BaseSettingsPanelProps> = ({
       <Spin spinning={loading}>
         {children}
       </Spin>
-    </StyledCard>
+    </Container>
   );
 };
 
