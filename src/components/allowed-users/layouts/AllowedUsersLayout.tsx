@@ -10,6 +10,11 @@ import { RelayOwnerConfig } from '../components/RelayOwnerConfig/RelayOwnerConfi
 import { AllowedUsersMode, MODE_CONFIGURATIONS, AllowedUsersSettings, DEFAULT_TIERS } from '@app/types/allowedUsers.types';
 import { getRelayOwner } from '@app/api/allowedUsers.api';
 import { DashboardWrapper } from '@app/pages/DashboardPages/DashboardPage.styles';
+import { BaseRow } from '@app/components/common/BaseRow/BaseRow';
+import { Balance } from '@app/components/relay-dashboard/Balance/Balance';
+import { TotalEarning } from '@app/components/relay-dashboard/totalEarning/TotalEarning';
+import { ActivityStory } from '@app/components/relay-dashboard/transactions/Transactions';
+import * as PageStyles from '@app/pages/uiComponentsPages/UIComponentsPage.styles';
 import * as S from './AllowedUsersLayout.styles';
 
 export const AllowedUsersLayout: React.FC = () => {
@@ -149,101 +154,119 @@ export const AllowedUsersLayout: React.FC = () => {
 
   return (
     <DashboardWrapper>
-      <S.Container>
-        <S.Header>
-          <S.Title>H.O.R.N.E.T Allowed Users</S.Title>
-          <S.Subtitle>Centralized user permission management</S.Subtitle>
-        </S.Header>
+      <BaseRow>
+        <PageStyles.LeftSideCol xl={16} xxl={17}>
+          <S.Container>
+            <S.Header>
+              <S.Title>H.O.R.N.E.T Allowed Users</S.Title>
+              <S.Subtitle>Centralized user permission management</S.Subtitle>
+            </S.Header>
 
-        <Row gutter={[24, 24]}>
-          <Col span={24}>
-            <S.ContentCard title="Relay Mode" loading={loading}>
-              <ModeSelector
-                currentMode={currentMode}
-                onModeChange={handleModeChange}
-                disabled={loading || saving}
-              />
-            </S.ContentCard>
-          </Col>
+            <Row gutter={[24, 24]}>
+              <Col span={24}>
+                <S.ContentCard title="Relay Mode" loading={loading}>
+                  <ModeSelector
+                    currentMode={currentMode}
+                    onModeChange={handleModeChange}
+                    disabled={loading || saving}
+                  />
+                </S.ContentCard>
+              </Col>
 
-          <Col span={24}>
-            <S.ContentCard title="Global Permissions" loading={loading}>
-              <PermissionsConfig
-                settings={localSettings}
-                onSettingsChange={handleSettingsUpdate}
-                disabled={loading || saving}
-              />
-            </S.ContentCard>
-          </Col>
+              <Col span={24}>
+                <S.ContentCard title="Global Permissions" loading={loading}>
+                  <PermissionsConfig
+                    settings={localSettings}
+                    onSettingsChange={handleSettingsUpdate}
+                    disabled={loading || saving}
+                  />
+                </S.ContentCard>
+              </Col>
 
-          {showRelayOwnerConfig && (
-            <Col span={24}>
-              <S.ContentCard title="Relay Owner Configuration" loading={loading}>
-                <RelayOwnerConfig
-                  settings={localSettings}
-                  onSettingsChange={handleSettingsUpdate}
-                  disabled={loading || saving}
-                />
-              </S.ContentCard>
-            </Col>
-          )}
+              {showRelayOwnerConfig && (
+                <Col span={24}>
+                  <S.ContentCard title="Relay Owner Configuration" loading={loading}>
+                    <RelayOwnerConfig
+                      settings={localSettings}
+                      onSettingsChange={handleSettingsUpdate}
+                      disabled={loading || saving}
+                    />
+                  </S.ContentCard>
+                </Col>
+              )}
 
-          {showTiers && (
-            <Col span={24}>
-              <S.ContentCard title={
-                currentMode === 'public' ? 'Free Tier Configuration' :
-                currentMode === 'only-me' ? 'Only Me Tiers' :
-                'Subscription Tiers'
-              } loading={loading}>
-                <TiersConfig
-                  settings={localSettings}
-                  mode={currentMode}
-                  onSettingsChange={handleSettingsUpdate}
-                  disabled={loading || saving}
-                />
-              </S.ContentCard>
-            </Col>
-          )}
+              {showTiers && (
+                <Col span={24}>
+                  <S.ContentCard title={
+                    currentMode === 'public' ? 'Free Tier Configuration' :
+                    currentMode === 'only-me' ? 'Only Me Tiers' :
+                    'Subscription Tiers'
+                  } loading={loading}>
+                    <TiersConfig
+                      settings={localSettings}
+                      mode={currentMode}
+                      onSettingsChange={handleSettingsUpdate}
+                      disabled={loading || saving}
+                    />
+                  </S.ContentCard>
+                </Col>
+              )}
 
-          {showNpubManagement && (
-            <Col span={24}>
-              <S.ContentCard title="Allowed Users Management">
-                <NPubManagement
-                  settings={localSettings}
-                  mode={currentMode}
-                />
-              </S.ContentCard>
-            </Col>
-          )}
+              {showNpubManagement && (
+                <Col span={24}>
+                  <S.ContentCard title="Allowed Users Management">
+                    <NPubManagement
+                      settings={localSettings}
+                      mode={currentMode}
+                    />
+                  </S.ContentCard>
+                </Col>
+              )}
 
-          <Col span={24}>
-            <S.SaveSection>
-              <Space>
-                <Button
-                  type="primary"
-                  icon={<SaveOutlined />}
-                  onClick={handleSave}
-                  loading={saving}
-                  disabled={!hasChanges}
-                >
-                  Save Changes
-                </Button>
-                <Button
-                  onClick={handleReset}
-                  disabled={!hasChanges || saving}
-                >
-                  Reset
-                </Button>
-                {hasChanges && (
-                  <S.ChangesIndicator>
-                    You have unsaved changes
-                  </S.ChangesIndicator>
-                )}
-              </Space>
-            </S.SaveSection>
-          </Col>
-        </Row>
-      </S.Container>
+              <Col span={24}>
+                <S.SaveSection>
+                  <Space>
+                    <Button
+                      type="primary"
+                      icon={<SaveOutlined />}
+                      onClick={handleSave}
+                      loading={saving}
+                      disabled={!hasChanges}
+                    >
+                      Save Changes
+                    </Button>
+                    <Button
+                      onClick={handleReset}
+                      disabled={!hasChanges || saving}
+                    >
+                      Reset
+                    </Button>
+                    {hasChanges && (
+                      <S.ChangesIndicator>
+                        You have unsaved changes
+                      </S.ChangesIndicator>
+                    )}
+                  </Space>
+                </S.SaveSection>
+              </Col>
+            </Row>
+          </S.Container>
+        </PageStyles.LeftSideCol>
+
+        <PageStyles.RightSideCol xl={8} xxl={7}>
+          <div id="balance">
+            <Balance />
+          </div>
+          <PageStyles.Space />
+          <div id="total-earning">
+            <TotalEarning />
+          </div>
+          <PageStyles.Space />
+          <div id="activity-story">
+            <ActivityStory />
+          </div>
+        </PageStyles.RightSideCol>
+      </BaseRow>
     </DashboardWrapper>
   );
 };
