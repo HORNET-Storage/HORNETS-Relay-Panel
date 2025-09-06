@@ -151,8 +151,6 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({
                                         )}
                                     </div>
                                     <LiquidToggle
-                                        checkedChildren="ON"
-                                        unCheckedChildren="OFF"
                                         checked={allowUnregisteredKinds}
                                         onChange={onAllowUnregisteredKindsChange}
                                     />

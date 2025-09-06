@@ -43,8 +43,6 @@ export const KindsSection: React.FC<KindsSectionProps> = ({
         <div className="flex-col w-full">
           <div className="switch-container">
             <LiquidToggle
-              checkedChildren="ON"
-              unCheckedChildren="OFF"
               checked={isKindsActive}
               onChange={() => onKindsActiveChange(!isKindsActive)}
             />

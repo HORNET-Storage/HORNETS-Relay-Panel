@@ -130,8 +130,6 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({
                                 
                                 <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
                                     <LiquidToggle
-                                        checkedChildren="ON"
-                                        unCheckedChildren="OFF"
                                         checked={allowUnregisteredKinds}
                                         onChange={onAllowUnregisteredKindsChange}
                                     />

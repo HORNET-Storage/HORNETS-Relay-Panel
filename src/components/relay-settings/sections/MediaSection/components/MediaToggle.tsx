@@ -15,8 +15,6 @@ export const MediaToggle: React.FC<MediaToggleProps> = ({
   return (
     <div className="switch-container">
       <LiquidToggle
-        checkedChildren="ON"
-        unCheckedChildren="OFF"
         checked={isActive}
         onChange={(checked) => onChange(checked)}
       />
