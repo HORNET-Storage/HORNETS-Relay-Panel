@@ -199,7 +199,7 @@ export const Switch = styled(AntdSwitch)`
         inset 0 1px 2px rgba(255, 255, 255, 0.8);
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       position: absolute !important;
-      top: 2px !important;  /* (22px - 18px) / 2 = 2px for perfect centering */
+      top: 0px !important;  /* Perfectly centered position */
       inset-inline-start: 2px !important;
       
       /* Inner glow effect - no symbol */
@@ -223,7 +223,7 @@ export const Switch = styled(AntdSwitch)`
     /* Position adjustment for checked state */
     &.ant-switch-checked .ant-switch-handle {
       inset-inline-start: calc(100% - 20px) !important;
-      top: 2px !important;  /* Keep consistent with unchecked state */
+      top: 0px !important;  /* Keep consistent with unchecked state */
     }
     
     /* Hover state for unchecked SATS */
@@ -341,7 +341,7 @@ export const Switch = styled(AntdSwitch)`
           0 0 60px rgba(34, 197, 94, 0.3),
           inset 0 1px 4px rgba(255, 255, 255, 1);
         position: absolute !important;
-        top: 2px !important;  /* Keep consistent vertical centering */
+        top: 0px !important;  /* Keep consistent vertical centering */
         
         &::before {
           width: 80%;
