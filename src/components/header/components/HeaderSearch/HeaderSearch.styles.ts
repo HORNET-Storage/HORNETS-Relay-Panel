@@ -21,11 +21,14 @@ export const InputSearch = styled(SearchInput)`
     display: none;
   }
 
+  /* Remove the extra styling that creates a second box appearance */
   @media only screen and ${media.md} {
     .ant-input-group .ant-input-affix-wrapper:not(:last-child) {
-      border-radius: 3.125rem;
-      border: 0;
-      padding: 0.5625rem 1.25rem;
+      /* Remove all extra styling - rely only on SearchInput base styles */
+      border: none !important;
+      padding: 0 !important;
+      background: transparent !important;
+      box-shadow: none !important;
     }
   }
 `;

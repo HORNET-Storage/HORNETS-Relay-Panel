@@ -8,6 +8,7 @@ import { BaseCol } from '../common/BaseCol/BaseCol';
 export const HeaderActionWrapper = styled.div`
   cursor: pointer;
   position: relative;
+  display: inline-block;  /* Prevent wrapper from expanding */
 
   /* Remove any potential background or box behind header buttons */
   background: transparent !important;

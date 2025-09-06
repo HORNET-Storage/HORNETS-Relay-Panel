@@ -4,7 +4,6 @@ import { HeaderActionWrapper } from '@app/components/header/Header.styles';
 import { CategoryComponents } from '@app/components/header/components/HeaderSearch/HeaderSearch';
 import { Btn, InputSearch } from '../HeaderSearch/HeaderSearch.styles';
 import { useTranslation } from 'react-i18next';
-import { BasePopover } from '@app/components/common/BasePopover/BasePopover';
 import usePaidSubscribers from '@app/hooks/usePaidSubscribers';
 import { useProfileAPI } from '@app/hooks/useProfileAPI';
 import { InvalidPubkey } from '../../Header.styles';
@@ -114,52 +113,50 @@ export const SearchDropdown: React.FC<SearchOverlayProps> = ({
   }, [query]);
   return (
     <>
-      <BasePopover
-        {...((!!data || isFilterOpen) && { trigger: 'click', onOpenChange: setOverlayOpen })}
-        overlayClassName="search-overlay"
-        content={<SearchOverlay data={data} isFilterOpen={isFilterOpen} />}
-        open={isOverlayOpen}
-        getPopupContainer={() => ref.current}
-      >
-        <HeaderActionWrapper>
-          {invalidPubkey && (
-            <InvalidPubkey>
-              {"Invalid pubkey."}
-            </InvalidPubkey>
-          )}
-          <InputSearch
-            width="100%"
-            value={query}
-            placeholder={t('header.search') + ' hex pubkey'}
-            filter={
-              <Btn
-                size="small"
-                type={isFilterOpen ? 'ghost' : 'text'}
-                aria-label="Filter"
-                onClick={() => setFilterOpen(!isFilterOpen)}
-              />
-            }
-            onChange={(event) => setQuery(event.target.value)}
-            enterButton={null}
-            addonAfter={null}
-            onKeyDown={(event) => {
-              if (event.key === 'Enter') {
-                handleSearchProfile();
-              }
-            }}
-          />
-          <div ref={ref} />
-        </HeaderActionWrapper>
-        {isSubscriberDetailModalOpen && (
-          <SubscriberDetailModal
-            loading={fetchingProfile || profileAPILoading}
-            fetchFailed={fetchingFailed}
-            isVisible={isSubscriberDetailModalOpen}
-            subscriber={subscriberProfile}
-            onClose={onCloseSubscriberDetailModal}
-          />
+      <HeaderActionWrapper>
+        {invalidPubkey && (
+          <InvalidPubkey>
+            {"Invalid pubkey."}
+          </InvalidPubkey>
         )}
-      </BasePopover>
+        <InputSearch
+          width="100%"
+          value={query}
+          placeholder={t('header.search') + ' hex pubkey'}
+          filter={
+            <Btn
+              size="small"
+              type={isFilterOpen ? 'ghost' : 'text'}
+              aria-label="Filter"
+              onClick={() => setFilterOpen(!isFilterOpen)}
+            />
+          }
+          onChange={(event) => setQuery(event.target.value)}
+          enterButton={null}
+          addonAfter={null}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter') {
+              handleSearchProfile();
+            }
+          }}
+        />
+        <div ref={ref} />
+        {/* Render SearchOverlay directly when needed */}
+        {isOverlayOpen && (
+          <div className="search-overlay" style={{ position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 1000 }}>
+            <SearchOverlay data={data} isFilterOpen={isFilterOpen} />
+          </div>
+        )}
+      </HeaderActionWrapper>
+      {isSubscriberDetailModalOpen && (
+        <SubscriberDetailModal
+          loading={fetchingProfile || profileAPILoading}
+          fetchFailed={fetchingFailed}
+          isVisible={isSubscriberDetailModalOpen}
+          subscriber={subscriberProfile}
+          onClose={onCloseSubscriberDetailModal}
+        />
+      )}
     </>
   );
 };
