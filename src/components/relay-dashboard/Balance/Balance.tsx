@@ -55,7 +55,7 @@ export const Balance: React.FC = () => {
 
               <BaseCol>
                 <BaseSwitch
-                  className={`balanceSwitch liquid-switch ${displayUSD ? 'usd-active' : ''}`}
+                  className={`balanceSwitch liquid-switch ${displayUSD ? 'usd-active' : 'sats-active'}`}
                   checked={displayUSD}
                   onChange={handleSwitchChange}
                 />
