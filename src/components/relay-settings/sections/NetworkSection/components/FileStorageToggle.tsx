@@ -1,7 +1,7 @@
 // src/components/relay-settings/sections/NetworkSection/components/FileStorageToggle.tsx
 
 import React from 'react';
-import { LiquidToggle } from '@app/components/common/LiquidToggle';
+import { BaseSwitch } from '@app/components/common/BaseSwitch/BaseSwitch';
 import * as S from '@app/pages/uiComponentsPages/UIComponentsPage.styles';
 import { useTranslation } from 'react-i18next';
 
@@ -22,7 +22,8 @@ export const FileStorageToggle: React.FC<FileStorageToggleProps> = ({
         {t('File Storage')}
       </S.LabelSpan>
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-        <LiquidToggle
+        <BaseSwitch
+          className="networkSwitch liquid-switch"
           checked={isActive}
           onChange={onChange}
         />
