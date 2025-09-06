@@ -4,6 +4,9 @@ import { BaseInput } from '../BaseInput/BaseInput';
 import { BaseSpace } from '../../BaseSpace/BaseSpace';
 
 export const SearchInput = styled(BaseInput.Search)`
+  width: 100% !important;  /* Full width of container */
+  max-width: 350px !important;  /* Fixed max width at 350px */
+  
   /* LIQUID GLASS GREEN - More transparent and subtle */
   background:
     /* Primary liquid glass green background - REDUCED OPACITY */

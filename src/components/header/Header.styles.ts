@@ -8,7 +8,9 @@ import { BaseCol } from '../common/BaseCol/BaseCol';
 export const HeaderActionWrapper = styled.div`
   cursor: pointer;
   position: relative;
-  display: inline-block;  /* Prevent wrapper from expanding */
+  display: inline-block;  /* Keep compact by default */
+  max-width: 350px;  /* Fixed max width at 350px to match search bar */
+  width: 100%;  /* Allow full width within max constraint */
 
   /* Remove any potential background or box behind header buttons */
   background: transparent !important;

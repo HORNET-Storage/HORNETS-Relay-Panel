@@ -17,6 +17,8 @@ export const SearchIcon = styled(SearchOutlined)`
 `;
 
 export const InputSearch = styled(SearchInput)`
+  width: 100% !important;  /* Ensure full width */
+  
   .ant-input-group-addon {
     display: none;
   }
