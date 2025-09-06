@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { DownloadOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '@app/hooks/reduxHooks';
 import { TopUpBalanceModal } from '../TopUpBalanceModal/TopUpBalanceModal';
@@ -23,7 +24,12 @@ export const TopUpBalanceButton: React.FC = () => {
 
   return (
     <>
-      <S.TopUpButton type={theme === 'dark' ? 'ghost' : 'primary'} block onClick={handleButtonClick}>
+      <S.TopUpButton
+        type={theme === 'dark' ? 'ghost' : 'primary'}
+        block
+        onClick={handleButtonClick}
+        icon={<DownloadOutlined />}
+      >
         {t('nft.receivingAddresses')}
       </S.TopUpButton>
       <TopUpBalanceModal

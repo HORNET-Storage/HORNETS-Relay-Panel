@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { SendOutlined } from '@ant-design/icons';
 import * as S from '../TopUpBalanceButton/TopUpBalanceButton.styles';
 import SendModal from '../SendModal/SendModal';
 import { useAppSelector } from '@app/hooks/reduxHooks';
@@ -14,8 +15,13 @@ const SendButton: React.FC = () => {
   };
   return (
     <>
-      <S.TopUpButton type={theme === 'dark' ? 'ghost' : 'primary'} block onClick={handleButtonClick}>
-        {'Send'}
+      <S.TopUpButton
+        type={theme === 'dark' ? 'ghost' : 'primary'}
+        block
+        onClick={handleButtonClick}
+        icon={<SendOutlined />}
+      >
+        Send
       </S.TopUpButton>
       <SendModal isOpen={isModalOpen} onOpenChange={handleModalClose} />
     </>
