@@ -12,17 +12,18 @@ const liquidShimmer = keyframes`
 `;
 
 export const TopUpButton = styled(BaseButton)`
-  /* Liquid glass button styling matching the spec */
+  /* Liquid glass button styling with teal-cyan-green gradient */
   background: linear-gradient(to bottom right,
-    rgba(37, 99, 235, 0.18), /* from-blue-600/18 */
-    rgba(6, 182, 212, 0.10)  /* to-cyan-600/10 */
+    rgba(20, 184, 166, 0.25), /* from-teal-500/25 */
+    rgba(6, 182, 212, 0.20),  /* via-cyan-500/20 */
+    rgba(34, 197, 94, 0.25)   /* to-green-500/25 */
   ) !important;
   
   box-shadow:
-    inset 0 2px 8px rgba(59, 130, 246, 0.25), /* shadow-inner shadow-blue-500/25 */
-    0 0 20px rgba(59, 130, 246, 0.15);
+    inset 0 2px 8px rgba(45, 212, 191, 0.30), /* shadow-inner with teal */
+    0 0 25px rgba(6, 182, 212, 0.20);
     
-  border: 1px solid rgba(59, 130, 246, 0.20) !important; /* border-blue-500/20 */
+  border: 1px solid rgba(45, 212, 191, 0.25) !important; /* border-teal-400/25 */
   
   color: #ffffff !important; /* text-white */
   
@@ -48,7 +49,7 @@ export const TopUpButton = styled(BaseButton)`
     pointer-events: none;
   }
   
-  /* Liquid shimmer effect */
+  /* Liquid shimmer effect with teal-cyan highlights */
   &::after {
     content: '';
     position: absolute;
@@ -59,7 +60,9 @@ export const TopUpButton = styled(BaseButton)`
     background: linear-gradient(
       105deg,
       transparent 30%,
-      rgba(59, 130, 246, 0.15) 50%,
+      rgba(45, 212, 191, 0.20) 45%,
+      rgba(6, 182, 212, 0.25) 50%,
+      rgba(34, 197, 94, 0.20) 55%,
       transparent 70%
     );
     background-size: 200% 100%;
@@ -71,13 +74,14 @@ export const TopUpButton = styled(BaseButton)`
   
   &:hover {
     background: linear-gradient(to bottom right,
-      rgba(37, 99, 235, 0.20), /* hover:from-blue-600/20 */
-      rgba(6, 182, 212, 0.12)  /* hover:to-cyan-600/12 */
+      rgba(20, 184, 166, 0.30), /* hover:from-teal-500/30 */
+      rgba(6, 182, 212, 0.25),  /* hover:via-cyan-500/25 */
+      rgba(34, 197, 94, 0.30)   /* hover:to-green-500/30 */
     ) !important;
     
     box-shadow:
-      inset 0 3px 10px rgba(59, 130, 246, 0.30), /* hover:shadow-blue-500/30 */
-      0 0 30px rgba(59, 130, 246, 0.20);
+      inset 0 3px 12px rgba(45, 212, 191, 0.35),
+      0 0 35px rgba(6, 182, 212, 0.25);
       
     transform: translateY(-1px);
     
@@ -88,24 +92,29 @@ export const TopUpButton = styled(BaseButton)`
   
   &:active {
     transform: translateY(0);
+    background: linear-gradient(to bottom right,
+      rgba(20, 184, 166, 0.35), /* Active state with stronger teal */
+      rgba(6, 182, 212, 0.30),
+      rgba(34, 197, 94, 0.35)
+    ) !important;
     box-shadow:
-      inset 0 4px 12px rgba(59, 130, 246, 0.35),
-      0 0 15px rgba(59, 130, 246, 0.15);
+      inset 0 4px 15px rgba(45, 212, 191, 0.40),
+      0 0 20px rgba(6, 182, 212, 0.20);
   }
   
   &:focus {
     outline: none;
     box-shadow:
-      inset 0 2px 8px rgba(59, 130, 246, 0.25),
-      0 0 30px rgba(59, 130, 246, 0.20),
-      0 0 0 2px rgba(59, 130, 246, 0.30);
+      inset 0 2px 10px rgba(45, 212, 191, 0.30),
+      0 0 35px rgba(6, 182, 212, 0.25),
+      0 0 0 2px rgba(45, 212, 191, 0.35);
   }
   
-  /* Icon styling if present */
+  /* Icon styling with teal glow */
   .anticon {
     font-size: 1.25rem;
     margin-right: 0.5rem;
-    filter: drop-shadow(0 0 2px rgba(59, 130, 246, 0.3));
+    filter: drop-shadow(0 0 3px rgba(45, 212, 191, 0.4));
   }
   
   /* Disabled state */
@@ -116,27 +125,29 @@ export const TopUpButton = styled(BaseButton)`
     &:hover {
       transform: none;
       box-shadow:
-        inset 0 2px 8px rgba(59, 130, 246, 0.25),
-        0 0 20px rgba(59, 130, 246, 0.15);
+        inset 0 2px 8px rgba(45, 212, 191, 0.25),
+        0 0 20px rgba(6, 182, 212, 0.15);
     }
   }
   
-  /* Theme-specific adjustments */
+  /* Theme-specific adjustments for ghost variant */
   ${(props) =>
     props.type === 'ghost' &&
     css`
       background: linear-gradient(to bottom right,
-        rgba(37, 99, 235, 0.12),
-        rgba(6, 182, 212, 0.08)
+        rgba(20, 184, 166, 0.15),
+        rgba(6, 182, 212, 0.12),
+        rgba(34, 197, 94, 0.15)
       ) !important;
       
-      border: 1px solid rgba(59, 130, 246, 0.15) !important;
-      color: rgba(219, 234, 254, 1) !important;
+      border: 1px solid rgba(45, 212, 191, 0.20) !important;
+      color: rgba(220, 252, 231, 1) !important;
       
       &:hover {
         background: linear-gradient(to bottom right,
-          rgba(37, 99, 235, 0.16),
-          rgba(6, 182, 212, 0.10)
+          rgba(20, 184, 166, 0.20),
+          rgba(6, 182, 212, 0.15),
+          rgba(34, 197, 94, 0.20)
         ) !important;
         
         color: #ffffff !important;
