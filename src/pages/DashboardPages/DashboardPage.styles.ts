@@ -14,11 +14,24 @@ export const RightSideCol = styled(BaseCol)`
   -webkit-backdrop-filter: blur(20px);
   border-left: 1px solid rgba(0, 255, 255, 0.15);
   overflow-y: auto;
+  overflow-x: hidden;
   z-index: 5;
 
   &::-webkit-scrollbar {
-    width: 6px;
-    display: none;
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 255, 255, 0.05);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 255, 255, 0.3);
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 255, 255, 0.5);
   }
 
   .liquid-element {
@@ -30,12 +43,25 @@ export const LeftSideCol = styled(BaseCol)`
   @media only screen and ${media.xl} {
     padding: ${LAYOUT.desktop.paddingVertical} ${LAYOUT.desktop.paddingHorizontal};
     height: calc(100vh - ${LAYOUT.desktop.headerHeight});
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
     background: transparent;
 
     &::-webkit-scrollbar {
-      width: 6px;
-      display: none;
+      width: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: rgba(0, 255, 255, 0.05);
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba(0, 255, 255, 0.3);
+      border-radius: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background: rgba(0, 255, 255, 0.5);
     }
   }
 
@@ -186,7 +212,22 @@ export const DashboardWrapper = styled.div`
   position: relative;
   min-height: calc(100vh - 80px);
   background: #000000;
-  overflow: hidden;
+  width: 100%;
+  overflow-x: hidden;
+
+  /* Fix for Ant Design Row negative margins */
+  & > .ant-row {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    
+    & > .ant-col:first-child {
+      padding-left: 0 !important;
+    }
+    
+    & > .ant-col:last-child {
+      padding-right: 0 !important;
+    }
+  }
 
   /* Multi-layer liquid blue gradient background */
   &::before {

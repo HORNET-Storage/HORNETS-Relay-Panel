@@ -71,7 +71,6 @@ const MainLayout: React.FC = () => {
           <Header toggleSider={toggleSider} isSiderOpened={!siderCollapsed} isTwoColumnsLayout={isTwoColumnsLayout} />
         </MainHeader>
         <MainContent
-          style={isDesktop ? { overflowY: 'auto' } : { overflowY: 'auto' }}
           id="main-content"
           $isTwoColumnsLayout={isTwoColumnsLayout}
           $isDesktop={isDesktop}
