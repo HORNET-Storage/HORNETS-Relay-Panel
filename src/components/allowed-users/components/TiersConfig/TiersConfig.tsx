@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Table, Space, Modal, Popconfirm, Alert, Radio, Card } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { LiquidBlueButton } from '@app/components/common/LiquidBlueButton';
 import { AllowedUsersSettings, AllowedUsersMode, AllowedUsersTier } from '@app/types/allowedUsers.types';
 import { TierEditor } from '../TierEditor/TierEditor';
 import { displayToFriendlyString, bytesToDisplayFormat } from '@app/utils/tierConversion.utils';
@@ -262,14 +263,14 @@ export const TiersConfig: React.FC<TiersConfigProps> = ({
            'Subscription Tiers'}
         </S.TiersTitle>
         {!isOnlyMeMode && (
-          <Button
-            type="primary"
+          <LiquidBlueButton
+            variant="primary"
             icon={<PlusOutlined />}
             onClick={handleAddTier}
             disabled={disabled}
           >
             Add Tier
-          </Button>
+          </LiquidBlueButton>
         )}
       </S.TiersHeader>
 

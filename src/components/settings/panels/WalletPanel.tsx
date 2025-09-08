@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Form, Input, Tooltip, Button, Alert, Spin } from 'antd';
 import { QuestionCircleOutlined, LockOutlined, WalletOutlined, SaveOutlined } from '@ant-design/icons';
+import { LiquidBlueButton } from '@app/components/common/LiquidBlueButton';
 import useGenericSettings from '@app/hooks/useGenericSettings';
 import { SettingsGroupType } from '@app/types/settings.types';
 
@@ -79,14 +80,14 @@ const WalletPanel: React.FC = () => {
       )}
       
       <div style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'flex-end' }}>
-        <Button
-          type="primary"
+        <LiquidBlueButton
+          variant="primary"
           icon={<SaveOutlined />}
           onClick={handlePanelSave}
           disabled={loading}
         >
           Save
-        </Button>
+        </LiquidBlueButton>
       </div>
       
       <Spin spinning={loading}>

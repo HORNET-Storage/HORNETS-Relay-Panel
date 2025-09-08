@@ -4,6 +4,7 @@ import React from 'react';
 import { BaseRow } from '@app/components/common/BaseRow/BaseRow';
 import { BaseCol } from '@app/components/common/BaseCol/BaseCol';
 import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
+import { LiquidBlueButton } from '@app/components/common/LiquidBlueButton';
 import * as S from '@app/pages/uiComponentsPages/UIComponentsPage.styles';
 import { NetworkSection } from '@app/components/relay-settings/sections/NetworkSection';
 import { KindsSection } from '@app/components/relay-settings/sections/KindsSection';
@@ -173,14 +174,14 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({
                     audio={audio}
                 />
 
-                <BaseButton
-                    style={{ marginTop: '2rem' }}
-                    type="primary"
+                <LiquidBlueButton
+                    style={{ marginTop: '2rem', width: '100%' }}
+                    variant="primary"
                     loading={loadings[0]}
                     onClick={onSaveClick}
                 >
                     {t('buttons.saveSettings')}
-                </BaseButton>
+                </LiquidBlueButton>
             </BaseCol>
         </BaseRow>
     );

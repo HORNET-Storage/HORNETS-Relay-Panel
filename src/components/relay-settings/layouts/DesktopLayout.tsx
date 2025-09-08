@@ -4,6 +4,7 @@ import React from 'react';
 import { BaseRow } from '@app/components/common/BaseRow/BaseRow';
 import { BaseCol } from '@app/components/common/BaseCol/BaseCol';
 import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
+import { LiquidBlueButton } from '@app/components/common/LiquidBlueButton';
 import { Balance } from '@app/components/relay-dashboard/Balance/Balance';
 import { TotalEarning } from '@app/components/relay-dashboard/totalEarning/TotalEarning';
 import { ActivityStory } from '@app/components/relay-dashboard/transactions/Transactions';
@@ -179,14 +180,14 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({
                         audio={audio}
                     />
 
-                    <BaseButton
+                    <LiquidBlueButton
                         style={{ marginTop: '2rem', paddingBottom: '1rem' }}
-                        type="primary"
+                        variant="primary"
                         loading={loadings[0]}
                         onClick={onSaveClick}
                     >
                         {t('buttons.saveSettings')}
-                    </BaseButton>
+                    </LiquidBlueButton>
                 </BaseCol>
             </S.LeftSideCol>
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button, Card, Space, Alert, Spin } from 'antd';
 import { SaveOutlined, ReloadOutlined } from '@ant-design/icons';
+import { LiquidBlueButton } from '@app/components/common/LiquidBlueButton';
 import styled from 'styled-components';
 
 const StyledCard = styled(Card)`
@@ -94,15 +95,15 @@ const BaseSettingsForm: React.FC<BaseSettingsFormProps> = ({
               >
                 Reset
               </Button>
-              <Button
-                type="primary"
+              <LiquidBlueButton
+                variant="primary"
                 icon={<SaveOutlined />}
                 onClick={handleSave}
                 loading={saving}
                 disabled={loading}
               >
                 Save
-              </Button>
+              </LiquidBlueButton>
             </Space>
           </ButtonsContainer>
         </ContentWrapper>

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Form, Input, InputNumber, Select, Tooltip, Button, Alert, Spin } from 'antd';
 import { SaveOutlined } from '@ant-design/icons';
 import { QuestionCircleOutlined } from '@ant-design/icons';
+import { LiquidBlueButton } from '@app/components/common/LiquidBlueButton';
 import useGenericSettings from '@app/hooks/useGenericSettings';
 import { SettingsGroupType } from '@app/types/settings.types';
 
@@ -110,14 +111,14 @@ const OllamaPanel: React.FC = () => {
       )}
       
       <div style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'flex-end' }}>
-        <Button
-          type="primary"
+        <LiquidBlueButton
+          variant="primary"
           icon={<SaveOutlined />}
           onClick={handlePanelSave}
           disabled={loading}
         >
           Save
-        </Button>
+        </LiquidBlueButton>
       </div>
       
       <Spin spinning={loading}>

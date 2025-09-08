@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Space, Spin } from 'antd';
+import { LiquidBlueButton } from '@app/components/common/LiquidBlueButton';
 import { BaseRow } from '@app/components/common/BaseRow/BaseRow';
 import { BaseCol } from '@app/components/common/BaseCol/BaseCol';
 import GeneralSettingsPanel from '../panels/GeneralSettingsPanel';
@@ -121,14 +122,14 @@ const AdvancedSettingsLayout: React.FC<AdvancedSettingsLayoutProps> = ({
           
           <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'center' }}>
             <Space size="middle">
-              <Button
-                type="primary"
+              <LiquidBlueButton
+                variant="primary"
                 size="large"
                 onClick={handleSave}
                 loading={saveLoading}
               >
                 Save All Settings
-              </Button>
+              </LiquidBlueButton>
               <Button
                 size="large"
                 onClick={handleReset}
