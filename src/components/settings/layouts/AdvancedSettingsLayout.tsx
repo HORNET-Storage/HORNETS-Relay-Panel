@@ -13,8 +13,7 @@ import { CollapsibleSection } from '@app/components/relay-settings/shared/Collap
 import { Balance } from '@app/components/relay-dashboard/Balance/Balance';
 import { TotalEarning } from '@app/components/relay-dashboard/totalEarning/TotalEarning';
 import { ActivityStory } from '@app/components/relay-dashboard/transactions/Transactions';
-import * as S from '@app/pages/uiComponentsPages/UIComponentsPage.styles';
-import { DashboardWrapper } from '@app/pages/DashboardPages/DashboardPage.styles';
+import * as S from './AdvancedSettingsLayout.styles';
 
 interface AdvancedSettingsLayoutProps {
   loading?: boolean;
@@ -97,9 +96,9 @@ const AdvancedSettingsLayout: React.FC<AdvancedSettingsLayoutProps> = ({
   }
 
   return (
-    <DashboardWrapper>
+    <S.DashboardWrapper>
       <BaseRow>
-        <S.LeftSideCol xl={16} xxl={17}>
+        <S.LeftSideCol xl={16} xxl={17} id="desktop-content">
           <CollapsibleSection header="General Settings">
             <GeneralSettingsPanel />
           </CollapsibleSection>
@@ -142,20 +141,20 @@ const AdvancedSettingsLayout: React.FC<AdvancedSettingsLayoutProps> = ({
         </S.LeftSideCol>
 
         <S.RightSideCol xl={8} xxl={7}>
-          <div id="balance">
+          <div id="balance" className="liquid-element">
             <Balance />
           </div>
           <S.Space />
-          <div id="total-earning">
+          <div id="total-earning" className="liquid-element">
             <TotalEarning />
           </div>
           <S.Space />
-          <div id="activity-story">
+          <div id="activity-story" className="liquid-element">
             <ActivityStory />
           </div>
         </S.RightSideCol>
       </BaseRow>
-    </DashboardWrapper>
+    </S.DashboardWrapper>
   );
 };
 

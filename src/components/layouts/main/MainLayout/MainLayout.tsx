@@ -11,6 +11,7 @@ import {
   MEDICAL_DASHBOARD_PATH,
   NFT_DASHBOARD_PATH,
   RELAY_SETTINGS_PATH,
+  SETTINGS_PATH,
   TABLES_PAGE_PATH,
 } from '@app/components/router/AppRouter';
 import { useResponsive } from '@app/hooks/useResponsive';
@@ -37,7 +38,7 @@ const MainLayout: React.FC = () => {
 
   useEffect(() => {
     setIsTwoColumnsLayout(
-      [MEDICAL_DASHBOARD_PATH, NFT_DASHBOARD_PATH, RELAY_SETTINGS_PATH, TABLES_PAGE_PATH].includes(location.pathname) &&
+      [MEDICAL_DASHBOARD_PATH, NFT_DASHBOARD_PATH, RELAY_SETTINGS_PATH, SETTINGS_PATH, TABLES_PAGE_PATH].includes(location.pathname) &&
         isDesktop,
     );
   }, [location.pathname, isDesktop]);
