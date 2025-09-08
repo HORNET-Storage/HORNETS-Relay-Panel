@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { CheckboxValueType } from 'antd/es/checkbox/Group';
-import { BaseCheckbox } from '@app/components/common/BaseCheckbox/BaseCheckbox';
+import { LiquidGlassCheckboxGroup, LiquidGlassCheckbox } from '@app/components/relay-settings/shared/LiquidGlassCheckbox/LiquidGlassCheckbox';
 import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
 import * as S from '@app/pages/uiComponentsPages/UIComponentsPage.styles';
 
@@ -43,32 +43,22 @@ export const DynamicKindsList: React.FC<DynamicKindsListProps> = ({
   };
 
   return (
-    <BaseCheckbox.Group
+    <LiquidGlassCheckboxGroup
       style={{ paddingLeft: '1rem' }}
-      className={`custom-checkbox-group grid-checkbox-group large-label ${dynamicKinds.length ? 'dynamic-group ' : ''}`}
+      className={`liquid-glass-checkbox custom-checkbox-group grid-checkbox-group large-label ${dynamicKinds.length ? 'dynamic-group ' : ''}`}
       value={selectedDynamicKinds}
       onChange={handleChange}
     >
       {dynamicKinds.map((kind) => {
         const isRegistered = isDynamicKindRegistered(kind);
-        const isSelected = selectedDynamicKinds.includes(kind);
-        
-        // Show status based on registration and selection
-        let statusIcon;
-        if (isSelected) {
-          statusIcon = isRegistered ? '✅' : '⚠️'; // Selected: green check for registered, warning for unregistered
-        } else {
-          statusIcon = '❌'; // Not selected: red X
-        }
         
         return (
           <div
             style={{ display: 'flex', flexDirection: 'row', gap: '.5rem', alignItems: 'center' }}
             key={kind}
           >
-            <span style={{ fontSize: '1.2em' }}>{statusIcon}</span>
             <div className="checkbox-container">
-              <BaseCheckbox
+              <LiquidGlassCheckbox
                 value={kind}
                 disabled={!isRegistered && !allowUnregisteredKinds}
               />
@@ -94,7 +84,7 @@ export const DynamicKindsList: React.FC<DynamicKindsListProps> = ({
           </div>
         );
       })}
-    </BaseCheckbox.Group>
+    </LiquidGlassCheckboxGroup>
   );
 };
 
