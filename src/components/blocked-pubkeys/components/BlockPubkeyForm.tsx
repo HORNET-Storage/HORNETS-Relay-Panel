@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Form, Input, Button, Card } from 'antd';
+import { Form, Input, Card } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import { BREAKPOINTS } from '@app/styles/themes/constants';
+import { LiquidBlueButton } from '@app/components/common/LiquidBlueButton';
 
 interface BlockPubkeyFormProps {
   onSubmit: (pubkey: string, reason?: string) => Promise<void>;
@@ -78,15 +79,15 @@ export const BlockPubkeyForm: React.FC<BlockPubkeyFormProps> = ({ onSubmit, disa
           />
         </div>
 
-        <Button
-          type="primary"
+        <LiquidBlueButton
+          variant="primary"
           icon={<PlusOutlined />}
           loading={submitting}
           disabled={disabled}
           onClick={() => handleSubmit(form.getFieldsValue())}
         >
           Block Pubkey
-        </Button>
+        </LiquidBlueButton>
       </div>
     </CardRoot>
   );

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Row, Col, Spin, Alert, Button, Space, message } from 'antd';
 import { SaveOutlined } from '@ant-design/icons';
+import { LiquidBlueButton } from '@app/components/common/LiquidBlueButton';
 import { useAllowedUsersSettings } from '@app/hooks/useAllowedUsers';
 import { ModeSelector } from '../components/ModeSelector/ModeSelector';
 import { PermissionsConfig } from '../components/PermissionsConfig/PermissionsConfig';
@@ -226,15 +227,15 @@ export const AllowedUsersLayout: React.FC = () => {
               <Col span={24}>
                 <S.SaveSection>
                   <Space>
-                    <Button
-                      type="primary"
+                    <LiquidBlueButton
+                      variant="primary"
                       icon={<SaveOutlined />}
                       onClick={handleSave}
                       loading={saving}
                       disabled={!hasChanges}
                     >
                       Save Changes
-                    </Button>
+                    </LiquidBlueButton>
                     <Button
                       onClick={handleReset}
                       disabled={!hasChanges || saving}
