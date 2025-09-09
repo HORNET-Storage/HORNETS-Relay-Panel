@@ -19,7 +19,6 @@ export const CreatorButton = styled.button<StoriesInternalProps>`
   overflow: hidden;
 
   border: 3px solid ${(props) => (!props.$viewed ? 'rgba(0, 255, 255, 0.5)' : 'rgba(255, 255, 255, 0.2)')};
-  box-shadow: ${(props) => (!props.$viewed ? '0 0 15px rgba(0, 255, 255, 0.3), inset 0 0 10px rgba(0, 255, 255, 0.1)' : 'none')};
 `;
 
 export const Avatar = styled.img`
