@@ -12,7 +12,8 @@ import { BaseCol } from '@app/components/common/BaseCol/BaseCol';
 import { SplideCarousel } from '@app/components/common/SplideCarousel/SplideCarousel';
 import { useResponsive } from '@app/hooks/useResponsive';
 import usePaidSubscribers, { SubscriberProfile } from '@app/hooks/usePaidSubscribers';
-import { Row, Col, Modal, Typography } from 'antd';
+import { Row, Col, Typography } from 'antd';
+import { BaseModal } from '@app/components/common/BaseModal/BaseModal';
 import { nip19 } from 'nostr-tools';
 import { UserOutlined } from '@ant-design/icons';
 import { CreatorButton } from './avatar/SubscriberAvatar.styles';
@@ -120,7 +121,7 @@ export const PaidSubscribers: React.FC = () => {
         <SubscriberDetailModal loading={loading} subscriber={selectedSubscriber} isVisible={isModalVisible} onClose={handleCloseModal} />
 
         {/* View All Subscribers Modal */}
-        <Modal
+        <BaseModal
           title={t('nft.allPaidSubscribers')}
           open={isViewAllModalVisible}
           onCancel={handleCloseViewAllModal}
@@ -233,7 +234,7 @@ export const PaidSubscribers: React.FC = () => {
               </Col>
             ))}
           </Row>
-        </Modal>
+        </BaseModal>
       </>
     );
   }
@@ -317,7 +318,7 @@ export const PaidSubscribers: React.FC = () => {
       )}
 
       {/* View All Subscribers Modal */}
-      <Modal
+      <BaseModal
         title={t('nft.allPaidSubscribers')}
         open={isViewAllModalVisible}
         onCancel={handleCloseViewAllModal}
@@ -430,7 +431,7 @@ export const PaidSubscribers: React.FC = () => {
             </Col>
           ))}
         </Row>
-      </Modal>
+      </BaseModal>
     </>
   );
 };
