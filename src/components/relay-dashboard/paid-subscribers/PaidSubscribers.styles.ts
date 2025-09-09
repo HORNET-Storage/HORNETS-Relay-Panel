@@ -69,11 +69,11 @@ export const CardWrapper = styled.div`
 `;
 
 export const ComponentWrapper = styled.div`
-  padding-bottom: 2.56rem;
+  padding-bottom: 1.86rem;
   position: relative;
   
   @media only screen and ${media.xl} {
-    padding-bottom: 3.07rem;
+    padding-bottom: 2.23rem;
   }
 `;
 
