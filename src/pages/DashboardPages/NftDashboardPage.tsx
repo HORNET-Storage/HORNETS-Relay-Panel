@@ -29,7 +29,7 @@ const MedicalDashboardPage: React.FC = () => {
         <S.LeftSideCol xl={16} xxl={17} id="desktop-content">
           <BaseRow gutter={[60, 60]}>
             <BaseCol span={24}>
-              <div className="holographic-card">
+              <div className="glass-panel">
                 <PaidSubscribers />
               </div>
             </BaseCol>
@@ -82,7 +82,7 @@ const MedicalDashboardPage: React.FC = () => {
     <S.DashboardWrapper>
       <BaseRow gutter={[20, 24]}>
         <BaseCol span={24}>
-          <div className="holographic-card">
+          <div className="glass-panel">
             <PaidSubscribers />
           </div>
         </BaseCol>
