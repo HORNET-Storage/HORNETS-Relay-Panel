@@ -141,17 +141,19 @@ const AdvancedSettingsLayout: React.FC<AdvancedSettingsLayoutProps> = ({
         </S.LeftSideCol>
 
         <S.RightSideCol xl={8} xxl={7}>
-          <div id="balance" className="liquid-element">
-            <Balance />
-          </div>
-          <S.Space />
-          <div id="total-earning" className="liquid-element">
-            <TotalEarning />
-          </div>
-          <S.Space />
-          <div id="activity-story" className="liquid-element">
-            <ActivityStory />
-          </div>
+          <S.RightSideContentWrapper>
+            <div id="balance" className="liquid-element">
+              <Balance />
+            </div>
+            <S.Space />
+            <div id="total-earning" className="liquid-element">
+              <TotalEarning />
+            </div>
+            <S.Space />
+            <div id="activity-story" className="liquid-element">
+              <ActivityStory />
+            </div>
+          </S.RightSideContentWrapper>
         </S.RightSideCol>
       </BaseRow>
     </S.DashboardWrapper>

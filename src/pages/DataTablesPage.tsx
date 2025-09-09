@@ -19,17 +19,19 @@ const DataTablesPage: React.FC = () => {
         <Tables />
       </S.LeftSideCol>
       <S.RightSideCol xl={8} xxl={7}>
-        <div id="balance">
-          <Balance />
-        </div>
-        <S.Space />
-        <div id="total-earning">
-          <TotalEarning />
-        </div>
-        <S.Space />
-        <div id="activity-story">
-          <ActivityStory />
-        </div>
+        <S.RightSideContentWrapper>
+          <div id="balance">
+            <Balance />
+          </div>
+          <S.Space />
+          <div id="total-earning">
+            <TotalEarning />
+          </div>
+          <S.Space />
+          <div id="activity-story">
+            <ActivityStory />
+          </div>
+        </S.RightSideContentWrapper>
       </S.RightSideCol>
     </BaseRow>
   );

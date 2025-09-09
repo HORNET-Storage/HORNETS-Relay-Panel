@@ -80,7 +80,7 @@ export const CollapseWrapper = styled(BaseCollapse)`
 `;
 
 export const RightSideCol = styled(BaseCol)`
-  padding: ${LAYOUT.desktop.paddingVertical} ${LAYOUT.desktop.paddingHorizontal};
+  padding: ${LAYOUT.desktop.paddingVertical} 0;
   position: sticky;
   top: 0;
   display: flex;
@@ -105,6 +105,17 @@ export const RightSideCol = styled(BaseCol)`
 
   &::-webkit-scrollbar-thumb:hover {
     background: rgba(0, 255, 255, 0.5);
+  }
+`;
+
+export const RightSideContentWrapper = styled.div`
+  width: 100%;
+  padding: 0 ${LAYOUT.desktop.paddingHorizontal};
+  display: flex;
+  flex-direction: column;
+  
+  @media only screen and ${media.xxl} {
+    padding: 0 2rem;
   }
 `;
 
