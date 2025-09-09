@@ -37,24 +37,36 @@ export const ArrowBtn = styled(BaseButton)`
   border: 1px solid rgba(0, 255, 255, 0.2);
   position: relative;
   overflow: hidden;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: rgba(0, 255, 255, 0.1);
+    border-color: rgba(0, 255, 255, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15),
+                0 0 20px rgba(0, 255, 255, 0.3);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
   
   @media only screen and ${media.xl} {
-    width: 36px;
-    height: 36px;
-    min-width: 36px;
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
   }
 `;
 
 export const IconContainer = styled.div`
   display: flex;
-  gap: 0.75rem;
+  gap: 0.5rem;
   align-items: center;
-  position: absolute;
-  right: 0;
-  bottom: -1.75rem;
+  padding-right: 1.5rem;
   
   @media only screen and ${media.xl} {
-    bottom: -2rem;
+    gap: 0.75rem;
+    padding-right: 2rem;
   }
 `;
 
@@ -69,11 +81,15 @@ export const CardWrapper = styled.div`
 `;
 
 export const ComponentWrapper = styled.div`
-  padding-bottom: 1.86rem;
   position: relative;
   
-  @media only screen and ${media.xl} {
-    padding-bottom: 2.23rem;
+  /* Add padding to align splide track with title */
+  .splide__track {
+    padding: 0 1.5rem;
+    
+    @media only screen and ${media.xl} {
+      padding: 0 2rem;
+    }
   }
 `;
 
@@ -89,16 +105,16 @@ export const EmptyState = styled.div`
 export const FlexWrapper = styled.div`
   display: flex;
   flex-wrap: wrap;
-  width: 90%;
-  margin: 0 auto;
-  justify-content: space-between;
+  width: 100%;
+  justify-content: flex-start;
   align-items: center;
   gap: 0.5rem;
-  padding-bottom: 0;
+  padding: 0 1.5rem;
   min-height: 120px;
 
   @media only screen and ${media.xl} {
     gap: 0.625rem;
+    padding: 0 2rem;
     min-height: 140px;
   }
 `;
