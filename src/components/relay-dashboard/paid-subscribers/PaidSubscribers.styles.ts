@@ -104,21 +104,18 @@ export const CardWrapper = styled.div`
   margin: 0 0.40625rem;
   width: min-content;
   position: relative;
-  transition: transform 0.3s ease, filter 0.3s ease;
-  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
-  
-  &:hover {
-    transform: translateY(-8px);
-    filter: drop-shadow(0 12px 20px rgba(0, 255, 255, 0.3))
-            drop-shadow(0 8px 12px rgba(0, 0, 0, 0.2));
-  }
   
   @media only screen and ${media.xl} {
     margin: 0 0.625rem;
-    
-    &:hover {
-      transform: translateY(-10px);
-    }
+  }
+`;
+
+export const ComponentWrapper = styled.div`
+  padding-bottom: 5rem;
+  position: relative;
+  
+  @media only screen and ${media.xl} {
+    padding-bottom: 6rem;
   }
 `;
 
@@ -130,20 +127,20 @@ export const EmptyState = styled.div`
   color: var(--text-light-color);
   font-size: 1rem;
 `;
+
 export const FlexWrapper = styled.div`
   display: flex;
   flex-wrap: wrap;
   width: 90%;
   margin: 0 auto;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: center;
   gap: 0.5rem;
-  padding-bottom: 1rem;
+  padding-bottom: 0;
   min-height: 120px;
 
   @media only screen and ${media.xl} {
     gap: 0.625rem;
-    padding-bottom: 1.5rem;
     min-height: 140px;
   }
 `;

@@ -217,7 +217,7 @@ export const PaidSubscribers: React.FC = () => {
   // Simple grid for few subscribers
   if (subscribers.length > 0 && subscribers.length < 7) {
     return (
-      <>
+      <S.ComponentWrapper>
         <NFTCardHeader title={t('nft.paidSubs')}>
           <S.IconContainer>
             <ViewAll bordered={false} onClick={handleViewAll} />
@@ -246,13 +246,13 @@ export const PaidSubscribers: React.FC = () => {
 
         {/* View All Subscribers Modal - rendered via portal */}
         <ViewAllModal />
-      </>
+      </S.ComponentWrapper>
     );
   }
 
   // Carousel view for 7+ subscribers
   return (
-    <>
+    <S.ComponentWrapper>
       <SplideCarousel
         ref={sliderRef}
         type={shouldUseLoop ? 'loop' : undefined}
@@ -322,7 +322,7 @@ export const PaidSubscribers: React.FC = () => {
 
       {/* View All Subscribers Modal - rendered via portal */}
       <ViewAllModal />
-    </>
+    </S.ComponentWrapper>
   );
 };
 
