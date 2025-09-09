@@ -11,6 +11,7 @@ import { useLanguage } from './hooks/useLanguage';
 import { useAutoNightMode } from './hooks/useAutoNightMode';
 import { usePWA } from './hooks/usePWA';
 import { useThemeWatcher } from './hooks/useThemeWatcher';
+import { useFullscreenModalFix } from './hooks/useFullscreenModalFix';
 // NDK removed - login uses window.nostr directly, profile API uses panel API
 
 const App: React.FC = () => {
@@ -21,6 +22,8 @@ const App: React.FC = () => {
   useAutoNightMode();
 
   useThemeWatcher();
+  
+  useFullscreenModalFix();
 
   return (
     <>

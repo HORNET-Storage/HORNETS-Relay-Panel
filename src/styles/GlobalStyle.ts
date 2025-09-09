@@ -39,6 +39,32 @@ export default createGlobalStyle`
     }
   }
 
+  // Fix for modals in fullscreen mode - ensure they appear above fullscreen elements
+  .ant-modal-root,
+  .ant-modal-wrap,
+  .ant-modal-mask {
+    z-index: 2147483647 !important; // Maximum z-index value
+  }
+
+  // Ensure dropdown menus and popovers also work in fullscreen
+  .ant-dropdown,
+  .ant-popover,
+  .ant-tooltip,
+  .ant-select-dropdown,
+  .ant-picker-dropdown {
+    z-index: 2147483647 !important;
+  }
+
+  // Ensure notification container appears above fullscreen
+  .ant-notification {
+    z-index: 2147483647 !important;
+  }
+
+  // Message container should also be above fullscreen
+  .ant-message {
+    z-index: 2147483647 !important;
+  }
+
   // Glass morphism effect for cards and panels (removed .ant-form to eliminate square containers)
   .ant-card,
   .ant-modal-content,
