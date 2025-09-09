@@ -130,7 +130,7 @@ export const PaidSubscribers: React.FC = () => {
         >
           <Row gutter={[16, 16]} style={{ padding: '16px 0' }}>
             {sortedProfiles.map((subscriber) => (
-              <Col key={subscriber.pubkey} xs={24} sm={24} md={24} lg={24} xl={24}>
+              <Col key={subscriber.pubkey} xs={24} sm={24} md={12} lg={12} xl={12}>
                 <div
                   style={{
                     display: 'flex',
@@ -138,7 +138,6 @@ export const PaidSubscribers: React.FC = () => {
                     padding: '16px',
                     border: '1px solid var(--border-color-base)',
                     borderRadius: '12px',
-                    marginBottom: '12px',
                     cursor: 'pointer',
                     transition: 'all 0.2s ease',
                     backgroundColor: 'var(--background-color-secondary)',
@@ -328,7 +327,7 @@ export const PaidSubscribers: React.FC = () => {
       >
         <Row gutter={[16, 16]} style={{ padding: '16px 0' }}>
           {sortedProfiles.map((subscriber) => (
-            <Col key={subscriber.pubkey} xs={24} sm={24} md={24} lg={24} xl={24}>
+            <Col key={subscriber.pubkey} xs={24} sm={24} md={12} lg={12} xl={12}>
               <div
                 style={{
                   display: 'flex',
@@ -336,7 +335,6 @@ export const PaidSubscribers: React.FC = () => {
                   padding: '16px',
                   border: '1px solid var(--border-color-base)',
                   borderRadius: '12px',
-                  marginBottom: '12px',
                   cursor: 'pointer',
                   transition: 'all 0.2s ease',
                   backgroundColor: 'var(--background-color-secondary)',
