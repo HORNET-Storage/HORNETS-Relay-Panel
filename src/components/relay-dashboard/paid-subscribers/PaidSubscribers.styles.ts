@@ -25,7 +25,6 @@ export const StoriesModal = styled(BaseModal)`
 
 export const ArrowBtn = styled(BaseButton)`
   color: var(--text-nft-light-color);
-  transition: all 0.3s ease;
   border-radius: 50%;
   width: 32px;
   height: 32px;
@@ -35,42 +34,9 @@ export const ArrowBtn = styled(BaseButton)`
   justify-content: center;
   padding: 0;
   background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
   border: 1px solid rgba(0, 255, 255, 0.2);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1),
-              0 0 15px rgba(0, 255, 255, 0.1);
   position: relative;
   overflow: hidden;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(0, 255, 255, 0.3), transparent);
-    transform: translate(-50%, -50%);
-    transition: width 0.3s ease, height 0.3s ease;
-  }
-  
-  &:hover {
-    background: rgba(0, 255, 255, 0.1);
-    border-color: rgba(0, 255, 255, 0.4);
-    transform: translateY(-2px) scale(1.05);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15),
-                0 0 25px rgba(0, 255, 255, 0.3);
-    
-    &::before {
-      width: 100%;
-      height: 100%;
-    }
-  }
-  
-  &:active {
-    transform: translateY(0) scale(0.98);
-  }
   
   @media only screen and ${media.xl} {
     width: 36px;
@@ -90,14 +56,6 @@ export const IconContainer = styled.div`
   @media only screen and ${media.xl} {
     bottom: -2rem;
   }
-  
-  & > * {
-    transition: transform 0.3s ease;
-    
-    &:hover {
-      transform: translateY(-4px);
-    }
-  }
 `;
 
 export const CardWrapper = styled.div`
@@ -111,11 +69,11 @@ export const CardWrapper = styled.div`
 `;
 
 export const ComponentWrapper = styled.div`
-  padding-bottom: 5rem;
+  padding-bottom: 2.56rem;
   position: relative;
   
   @media only screen and ${media.xl} {
-    padding-bottom: 6rem;
+    padding-bottom: 3.07rem;
   }
 `;
 
