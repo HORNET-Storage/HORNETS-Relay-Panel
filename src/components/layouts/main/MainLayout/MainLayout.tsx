@@ -38,8 +38,11 @@ const MainLayout: React.FC = () => {
 
   useEffect(() => {
     setIsTwoColumnsLayout(
-      [MEDICAL_DASHBOARD_PATH, NFT_DASHBOARD_PATH, RELAY_SETTINGS_PATH, SETTINGS_PATH, TABLES_PAGE_PATH].includes(location.pathname) &&
-        isDesktop,
+      (
+        [MEDICAL_DASHBOARD_PATH, NFT_DASHBOARD_PATH, RELAY_SETTINGS_PATH, SETTINGS_PATH, TABLES_PAGE_PATH].includes(location.pathname) ||
+        location.pathname === '/allowed-users' ||
+        location.pathname === '/blocked-pubkeys'
+      ) && isDesktop,
     );
   }, [location.pathname, isDesktop]);
 
