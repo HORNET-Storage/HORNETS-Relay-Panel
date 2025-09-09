@@ -25,13 +25,100 @@ export const StoriesModal = styled(BaseModal)`
 
 export const ArrowBtn = styled(BaseButton)`
   color: var(--text-nft-light-color);
+  transition: all 0.3s ease;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1),
+              0 0 15px rgba(0, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0, 255, 255, 0.3), transparent);
+    transform: translate(-50%, -50%);
+    transition: width 0.3s ease, height 0.3s ease;
+  }
+  
+  &:hover {
+    background: rgba(0, 255, 255, 0.1);
+    border-color: rgba(0, 255, 255, 0.4);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15),
+                0 0 25px rgba(0, 255, 255, 0.3);
+    
+    &::before {
+      width: 100%;
+      height: 100%;
+    }
+  }
+  
+  &:active {
+    transform: translateY(0) scale(0.98);
+  }
+  
+  @media only screen and ${media.xl} {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+  }
+`;
+
+export const IconContainer = styled.div`
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  position: absolute;
+  right: 0;
+  bottom: -1.75rem;
+  
+  @media only screen and ${media.xl} {
+    bottom: -2rem;
+  }
+  
+  & > * {
+    transition: transform 0.3s ease;
+    
+    &:hover {
+      transform: translateY(-4px);
+    }
+  }
 `;
 
 export const CardWrapper = styled.div`
   margin: 0 0.40625rem;
   width: min-content;
+  position: relative;
+  transition: transform 0.3s ease, filter 0.3s ease;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+  
+  &:hover {
+    transform: translateY(-8px);
+    filter: drop-shadow(0 12px 20px rgba(0, 255, 255, 0.3))
+            drop-shadow(0 8px 12px rgba(0, 0, 0, 0.2));
+  }
+  
   @media only screen and ${media.xl} {
     margin: 0 0.625rem;
+    
+    &:hover {
+      transform: translateY(-10px);
+    }
   }
 `;
 
@@ -49,10 +136,14 @@ export const FlexWrapper = styled.div`
   width: 90%;
   margin: 0 auto;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-end;
   gap: 0.5rem;
+  padding-bottom: 1rem;
+  min-height: 120px;
 
   @media only screen and ${media.xl} {
     gap: 0.625rem;
+    padding-bottom: 1.5rem;
+    min-height: 140px;
   }
 `;

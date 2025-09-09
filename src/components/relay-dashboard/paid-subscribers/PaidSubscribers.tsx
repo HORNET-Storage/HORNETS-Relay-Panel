@@ -219,11 +219,9 @@ export const PaidSubscribers: React.FC = () => {
     return (
       <>
         <NFTCardHeader title={t('nft.paidSubs')}>
-          <BaseRow align="middle">
-            <BaseCol>
-              <ViewAll bordered={false} onClick={handleViewAll} />
-            </BaseCol>
-          </BaseRow>
+          <S.IconContainer>
+            <ViewAll bordered={false} onClick={handleViewAll} />
+          </S.IconContainer>
         </NFTCardHeader>
 
         <S.FlexWrapper>
@@ -282,27 +280,19 @@ export const PaidSubscribers: React.FC = () => {
         }}
       >
         <NFTCardHeader title={t('nft.paidSubs')}>
-          <BaseRow align="middle">
-            <BaseCol>
-              <ViewAll bordered={false} onClick={handleViewAll} />
-            </BaseCol>
-
+          <S.IconContainer>
+            <ViewAll bordered={false} onClick={handleViewAll} />
             {isTabletOrHigher && subscribers.length > 1 && (
               <>
-                <BaseCol>
-                  <S.ArrowBtn type="text" size="small" onClick={goPrev}>
-                    <LeftOutlined />
-                  </S.ArrowBtn>
-                </BaseCol>
-
-                <BaseCol>
-                  <S.ArrowBtn type="text" size="small" onClick={goNext}>
-                    <RightOutlined />
-                  </S.ArrowBtn>
-                </BaseCol>
+                <S.ArrowBtn type="text" size="small" onClick={goPrev}>
+                  <LeftOutlined />
+                </S.ArrowBtn>
+                <S.ArrowBtn type="text" size="small" onClick={goNext}>
+                  <RightOutlined />
+                </S.ArrowBtn>
               </>
             )}
-          </BaseRow>
+          </S.IconContainer>
         </NFTCardHeader>
         <SplideTrack>
           {!loading &&
