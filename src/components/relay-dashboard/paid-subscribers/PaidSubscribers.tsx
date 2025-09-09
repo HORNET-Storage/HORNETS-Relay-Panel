@@ -214,6 +214,21 @@ export const PaidSubscribers: React.FC = () => {
     );
   };
 
+  // Subscriber Detail Modal Component - rendered via portal
+  const DetailModal = () => {
+    if (!isModalVisible) return null;
+    
+    return ReactDOM.createPortal(
+      <SubscriberDetailModal
+        loading={loading}
+        subscriber={selectedSubscriber}
+        isVisible={isModalVisible}
+        onClose={handleCloseModal}
+      />,
+      document.body
+    );
+  };
+
   // Simple grid for few subscribers
   if (subscribers.length > 0 && subscribers.length < 7) {
     return (
@@ -242,7 +257,8 @@ export const PaidSubscribers: React.FC = () => {
           ))}
         </S.FlexWrapper>
 
-        <SubscriberDetailModal loading={loading} subscriber={selectedSubscriber} isVisible={isModalVisible} onClose={handleCloseModal} />
+        {/* Subscriber Detail Modal - rendered via portal */}
+        <DetailModal />
 
         {/* View All Subscribers Modal - rendered via portal */}
         <ViewAllModal />
@@ -316,9 +332,8 @@ export const PaidSubscribers: React.FC = () => {
         </SplideTrack>
       </SplideCarousel>
 
-      {isModalVisible && (
-        <SubscriberDetailModal loading={loading} subscriber={selectedSubscriber} isVisible={isModalVisible} onClose={handleCloseModal} />
-      )}
+      {/* Subscriber Detail Modal - rendered via portal */}
+      <DetailModal />
 
       {/* View All Subscribers Modal - rendered via portal */}
       <ViewAllModal />
