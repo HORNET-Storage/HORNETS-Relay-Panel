@@ -110,11 +110,9 @@ export const FlexWrapper = styled.div`
   align-items: center;
   gap: 0.5rem;
   padding: 0 1.5rem;
-  min-height: 120px;
 
   @media only screen and ${media.xl} {
     gap: 0.625rem;
     padding: 0 2rem;
-    min-height: 140px;
   }
 `;

@@ -27,7 +27,7 @@ const MedicalDashboardPage: React.FC = () => {
     <S.DashboardWrapper>
       <BaseRow>
         <S.LeftSideCol xl={16} xxl={17} id="desktop-content">
-          <BaseRow gutter={[60, 60]}>
+          <BaseRow gutter={[60, 30]}>
             <BaseCol span={24}>
               <div className="glass-panel">
                 <PaidSubscribers />
@@ -80,7 +80,7 @@ const MedicalDashboardPage: React.FC = () => {
 
   const mobileAndTabletLayout = (
     <S.DashboardWrapper>
-      <BaseRow gutter={[20, 24]}>
+      <BaseRow gutter={[20, 16]}>
         <BaseCol span={24}>
           <div className="glass-panel">
             <PaidSubscribers />
