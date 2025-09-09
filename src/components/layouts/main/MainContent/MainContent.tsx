@@ -28,7 +28,8 @@ export default styled(BaseLayout.Content)<HeaderProps>`
     ${(props) =>
       props?.$isTwoColumnsLayout &&
       css`
-        padding: 0;
+        padding: ${LAYOUT.desktop.paddingVertical} 1.8rem 0 ${LAYOUT.desktop.paddingHorizontal};
+        padding-right: 0; /* Only remove right padding to allow right column to attach to edge */
       `}
   }
 `;
