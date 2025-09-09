@@ -98,15 +98,15 @@ export const BlockedPubkeys: React.FC = () => {
 
         <PageStyles.RightSideCol xl={8} xxl={7}>
           <PageStyles.RightSideContentWrapper>
-            <div id="balance">
+            <div id="balance" className="liquid-element">
               <Balance />
             </div>
             <PageStyles.Space />
-            <div id="total-earning">
+            <div id="total-earning" className="liquid-element">
               <TotalEarning />
             </div>
             <PageStyles.Space />
-            <div id="activity-story">
+            <div id="activity-story" className="liquid-element">
               <ActivityStory />
             </div>
           </PageStyles.RightSideContentWrapper>

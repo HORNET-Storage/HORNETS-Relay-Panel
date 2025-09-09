@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { createGlobalStyle } from 'styled-components';
 import { BaseCard as CommonCard } from '@app/components/common/BaseCard/BaseCard';
 import { BaseCollapse } from '@app/components/common/BaseCollapse/BaseCollapse';
 import { LAYOUT, media } from '@app/styles/themes/constants';
@@ -86,9 +86,13 @@ export const RightSideCol = styled(BaseCol)`
   display: flex;
   flex-direction: column;
   height: calc(100vh - ${LAYOUT.desktop.headerHeight});
-  background-color: var(--sider-background-color);
+  background: rgba(0, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-left: 1px solid rgba(0, 255, 255, 0.15);
   overflow-y: auto;
   overflow-x: hidden;
+  z-index: 5;
 
   &::-webkit-scrollbar {
     width: 8px;
@@ -105,6 +109,10 @@ export const RightSideCol = styled(BaseCol)`
 
   &::-webkit-scrollbar-thumb:hover {
     background: rgba(0, 255, 255, 0.5);
+  }
+
+  .liquid-element {
+    animation: fadeInUp 0.6s ease-out;
   }
 `;
 
@@ -223,4 +231,18 @@ export const LabelSpan = styled.span`
 `;
 export const HeadingContainer = styled.div`
   margin-bottom: 1.25rem;
+`;
+
+// Create global styles for animations
+export const LiquidAnimations = createGlobalStyle`
+  @keyframes fadeInUp {
+    0% {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 `;
