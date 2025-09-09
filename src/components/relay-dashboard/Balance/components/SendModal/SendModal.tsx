@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
+import ReactDOM from 'react-dom';
 import { BaseModal } from '@app/components/common/BaseModal/BaseModal';
 import { BaseSpin } from '@app/components/common/BaseSpin/BaseSpin';
 import SendForm from '../SendForm/SendForm';
-import * as S from './SendModal.styles';
 import ResultScreen from '../SendForm/components/ResultScreen/ResultScreen';
 
 interface SendModalProps {
@@ -34,8 +34,8 @@ const SendModal: React.FC<SendModalProps> = ({ isOpen, onOpenChange }) => {
     onOpenChange();
   };
 
-  return (
-    <S.SendModal centered={true}  open={isOpen} onCancel={handleFinish} footer={null} destroyOnClose>
+  return ReactDOM.createPortal(
+    <BaseModal centered={true} width={600} open={isOpen} onCancel={handleFinish} footer={null} destroyOnClose>
       <BaseSpin spinning={isLoading}>
         {isFinished && successScreenState ? (
           <ResultScreen
@@ -50,7 +50,8 @@ const SendModal: React.FC<SendModalProps> = ({ isOpen, onOpenChange }) => {
           <SendForm onSend={onFinish} />
         )}
       </BaseSpin>
-    </S.SendModal>
+    </BaseModal>,
+    document.body
   );
 };
 
