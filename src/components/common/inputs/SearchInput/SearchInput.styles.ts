@@ -7,24 +7,24 @@ export const SearchInput = styled(BaseInput.Search)`
   width: 100% !important;  /* Full width of container */
   max-width: 350px !important;  /* Fixed max width at 350px */
   
-  /* LIQUID GLASS GREEN - More transparent and subtle */
+  /* LIQUID GLASS GREEN - Even more transparent and subtle */
   background:
-    /* Primary liquid glass green background - REDUCED OPACITY */
+    /* Primary liquid glass green background - INCREASED TRANSPARENCY */
     linear-gradient(135deg,
-      rgba(45, 212, 191, 0.25),  /* Subtle liquid glass teal */
-      rgba(20, 184, 166, 0.30),  /* Transparent teal */
-      rgba(6, 182, 212, 0.25)    /* Light cyan accent */
+      rgba(45, 212, 191, 0.12),  /* Very subtle liquid glass teal */
+      rgba(20, 184, 166, 0.15),  /* More transparent teal */
+      rgba(6, 182, 212, 0.12)    /* Very light cyan accent */
     ),
-    /* Secondary layer for depth - SUBTLE */
+    /* Secondary layer for depth - VERY SUBTLE */
     linear-gradient(180deg,
-      rgba(34, 197, 94, 0.15) 0%,   /* Very subtle green top */
-      rgba(45, 212, 191, 0.20) 50%,  /* Transparent teal middle */
-      rgba(6, 182, 212, 0.15) 100%   /* Light cyan bottom */
+      rgba(34, 197, 94, 0.08) 0%,   /* Extremely subtle green top */
+      rgba(45, 212, 191, 0.10) 50%,  /* Very transparent teal middle */
+      rgba(6, 182, 212, 0.08) 100%   /* Very light cyan bottom */
     ),
-    /* Much more transparent dark base */
+    /* Even more transparent dark base */
     linear-gradient(to bottom,
-      rgba(13, 42, 40, 0.35),  /* Very transparent dark teal base */
-      rgba(17, 52, 50, 0.40)   /* Slightly less transparent bottom */
+      rgba(13, 42, 40, 0.20),  /* Extremely transparent dark teal base */
+      rgba(17, 52, 50, 0.25)   /* Very transparent bottom */
     ) !important;
     backdrop-filter: blur(12px) saturate(140%) brightness(1.05) !important;
     -webkit-backdrop-filter: blur(12px) saturate(140%) brightness(1.05) !important;
@@ -33,15 +33,15 @@ export const SearchInput = styled(BaseInput.Search)`
     background-clip: padding-box !important;
     border-radius: 2rem !important;  /* Fully rounded edges */
     padding: 0 !important;  /* Remove padding to prevent double box appearance */
-  /* Create subtle liquid green outline - ONLY thin border, no spread */
+  /* Create very subtle liquid green outline - MINIMAL visibility */
   box-shadow:
-    /* Thin liquid green outline only */
-    0 0 0 1px rgba(34, 197, 94, 0.3),     /* Very subtle green outline */
-    0 0 0 2px rgba(45, 212, 191, 0.15),   /* Faint teal second layer */
-    /* Minimal shadow effects */
-    0 2px 8px rgba(45, 212, 191, 0.08),
-    inset 0 1px 3px rgba(255, 255, 255, 0.08),
-    inset 0 -1px 3px rgba(45, 212, 191, 0.05) !important;
+    /* Very thin liquid green outline only */
+    0 0 0 0.5px rgba(34, 197, 94, 0.15),     /* Extremely subtle green outline */
+    0 0 0 1px rgba(45, 212, 191, 0.08),      /* Very faint teal second layer */
+    /* Very minimal shadow effects */
+    0 1px 4px rgba(45, 212, 191, 0.04),
+    inset 0 1px 2px rgba(255, 255, 255, 0.04),
+    inset 0 -1px 2px rgba(45, 212, 191, 0.02) !important;
   /* Animated gradient border using pseudo-element */
   position: relative;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
@@ -71,11 +71,11 @@ export const SearchInput = styled(BaseInput.Search)`
     bottom: -3px;
     background: linear-gradient(
       45deg,
-      rgba(34, 197, 94, 0.3),     /* Subtle green */
-      rgba(45, 212, 191, 0.35),   /* Subtle teal */
-      rgba(16, 185, 129, 0.3),    /* Subtle emerald */
-      rgba(6, 182, 212, 0.25),    /* Subtle cyan */
-      rgba(34, 197, 94, 0.3)      /* Back to subtle green */
+      rgba(34, 197, 94, 0.12),     /* Very subtle green */
+      rgba(45, 212, 191, 0.15),   /* Very subtle teal */
+      rgba(16, 185, 129, 0.12),    /* Very subtle emerald */
+      rgba(6, 182, 212, 0.10),    /* Very subtle cyan */
+      rgba(34, 197, 94, 0.12)      /* Back to very subtle green */
     );
     background-size: 400% 400%;
     border-radius: 2rem;
@@ -94,9 +94,9 @@ export const SearchInput = styled(BaseInput.Search)`
     background: linear-gradient(
       105deg,
       transparent 30%,
-      rgba(45, 212, 191, 0.15) 45%,  /* Subtle shimmer */
-      rgba(20, 184, 166, 0.20) 50%,
-      rgba(45, 212, 191, 0.15) 55%,
+      rgba(45, 212, 191, 0.06) 45%,  /* Very subtle shimmer */
+      rgba(20, 184, 166, 0.08) 50%,
+      rgba(45, 212, 191, 0.06) 55%,
       transparent 70%
     );
     background-size: 200% 100%;
@@ -128,96 +128,96 @@ export const SearchInput = styled(BaseInput.Search)`
     }
   }
 
-  /* FOCUS STATE - Even brighter when selected */
+  /* FOCUS STATE - Slightly more visible when selected */
   &:focus-within {
     background:
       linear-gradient(135deg,
-        rgba(45, 212, 191, 0.35),  /* Slightly brighter on focus */
-        rgba(20, 184, 166, 0.40),
-        rgba(6, 182, 212, 0.35)
+        rgba(45, 212, 191, 0.15),  /* Slightly more visible on focus */
+        rgba(20, 184, 166, 0.18),
+        rgba(6, 182, 212, 0.15)
       ),
       linear-gradient(180deg,
-        rgba(34, 197, 94, 0.20) 0%,
-        rgba(45, 212, 191, 0.25) 50%,
-        rgba(6, 182, 212, 0.20) 100%
+        rgba(34, 197, 94, 0.10) 0%,
+        rgba(45, 212, 191, 0.12) 50%,
+        rgba(6, 182, 212, 0.10) 100%
       ),
       linear-gradient(to bottom,
-        rgba(13, 42, 40, 0.45),
-        rgba(17, 52, 50, 0.50)
+        rgba(13, 42, 40, 0.25),
+        rgba(17, 52, 50, 0.30)
       ) !important;
     box-shadow:
-      /* Thin liquid green outline on focus - no spread */
-      0 0 0 1.5px rgba(34, 197, 94, 0.4),   /* Subtle green outline */
-      0 0 0 2.5px rgba(45, 212, 191, 0.2),  /* Faint teal second layer */
-      /* Minimal effects */
-      0 3px 10px rgba(45, 212, 191, 0.1),
-      inset 0 1px 4px rgba(255, 255, 255, 0.1),
-      inset 0 -1px 4px rgba(45, 212, 191, 0.06) !important;
+      /* Very thin liquid green outline on focus - minimal */
+      0 0 0 1px rgba(34, 197, 94, 0.20),   /* Subtle green outline */
+      0 0 0 1.5px rgba(45, 212, 191, 0.10),  /* Very faint teal second layer */
+      /* Very minimal effects */
+      0 2px 6px rgba(45, 212, 191, 0.05),
+      inset 0 1px 2px rgba(255, 255, 255, 0.05),
+      inset 0 -1px 2px rgba(45, 212, 191, 0.03) !important;
     transform: scale(1.01);  /* Subtle grow effect */
   }
 
-  /* Hover state - slightly brighter liquid glass */
+  /* Hover state - very slightly brighter liquid glass */
   &:hover {
     background:
       linear-gradient(135deg,
-        rgba(45, 212, 191, 0.30),
-        rgba(20, 184, 166, 0.35),
-        rgba(6, 182, 212, 0.30)
+        rgba(45, 212, 191, 0.14),
+        rgba(20, 184, 166, 0.17),
+        rgba(6, 182, 212, 0.14)
       ),
       linear-gradient(180deg,
-        rgba(34, 197, 94, 0.18) 0%,
-        rgba(45, 212, 191, 0.22) 50%,
-        rgba(6, 182, 212, 0.18) 100%
+        rgba(34, 197, 94, 0.09) 0%,
+        rgba(45, 212, 191, 0.11) 50%,
+        rgba(6, 182, 212, 0.09) 100%
       ),
       linear-gradient(to bottom,
-        rgba(13, 42, 40, 0.40),
-        rgba(17, 52, 50, 0.45)
+        rgba(13, 42, 40, 0.22),
+        rgba(17, 52, 50, 0.27)
       ) !important;
     box-shadow:
-      /* Hover state thin liquid green outline - no spread */
-      0 0 0 1.2px rgba(34, 197, 94, 0.35),  /* Subtle green outline */
-      0 0 0 2.2px rgba(45, 212, 191, 0.18), /* Faint teal second layer */
-      /* Minimal effects */
-      0 2.5px 9px rgba(45, 212, 191, 0.09),
-      inset 0 1px 3.5px rgba(255, 255, 255, 0.09),
-      inset 0 -1px 3.5px rgba(45, 212, 191, 0.05) !important;
+      /* Hover state very thin liquid green outline - minimal */
+      0 0 0 0.8px rgba(34, 197, 94, 0.18),  /* Very subtle green outline */
+      0 0 0 1.2px rgba(45, 212, 191, 0.09), /* Very faint teal second layer */
+      /* Very minimal effects */
+      0 1.5px 5px rgba(45, 212, 191, 0.05),
+      inset 0 1px 2px rgba(255, 255, 255, 0.05),
+      inset 0 -1px 2px rgba(45, 212, 191, 0.03) !important;
   }
 
-  /* Continuous glow animation - liquid glass green theme */
+  /* Continuous glow animation - much dimmer liquid glass green theme */
   @keyframes searchGlow {
     0%, 100% {
       box-shadow:
-        /* Thin pulsing liquid green outline - no large spread */
-        0 0 0 1px rgba(34, 197, 94, 0.3),
-        0 0 0 2px rgba(45, 212, 191, 0.15),
-        /* Minimal glows */
-        0 2px 8px rgba(45, 212, 191, 0.08),
-        inset 0 1px 3px rgba(255, 255, 255, 0.08),
-        inset 0 -1px 3px rgba(45, 212, 191, 0.05);
+        /* Very thin pulsing liquid green outline - minimal visibility */
+        0 0 0 0.5px rgba(34, 197, 94, 0.15),
+        0 0 0 1px rgba(45, 212, 191, 0.08),
+        /* Very minimal glows */
+        0 1px 4px rgba(45, 212, 191, 0.04),
+        inset 0 1px 2px rgba(255, 255, 255, 0.04),
+        inset 0 -1px 2px rgba(45, 212, 191, 0.02);
     }
     50% {
       box-shadow:
-        /* Slightly brighter thin pulse */
-        0 0 0 1.5px rgba(34, 197, 94, 0.35),
-        0 0 0 2.5px rgba(45, 212, 191, 0.18),
-        /* Minimal glows */
-        0 3px 10px rgba(45, 212, 191, 0.1),
-        inset 0 1px 4px rgba(255, 255, 255, 0.1),
-        inset 0 -1px 4px rgba(45, 212, 191, 0.06);
+        /* Slightly more visible thin pulse - still very subtle */
+        0 0 0 0.8px rgba(34, 197, 94, 0.18),
+        0 0 0 1.3px rgba(45, 212, 191, 0.09),
+        /* Very minimal glows */
+        0 2px 5px rgba(45, 212, 191, 0.05),
+        inset 0 1px 2px rgba(255, 255, 255, 0.05),
+        inset 0 -1px 2px rgba(45, 212, 191, 0.03);
     }
   }
 
-  /* Liquid Blue Theme - Search prefix icon always glowing */
+  /* Liquid Blue Theme - Search prefix icon with reduced glow */
   & .ant-input-prefix {
     margin: 0.5rem;  /* Adjust margin for better spacing without extra padding */
-    color: rgba(6, 182, 212, 0.9) !important;
-    filter: drop-shadow(0 0 6px rgba(6, 182, 212, 0.4));
+    color: rgba(6, 182, 212, 0.6) !important;
+    filter: drop-shadow(0 0 3px rgba(6, 182, 212, 0.2));
     transition: all 0.3s ease;
   }
 
   &:focus-within .ant-input-prefix {
-    color: rgba(6, 182, 212, 1) !important;
-    filter: drop-shadow(0 0 10px rgba(6, 182, 212, 0.6));
+    color: rgba(6, 182, 212, 0.7) !important;
+    filter: drop-shadow(0 0 5px rgba(6, 182, 212, 0.3));
   }
 
   & .ant-input-search-button {
@@ -300,10 +300,10 @@ export const SearchInput = styled(BaseInput.Search)`
     outline: none !important;
   }
 
-  /* Liquid Blue Theme - Search button with enhanced glow */
+  /* Liquid Blue Theme - Search button with reduced glow */
   && .ant-input-search-button {
     &.ant-btn .anticon {
-      color: rgba(6, 182, 212, 0.7) !important;
+      color: rgba(6, 182, 212, 0.5) !important;
       transition: all 0.3s ease;
     }
     width: 100%;
@@ -312,20 +312,20 @@ export const SearchInput = styled(BaseInput.Search)`
     border: none !important;
     box-shadow: none !important;
     outline: none !important;
-    color: rgba(6, 182, 212, 0.7) !important;
+    color: rgba(6, 182, 212, 0.5) !important;
     transition: all 0.3s ease;
 
     &:hover .anticon {
-      color: rgba(6, 182, 212, 0.9) !important;
-      filter: drop-shadow(0 0 6px rgba(6, 182, 212, 0.4));
+      color: rgba(6, 182, 212, 0.6) !important;
+      filter: drop-shadow(0 0 3px rgba(6, 182, 212, 0.2));
     }
   }
 
-  /* Search button brightens on container focus */
+  /* Search button slightly brightens on container focus */
   &:focus-within .ant-input-search-button {
     &.ant-btn .anticon {
-      color: rgba(6, 182, 212, 1) !important;
-      filter: drop-shadow(0 0 10px rgba(6, 182, 212, 0.6));
+      color: rgba(6, 182, 212, 0.7) !important;
+      filter: drop-shadow(0 0 5px rgba(6, 182, 212, 0.3));
     }
   }
 
