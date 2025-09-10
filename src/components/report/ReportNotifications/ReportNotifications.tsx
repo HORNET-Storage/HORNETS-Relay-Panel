@@ -290,7 +290,7 @@ export const ReportNotifications: React.FC<ReportNotificationsProps> = ({ classN
         </>
       ) : (
         <div style={{ textAlign: 'center', padding: '60px 0' }}>
-          <div style={{ fontSize: '32px', marginBottom: '16px' }}>🔍</div>
+          <div style={{ fontSize: '32px', marginBottom: '16px' }}>🚨</div>
           <S.Text style={{ display: 'block', marginBottom: '12px', fontWeight: 500, fontSize: '18px' }}>
             {t('report.notifications.noNotifications', 'No report notifications')}
           </S.Text>
