@@ -207,6 +207,7 @@
     "autocomplete": "AutoComplete",
     "avatar": "Avatar",
     "back": "Back",
+    "createAccount": "Create Account",
     "balance-page": "Wallet",
     "badge": "Badge",
     "breadcrumbs": "Breadcrumbs",
@@ -880,7 +881,7 @@
   },
   "signup": {
     "agree": "I agree to the",
-    "alreadyHaveAccount": "Already have an account? Log in",
+    "alreadyHaveAccount": "Already have an account?",
     "and": "and",
     "facebookLink": "Sign up with Facebook",
     "googleLink": "Sign up with Google",

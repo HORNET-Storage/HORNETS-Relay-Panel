@@ -90,12 +90,14 @@ export const SignUpForm: React.FC = () => {
           </Auth.SubmitButton>
         </Auth.FormItem>
         <Auth.FooterWrapper>
-          <Auth.Text>
-            {t('signup.alreadyHaveAccount')}{' '}
-            <Link to="/auth/login">
-              <Auth.LinkText>{t('common.here')}</Auth.LinkText>
-            </Link>
+          <Auth.Text style={{ marginBottom: '1rem' }}>
+            {t('signup.alreadyHaveAccount')}
           </Auth.Text>
+          <Link to="/auth/login" style={{ display: 'block', textDecoration: 'none' }}>
+            <Auth.SecondaryButton type="button" block>
+              {t('common.login')}
+            </Auth.SecondaryButton>
+          </Link>
         </Auth.FooterWrapper>
       </Form>
     </Auth.FormWrapper>

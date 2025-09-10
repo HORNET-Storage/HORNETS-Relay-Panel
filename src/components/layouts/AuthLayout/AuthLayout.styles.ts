@@ -498,6 +498,128 @@ export const SubmitButton = styled(BaseButton)`
   }
 `;
 
+export const SecondaryButton = styled(BaseButton)`
+  font-size: ${FONT_SIZE.md};
+  font-weight: 600;
+  width: 100%;
+  height: 44px;
+  
+  /* Secondary variant of liquid blue button - lighter than primary */
+  background: linear-gradient(to bottom right,
+    rgba(20, 184, 166, 0.20), /* Lighter than primary */
+    rgba(6, 182, 212, 0.15),
+    rgba(34, 197, 94, 0.20)
+  ) !important;
+  
+  box-shadow:
+    inset 0 2px 6px rgba(45, 212, 191, 0.25),
+    0 0 20px rgba(6, 182, 212, 0.18);
+    
+  border: 1px solid rgba(45, 212, 191, 0.22) !important;
+  
+  color: rgba(220, 252, 231, 1) !important;
+  
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  
+  /* Glass overlay effect */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.08) 0%,
+      transparent 100%
+    );
+    pointer-events: none;
+  }
+  
+  /* Liquid shimmer effect */
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+      105deg,
+      transparent 30%,
+      rgba(45, 212, 191, 0.18) 45%,
+      rgba(6, 182, 212, 0.22) 50%,
+      rgba(34, 197, 94, 0.18) 55%,
+      transparent 70%
+    );
+    background-size: 200% 100%;
+    animation: ${liquidShimmer} 3.5s ease-in-out infinite;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+  
+  /* Ensure text is readable */
+  span {
+    position: relative;
+    z-index: 1;
+  }
+  
+  &:hover {
+    background: linear-gradient(to bottom right,
+      rgba(20, 184, 166, 0.25),
+      rgba(6, 182, 212, 0.20),
+      rgba(34, 197, 94, 0.25)
+    ) !important;
+    
+    box-shadow:
+      inset 0 3px 10px rgba(45, 212, 191, 0.30),
+      0 0 30px rgba(6, 182, 212, 0.22);
+      
+    transform: translateY(-1px);
+    color: #ffffff !important;
+    
+    &::after {
+      opacity: 1;
+    }
+  }
+  
+  &:active {
+    transform: translateY(0);
+    background: linear-gradient(to bottom right,
+      rgba(20, 184, 166, 0.30),
+      rgba(6, 182, 212, 0.25),
+      rgba(34, 197, 94, 0.30)
+    ) !important;
+    
+    box-shadow:
+      inset 0 4px 12px rgba(45, 212, 191, 0.35),
+      0 0 18px rgba(6, 182, 212, 0.20);
+  }
+  
+  &:focus {
+    outline: none;
+    box-shadow:
+      inset 0 2px 8px rgba(45, 212, 191, 0.28),
+      0 0 30px rgba(6, 182, 212, 0.23),
+      0 0 0 2px rgba(45, 212, 191, 0.30);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    
+    &:hover {
+      transform: none;
+    }
+  }
+`;
+
 export const SocialButton = styled(BaseButton)`
   font-size: ${FONT_SIZE.md};
   font-weight: 600;

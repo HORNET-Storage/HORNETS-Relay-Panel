@@ -151,12 +151,14 @@ export const LoginForm: React.FC = () => {
           </Auth.SubmitButton>
         </Form.Item>
         <Auth.FooterWrapper>
-          <Auth.Text>
-            {t('login.noAccount')}{' '}
-            <Link to="/auth/sign-up">
-              <Auth.LinkText>{t('common.here')}</Auth.LinkText>
-            </Link>
+          <Auth.Text style={{ marginBottom: '1rem' }}>
+            {t('login.noAccount')}
           </Auth.Text>
+          <Link to="/auth/sign-up" style={{ display: 'block', textDecoration: 'none' }}>
+            <Auth.SecondaryButton type="button" block>
+              {t('common.createAccount')}
+            </Auth.SecondaryButton>
+          </Link>
         </Auth.FooterWrapper>
       </Form>
     </Auth.FormWrapper>
