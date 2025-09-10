@@ -82,6 +82,7 @@ export const CardWrapper = styled.div`
 
 export const ComponentWrapper = styled.div`
   position: relative;
+  padding-bottom: 12px;
   
   /* Add padding to align splide track with title */
   .splide__track {
@@ -109,10 +110,10 @@ export const FlexWrapper = styled.div`
   justify-content: flex-start;
   align-items: center;
   gap: 0.5rem;
-  padding: 0 1.5rem;
+  padding: 0 1.5rem 12px 1.5rem;
 
   @media only screen and ${media.xl} {
     gap: 0.625rem;
-    padding: 0 2rem;
+    padding: 0 2rem 12px 2rem;
   }
 `;
