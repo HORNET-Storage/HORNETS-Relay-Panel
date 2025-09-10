@@ -159,8 +159,8 @@ export const AllowedUsersLayout: React.FC = () => {
         <PageStyles.LeftSideCol xl={16} xxl={17}>
           <S.Container>
             <S.Header>
-              <S.Title>H.O.R.N.E.T Allowed Users</S.Title>
-              <S.Subtitle>Centralized user permission management</S.Subtitle>
+              <S.Title>Allowed Users on Relay</S.Title>
+              <S.Subtitle>Choose who has access to your nostr relay</S.Subtitle>
             </S.Header>
 
             <Row gutter={[24, 24]}>
