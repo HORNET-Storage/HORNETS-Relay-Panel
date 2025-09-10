@@ -26,6 +26,12 @@ export const useSidebarNavigation = (): SidebarNavigationItem[] => {
         icon: <NestIcon />,
       },
       {
+        title: 'Allowed Users',
+        key: 'allowed-users',
+        url: '/allowed-users',
+        icon: <UserOutlined />,
+      },
+      {
         title: 'common.relay-settings',
         key: 'relay-settings',
         url: '/relay-settings',
@@ -38,13 +44,7 @@ export const useSidebarNavigation = (): SidebarNavigationItem[] => {
         icon: <SettingOutlined />,
       },
       {
-        title: 'Allowed Users',
-        key: 'allowed-users',
-        url: '/allowed-users',
-        icon: <UserOutlined />,
-      },
-      {
-        title: 'common.access-control',
+        title: 'Content Moderation',
         key: 'blocked-pubkeys',
         url: '/blocked-pubkeys',
         icon: <StopOutlined />,
