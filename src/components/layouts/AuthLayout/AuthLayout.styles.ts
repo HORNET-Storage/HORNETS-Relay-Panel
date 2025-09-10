@@ -255,65 +255,142 @@ export const FormItem = styled(BaseForm.Item)`
 `;
 
 export const FormInput = styled(CommonInput)`
-  color: rgba(255, 255, 255, 0.95);
-  background: rgba(0, 255, 255, 0.05);
-  border: 1px solid rgba(0, 255, 255, 0.2);
-  border-radius: 8px;
-  transition: all 0.3s ease;
-
-  & input.ant-input {
-    background: transparent;
+  &.ant-input-affix-wrapper {
     color: rgba(255, 255, 255, 0.95);
+    background: transparent !important;
+    border: 1px solid rgba(0, 255, 255, 0.2);
+    border-radius: 8px;
+    transition: border-color 0.3s ease;
+    padding: 12px 16px;
+    box-shadow: none !important;
+    
+    & input.ant-input {
+      background: transparent !important;
+      border: none !important;
+      outline: none !important;
+      box-shadow: none !important;
+      padding: 0;
+      color: rgba(255, 255, 255, 0.95);
+      
+      &::placeholder {
+        color: rgba(255, 255, 255, 0.4);
+      }
+      
+      &:hover {
+        box-shadow: none !important;
+      }
+      
+      &:focus {
+        box-shadow: none !important;
+      }
+    }
+    
+    &:hover:not(.ant-input-affix-wrapper-focused) {
+      border-color: rgba(0, 255, 255, 0.4);
+      background: transparent !important;
+      box-shadow: none !important;
+    }
+    
+    &.ant-input-affix-wrapper-focused,
+    &:focus {
+      background: transparent !important;
+      border-color: rgba(0, 255, 255, 0.6);
+      box-shadow: 0 0 0 2px rgba(0, 255, 255, 0.1),
+                  0 0 20px rgba(0, 255, 255, 0.2);
+    }
+  }
+  
+  /* For inputs without affix wrapper */
+  &.ant-input {
+    color: rgba(255, 255, 255, 0.95);
+    background: transparent !important;
+    border: 1px solid rgba(0, 255, 255, 0.2);
+    border-radius: 8px;
+    transition: border-color 0.3s ease;
+    padding: 12px 16px;
+    height: auto;
+    box-shadow: none !important;
     
     &::placeholder {
       color: rgba(255, 255, 255, 0.4);
     }
-  }
-
-  &:hover {
-    border-color: rgba(0, 255, 255, 0.4);
-    box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
-  }
-
-  &:focus,
-  &.ant-input-focused {
-    background: rgba(0, 255, 255, 0.08);
-    border-color: rgba(0, 255, 255, 0.6);
-    box-shadow: 0 0 0 2px rgba(0, 255, 255, 0.1),
-                0 0 20px rgba(0, 255, 255, 0.2);
+    
+    &:hover:not(:focus) {
+      border-color: rgba(0, 255, 255, 0.4);
+      background: transparent !important;
+      box-shadow: none !important;
+    }
+    
+    &:focus,
+    &.ant-input-focused {
+      background: transparent !important;
+      border-color: rgba(0, 255, 255, 0.6);
+      box-shadow: 0 0 0 2px rgba(0, 255, 255, 0.1),
+                  0 0 20px rgba(0, 255, 255, 0.2);
+      outline: none;
+    }
   }
 `;
 
 export const FormInputPassword = styled(CommonInputPassword)`
-  color: rgba(255, 255, 255, 0.95);
-  background: rgba(0, 255, 255, 0.05);
-  border: 1px solid rgba(0, 255, 255, 0.2);
-  border-radius: 8px;
-  transition: all 0.3s ease;
-
-  & input.ant-input {
-    background: transparent;
+  &.ant-input-affix-wrapper {
     color: rgba(255, 255, 255, 0.95);
+    background: transparent !important;
+    border: 1px solid rgba(0, 255, 255, 0.2);
+    border-radius: 8px;
+    transition: border-color 0.3s ease;
+    padding: 12px 16px;
+    height: auto;
+    box-shadow: none !important;
     
-    &::placeholder {
-      color: rgba(255, 255, 255, 0.4);
+    & input.ant-input {
+      background: transparent !important;
+      border: none !important;
+      outline: none !important;
+      box-shadow: none !important;
+      padding: 0;
+      color: rgba(255, 255, 255, 0.95);
+      
+      &::placeholder {
+        color: rgba(255, 255, 255, 0.4);
+      }
+      
+      &:hover {
+        box-shadow: none !important;
+      }
+      
+      &:focus {
+        box-shadow: none !important;
+      }
     }
-  }
-
-  & .ant-input-suffix {
-    color: rgba(0, 255, 255, 0.6);
-  }
-
-  &:hover {
-    border-color: rgba(0, 255, 255, 0.4);
-    box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
-  }
-
-  &:focus-within {
-    background: rgba(0, 255, 255, 0.08);
-    border-color: rgba(0, 255, 255, 0.6);
-    box-shadow: 0 0 0 2px rgba(0, 255, 255, 0.1),
-                0 0 20px rgba(0, 255, 255, 0.2);
+    
+    & .ant-input-suffix {
+      color: rgba(0, 255, 255, 0.6);
+      margin-left: 8px;
+      
+      .anticon {
+        color: rgba(0, 255, 255, 0.6);
+        transition: color 0.3s ease;
+        
+        &:hover {
+          color: rgba(0, 255, 255, 0.8);
+        }
+      }
+    }
+    
+    &:hover:not(.ant-input-affix-wrapper-focused) {
+      border-color: rgba(0, 255, 255, 0.4);
+      background: transparent !important;
+      box-shadow: none !important;
+    }
+    
+    &.ant-input-affix-wrapper-focused,
+    &:focus-within {
+      background: transparent !important;
+      border-color: rgba(0, 255, 255, 0.6);
+      box-shadow: 0 0 0 2px rgba(0, 255, 255, 0.1),
+                  0 0 20px rgba(0, 255, 255, 0.2);
+    }
   }
 `;
 
