@@ -7,9 +7,9 @@ import ReportNotificationsOverlay from '@app/components/header/components/notifi
 import { usePaymentNotifications } from '@app/hooks/usePaymentNotifications';
 import { useReportNotifications } from '@app/hooks/useReportNotifications';
 import { HeaderActionWrapper } from '@app/components/header/Header.styles';
-import { BasePopover } from '@app/components/common/BasePopover/BasePopover';
 import { useTranslation } from 'react-i18next';
 import { Tabs } from 'antd';
+import * as S from './NotificationsDropdown.styles';
 
 export const NotificationsDropdown: React.FC = () => {
   const { t } = useTranslation();
@@ -132,17 +132,17 @@ export const NotificationsDropdown: React.FC = () => {
   ];
 
   return (
-    <BasePopover
+    <S.StyledNotificationPopover
       trigger="click"
       content={
-        <div style={{ maxWidth: '400px', minWidth: '320px' }}>
-          <Tabs 
-            defaultActiveKey="1" 
+        <S.NotificationContent>
+          <Tabs
+            defaultActiveKey="1"
             items={tabItems}
             destroyInactiveTabPane={false}
             style={{ height: '100%' }}
           />
-        </div>
+        </S.NotificationContent>
       }
       onOpenChange={setOpened}
       placement="bottomRight"
@@ -157,6 +157,6 @@ export const NotificationsDropdown: React.FC = () => {
           }
         />
       </HeaderActionWrapper>
-    </BasePopover>
+    </S.StyledNotificationPopover>
   );
 };

@@ -233,7 +233,7 @@ export default createGlobalStyle`
 
   // Apply to modal-like dropdown containers
   .ant-popover {
-    animation: dropdownGlowFadeIn 0.8s ease-out forwards !important;
+    animation: none !important;
   }
 
   // Sidebar with glass effect

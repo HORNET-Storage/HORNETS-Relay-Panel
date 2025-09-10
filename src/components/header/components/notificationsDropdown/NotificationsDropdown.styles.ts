@@ -3,11 +3,11 @@ import { BasePopover } from '@app/components/common/BasePopover/BasePopover';
 
 export const StyledNotificationPopover = styled(BasePopover)`
   .ant-popover-content {
-    background: rgba(0, 122, 255, 0.08) !important;
-    backdrop-filter: blur(24px) !important;
-    -webkit-backdrop-filter: blur(24px) !important;
-    border: 1px solid rgba(0, 255, 255, 0.2) !important;
-    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3) !important;
+    background: rgba(0, 255, 255, 0.03) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(0, 255, 255, 0.15) !important;
+    box-shadow: 0 8px 32px 0 rgba(0, 255, 255, 0.1) !important;
     border-radius: 12px !important;
   }
   
