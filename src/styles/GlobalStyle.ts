@@ -133,10 +133,44 @@ export default createGlobalStyle`
     border-color: rgba(0, 255, 255, 0.4) !important;
   }
 
+  // Animated dropdown glow effect keyframes
+  @keyframes dropdownGlowFadeIn {
+    0% {
+      opacity: 0;
+      box-shadow:
+        0 0 0 rgba(0, 255, 255, 0),
+        0 8px 32px 0 rgba(0, 255, 255, 0);
+      border-color: rgba(0, 255, 255, 0);
+      transform: translateY(-5px);
+    }
+    100% {
+      opacity: 1;
+      box-shadow:
+        0 0 20px rgba(0, 255, 255, 0.4),
+        0 8px 32px 0 rgba(0, 255, 255, 0.15);
+      border-color: rgba(0, 255, 255, 0.35);
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes dropdownGlowPulse {
+    0%, 100% {
+      box-shadow:
+        0 0 20px rgba(0, 255, 255, 0.4),
+        0 8px 32px 0 rgba(0, 255, 255, 0.15);
+      border-color: rgba(0, 255, 255, 0.35);
+    }
+    50% {
+      box-shadow:
+        0 0 30px rgba(0, 255, 255, 0.5),
+        0 8px 40px 0 rgba(0, 255, 255, 0.2);
+      border-color: rgba(0, 255, 255, 0.45);
+    }
+  }
+
   // Input fields with glass effect
   .ant-input,
   .ant-input-affix-wrapper,
-  .ant-select-selector,
   .ant-picker {
     background: rgba(0, 255, 255, 0.05) !important;
     border: 1px solid rgba(0, 255, 255, 0.2) !important;
@@ -148,6 +182,58 @@ export default createGlobalStyle`
       border-color: rgba(0, 255, 255, 0.5) !important;
       box-shadow: 0 0 10px rgba(0, 255, 255, 0.2) !important;
     }
+  }
+
+  // Select dropdowns with animated glow
+  .ant-select-selector {
+    background: rgba(0, 255, 255, 0.05) !important;
+    border: 1px solid rgba(0, 255, 255, 0.2) !important;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    color: rgba(255, 255, 255, 0.9) !important;
+    transition: all 0.3s ease;
+    
+    // Apply fade-in animation on initial render - 0.8 second duration
+    animation: dropdownGlowFadeIn 0.8s ease-out forwards;
+    
+    &:hover {
+      // Add pulse animation on hover
+      animation: dropdownGlowPulse 2s ease-in-out infinite;
+      border-color: rgba(0, 255, 255, 0.5) !important;
+    }
+    
+    &:focus, .ant-select-focused & {
+      animation: dropdownGlowPulse 2s ease-in-out infinite;
+      border-color: rgba(0, 255, 255, 0.5) !important;
+    }
+  }
+
+  // Apply animation to dropdown popup containers
+  .ant-select-dropdown {
+    animation: dropdownGlowFadeIn 0.8s ease-out forwards !important;
+    background: rgba(0, 255, 255, 0.03) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(0, 255, 255, 0.15) !important;
+    box-shadow:
+      0 0 20px rgba(0, 255, 255, 0.4),
+      0 8px 32px 0 rgba(0, 255, 255, 0.15) !important;
+  }
+
+  // Apply animation to all dropdown-like containers
+  .ant-dropdown,
+  .ant-picker-dropdown {
+    animation: dropdownGlowFadeIn 0.8s ease-out forwards !important;
+  }
+
+  // Enhanced glow for relay settings specific containers
+  .ant-collapse-content {
+    animation: dropdownGlowFadeIn 0.8s ease-out forwards;
+  }
+
+  // Apply to modal-like dropdown containers
+  .ant-popover {
+    animation: dropdownGlowFadeIn 0.8s ease-out forwards !important;
   }
 
   // Sidebar with glass effect
