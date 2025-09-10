@@ -3,6 +3,7 @@ export {
   DashboardWrapper,
   LeftSideCol,
   RightSideCol,
+  RightSideContentWrapper,
   Space,
   ScrollWrapper,
   BlockWrapper

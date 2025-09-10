@@ -141,7 +141,7 @@ const AdvancedSettingsLayout: React.FC<AdvancedSettingsLayoutProps> = ({
         </S.LeftSideCol>
 
         <S.RightSideCol xl={8} xxl={7}>
-          <S.RightSideContentWrapper>
+          <div style={{ width: '100%', padding: '0 2rem', display: 'flex', flexDirection: 'column' }}>
             <div id="balance" className="liquid-element">
               <Balance />
             </div>
@@ -153,7 +153,7 @@ const AdvancedSettingsLayout: React.FC<AdvancedSettingsLayoutProps> = ({
             <div id="activity-story" className="liquid-element">
               <ActivityStory />
             </div>
-          </S.RightSideContentWrapper>
+          </div>
         </S.RightSideCol>
       </BaseRow>
     </S.DashboardWrapper>

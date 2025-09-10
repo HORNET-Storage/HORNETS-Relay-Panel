@@ -1,21 +1,12 @@
-import { useEffect } from 'react';
-import { ConfigProvider } from 'antd';
+import { useEffect, useState } from 'react';
 
 export const useFullscreenModalFix = () => {
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
   useEffect(() => {
     const handleFullscreenChange = () => {
-      const isFullscreen = document.fullscreenElement !== null;
-      
-      // Configure Ant Design to render modals in the correct container
-      ConfigProvider.config({
-        getPopupContainer: () => {
-          // If in fullscreen, append to the fullscreen element
-          // Otherwise, append to body as normal
-          return isFullscreen && document.fullscreenElement 
-            ? document.fullscreenElement as HTMLElement
-            : document.body;
-        },
-      });
+      const isInFullscreen = document.fullscreenElement !== null;
+      setIsFullscreen(isInFullscreen);
     };
 
     // Set initial state
@@ -34,4 +25,6 @@ export const useFullscreenModalFix = () => {
       document.removeEventListener('MSFullscreenChange', handleFullscreenChange);
     };
   }, []);
+
+  return isFullscreen;
 };
