@@ -26,6 +26,18 @@ export const Card = styled(CommonCard)`
   &.ant-card-bordered {
     border: 1px solid var(--border-color);
   }
+  
+  /* Apply permanent hover glow when inside CollapsibleSection (Relay Settings dropdown containers) */
+  .ant-collapse-content-box & {
+    box-shadow: var(--box-shadow-hover) !important;
+    transition: transform 0.3s ease;
+    
+    &:hover {
+      /* Keep the hover glow and add slight transform */
+      box-shadow: var(--box-shadow-hover) !important;
+      transform: translateY(-1px);
+    }
+  }
 `;
 export const InfoCircleOutlinedIcon = styled(InfoCircleOutlined)`
   color: var(--text-light-color);
