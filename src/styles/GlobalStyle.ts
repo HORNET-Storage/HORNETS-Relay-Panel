@@ -231,7 +231,8 @@ export default createGlobalStyle`
     animation: dropdownGlowFadeIn 0.8s ease-out forwards;
   }
 
-  // Apply to modal-like dropdown containers
+  // Disable animation on header popovers (notification & settings dropdowns)
+  // but allow animations on other popovers elsewhere in the app
   .ant-popover {
     animation: none !important;
   }

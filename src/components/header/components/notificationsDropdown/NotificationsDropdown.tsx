@@ -146,6 +146,9 @@ export const NotificationsDropdown: React.FC = () => {
       }
       onOpenChange={setOpened}
       placement="bottomRight"
+      transitionName=""
+      mouseEnterDelay={0}
+      mouseLeaveDelay={0}
     >
       <HeaderActionWrapper>
         <BaseButton
