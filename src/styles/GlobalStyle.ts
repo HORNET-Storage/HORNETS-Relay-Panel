@@ -257,26 +257,17 @@ export default createGlobalStyle`
     transition: none !important;
   }
 
+  /* Hide all scrollbars completely while maintaining functionality */
   * {
-    scrollbar-width: thin;
-    scrollbar-color: rgba(0, 255, 255, 0.3) rgba(0, 255, 255, 0.05);
+    /* Firefox */
+    scrollbar-width: none !important;
+    /* IE/Edge */
+    -ms-overflow-style: none !important;
 
     &::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
-    }
-
-    &::-webkit-scrollbar-track {
-      background: rgba(0, 255, 255, 0.05);
-    }
-
-    &::-webkit-scrollbar-thumb {
-      background: rgba(0, 255, 255, 0.3);
-      border-radius: 4px;
-    }
-
-    &::-webkit-scrollbar-thumb:hover {
-      background: rgba(0, 255, 255, 0.5);
+      width: 0 !important;
+      height: 0 !important;
+      display: none !important;
     }
   }
 

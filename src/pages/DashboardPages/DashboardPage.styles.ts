@@ -17,22 +17,18 @@ export const RightSideCol = styled(BaseCol)`
   overflow-x: hidden;
   z-index: 5;
 
+  /* Hide scrollbars completely while maintaining functionality */
   &::-webkit-scrollbar {
-    width: 8px;
+    width: 0;
+    height: 0;
+    display: none;
   }
-
-  &::-webkit-scrollbar-track {
-    background: rgba(0, 255, 255, 0.05);
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: rgba(0, 255, 255, 0.3);
-    border-radius: 4px;
-  }
-
-  &::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 255, 255, 0.5);
-  }
+  
+  /* Firefox */
+  scrollbar-width: none;
+  
+  /* IE/Edge */
+  -ms-overflow-style: none;
 
   .liquid-element {
     animation: fadeInUp 0.6s ease-out;
@@ -59,22 +55,18 @@ export const LeftSideCol = styled(BaseCol)`
     overflow-x: hidden;
     background: transparent;
 
+    /* Hide scrollbars completely while maintaining functionality */
     &::-webkit-scrollbar {
-      width: 8px;
+      width: 0;
+      height: 0;
+      display: none;
     }
-
-    &::-webkit-scrollbar-track {
-      background: rgba(0, 255, 255, 0.05);
-    }
-
-    &::-webkit-scrollbar-thumb {
-      background: rgba(0, 255, 255, 0.3);
-      border-radius: 4px;
-    }
-
-    &::-webkit-scrollbar-thumb:hover {
-      background: rgba(0, 255, 255, 0.5);
-    }
+    
+    /* Firefox */
+    scrollbar-width: none;
+    
+    /* IE/Edge */
+    -ms-overflow-style: none;
   }
 
   .glass-panel {

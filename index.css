@@ -152,36 +152,102 @@ iframe {
   @apply max-w-full;
 }
 
-/* Webkit scrollbar (Chrome, Safari, Edge) */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+/* FORCE HIDE ALL SCROLLBARS - MAXIMUM SPECIFICITY */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video, main, button, input, select, textarea,
+*, *::before, *::after {
+  /* Firefox */
+  scrollbar-width: none !important;
+  /* IE/Edge */
+  -ms-overflow-style: none !important;
 }
 
-::-webkit-scrollbar-track {
-  background: #34216c;
+/* Webkit browsers - ALL elements and pseudo-elements */
+html::-webkit-scrollbar, body::-webkit-scrollbar, div::-webkit-scrollbar,
+*::-webkit-scrollbar, *::before::-webkit-scrollbar, *::after::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+  display: none !important;
 }
 
-::-webkit-scrollbar-thumb {
-  background-color: #0c1021;
-  border-radius: 4px;
+/* Ensure Ant Design components also hide scrollbars */
+.ant-layout::-webkit-scrollbar,
+.ant-layout-content::-webkit-scrollbar,
+.ant-layout-sider::-webkit-scrollbar,
+.ant-card::-webkit-scrollbar,
+.ant-card-body::-webkit-scrollbar,
+.ant-modal::-webkit-scrollbar,
+.ant-modal-body::-webkit-scrollbar,
+.ant-table::-webkit-scrollbar,
+.ant-table-body::-webkit-scrollbar,
+.ant-select-dropdown::-webkit-scrollbar,
+.ant-dropdown::-webkit-scrollbar,
+.ant-drawer::-webkit-scrollbar,
+.ant-drawer-body::-webkit-scrollbar,
+.ant-menu::-webkit-scrollbar,
+.ant-list::-webkit-scrollbar,
+.ant-collapse::-webkit-scrollbar,
+.ant-tabs-content::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+  display: none !important;
 }
 
-/* Firefox scrollbar */
-* {
-  scrollbar-width: thin;
+/* Firefox/IE for Ant Design components */
+.ant-layout,
+.ant-layout-content,
+.ant-layout-sider,
+.ant-card,
+.ant-card-body,
+.ant-modal,
+.ant-modal-body,
+.ant-table,
+.ant-table-body,
+.ant-select-dropdown,
+.ant-dropdown,
+.ant-drawer,
+.ant-drawer-body,
+.ant-menu,
+.ant-list,
+.ant-collapse,
+.ant-tabs-content {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
 }
 
-/* Universal scrollbar hiding for clean appearance - cross-browser */
-*::-webkit-scrollbar {
-  width: 0px;
-  height: 0px;
-  display: none;
+/* For elements that should explicitly show scrollbars, add class .show-scrollbar */
+.show-scrollbar {
+  /* Firefox */
+  scrollbar-width: thin !important;
+  /* IE/Edge */
+  -ms-overflow-style: auto !important;
 }
 
-*:not(.allow-scrollbar) {
-  -ms-overflow-style: none; /* IE/Edge */
-  scrollbar-width: none; /* Firefox */
+.show-scrollbar::-webkit-scrollbar {
+  width: 8px !important;
+  height: 8px !important;
+  display: block !important;
+}
+
+.show-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-radius: 4px !important;
+}
+
+.show-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-radius: 4px !important;
 }
 
 /* Custom scrollbar for FileContent component */
