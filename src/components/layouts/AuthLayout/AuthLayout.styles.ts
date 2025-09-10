@@ -20,13 +20,13 @@ const liquidFlow = keyframes`
   }
 `;
 
-// Glow pulse animation
-const glowPulse = keyframes`
-  0%, 100% {
-    box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+// Liquid shimmer animation
+const liquidShimmer = keyframes`
+  0% {
+    background-position: -200% 50%;
   }
-  50% {
-    box-shadow: 0 0 40px rgba(0, 255, 255, 0.4), 0 0 60px rgba(0, 255, 170, 0.2);
+  100% {
+    background-position: 200% 50%;
   }
 `;
 
@@ -131,7 +131,6 @@ export const FormWrapper = styled.div`
     0 8px 32px 0 rgba(0, 255, 255, 0.15),
     inset 0 1px 0 0 rgba(0, 255, 255, 0.1),
     inset 0 -1px 0 0 rgba(0, 255, 255, 0.05);
-  animation: ${glowPulse} 4s ease-in-out infinite;
   position: relative;
 
   &::before {
@@ -358,109 +357,245 @@ export const LinkText = styled(Text)`
   }
 `;
 
-const buttonGlow = keyframes`
-  0%, 100% {
-    box-shadow:
-      0 4px 15px rgba(0, 255, 255, 0.3),
-      inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  }
-  50% {
-    box-shadow:
-      0 4px 25px rgba(0, 255, 255, 0.5),
-      0 0 40px rgba(0, 255, 255, 0.2),
-      inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  }
-`;
-
 export const SubmitButton = styled(BaseButton)`
   font-size: ${FONT_SIZE.md};
-  font-weight: ${FONT_WEIGHT.semibold};
+  font-weight: 600;
   width: 100%;
   height: 48px;
-  background: linear-gradient(135deg, #06B6D4 0%, #14B8A6 100%);
-  border: 1px solid rgba(0, 255, 255, 0.3);
-  color: white;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  border-radius: 8px;
+  
+  /* Liquid glass button styling matching dashboard buttons */
+  background: linear-gradient(to bottom right,
+    rgba(20, 184, 166, 0.25), /* from-teal-500/25 */
+    rgba(6, 182, 212, 0.20),  /* via-cyan-500/20 */
+    rgba(34, 197, 94, 0.25)   /* to-green-500/25 */
+  ) !important;
+  
+  box-shadow:
+    inset 0 2px 8px rgba(45, 212, 191, 0.30), /* shadow-inner with teal */
+    0 0 25px rgba(6, 182, 212, 0.20);
+    
+  border: 1px solid rgba(45, 212, 191, 0.25) !important; /* border-teal-400/25 */
+  
+  color: #ffffff !important; /* text-white */
+  
   position: relative;
   overflow: hidden;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  animation: ${buttonGlow} 3s ease-in-out infinite;
-
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  
+  /* Glass overlay effect */
   &::before {
     content: '';
     position: absolute;
     top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
+    left: 0;
+    right: 0;
+    height: 50%;
     background: linear-gradient(
-      90deg,
-      transparent,
-      rgba(255, 255, 255, 0.2),
-      transparent
+      180deg,
+      rgba(255, 255, 255, 0.10) 0%,
+      transparent 100%
     );
-    transition: left 0.5s ease;
+    pointer-events: none;
   }
-
-  &:hover:not(:disabled) {
-    transform: translateY(-2px);
-    background: linear-gradient(135deg, #00DDFF 0%, #00FFAA 100%);
-    border-color: rgba(0, 255, 255, 0.6);
-    color: white;
+  
+  /* Liquid shimmer effect with teal-cyan highlights */
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+      105deg,
+      transparent 30%,
+      rgba(45, 212, 191, 0.20) 45%,
+      rgba(6, 182, 212, 0.25) 50%,
+      rgba(34, 197, 94, 0.20) 55%,
+      transparent 70%
+    );
+    background-size: 200% 100%;
+    animation: ${liquidShimmer} 3s ease-in-out infinite;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+  
+  /* Ensure text is readable */
+  span {
+    position: relative;
+    z-index: 1;
+  }
+  
+  &:hover {
+    background: linear-gradient(to bottom right,
+      rgba(20, 184, 166, 0.30), /* hover:from-teal-500/30 */
+      rgba(6, 182, 212, 0.25),  /* hover:via-cyan-500/25 */
+      rgba(34, 197, 94, 0.30)   /* hover:to-green-500/30 */
+    ) !important;
     
-    &::before {
-      left: 100%;
+    box-shadow:
+      inset 0 3px 12px rgba(45, 212, 191, 0.35),
+      0 0 35px rgba(6, 182, 212, 0.25);
+      
+    transform: translateY(-1px);
+    color: #ffffff !important;
+    
+    &::after {
+      opacity: 1;
     }
   }
-
-  &:active:not(:disabled) {
+  
+  &:active {
     transform: translateY(0);
+    background: linear-gradient(to bottom right,
+      rgba(20, 184, 166, 0.35), /* Active state with stronger teal */
+      rgba(6, 182, 212, 0.30),
+      rgba(34, 197, 94, 0.35)
+    ) !important;
+    box-shadow:
+      inset 0 4px 15px rgba(45, 212, 191, 0.40),
+      0 0 20px rgba(6, 182, 212, 0.20);
+  }
+  
+  &:focus {
+    outline: none;
+    box-shadow:
+      inset 0 2px 10px rgba(45, 212, 191, 0.30),
+      0 0 35px rgba(6, 182, 212, 0.25),
+      0 0 0 2px rgba(45, 212, 191, 0.35);
   }
 
   &:disabled {
-    background: rgba(0, 255, 255, 0.1);
-    border-color: rgba(0, 255, 255, 0.1);
-    color: rgba(255, 255, 255, 0.3);
+    opacity: 0.5;
     cursor: not-allowed;
-    animation: none;
+    background: linear-gradient(to bottom right,
+      rgba(20, 184, 166, 0.10),
+      rgba(6, 182, 212, 0.08),
+      rgba(34, 197, 94, 0.10)
+    ) !important;
+    
+    &:hover {
+      transform: none;
+      box-shadow:
+        inset 0 2px 8px rgba(45, 212, 191, 0.25),
+        0 0 20px rgba(6, 182, 212, 0.15);
+    }
   }
 
   &.ant-btn-loading {
-    &::after {
-      border-color: rgba(255, 255, 255, 0.3);
-      border-top-color: white;
+    opacity: 0.8;
+    
+    &::before {
+      background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.05) 0%,
+        transparent 100%
+      );
     }
   }
 `;
 
 export const SocialButton = styled(BaseButton)`
   font-size: ${FONT_SIZE.md};
-  font-weight: ${FONT_WEIGHT.semibold};
-  color: rgba(0, 255, 255, 0.9);
-  border: 1px solid rgba(0, 255, 255, 0.3);
+  font-weight: 600;
   width: 100%;
   margin-top: 1rem;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: rgba(0, 255, 255, 0.05);
+  
+  /* Ghost variant of liquid blue button */
+  background: linear-gradient(to bottom right,
+    rgba(20, 184, 166, 0.15),
+    rgba(6, 182, 212, 0.12),
+    rgba(34, 197, 94, 0.15)
+  ) !important;
+  
+  border: 1px solid rgba(45, 212, 191, 0.20) !important;
+  color: rgba(220, 252, 231, 1) !important;
+  
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border-radius: 8px;
-  transition: all 0.3s ease;
+  
+  box-shadow:
+    inset 0 2px 6px rgba(45, 212, 191, 0.20),
+    0 0 15px rgba(6, 182, 212, 0.15);
+  
+  /* Glass overlay effect */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.05) 0%,
+      transparent 100%
+    );
+    pointer-events: none;
+  }
+  
+  /* Liquid shimmer effect */
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+      105deg,
+      transparent 30%,
+      rgba(45, 212, 191, 0.15) 45%,
+      rgba(6, 182, 212, 0.20) 50%,
+      rgba(34, 197, 94, 0.15) 55%,
+      transparent 70%
+    );
+    background-size: 200% 100%;
+    animation: ${liquidShimmer} 4s ease-in-out infinite;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
 
   &:hover {
-    background: rgba(0, 255, 255, 0.1);
-    border-color: rgba(0, 255, 255, 0.5);
-    color: #00FFFF;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(0, 255, 255, 0.2);
+    background: linear-gradient(to bottom right,
+      rgba(20, 184, 166, 0.20),
+      rgba(6, 182, 212, 0.15),
+      rgba(34, 197, 94, 0.20)
+    ) !important;
+    
+    color: #ffffff !important;
+    transform: translateY(-1px);
+    
+    box-shadow:
+      inset 0 3px 10px rgba(45, 212, 191, 0.25),
+      0 0 25px rgba(6, 182, 212, 0.20);
+    
+    &::after {
+      opacity: 1;
+    }
   }
 
   &:active {
     transform: translateY(0);
+    background: linear-gradient(to bottom right,
+      rgba(20, 184, 166, 0.30),
+      rgba(6, 182, 212, 0.25),
+      rgba(34, 197, 94, 0.30)
+    ) !important;
+    
+    box-shadow:
+      inset 0 4px 12px rgba(45, 212, 191, 0.30),
+      0 0 15px rgba(6, 182, 212, 0.15);
   }
 `;
 
