@@ -9,10 +9,10 @@ export const RightSideCol = styled(BaseCol)`
   display: flex;
   flex-direction: column;
   height: calc(100vh - ${LAYOUT.desktop.headerHeight});
-  background: rgba(0, 255, 255, 0.02);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-left: 1px solid rgba(0, 255, 255, 0.1);
+  background: rgba(0, 255, 255, 0.08);  /* Glass effect with 8% opacity */
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-left: 1px solid rgba(0, 255, 255, 0.15);
   overflow-y: auto;
   overflow-x: hidden;
   z-index: 5;

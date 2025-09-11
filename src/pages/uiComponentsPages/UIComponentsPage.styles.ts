@@ -98,7 +98,7 @@ export const RightSideCol = styled(BaseCol)`
   display: flex;
   flex-direction: column;
   height: calc(100vh - ${LAYOUT.desktop.headerHeight});
-  background: rgba(0, 255, 255, 0.08);
+  background: rgba(0, 255, 255, 0.08);  /* Glass effect with 8% opacity */
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-left: 1px solid rgba(0, 255, 255, 0.15);
@@ -106,22 +106,18 @@ export const RightSideCol = styled(BaseCol)`
   overflow-x: hidden;
   z-index: 5;
 
+  /* Hide scrollbars completely */
   &::-webkit-scrollbar {
-    width: 8px;
+    width: 0;
+    height: 0;
+    display: none;
   }
-
-  &::-webkit-scrollbar-track {
-    background: rgba(0, 255, 255, 0.05);
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: rgba(0, 255, 255, 0.3);
-    border-radius: 4px;
-  }
-
-  &::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 255, 255, 0.5);
-  }
+  
+  /* Firefox */
+  scrollbar-width: none;
+  
+  /* IE/Edge */
+  -ms-overflow-style: none;
 
   .liquid-element {
     animation: fadeInUp 0.6s ease-out;
