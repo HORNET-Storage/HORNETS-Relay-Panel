@@ -16,7 +16,7 @@ export const Header = styled(BaseLayout.Header)<Header>`
     ${(props) =>
       props.$isSiderOpened &&
       css`
-        background-color: rgba(0, 0, 0, 0) !important;
+        background-color: transparent !important;
       `}
   }
   position: sticky;
@@ -26,7 +26,7 @@ export const Header = styled(BaseLayout.Header)<Header>`
   @media only screen and ${media.md} {
     display: block;
     z-index: 100;
-     background-color: var(--layout-body-bg-color) !important;
+    background-color: transparent !important;
     padding: ${LAYOUT.desktop.paddingVertical} ${LAYOUT.desktop.paddingHorizontal};
     height: ${LAYOUT.desktop.headerHeight};
   }

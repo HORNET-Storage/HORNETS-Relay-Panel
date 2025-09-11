@@ -65,16 +65,15 @@ export default createGlobalStyle`
     z-index: 2147483647 !important;
   }
 
-  // Glass morphism effect for cards and panels (removed .ant-form to eliminate square containers)
+  // Glass morphism effect for cards and panels - reduced opacity to match fullscreen
   .ant-card,
   .ant-modal-content,
   .ant-collapse-item,
   .ant-table {
-    background: rgba(0, 255, 255, 0.03) !important;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(0, 255, 255, 0.15) !important;
-    box-shadow: 0 8px 32px 0 rgba(0, 255, 255, 0.1) !important;
+    background: rgba(0, 255, 255, 0.01) !important;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(0, 255, 255, 0.1) !important;
   }
 
   // Apply glass morphism to notification dropdown popover
@@ -266,20 +265,20 @@ export default createGlobalStyle`
     animation: none !important;
   }
 
-  // Sidebar with glass effect
+  // Sidebar - transparent to match fullscreen
   .ant-layout-sider {
-    background: rgba(0, 255, 255, 0.06) !important;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-right: 1px solid rgba(0, 255, 255, 0.15);
+    background: transparent !important;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-right: 1px solid rgba(0, 255, 255, 0.05);
   }
 
-  // Header with glass effect
+  // Header - transparent to match fullscreen appearance
   .ant-layout-header {
-    background: rgba(0, 255, 255, 0.08) !important;
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-    border-bottom: 1px solid rgba(0, 255, 255, 0.15);
+    background: transparent !important;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-bottom: 1px solid rgba(0, 255, 255, 0.05);
   }
 
   [data-no-transition] * {

@@ -9,10 +9,10 @@ export const RightSideCol = styled(BaseCol)`
   display: flex;
   flex-direction: column;
   height: calc(100vh - ${LAYOUT.desktop.headerHeight});
-  background: rgba(0, 255, 255, 0.08);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-left: 1px solid rgba(0, 255, 255, 0.15);
+  background: rgba(0, 255, 255, 0.02);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-left: 1px solid rgba(0, 255, 255, 0.1);
   overflow-y: auto;
   overflow-x: hidden;
   z-index: 5;
@@ -70,18 +70,16 @@ export const LeftSideCol = styled(BaseCol)`
   }
 
   .glass-panel {
-    background: rgba(0, 255, 255, 0.03);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(0, 255, 255, 0.15);
-    box-shadow: 0 8px 32px 0 rgba(0, 255, 255, 0.1);
+    background: rgba(0, 255, 255, 0.01);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(0, 255, 255, 0.1);
     border-radius: 8px;
     transition: all 0.3s ease;
     animation: fadeInUp 0.6s ease-out;
 
     &:hover {
-      box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
-      border-color: rgba(0, 255, 255, 0.4);
+      border-color: rgba(0, 255, 255, 0.3);
       transform: translateY(-2px);
     }
   }
@@ -215,7 +213,6 @@ export const BlockWrapper = styled.div`
 export const DashboardWrapper = styled.div`
   position: relative;
   min-height: calc(100vh - 80px);
-  background: #000000;
   width: 100%;
   overflow-x: hidden;
 
@@ -233,12 +230,25 @@ export const DashboardWrapper = styled.div`
     }
   }
 
-  /* Multi-layer liquid blue gradient background */
+  /* Background layer shifted 50px to the left */
   &::before {
     content: '';
     position: fixed;
+    top: 0;
+    left: -50px;  /* Shifted left by 50px */
+    width: calc(100% + 50px);  /* Extended width to compensate */
+    height: 100%;
+    background: #1a1a1a;  /* Lighter background color (from pure black to dark gray) */
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  /* Multi-layer liquid blue gradient background - also shifted */
+  &::after {
+    content: '';
+    position: fixed;
     top: -50%;
-    left: -50%;
+    left: calc(-50% - 50px);  /* Shifted left by 50px */
     width: 200%;
     height: 200%;
     background:
@@ -247,28 +257,8 @@ export const DashboardWrapper = styled.div`
       radial-gradient(circle at 60% 80%, rgba(20, 184, 166, 0.12) 0%, transparent 45%),
       radial-gradient(circle at 40% 40%, rgba(0, 221, 255, 0.08) 0%, transparent 50%);
     pointer-events: none;
-    z-index: 0;
+    z-index: -1;
     animation: liquidBackground 30s ease infinite, rotate 60s linear infinite;
-  }
-
-  /* Additional animated gradient layer */
-  &::after {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg,
-      rgba(0, 255, 255, 0.03) 0%,
-      rgba(0, 255, 170, 0.03) 25%,
-      rgba(20, 184, 166, 0.03) 50%,
-      rgba(0, 221, 255, 0.03) 75%,
-      rgba(0, 255, 255, 0.03) 100%);
-    background-size: 400% 400%;
-    animation: liquidFlow 20s ease infinite;
-    pointer-events: none;
-    z-index: 0;
   }
 
   /* Ensure content is above background layers */
