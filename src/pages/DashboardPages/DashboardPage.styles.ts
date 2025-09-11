@@ -5,17 +5,18 @@ import { BaseCol } from '@app/components/common/BaseCol/BaseCol';
 export const RightSideCol = styled(BaseCol)`
   padding: ${LAYOUT.desktop.paddingVertical} 0;
   position: sticky;
-  top: 0;
+  top: -${LAYOUT.desktop.paddingVertical};  /* Move up to eliminate gap */
   display: flex;
   flex-direction: column;
-  height: calc(100vh - ${LAYOUT.desktop.headerHeight});
+  height: calc(100vh - ${LAYOUT.desktop.headerHeight} + ${LAYOUT.desktop.paddingVertical});
+  padding-top: calc(${LAYOUT.desktop.paddingVertical} * 2);  /* Add extra top padding for content */
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 5;
   background: rgba(0, 255, 255, 0.08);  /* Glass effect with 8% opacity */
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-left: 1px solid rgba(0, 255, 255, 0.15);
-  overflow-y: auto;
-  overflow-x: hidden;
-  z-index: 5;
 
   /* Hide scrollbars completely while maintaining functionality */
   &::-webkit-scrollbar {
