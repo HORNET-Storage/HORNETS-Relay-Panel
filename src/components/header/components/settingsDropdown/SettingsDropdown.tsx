@@ -16,6 +16,7 @@ export const SettingsDropdown: React.FC = () => {
       transitionName=""
       mouseEnterDelay={0}
       mouseLeaveDelay={0}
+      getPopupContainer={() => document.getElementById('root') || document.body}
     >
       <HeaderActionWrapper>
         <BaseButton type={isOpened ? 'ghost' : 'text'} icon={<SettingOutlined />} />

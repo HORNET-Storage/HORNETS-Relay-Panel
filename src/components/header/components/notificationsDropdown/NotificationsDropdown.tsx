@@ -149,6 +149,7 @@ export const NotificationsDropdown: React.FC = () => {
       transitionName=""
       mouseEnterDelay={0}
       mouseLeaveDelay={0}
+      getPopupContainer={() => document.getElementById('root') || document.body}
     >
       <HeaderActionWrapper>
         <BaseButton
