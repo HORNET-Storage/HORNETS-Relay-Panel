@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import ReactDOM from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import TransactionItem from './TransactionItem/TransactionItem';
 import { getUserActivities, WalletTransaction } from '@app/api/activity.api';
@@ -11,7 +12,6 @@ import { Line } from 'react-chartjs-2';
 import { BaseSkeleton } from '@app/components/common/BaseSkeleton/BaseSkeleton';
 import { ChartOptions } from 'chart.js';
 import { liquidBlueTheme } from '@app/styles/themes/liquidBlue/liquidBlueTheme';
-import { useFullscreenContainer } from '@app/hooks/useFullscreenContainer';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -65,7 +65,6 @@ export const ActivityStory: React.FC = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const handleLogout = useHandleLogout();
-  const fullscreenContainer = useFullscreenContainer();
 
   const { t } = useTranslation();
 
@@ -226,6 +225,32 @@ export const ActivityStory: React.FC = () => {
     },
   };
 
+  // Transaction Modal Component - rendered via portal
+  const TransactionModal = () => {
+    if (!isModalVisible) return null;
+    
+    return ReactDOM.createPortal(
+      <Modal
+        title={<span className="liquid-glow-text">{t('nft.yourTransactions')}</span>}
+        open={isModalVisible}
+        onCancel={handleCancel}
+        footer={null}
+        width={900}
+        className="liquid-modal"
+        centered
+        destroyOnClose
+      >
+        <div style={{ height: '400px', marginBottom: '20px' }}>
+          <Line data={prepareChartData()} options={chartOptions} />
+        </div>
+        <div className="liquid-transactions-list">
+          {isLoading ? <TransactionSkeletons /> : <S.ActivityRow gutter={[26, 26]}>{activityContent}</S.ActivityRow>}
+        </div>
+      </Modal>,
+      document.body
+    );
+  };
+
   return (
     <LiquidWrapper className="liquid-dashboard-element">
       <TitleContainer>
@@ -242,24 +267,10 @@ export const ActivityStory: React.FC = () => {
 
       <ButtonTrigger amount={0}/>
 
-      <Modal
-        title={<span className="liquid-glow-text">{t('nft.yourTransactions')}</span>}
-        open={isModalVisible}
-        onCancel={handleCancel}
-        footer={null}
-        width={900}
-        className="liquid-modal"
-        getContainer={fullscreenContainer || false}
-      >
-        <div style={{ height: '400px', marginBottom: '20px' }}>
-          <Line data={prepareChartData()} options={chartOptions} />
-        </div>
-        <div className="liquid-transactions-list">
-          {isLoading ? <TransactionSkeletons /> : <S.ActivityRow gutter={[26, 26]}>{activityContent}</S.ActivityRow>}
-        </div>
-      </Modal>
-
       {isLoading ? <TransactionSkeletons /> : <S.ActivityRow gutter={[26, 26]}>{activityContent}</S.ActivityRow>}
+
+      {/* Transaction Modal - rendered via portal */}
+      <TransactionModal />
     </LiquidWrapper>
   );
 };
