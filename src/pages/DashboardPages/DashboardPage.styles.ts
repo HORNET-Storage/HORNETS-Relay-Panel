@@ -112,7 +112,7 @@ export const LeftSideCol = styled(BaseCol)`
       width: 200%;
       height: 200%;
       background: radial-gradient(circle, rgba(0, 255, 255, 0.1) 0%, transparent 70%);
-      animation: rotate 10s linear infinite;
+      /* Removed rotate animation for static effect */
       pointer-events: none;
     }
   }
@@ -132,14 +132,7 @@ export const LiquidAnimations = styled.div`
     }
   }
 
-  @keyframes rotate {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
-  }
+  /* Removed unused rotate keyframes */
 
   @keyframes fadeInUp {
     0% {
@@ -259,7 +252,7 @@ export const DashboardWrapper = styled.div`
       radial-gradient(circle at 40% 40%, rgba(0, 221, 255, 0.08) 0%, transparent 50%);
     pointer-events: none;
     z-index: -1;
-    animation: liquidBackground 30s ease infinite, rotate 60s linear infinite;
+    animation: liquidBackground 30s ease infinite;  /* Removed rotate animation */
   }
 
   /* Ensure content is above background layers */
@@ -271,19 +264,19 @@ export const DashboardWrapper = styled.div`
   @keyframes liquidBackground {
     0%, 100% {
       opacity: 0.6;
-      transform: scale(1) rotate(0deg);
+      transform: scale(1);  /* Removed rotation */
     }
     25% {
       opacity: 0.8;
-      transform: scale(1.1) rotate(90deg);
+      transform: scale(1.1);  /* Removed rotation */
     }
     50% {
       opacity: 1;
-      transform: scale(1.2) rotate(180deg);
+      transform: scale(1.2);  /* Removed rotation */
     }
     75% {
       opacity: 0.8;
-      transform: scale(1.1) rotate(270deg);
+      transform: scale(1.1);  /* Removed rotation */
     }
   }
 
@@ -299,14 +292,7 @@ export const DashboardWrapper = styled.div`
     }
   }
 
-  @keyframes rotate {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
-  }
+  /* Removed duplicate rotate keyframes */
 `;
 
 export const Item = styled.div`

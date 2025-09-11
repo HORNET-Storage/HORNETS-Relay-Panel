@@ -54,7 +54,7 @@ const LiquidWrapper = styled.div`
     width: 100%;
     height: 100%;
     background: radial-gradient(circle, rgba(0, 255, 255, 0.05) 0%, transparent 70%);
-    animation: rotate 10s linear infinite;
+    /* Removed rotate animation */
     pointer-events: none;
   }
 `;
@@ -132,7 +132,8 @@ export const ActivityStory: React.FC = () => {
           backgroundColor: (context: any) => {
             const ctx = context.chart.ctx;
             const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-            gradient.addColorStop(0, `${liquidBlueTheme.chartPrimaryGradient}`);
+            // Fix: Use a direct color value instead of object
+            gradient.addColorStop(0, 'rgba(0, 255, 255, 0.15)');
             gradient.addColorStop(1, 'rgba(0, 255, 255, 0.05)');
             return gradient;
           },

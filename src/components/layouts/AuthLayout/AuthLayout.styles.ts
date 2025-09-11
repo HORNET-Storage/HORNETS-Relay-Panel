@@ -84,7 +84,7 @@ export const BackgroundWrapper = styled.div`
       rgba(20, 184, 166, 0.06) 0%,
       transparent 70%
     );
-    animation: ${rotate} 30s linear infinite;
+    /* Removed rotate animation for static effect */
   }
 
   &::after {
