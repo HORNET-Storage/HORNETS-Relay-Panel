@@ -214,7 +214,7 @@ export default createGlobalStyle`
     }
   }
 
-  // Select dropdowns with animated glow
+  // Select dropdowns with glass effect (NO animation)
   .ant-select-selector {
     background: rgba(0, 255, 255, 0.05) !important;
     border: 1px solid rgba(0, 255, 255, 0.2) !important;
@@ -223,24 +223,19 @@ export default createGlobalStyle`
     color: rgba(255, 255, 255, 0.9) !important;
     transition: all 0.3s ease;
     
-    // Apply fade-in animation on initial render - 0.8 second duration
-    animation: dropdownGlowFadeIn 0.8s ease-out forwards;
-    
     &:hover {
-      // Add pulse animation on hover
-      animation: dropdownGlowPulse 2s ease-in-out infinite;
       border-color: rgba(0, 255, 255, 0.5) !important;
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.2) !important;
     }
     
     &:focus, .ant-select-focused & {
-      animation: dropdownGlowPulse 2s ease-in-out infinite;
       border-color: rgba(0, 255, 255, 0.5) !important;
+      box-shadow: 0 0 15px rgba(0, 255, 255, 0.3) !important;
     }
   }
 
-  // Apply animation to dropdown popup containers
+  // Dropdown popup containers with glass effect (NO animation)
   .ant-select-dropdown {
-    animation: dropdownGlowFadeIn 0.8s ease-out forwards !important;
     background: rgba(0, 255, 255, 0.03) !important;
     backdrop-filter: blur(10px) !important;
     -webkit-backdrop-filter: blur(10px) !important;
@@ -250,13 +245,17 @@ export default createGlobalStyle`
       0 8px 32px 0 rgba(0, 255, 255, 0.15) !important;
   }
 
-  // Apply animation to all dropdown-like containers
+  // Other dropdown containers with glass effect (NO animation)
   .ant-dropdown,
   .ant-picker-dropdown {
-    animation: dropdownGlowFadeIn 0.8s ease-out forwards !important;
+    background: rgba(0, 255, 255, 0.03) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(0, 255, 255, 0.15) !important;
+    box-shadow: 0 8px 32px 0 rgba(0, 255, 255, 0.1) !important;
   }
 
-  // Enhanced glow for relay settings specific containers
+  // Enhanced glow animation ONLY for collapsible sections (as intended)
   .ant-collapse-content {
     animation: dropdownGlowFadeIn 0.8s ease-out forwards;
   }
