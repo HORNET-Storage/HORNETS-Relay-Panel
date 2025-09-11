@@ -183,6 +183,36 @@ export default createGlobalStyle`
       box-shadow: 0 0 10px rgba(0, 255, 255, 0.2) !important;
     }
   }
+  
+  /* COMPLETELY REMOVE inner box from ALL search inputs with icons */
+  .ant-input-affix-wrapper {
+    /* The wrapper gets the glass effect */
+    
+    /* COMPLETELY HIDE the inner input box - make it invisible */
+    & .ant-input,
+    & input.ant-input {
+      background: none !important;
+      background-color: transparent !important;
+      background-image: none !important;
+      border: 0 !important;
+      border: none !important;
+      box-shadow: none !important;
+      outline: none !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      
+      &:hover,
+      &:focus,
+      &:active,
+      &:focus-visible {
+        background: none !important;
+        background-color: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        outline: none !important;
+      }
+    }
+  }
 
   // Select dropdowns with animated glow
   .ant-select-selector {
