@@ -11,6 +11,7 @@ import { Line } from 'react-chartjs-2';
 import { BaseSkeleton } from '@app/components/common/BaseSkeleton/BaseSkeleton';
 import { ChartOptions } from 'chart.js';
 import { liquidBlueTheme } from '@app/styles/themes/liquidBlue/liquidBlueTheme';
+import { useFullscreenContainer } from '@app/hooks/useFullscreenContainer';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -64,6 +65,7 @@ export const ActivityStory: React.FC = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const handleLogout = useHandleLogout();
+  const fullscreenContainer = useFullscreenContainer();
 
   const { t } = useTranslation();
 
@@ -247,6 +249,7 @@ export const ActivityStory: React.FC = () => {
         footer={null}
         width={900}
         className="liquid-modal"
+        getContainer={fullscreenContainer || false}
       >
         <div style={{ height: '400px', marginBottom: '20px' }}>
           <Line data={prepareChartData()} options={chartOptions} />

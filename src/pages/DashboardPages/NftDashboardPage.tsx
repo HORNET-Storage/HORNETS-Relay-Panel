@@ -24,7 +24,7 @@ const MedicalDashboardPage: React.FC = () => {
   // };
 
   const desktopLayout = (
-    <S.DashboardWrapper>
+    <S.DashboardWrapper data-fullscreen-container>
       <BaseRow>
         <S.LeftSideCol xl={16} xxl={17} id="desktop-content">
           <BaseRow gutter={[60, 30]}>
@@ -79,7 +79,7 @@ const MedicalDashboardPage: React.FC = () => {
   );
 
   const mobileAndTabletLayout = (
-    <S.DashboardWrapper>
+    <S.DashboardWrapper data-fullscreen-container>
       <BaseRow gutter={[20, 16]}>
         <BaseCol span={24}>
           <div className="glass-panel">

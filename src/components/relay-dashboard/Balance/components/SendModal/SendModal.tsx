@@ -4,6 +4,7 @@ import { BaseModal } from '@app/components/common/BaseModal/BaseModal';
 import { BaseSpin } from '@app/components/common/BaseSpin/BaseSpin';
 import SendForm from '../SendForm/SendForm';
 import ResultScreen from '../SendForm/components/ResultScreen/ResultScreen';
+import { useFullscreenContainer } from '@app/hooks/useFullscreenContainer';
 
 interface SendModalProps {
   isOpen: boolean;
@@ -22,6 +23,7 @@ const SendModal: React.FC<SendModalProps> = ({ isOpen, onOpenChange }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
   const [successScreenState, setSuccessScreenState] = useState<SuccessScreenProps | null>(null);
+  const fullscreenContainer = useFullscreenContainer();
 
   const onFinish = (status: boolean, address: string, amount: number, txid?: string, message?: string) => {
     setSuccessScreenState({ isSuccess: status, address, amount, txid, message });
@@ -34,8 +36,18 @@ const SendModal: React.FC<SendModalProps> = ({ isOpen, onOpenChange }) => {
     onOpenChange();
   };
 
+  // Use fullscreen container if available, otherwise render to body
+  const portalContainer = fullscreenContainer || document.body;
+
   return ReactDOM.createPortal(
-    <BaseModal centered={true} width={600} open={isOpen} onCancel={handleFinish} footer={null} destroyOnClose>
+    <BaseModal
+      centered={true}
+      width={600}
+      open={isOpen}
+      onCancel={handleFinish}
+      footer={null}
+      destroyOnClose
+    >
       <BaseSpin spinning={isLoading}>
         {isFinished && successScreenState ? (
           <ResultScreen
@@ -51,7 +63,7 @@ const SendModal: React.FC<SendModalProps> = ({ isOpen, onOpenChange }) => {
         )}
       </BaseSpin>
     </BaseModal>,
-    document.body
+    portalContainer
   );
 };
 

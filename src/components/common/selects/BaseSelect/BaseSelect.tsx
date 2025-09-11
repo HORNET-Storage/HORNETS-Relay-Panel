@@ -15,7 +15,6 @@ export interface BaseSelectProps extends ComponentProps<typeof AntSelect> {
 export const BaseSelect = React.forwardRef<RefSelectProps, BaseSelectProps>(
   ({ className, width, shadow, children, ...props }, ref) => (
     <S.Select
-      getPopupContainer={(triggerNode) => triggerNode}
       ref={ref}
       className={className}
       $width={width}

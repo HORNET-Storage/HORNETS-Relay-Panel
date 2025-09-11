@@ -30,7 +30,14 @@ const App: React.FC = () => {
       <meta name="theme-color" content="#000000" />
       <GlobalStyle />
       <HelmetProvider>
-        <ConfigProvider locale={language === 'en' ? enUS : deDe}>
+        <ConfigProvider
+          locale={language === 'en' ? enUS : deDe}
+          getPopupContainer={() => {
+            // Always use root element for all Ant Design popups to support fullscreen
+            const root = document.getElementById('root');
+            return root || document.body;
+          }}
+        >
           <AppRouter />
         </ConfigProvider>
       </HelmetProvider>
