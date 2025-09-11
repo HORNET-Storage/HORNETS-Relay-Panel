@@ -9,53 +9,78 @@ interface ViewAllInternalProps {
 export const ViewAllBtn = styled(BaseButton)<ViewAllInternalProps>`
   font-size: ${FONT_SIZE.xs};
   font-weight: ${FONT_WEIGHT.medium};
-  color: var(--text-main-color);
+  color: #ffffff;
   padding: 0.4rem 1.2rem;
   height: 32px;
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(0, 255, 255, 0.2);
   border-radius: 20px;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1),
-              0 0 10px rgba(0, 255, 255, 0.1);
   position: relative;
   overflow: hidden;
+  
+  /* Match liquid glass styling of Send/Receive buttons */
+  background: linear-gradient(to bottom right,
+    rgba(20, 184, 166, 0.25), /* from-teal-500/25 */
+    rgba(6, 182, 212, 0.20),  /* via-cyan-500/20 */
+    rgba(34, 197, 94, 0.25)   /* to-green-500/25 */
+  ) !important;
+  
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(45, 212, 191, 0.25) !important;
+  
+  box-shadow:
+    inset 0 2px 8px rgba(45, 212, 191, 0.30),
+    0 0 15px rgba(6, 182, 212, 0.20);
+  
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
+  /* Glass overlay effect */
   &::before {
     content: '';
     position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    background: radial-gradient(circle, rgba(0, 255, 255, 0.2), transparent);
-    transform: translate(-50%, -50%);
-    transition: width 0.3s ease, height 0.3s ease;
-    border-radius: 50%;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.10) 0%,
+      transparent 100%
+    );
+    pointer-events: none;
   }
 
   &:hover {
-    color: #00ffff;
-    background: rgba(0, 255, 255, 0.1);
-    border-color: rgba(0, 255, 255, 0.4);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15),
-                0 0 20px rgba(0, 255, 255, 0.3);
+    color: #ffffff;
+    background: linear-gradient(to bottom right,
+      rgba(20, 184, 166, 0.30),
+      rgba(6, 182, 212, 0.25),
+      rgba(34, 197, 94, 0.30)
+    ) !important;
     
-    &::before {
-      width: 150%;
-      height: 150%;
-    }
+    border-color: rgba(45, 212, 191, 0.35) !important;
+    transform: translateY(-2px);
+    
+    box-shadow:
+      inset 0 3px 12px rgba(45, 212, 191, 0.35),
+      0 0 25px rgba(6, 182, 212, 0.25);
   }
 
   &:active {
     transform: translateY(0);
+    background: linear-gradient(to bottom right,
+      rgba(20, 184, 166, 0.35),
+      rgba(6, 182, 212, 0.30),
+      rgba(34, 197, 94, 0.35)
+    ) !important;
+    
+    box-shadow:
+      inset 0 4px 15px rgba(45, 212, 191, 0.40),
+      0 0 20px rgba(6, 182, 212, 0.20);
   }
 
   ${(props) =>
     props.$bordered &&
     css`
-      /* Bordered style overridden by floating style */
+      /* Bordered style overridden by liquid glass style */
     `};
 `;
