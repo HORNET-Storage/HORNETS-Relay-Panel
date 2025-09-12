@@ -106,6 +106,7 @@ export const RightSideCol = styled(BaseCol)`
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-left: 1px solid rgba(0, 255, 255, 0.15);
+  border-top-left-radius: 7px;  /* Rounded top-left corner matching Balance component */
 
   /* Hide scrollbars completely */
   &::-webkit-scrollbar {

@@ -267,6 +267,19 @@ export const ActivityStory: React.FC = () => {
 
       <ButtonTrigger amount={0}/>
 
+      {/* Liquid glass divider between Unconfirmed and Confirmed transactions */}
+      <div
+        style={{
+          width: '100%',
+          height: '2px',
+          background: 'linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.2), rgba(45, 212, 191, 0.15), rgba(0, 255, 255, 0.2), transparent)',
+          margin: '1.25rem 0',
+          position: 'relative',
+          borderRadius: '1px',
+          boxShadow: '0 0 10px rgba(0, 255, 255, 0.1), inset 0 0 3px rgba(255, 255, 255, 0.05)',
+        }}
+      />
+
       {isLoading ? <TransactionSkeletons /> : <S.ActivityRow gutter={[26, 26]}>{activityContent}</S.ActivityRow>}
 
       {/* Transaction Modal - rendered via portal */}
