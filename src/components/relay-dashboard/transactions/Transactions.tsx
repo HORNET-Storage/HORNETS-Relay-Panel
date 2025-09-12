@@ -42,7 +42,7 @@ const LiquidWrapper = styled.div`
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgba(0, 255, 255, 0.12);
-  border-radius: 8px;
+  border-radius: 7px;
   padding: 1rem;
   position: relative;
   overflow: hidden;

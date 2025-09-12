@@ -130,6 +130,10 @@ export const CardWrapper = styled.div`
 export const ComponentWrapper = styled.div`
   position: relative;
   padding-bottom: 12px;
+  border-radius: 7px;
+  overflow: hidden;
+  background: var(--additional-background-color);
+  border: 1px solid var(--border-nft-color);
   
   /* Add padding to align splide track with title */
   .splide__track {
