@@ -295,7 +295,11 @@ export const ActivityChart: React.FC = () => {
       : null,
   };
 
-  return <BaseChart style={{}} option={option} height="100%" />;
+  return (
+    <div className="liquid-chart-container">
+      <BaseChart style={{}} option={option} height="24rem" />
+    </div>
+  );
 };
 
 // import React from 'react';

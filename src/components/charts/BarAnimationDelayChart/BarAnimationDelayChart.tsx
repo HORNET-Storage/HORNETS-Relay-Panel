@@ -166,7 +166,9 @@ export const BarAnimationDelayChart: React.FC = () => {
 
   return (
     <BaseCard padding="0 0 1.875rem" title={t('charts.monthlyDataUsage')}>
-      <BaseChart option={option} />
+      <div className="liquid-chart-container">
+        <BaseChart option={option} height="24rem" />
+      </div>
     </BaseCard>
   );
 };

@@ -11,11 +11,13 @@ export const VisitorsPieChart: React.FC = () => {
   const name = t('charts.visitorsFrom');
 
   return (
-    <BaseCard padding="0 0 1.876rem" title={t('charts.pie')}>
+    <BaseCard padding="0 0 1.875rem" title={t('charts.pie')}>
       {isLoading || !chartData ? (
         <p>{t('common.loading')}</p>
       ) : (
-        <PieChart data={chartData} name={name} showLegend={true} />
+        <div className="liquid-chart-container">
+          <PieChart data={chartData} name={name} showLegend={true} height="24rem" />
+        </div>
       )}
     </BaseCard>
   );

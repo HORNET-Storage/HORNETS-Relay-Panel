@@ -9,12 +9,11 @@ export const ActivityCard: React.FC = () => {
   const { t } = useTranslation();
 
   return (
-    <ActivityCardStyled id="activity" title={t('medical-dashboard.activity.title')} padding={0}>
+    <ActivityCardStyled id="activity" title={t('medical-dashboard.activity.title')} padding="0 0 1.875rem">
       <ActivityChart />
     </ActivityCardStyled>
   );
 };
 
 const ActivityCardStyled = styled(BaseCard)`
-  height: 100%;
 `;
