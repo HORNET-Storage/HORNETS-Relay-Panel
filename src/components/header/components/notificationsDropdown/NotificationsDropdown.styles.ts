@@ -51,28 +51,28 @@ export const NotificationContent = styled.div`
   background: transparent !important;
   
   .ant-tabs {
-    color: rgba(255, 255, 255, 0.95) !important;
+    color: rgba(255, 255, 255, 0.85) !important;
   }
   
   .ant-tabs-tab {
-    color: rgba(255, 255, 255, 0.7) !important;
+    color: rgba(255, 255, 255, 0.6) !important;
     
     &:hover {
-      color: rgba(255, 255, 255, 0.9) !important;
+      color: rgba(255, 255, 255, 0.8) !important;
     }
     
     &.ant-tabs-tab-active {
-      color: white !important;
+      color: rgba(255, 255, 255, 0.95) !important;
     }
   }
   
   .ant-tabs-ink-bar {
-    background: rgba(0, 255, 255, 0.6) !important;
+    background: rgba(255, 255, 255, 0.3) !important;
   }
   
   .ant-tabs-nav {
     background: transparent !important;
-    border-bottom: 1px solid rgba(0, 255, 255, 0.1) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
   }
   
   .ant-tabs-content {

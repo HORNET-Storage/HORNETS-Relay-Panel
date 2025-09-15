@@ -4,6 +4,12 @@ import { FONT_SIZE, BORDER_RADIUS, FONT_WEIGHT } from '@app/styles/themes/consta
 
 export const FiltersWrapper = styled.div`
   margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: rgba(0, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 255, 255, 0.1);
+  border-radius: ${BORDER_RADIUS};
 `;
 
 export const SplitDivider = styled(Divider)`
@@ -13,18 +19,26 @@ export const SplitDivider = styled(Divider)`
 export const NotificationItem = styled.div<{ $isRead: boolean }>`
   padding: 0.75rem;
   border-radius: ${BORDER_RADIUS};
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
   margin-bottom: 1rem;
+  background: rgba(0, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 255, 255, 0.1);
 
   ${({ $isRead }) =>
     !$isRead &&
     css`
-      background-color: var(--background-color);
-      border-left: 4px solid var(--primary-color);
+      background: rgba(0, 255, 255, 0.05);
+      border-left: 3px solid rgba(0, 255, 255, 0.4);
+      box-shadow: 0 0 15px rgba(0, 255, 255, 0.1);
     `}
 
   &:hover {
-    background-color: var(--secondary-background-color);
+    background: rgba(0, 255, 255, 0.06);
+    border-color: rgba(0, 255, 255, 0.2);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 20px rgba(0, 255, 255, 0.15);
   }
 `;
 
@@ -73,10 +87,14 @@ export const CopyButton = styled(Button)`
   padding: 2px 6px;
   height: 20px;
   border-radius: ${BORDER_RADIUS};
-  background-color: var(--background-color);
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 
   &:hover {
-    background-color: var(--secondary-background-color);
+    background: rgba(255, 255, 255, 0.12);
+    color: rgba(255, 255, 255, 0.9);
+    border-color: rgba(255, 255, 255, 0.2);
   }
 `;
 
@@ -91,22 +109,24 @@ export const ContentContainer = styled.div`
 `;
 
 export const PaymentBanner = styled.div<{ $paymentType: string }>`
-  padding: 4px 8px;
-  background-color: rgba(var(--primary-rgb-color), 0.1);
-  color: var(--primary-color);
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.85);
   font-size: ${FONT_SIZE.xs};
   font-weight: ${FONT_WEIGHT.medium};
-  border-radius: 4px;
+  border-radius: 6px;
   margin-bottom: 0.5rem;
   display: flex;
   align-items: center;
   gap: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 
   ${({ $paymentType }) => {
     if ($paymentType === 'new') {
       return css`
-        background-color: rgba(var(--success-rgb-color), 0.1);
-        color: var(--success-color);
+        background: rgba(6, 182, 212, 0.12);
+        color: rgba(6, 182, 212, 0.9);
+        border-color: rgba(6, 182, 212, 0.2);
       `;
     }
     return '';
@@ -134,7 +154,7 @@ export const UserInput = styled(Input)`
 export const FooterWrapper = styled.div`
   margin-top: 1.5rem;
   padding-top: 1rem;
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 `;
 
 export const Text = styled.span`
@@ -170,15 +190,15 @@ export const PaymentTypeTag = styled(Tag)<{ $type: string }>`
   ${({ $type }) => {
     if ($type === 'new') {
       return css`
-        color: var(--success-color);
-        background: rgba(var(--success-rgb-color), 0.1);
-        border-color: var(--success-color);
+        color: rgba(6, 182, 212, 0.9);
+        background: rgba(6, 182, 212, 0.12);
+        border-color: rgba(6, 182, 212, 0.3);
       `;
     }
     return css`
-      color: var(--primary-color);
-      background: rgba(var(--primary-rgb-color), 0.1);
-      border-color: var(--primary-color);
+      color: rgba(255, 255, 255, 0.85);
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
     `;
   }}
 `;

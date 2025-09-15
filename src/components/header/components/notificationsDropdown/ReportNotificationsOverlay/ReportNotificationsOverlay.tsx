@@ -58,21 +58,21 @@ export const ReportNotificationsOverlay: React.FC<ReportNotificationsOverlayProp
           <span style={{
             fontSize: '0.7rem',
             padding: '2px 6px',
-            background: 'rgba(var(--warning-rgb-color), 0.1)',
-            color: 'var(--warning-color)',
+            background: 'rgba(245, 158, 11, 0.12)',
+            color: 'rgba(245, 158, 11, 0.85)',
             borderRadius: '10px',
             textTransform: 'uppercase'
           }}>
             {notification.report_type}
           </span>
-          <span>
+          <span style={{ color: 'rgba(255, 255, 255, 0.85)' }}>
             {t('report.notifications.reportedContent', 'Reported Content')}
           </span>
           <span style={{
             fontSize: '0.7rem',
             padding: '2px 6px',
-            background: 'rgba(var(--warning-rgb-color), 0.1)',
-            color: 'var(--warning-color)',
+            background: 'rgba(245, 158, 11, 0.12)',
+            color: 'rgba(245, 158, 11, 0.85)',
             borderRadius: '10px'
           }}>
             {notification.report_count}
@@ -116,7 +116,7 @@ export const ReportNotificationsOverlay: React.FC<ReportNotificationsOverlayProp
           )}
 
           <div style={{ marginTop: '4px' }}>
-            <Link to="/report-notifications" style={{ fontSize: '0.85rem' }}>
+            <Link to="/report-notifications" style={{ fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.7)' }}>
               {t('report.notifications.viewDetails', 'View details')}
             </Link>
           </div>

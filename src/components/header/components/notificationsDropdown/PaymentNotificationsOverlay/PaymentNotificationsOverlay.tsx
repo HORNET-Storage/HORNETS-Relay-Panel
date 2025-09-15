@@ -50,11 +50,11 @@ export const PaymentNotificationsOverlay: React.FC<PaymentNotificationsOverlayPr
       type="info"
       title={
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ 
-            fontSize: '0.7rem', 
-            padding: '2px 6px', 
-            background: 'rgba(var(--primary-rgb-color), 0.1)', 
-            color: 'var(--primary-color)',
+          <span style={{
+            fontSize: '0.7rem',
+            padding: '2px 6px',
+            background: 'rgba(255, 255, 255, 0.08)',
+            color: 'rgba(255, 255, 255, 0.85)',
             borderRadius: '10px',
             textTransform: 'uppercase'
           }}>
@@ -71,11 +71,11 @@ export const PaymentNotificationsOverlay: React.FC<PaymentNotificationsOverlayPr
             )}
           </span>
           {notification.is_new_subscriber && (
-            <span style={{ 
-              fontSize: '0.7rem', 
-              padding: '2px 6px', 
-              background: 'rgba(var(--success-rgb-color), 0.1)', 
-              color: 'var(--success-color)',
+            <span style={{
+              fontSize: '0.7rem',
+              padding: '2px 6px',
+              background: 'rgba(6, 182, 212, 0.15)',
+              color: 'rgba(6, 182, 212, 0.9)',
               borderRadius: '10px',
               textTransform: 'uppercase'
             }}>
@@ -100,7 +100,7 @@ export const PaymentNotificationsOverlay: React.FC<PaymentNotificationsOverlayPr
             {t('payment.notifications.expiration', 'Expires')}: {formatDate(notification.expiration_date)}
           </div> */}
           <S.ActionRow>
-            <Link to="/payment-notifications" style={{ fontSize: '0.85rem' }}>
+            <Link to="/payment-notifications" style={{ fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.7)' }}>
               {t('payment.notifications.viewDetails', 'View details')}
             </Link>
           {!notification.is_read && (
