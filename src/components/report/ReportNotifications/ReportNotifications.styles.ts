@@ -1,6 +1,26 @@
 import styled, { css } from 'styled-components';
 import { Input, Button, Divider, Badge, Tag } from 'antd';
-import { FONT_SIZE, BORDER_RADIUS, FONT_WEIGHT } from '@app/styles/themes/constants';
+import { FONT_SIZE, BORDER_RADIUS, FONT_WEIGHT, LAYOUT } from '@app/styles/themes/constants';
+
+export const ScrollableWrapper = styled.div`
+  height: calc(100vh - ${LAYOUT.desktop.headerHeight} - 4rem);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 0.5rem;
+  
+  /* Hide scrollbars completely while maintaining functionality */
+  &::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
+  }
+  
+  /* Firefox */
+  scrollbar-width: none;
+  
+  /* IE/Edge */
+  -ms-overflow-style: none;
+`;
 
 export const FiltersWrapper = styled.div`
   margin-bottom: 1.5rem;

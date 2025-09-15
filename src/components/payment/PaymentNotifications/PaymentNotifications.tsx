@@ -60,8 +60,9 @@ export const PaymentNotifications: React.FC<PaymentNotificationsProps> = ({ clas
   };
 
   return (
-    <BaseCard className={className} title={t('payment.notifications.title', 'Payment Notifications')} padding="1.25rem">
-      <S.FiltersWrapper>
+    <S.ScrollableWrapper>
+      <BaseCard className={className} title={t('payment.notifications.title', 'Payment Notifications')} padding="1.25rem">
+        <S.FiltersWrapper>
         <BaseRow gutter={[16, 16]} align="middle">
           <BaseCol xs={24} md={8}>
             <BaseSelect
@@ -209,7 +210,8 @@ export const PaymentNotifications: React.FC<PaymentNotificationsProps> = ({ clas
             {t('payment.notifications.emptyDescription', 'Payment notifications will appear here when users subscribe to your services')}
           </S.Text>
         </div>
-      )}
-    </BaseCard>
+        )}
+      </BaseCard>
+    </S.ScrollableWrapper>
   );
 };
