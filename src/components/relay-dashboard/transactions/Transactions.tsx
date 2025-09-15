@@ -38,26 +38,12 @@ const TitleContainer = styled.div`
 `;
 
 const LiquidWrapper = styled.div`
-  background: rgba(0, 255, 255, 0.03);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(0, 255, 255, 0.12);
+  background: var(--additional-background-color);
+  box-shadow: var(--box-shadow-nft-color);
   border-radius: 7px;
-  padding: 1rem;
+  padding: 1.5rem 1.25rem;
   position: relative;
   overflow: hidden;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    right: -50%;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(circle, rgba(0, 255, 255, 0.05) 0%, transparent 70%);
-    /* Removed rotate animation */
-    pointer-events: none;
-  }
 `;
 
 export const ActivityStory: React.FC = () => {
