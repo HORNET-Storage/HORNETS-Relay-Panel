@@ -213,7 +213,13 @@ export const PaymentCountBadge = styled(Badge)`
   margin-left: 0.5rem;
   
   .ant-badge-count {
-    background-color: var(--success-color);
+    background: linear-gradient(135deg, #00ffff 0%, #06b6d4 100%);
+    color: rgba(0, 0, 0, 0.85);
+    font-weight: 600;
+    box-shadow:
+      0 0 8px rgba(0, 255, 255, 0.5),
+      0 0 16px rgba(0, 255, 255, 0.3);
+    border: none;
   }
 `;
 

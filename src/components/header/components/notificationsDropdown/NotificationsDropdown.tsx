@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { BellOutlined } from '@ant-design/icons';
 import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
-import { BaseBadge } from '@app/components/common/BaseBadge/BaseBadge';
+import { LiquidBlueBadge } from '@app/components/common/LiquidBlueBadge/LiquidBlueBadge';
 import { PaymentNotificationsOverlay } from '@app/components/header/components/notificationsDropdown/PaymentNotificationsOverlay';
 import ReportNotificationsOverlay from '@app/components/header/components/notificationsDropdown/ReportNotificationsOverlay';
 import { usePaymentNotifications } from '@app/hooks/usePaymentNotifications';
@@ -87,7 +87,12 @@ export const NotificationsDropdown: React.FC = () => {
         <span>
           {paymentsLabel}
           {unreadPaymentCount > 0 && (
-            <BaseBadge count={unreadPaymentCount} size="small" style={{ marginLeft: '5px' }} />
+            <LiquidBlueBadge
+              count={unreadPaymentCount}
+              size="small"
+              variant="tab"
+              style={{ marginLeft: '5px' }}
+            />
           )}
         </span>
       ),
@@ -111,7 +116,12 @@ export const NotificationsDropdown: React.FC = () => {
         <span>
           {reportsLabel}
           {unreadReportCount > 0 && (
-            <BaseBadge count={unreadReportCount} size="small" style={{ marginLeft: '5px' }} />
+            <LiquidBlueBadge
+              count={unreadReportCount}
+              size="small"
+              variant="tab"
+              style={{ marginLeft: '5px' }}
+            />
           )}
         </span>
       ),
@@ -154,9 +164,13 @@ export const NotificationsDropdown: React.FC = () => {
         <BaseButton
           type={isOpened ? 'ghost' : 'text'}
           icon={
-            <BaseBadge count={totalUnreadCount > 0 ? totalUnreadCount : 0} overflowCount={99} dot={false}>
+            <LiquidBlueBadge
+              count={totalUnreadCount > 0 ? totalUnreadCount : 0}
+              overflowCount={99}
+              dot={false}
+            >
               <BellOutlined />
-            </BaseBadge>
+            </LiquidBlueBadge>
           }
         />
       </HeaderActionWrapper>
