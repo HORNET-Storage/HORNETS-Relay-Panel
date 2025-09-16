@@ -20,7 +20,8 @@ import useKindTrendData from '@app/hooks/useKindTrendData';
 import { Breakpoint } from 'antd/lib/_util/responsiveObserve';
 import { useResponsive } from '@app/hooks/useResponsive';
 import { BaseSkeleton } from '@app/components/common/BaseSkeleton/BaseSkeleton';
-import { CaretDownOutlined, CaretRightOutlined } from '@ant-design/icons';
+import { CaretDownOutlined, CaretRightOutlined, ExpandOutlined, ShrinkOutlined } from '@ant-design/icons';
+import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
 
 interface KindData {
@@ -31,7 +32,17 @@ interface KindData {
   totalSize: number;
 }
 
-const EditableTable: React.FC = () => {
+interface EditableTableProps {
+  allExpanded?: boolean;
+  expandedKeys?: number[];
+  setExpandedKeys?: (keys: number[]) => void;
+}
+
+const EditableTable: React.FC<EditableTableProps> = ({
+  allExpanded: parentAllExpanded,
+  expandedKeys: parentExpandedKeys,
+  setExpandedKeys: parentSetExpandedKeys
+}) => {
   const [form] = BaseForm.useForm();
   const { t } = useTranslation();
   const { kindData: initialKindData, isLoading } = useKindData();
@@ -60,12 +71,29 @@ const EditableTable: React.FC = () => {
     }
   }, [initialKindData, sortOrder, sortField]);
 
-  const handleExpand = (expanded: boolean, record: KindData) => {
-    if (expanded) {
-      setExpandedRowKeys([...expandedRowKeys, record.kindNumber]);
-    } else {
-      setExpandedRowKeys(expandedRowKeys.filter(key => key !== record.kindNumber));
+  // Handle expand all/collapse all from parent
+  useEffect(() => {
+    if (parentAllExpanded !== undefined && sortedData.length > 0) {
+      if (parentAllExpanded) {
+        const allKeys = sortedData.map((item) => item.kindNumber);
+        setExpandedRowKeys(allKeys);
+        if (parentSetExpandedKeys) parentSetExpandedKeys(allKeys);
+      } else {
+        setExpandedRowKeys([]);
+        if (parentSetExpandedKeys) parentSetExpandedKeys([]);
+      }
     }
+  }, [parentAllExpanded, sortedData, parentSetExpandedKeys]);
+
+  const handleExpand = (expanded: boolean, record: KindData) => {
+    let newKeys: number[];
+    if (expanded) {
+      newKeys = [...expandedRowKeys, record.kindNumber];
+    } else {
+      newKeys = expandedRowKeys.filter(key => key !== record.kindNumber);
+    }
+    setExpandedRowKeys(newKeys);
+    if (parentSetExpandedKeys) parentSetExpandedKeys(newKeys);
   };
 
   const handleChange = (pagination: any, filters: any, sorter: any) => {
@@ -134,17 +162,16 @@ const EditableTable: React.FC = () => {
             size: 12,
             weight: 'bold',
           },
-          color: 'rgba(0, 255, 255, 0.9)', // Liquid cyan for titles
+          color: 'rgba(255, 255, 255, 0.95)', // White text for titles like Bitcoin chart
         },
         ticks: {
           font: {
-            size: 11,
+            size: 12,
           },
-          color: 'rgba(0, 255, 255, 0.6)', // Lighter cyan for tick labels
+          color: 'rgba(255, 255, 255, 0.9)', // White text like Bitcoin chart
         },
         grid: {
-          color: 'rgba(0, 255, 255, 0.05)', // Very subtle cyan grid
-          drawBorder: false,
+          color: 'rgba(0, 255, 255, 0.15)', // Match Bitcoin borderBase
         },
       },
       x: {
@@ -155,17 +182,16 @@ const EditableTable: React.FC = () => {
             size: 12,
             weight: 'bold',
           },
-          color: 'rgba(0, 255, 255, 0.9)', // Liquid cyan for titles
+          color: 'rgba(255, 255, 255, 0.95)', // White text for titles like Bitcoin chart
         },
         ticks: {
           font: {
             size: 11,
           },
-          color: 'rgba(0, 255, 255, 0.6)', // Lighter cyan for tick labels
+          color: 'rgba(255, 255, 255, 0.9)', // White text like Bitcoin chart
         },
         grid: {
-          color: 'rgba(0, 255, 255, 0.05)', // Very subtle cyan grid
-          drawBorder: false,
+          color: 'rgba(0, 255, 255, 0.15)', // Match Bitcoin borderBase
         },
       },
     },
@@ -176,7 +202,7 @@ const EditableTable: React.FC = () => {
           font: {
             size: 13,
           },
-          color: 'rgba(0, 255, 255, 0.9)', // Liquid cyan for legend
+          color: 'rgba(255, 255, 255, 0.95)', // White text for legend like Bitcoin chart
         },
       },
       filler: {
@@ -186,21 +212,18 @@ const EditableTable: React.FC = () => {
         callbacks: {
           label: (context: any) => `Total Size: ${context.raw.toFixed(3)} GB`,
         },
-        backgroundColor: 'rgba(0, 10, 20, 0.95)',
-        titleColor: 'rgba(0, 255, 255, 1)', // Liquid cyan
-        bodyColor: 'rgba(255, 255, 255, 0.9)',
-        borderColor: 'rgba(0, 255, 255, 0.3)',
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        titleColor: '#06B6D4', // Primary color like Bitcoin chart
+        bodyColor: 'rgba(255, 255, 255, 0.95)',
+        borderColor: '#06B6D4',
         borderWidth: 1,
-        cornerRadius: 8,
-        displayColors: false,
-        padding: 12,
       },
     },
     layout: {
       padding: 0,
     },
     animation: {
-      duration: 800,
+      duration: 1000,
       easing: 'easeInOutQuart',
     },
     hover: {
@@ -222,16 +245,18 @@ const EditableTable: React.FC = () => {
           backgroundColor: (context: any) => {
             const ctx = context.chart.ctx;
             const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-            gradient.addColorStop(0, 'rgba(0, 255, 255, 0.3)'); // Liquid cyan
-            gradient.addColorStop(1, 'rgba(0, 255, 255, 0.02)'); // Fade to transparent
+            gradient.addColorStop(0, 'rgba(0, 255, 255, 0.15)'); // Match Bitcoin chart gradient
+            gradient.addColorStop(1, 'rgba(0, 255, 255, 0.05)'); // Subtle fade
             return gradient;
           },
-          borderColor: 'rgba(0, 255, 255, 0.8)', // Liquid cyan border
-          pointBackgroundColor: 'rgba(0, 255, 255, 0.9)',
-          pointBorderColor: 'rgba(0, 255, 255, 0.5)',
-          pointHoverBackgroundColor: '#00FFFF',
-          pointHoverBorderColor: 'rgba(0, 255, 255, 1)',
+          borderColor: '#06B6D4', // Match liquid blue theme primary color (from Bitcoin chart)
+          pointBackgroundColor: '#06B6D4',
+          pointBorderColor: 'rgba(255, 255, 255, 0.95)', // White border like Bitcoin chart
+          pointHoverBackgroundColor: 'rgba(255, 255, 255, 0.95)',
+          pointHoverBorderColor: '#06B6D4',
           tension: 0.4,
+          pointRadius: 4,
+          pointHoverRadius: 6,
         },
       ],
     };
