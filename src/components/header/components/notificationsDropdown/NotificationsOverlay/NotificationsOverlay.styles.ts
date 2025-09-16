@@ -30,7 +30,7 @@ export const NotificationsList = styled.div`
   }
   
   &::-webkit-scrollbar-thumb {
-    background-color: rgba(6, 182, 212, 0.6);
+    background-color: rgba(255, 255, 255, 0.3);
     border-radius: 3px;
   }
 `;

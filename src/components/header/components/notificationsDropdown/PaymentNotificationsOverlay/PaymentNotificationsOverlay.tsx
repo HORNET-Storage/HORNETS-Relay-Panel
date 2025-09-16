@@ -74,8 +74,8 @@ export const PaymentNotificationsOverlay: React.FC<PaymentNotificationsOverlayPr
             <span style={{
               fontSize: '0.7rem',
               padding: '2px 6px',
-              background: 'rgba(6, 182, 212, 0.15)',
-              color: 'rgba(6, 182, 212, 0.9)',
+              background: 'rgba(255, 255, 255, 0.1)',
+              color: 'rgba(255, 255, 255, 0.8)',
               borderRadius: '10px',
               textTransform: 'uppercase'
             }}>
