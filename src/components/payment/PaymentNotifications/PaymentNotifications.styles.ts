@@ -56,26 +56,63 @@ export const SplitDivider = styled(Divider)`
 export const NotificationItem = styled.div<{ $isRead: boolean }>`
   padding: 0.75rem;
   border-radius: ${BORDER_RADIUS};
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   margin-bottom: 1rem;
-  background: rgba(0, 255, 255, 0.03);
+  
+  /* Glass morphism background matching Paid Subscribers */
+  background: linear-gradient(to bottom right,
+    rgba(20, 184, 166, 0.08),  /* from-teal-500/8 */
+    rgba(6, 182, 212, 0.06),   /* via-cyan-500/6 */
+    rgba(34, 197, 94, 0.08)    /* to-green-500/8 */
+  );
+  
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(0, 255, 255, 0.1);
+  border: 1px solid rgba(45, 212, 191, 0.2);
+  position: relative;
+  overflow: hidden;
+  
+  /* Glass overlay effect */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.05) 0%,
+      transparent 100%
+    );
+    pointer-events: none;
+  }
 
   ${({ $isRead }) =>
     !$isRead &&
     css`
-      background: rgba(0, 255, 255, 0.05);
-      border-left: 3px solid rgba(0, 255, 255, 0.4);
-      box-shadow: 0 0 15px rgba(0, 255, 255, 0.1);
+      background: linear-gradient(to bottom right,
+        rgba(20, 184, 166, 0.12),
+        rgba(6, 182, 212, 0.10),
+        rgba(34, 197, 94, 0.12)
+      );
+      border-left: 3px solid rgba(45, 212, 191, 0.6);
+      box-shadow:
+        inset 0 2px 8px rgba(45, 212, 191, 0.15),
+        0 0 20px rgba(6, 182, 212, 0.15);
     `}
 
   &:hover {
-    background: rgba(0, 255, 255, 0.06);
-    border-color: rgba(0, 255, 255, 0.2);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 20px rgba(0, 255, 255, 0.15);
+    background: linear-gradient(to bottom right,
+      rgba(20, 184, 166, 0.15),
+      rgba(6, 182, 212, 0.12),
+      rgba(34, 197, 94, 0.15)
+    );
+    border-color: rgba(45, 212, 191, 0.35);
+    transform: translateY(-2px);
+    box-shadow:
+      inset 0 3px 12px rgba(45, 212, 191, 0.2),
+      0 0 30px rgba(6, 182, 212, 0.2);
   }
 `;
 
@@ -124,14 +161,28 @@ export const CopyButton = styled(Button)`
   padding: 2px 6px;
   height: 20px;
   border-radius: ${BORDER_RADIUS};
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  
+  /* Liquid glass effect matching theme */
+  background: linear-gradient(to bottom right,
+    rgba(20, 184, 166, 0.15),
+    rgba(6, 182, 212, 0.12),
+    rgba(34, 197, 94, 0.15)
+  );
+  color: rgba(45, 212, 191, 0.9);
+  border: 1px solid rgba(45, 212, 191, 0.25);
+  backdrop-filter: blur(5px);
+  transition: all 0.3s ease;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.12);
-    color: rgba(255, 255, 255, 0.9);
-    border-color: rgba(255, 255, 255, 0.2);
+    background: linear-gradient(to bottom right,
+      rgba(20, 184, 166, 0.20),
+      rgba(6, 182, 212, 0.18),
+      rgba(34, 197, 94, 0.20)
+    );
+    color: rgba(45, 212, 191, 1);
+    border-color: rgba(45, 212, 191, 0.4);
+    box-shadow: 0 0 10px rgba(6, 182, 212, 0.2);
+    transform: scale(1.05);
   }
 `;
 
@@ -147,8 +198,6 @@ export const ContentContainer = styled.div`
 
 export const PaymentBanner = styled.div<{ $paymentType: string }>`
   padding: 6px 12px;
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.85);
   font-size: ${FONT_SIZE.xs};
   font-weight: ${FONT_WEIGHT.medium};
   border-radius: 6px;
@@ -156,17 +205,51 @@ export const PaymentBanner = styled.div<{ $paymentType: string }>`
   display: flex;
   align-items: center;
   gap: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
 
   ${({ $paymentType }) => {
     if ($paymentType === 'new') {
       return css`
-        background: rgba(6, 182, 212, 0.12);
-        color: rgba(6, 182, 212, 0.9);
-        border-color: rgba(6, 182, 212, 0.2);
+        background: linear-gradient(to bottom right,
+          rgba(20, 184, 166, 0.20),
+          rgba(6, 182, 212, 0.18),
+          rgba(34, 197, 94, 0.20)
+        );
+        color: rgba(45, 212, 191, 1);
+        border: 1px solid rgba(45, 212, 191, 0.3);
+        box-shadow:
+          inset 0 2px 6px rgba(45, 212, 191, 0.2),
+          0 0 12px rgba(6, 182, 212, 0.15);
+          
+        &::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 50%;
+          background: linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.08) 0%,
+            transparent 100%
+          );
+          pointer-events: none;
+        }
       `;
     }
-    return '';
+    return css`
+      background: linear-gradient(to bottom right,
+        rgba(20, 184, 166, 0.12),
+        rgba(6, 182, 212, 0.10),
+        rgba(34, 197, 94, 0.12)
+      );
+      color: rgba(255, 255, 255, 0.85);
+      border: 1px solid rgba(45, 212, 191, 0.2);
+    `;
   }}
 `;
 
@@ -182,6 +265,43 @@ export const ExpirationInfo = styled.div`
 export const MarkReadButton = styled(Button)`
   align-self: flex-start;
   margin-top: 0.5rem;
+  
+  /* Liquid glass button styling */
+  background: linear-gradient(to bottom right,
+    rgba(20, 184, 166, 0.20),
+    rgba(6, 182, 212, 0.15),
+    rgba(34, 197, 94, 0.20)
+  ) !important;
+  
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(45, 212, 191, 0.25) !important;
+  color: rgba(45, 212, 191, 0.95) !important;
+  
+  box-shadow:
+    inset 0 2px 8px rgba(45, 212, 191, 0.25),
+    0 0 12px rgba(6, 182, 212, 0.15);
+  
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  &:hover {
+    background: linear-gradient(to bottom right,
+      rgba(20, 184, 166, 0.25),
+      rgba(6, 182, 212, 0.20),
+      rgba(34, 197, 94, 0.25)
+    ) !important;
+    
+    border-color: rgba(45, 212, 191, 0.35) !important;
+    transform: translateY(-1px);
+    
+    box-shadow:
+      inset 0 3px 10px rgba(45, 212, 191, 0.30),
+      0 0 20px rgba(6, 182, 212, 0.20);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
 `;
 
 export const UserInput = styled(Input)`
@@ -229,19 +349,44 @@ export const PaymentTypeTag = styled(Tag)<{ $type: string }>`
   font-weight: ${FONT_WEIGHT.semibold};
   text-transform: uppercase;
   margin-right: 8px;
+  backdrop-filter: blur(5px);
+  transition: all 0.3s ease;
 
   ${({ $type }) => {
     if ($type === 'new') {
       return css`
-        color: rgba(6, 182, 212, 0.9);
-        background: rgba(6, 182, 212, 0.12);
-        border-color: rgba(6, 182, 212, 0.3);
+        color: rgba(45, 212, 191, 1);
+        background: linear-gradient(135deg,
+          rgba(20, 184, 166, 0.18),
+          rgba(6, 182, 212, 0.15)
+        );
+        border: 1px solid rgba(45, 212, 191, 0.35);
+        box-shadow: 0 0 8px rgba(6, 182, 212, 0.2);
+        
+        &:hover {
+          background: linear-gradient(135deg,
+            rgba(20, 184, 166, 0.25),
+            rgba(6, 182, 212, 0.20)
+          );
+          box-shadow: 0 0 12px rgba(6, 182, 212, 0.3);
+        }
       `;
     }
     return css`
       color: rgba(255, 255, 255, 0.85);
-      background: rgba(255, 255, 255, 0.08);
-      border-color: rgba(255, 255, 255, 0.2);
+      background: linear-gradient(135deg,
+        rgba(45, 212, 191, 0.08),
+        rgba(6, 182, 212, 0.06)
+      );
+      border: 1px solid rgba(45, 212, 191, 0.2);
+      
+      &:hover {
+        background: linear-gradient(135deg,
+          rgba(45, 212, 191, 0.12),
+          rgba(6, 182, 212, 0.10)
+        );
+        border-color: rgba(45, 212, 191, 0.3);
+      }
     `;
   }}
 `;
