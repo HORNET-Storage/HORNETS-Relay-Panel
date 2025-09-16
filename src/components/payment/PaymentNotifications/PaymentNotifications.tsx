@@ -19,7 +19,7 @@ interface PaymentNotificationsProps {
 
 export const PaymentNotifications: React.FC<PaymentNotificationsProps> = ({ className }) => {
   const { t } = useTranslation();
-  const [filter, setFilter] = useState<'all' | 'unread'>('unread');
+  const [filter, setFilter] = useState<'all' | 'unread'>('all');
 
   const { notifications, pagination, isLoading, fetchNotifications, markAsRead, markAllAsRead } =
     usePaymentNotifications();
@@ -29,7 +29,7 @@ export const PaymentNotifications: React.FC<PaymentNotificationsProps> = ({ clas
     fetchNotifications({
       page: 1,
       limit: pagination?.pageSize || 10,
-      filter: 'unread'
+      filter: 'all'
     });
   }, [fetchNotifications, pagination?.pageSize]);
 
@@ -60,24 +60,25 @@ export const PaymentNotifications: React.FC<PaymentNotificationsProps> = ({ clas
   };
 
   return (
-    <S.ScrollableWrapper>
-      <BaseCard className={className} title={t('payment.notifications.title', 'Payment Notifications')} padding="1.25rem">
-        <S.FiltersWrapper>
-        <BaseRow gutter={[16, 16]} align="middle">
-          <BaseCol xs={24} md={8}>
-            <BaseSelect
-              value={filter}
-              onChange={handleFilterChange}
-              options={[
-                { value: 'all', label: t('payment.notifications.filters.all', 'All Notifications') },
-                { value: 'unread', label: t('payment.notifications.filters.unread', 'Unread') }
-              ]}
-            />
-          </BaseCol>
-        </BaseRow>
-      </S.FiltersWrapper>
+    <BaseCard className={className} title={t('payment.notifications.title', 'Payment Notifications')} padding="0">
+      <S.ScrollableContent>
+        <S.ContentPadding>
+          <S.FiltersWrapper>
+            <BaseRow gutter={[16, 16]} align="middle">
+              <BaseCol xs={24} md={8}>
+                <BaseSelect
+                  value={filter}
+                  onChange={handleFilterChange}
+                  options={[
+                    { value: 'all', label: t('payment.notifications.filters.all', 'All Notifications') },
+                    { value: 'unread', label: t('payment.notifications.filters.unread', 'Unread') }
+                  ]}
+                />
+              </BaseCol>
+            </BaseRow>
+          </S.FiltersWrapper>
 
-      {isLoading ? (
+          {isLoading ? (
         <div style={{ textAlign: 'center', padding: '40px 0' }}>
           <div style={{ fontSize: '28px', marginBottom: '16px' }}>⏳</div>
           <S.Text style={{ fontSize: '16px' }}>
@@ -210,8 +211,9 @@ export const PaymentNotifications: React.FC<PaymentNotificationsProps> = ({ clas
             {t('payment.notifications.emptyDescription', 'Payment notifications will appear here when users subscribe to your services')}
           </S.Text>
         </div>
-        )}
-      </BaseCard>
-    </S.ScrollableWrapper>
+          )}
+        </S.ContentPadding>
+      </S.ScrollableContent>
+    </BaseCard>
   );
 };

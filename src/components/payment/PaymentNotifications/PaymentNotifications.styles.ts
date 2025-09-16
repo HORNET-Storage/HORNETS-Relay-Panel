@@ -22,6 +22,29 @@ export const ScrollableWrapper = styled.div`
   -ms-overflow-style: none;
 `;
 
+export const ScrollableContent = styled.div`
+  height: calc(100vh - ${LAYOUT.desktop.headerHeight} - 8rem);
+  overflow-y: auto;
+  overflow-x: hidden;
+  
+  /* Hide scrollbars completely while maintaining functionality */
+  &::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
+  }
+  
+  /* Firefox */
+  scrollbar-width: none;
+  
+  /* IE/Edge */
+  -ms-overflow-style: none;
+`;
+
+export const ContentPadding = styled.div`
+  padding: 1.25rem;
+`;
+
 export const FiltersWrapper = styled.div`
   margin-bottom: 1.5rem;
 `;

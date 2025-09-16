@@ -40,15 +40,33 @@ export const TotalEarningChart: React.FC<TotalEarningChartProps> = ({ xAxisData,
       name: t('nft.earnings'),
       type: 'line',
       data: earningData.data.map((value, index) => [xAxisData[index], value]),
-      showSymbol: true,
-      symbolSize: 4,
-      smooth: false,
+      showSymbol: false,
+      smooth: true,
       lineStyle: {
-        width: 2,
+        width: 3,
         color: themeObject[theme].chartColor3,
+        shadowColor: 'rgba(0, 255, 255, 0.4)',
+        shadowBlur: 10,
+        shadowOffsetY: 3,
+      },
+      areaStyle: {
+        color: {
+          type: 'linear',
+          x: 0,
+          y: 0,
+          x2: 0,
+          y2: 1,
+          colorStops: [
+            { offset: 0, color: 'rgba(0, 255, 255, 0.2)' },
+            { offset: 1, color: 'rgba(0, 255, 255, 0.02)' }
+          ],
+        },
       },
       emphasis: {
         focus: 'series',
+        lineStyle: {
+          width: 4,
+        },
       },
       encode: {
         x: 'date',

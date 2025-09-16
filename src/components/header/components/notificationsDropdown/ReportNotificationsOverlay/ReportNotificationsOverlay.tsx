@@ -58,8 +58,10 @@ export const ReportNotificationsOverlay: React.FC<ReportNotificationsOverlayProp
           <span style={{
             fontSize: '0.7rem',
             padding: '2px 6px',
-            background: 'rgba(245, 158, 11, 0.12)',
-            color: 'rgba(245, 158, 11, 0.85)',
+            background: notification.report_type === 'impersonation' ?
+              'rgba(6, 182, 212, 0.12)' : 'rgba(245, 158, 11, 0.12)',
+            color: notification.report_type === 'impersonation' ?
+              'rgba(6, 182, 212, 0.9)' : 'rgba(245, 158, 11, 0.85)',
             borderRadius: '10px',
             textTransform: 'uppercase'
           }}>
@@ -71,8 +73,10 @@ export const ReportNotificationsOverlay: React.FC<ReportNotificationsOverlayProp
           <span style={{
             fontSize: '0.7rem',
             padding: '2px 6px',
-            background: 'rgba(245, 158, 11, 0.12)',
-            color: 'rgba(245, 158, 11, 0.85)',
+            background: notification.report_type === 'impersonation' ?
+              'rgba(6, 182, 212, 0.12)' : 'rgba(245, 158, 11, 0.12)',
+            color: notification.report_type === 'impersonation' ?
+              'rgba(6, 182, 212, 0.9)' : 'rgba(245, 158, 11, 0.85)',
             borderRadius: '10px'
           }}>
             {notification.report_count}
