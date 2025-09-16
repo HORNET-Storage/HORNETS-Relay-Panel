@@ -40,7 +40,6 @@ export const SpaceWrapper = styled(BaseSpace)<SpacewWrapperProps>`
           return css`
             /* Liquid cyan theme colors to match Paid Subscribers */
             color: rgba(45, 212, 191, 0.95);
-            filter: drop-shadow(0 0 2px rgba(6, 182, 212, 0.15));
           `;
         case 'mention':
           return css`
@@ -54,22 +53,5 @@ export const SpaceWrapper = styled(BaseSpace)<SpacewWrapperProps>`
 
   & span[role='img'] {
     font-size: 2rem;
-    
-    /* Add subtle glow effect for info icons */
-    ${(props) => props.type === 'info' && css`
-      animation: pulseGlow 3s ease-in-out infinite;
-      
-      @keyframes pulseGlow {
-        0% {
-          filter: drop-shadow(0 0 2px rgba(6, 182, 212, 0.15));
-        }
-        50% {
-          filter: drop-shadow(0 0 4px rgba(45, 212, 191, 0.25));
-        }
-        100% {
-          filter: drop-shadow(0 0 2px rgba(6, 182, 212, 0.15));
-        }
-      }
-    `}
   }
 `;
