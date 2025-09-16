@@ -18,6 +18,23 @@ export const Table = styled(AntdTable)`
     font-size: ${FONT_SIZE.xs};
     line-height: 1.25rem;
   }
+  
+  /* Ensure expanded rows have transparent background */
+  & .ant-table-expanded-row {
+    background: transparent !important;
+    background-color: transparent !important;
+    
+    > td {
+      background: transparent !important;
+      background-color: transparent !important;
+    }
+  }
+  
+  /* Remove any default white backgrounds on expansion cells */
+  & .ant-table-tbody > tr.ant-table-expanded-row > td {
+    background: transparent !important;
+    background-color: transparent !important;
+  }
 
   & tbody .ant-table-row-expand-icon {
     min-height: 1.25rem;
