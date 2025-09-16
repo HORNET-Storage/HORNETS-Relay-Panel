@@ -54,65 +54,52 @@ export const SplitDivider = styled(Divider)`
 `;
 
 export const NotificationItem = styled.div<{ $isRead: boolean }>`
-  padding: 0.75rem;
-  border-radius: ${BORDER_RADIUS};
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 0;
   margin-bottom: 1rem;
-  
-  /* Glass morphism background matching Paid Subscribers */
-  background: linear-gradient(to bottom right,
-    rgba(20, 184, 166, 0.08),  /* from-teal-500/8 */
-    rgba(6, 182, 212, 0.06),   /* via-cyan-500/6 */
-    rgba(34, 197, 94, 0.08)    /* to-green-500/8 */
-  );
-  
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(45, 212, 191, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
-  overflow: hidden;
   
-  /* Glass overlay effect */
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 50%;
-    background: linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.05) 0%,
-      transparent 100%
-    );
-    pointer-events: none;
-  }
-
+  /* Remove all background styling - let BaseNotification handle the visuals */
+  background: transparent;
+  border: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  
+  /* Add left indicator for unread state */
   ${({ $isRead }) =>
     !$isRead &&
     css`
-      background: linear-gradient(to bottom right,
-        rgba(20, 184, 166, 0.12),
-        rgba(6, 182, 212, 0.10),
-        rgba(34, 197, 94, 0.12)
-      );
-      border-left: 3px solid rgba(45, 212, 191, 0.6);
-      box-shadow:
-        inset 0 2px 8px rgba(45, 212, 191, 0.15),
-        0 0 20px rgba(6, 182, 212, 0.15);
+      &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 3px;
+        height: 60%;
+        background: linear-gradient(
+          to bottom,
+          rgba(45, 212, 191, 0.6),
+          rgba(6, 182, 212, 0.8),
+          rgba(45, 212, 191, 0.6)
+        );
+        border-radius: 0 2px 2px 0;
+        box-shadow: 0 0 10px rgba(6, 182, 212, 0.4);
+        animation: unreadGlow 2s ease-in-out infinite;
+      }
+      
+      @keyframes unreadGlow {
+        0%, 100% {
+          box-shadow: 0 0 10px rgba(6, 182, 212, 0.4);
+        }
+        50% {
+          box-shadow: 0 0 20px rgba(45, 212, 191, 0.6);
+        }
+      }
     `}
 
   &:hover {
-    background: linear-gradient(to bottom right,
-      rgba(20, 184, 166, 0.15),
-      rgba(6, 182, 212, 0.12),
-      rgba(34, 197, 94, 0.15)
-    );
-    border-color: rgba(45, 212, 191, 0.35);
     transform: translateY(-2px);
-    box-shadow:
-      inset 0 3px 12px rgba(45, 212, 191, 0.2),
-      0 0 30px rgba(6, 182, 212, 0.2);
   }
 `;
 
@@ -333,13 +320,69 @@ export const PaymentCountBadge = styled(Badge)`
   margin-left: 0.5rem;
   
   .ant-badge-count {
-    background: linear-gradient(135deg, #00ffff 0%, #06b6d4 100%);
-    color: rgba(0, 0, 0, 0.85);
-    font-weight: 600;
+    /* Liquid glass morphism badge matching Paid Subscribers theme */
+    background: linear-gradient(135deg,
+      rgba(20, 184, 166, 0.85),  /* from-teal-500 */
+      rgba(6, 182, 212, 0.80),   /* to-cyan-500 */
+      rgba(45, 212, 191, 0.85)   /* accent cyan */
+    );
+    color: rgba(0, 20, 30, 0.95);  /* Dark text for contrast */
+    font-weight: 700;
+    font-size: 11px;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(45, 212, 191, 0.4);
     box-shadow:
-      0 0 8px rgba(0, 255, 255, 0.5),
-      0 0 16px rgba(0, 255, 255, 0.3);
-    border: none;
+      inset 0 1px 4px rgba(255, 255, 255, 0.25),
+      0 0 12px rgba(45, 212, 191, 0.5),
+      0 0 24px rgba(6, 182, 212, 0.3),
+      0 2px 8px rgba(0, 0, 0, 0.15);
+    position: relative;
+    overflow: hidden;
+    animation: pulseGlow 2s ease-in-out infinite;
+    
+    /* Glass overlay for depth */
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 40%;
+      background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.15) 0%,
+        transparent 100%
+      );
+      pointer-events: none;
+    }
+    
+    @keyframes pulseGlow {
+      0%, 100% {
+        box-shadow:
+          inset 0 1px 4px rgba(255, 255, 255, 0.25),
+          0 0 12px rgba(45, 212, 191, 0.5),
+          0 0 24px rgba(6, 182, 212, 0.3),
+          0 2px 8px rgba(0, 0, 0, 0.15);
+      }
+      50% {
+        box-shadow:
+          inset 0 1px 4px rgba(255, 255, 255, 0.25),
+          0 0 18px rgba(45, 212, 191, 0.7),
+          0 0 36px rgba(6, 182, 212, 0.5),
+          0 2px 10px rgba(0, 0, 0, 0.2);
+      }
+    }
+  }
+  
+  /* Hover effect on the badge count */
+  &:hover .ant-badge-count {
+    transform: scale(1.1);
+    box-shadow:
+      inset 0 1px 6px rgba(255, 255, 255, 0.3),
+      0 0 20px rgba(45, 212, 191, 0.7),
+      0 0 40px rgba(6, 182, 212, 0.5),
+      0 3px 12px rgba(0, 0, 0, 0.2);
   }
 `;
 
