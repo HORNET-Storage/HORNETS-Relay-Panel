@@ -1,15 +1,17 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { DropdownCollapse } from '@app/components/header/Header.styles';
 import { useTranslation } from 'react-i18next';
 import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
 import { useAppSelector } from '@app/hooks/reduxHooks';
 import { useAppDispatch } from '@app/hooks/reduxHooks';
 import { setShowAlert } from '@app/store/slices/pwaSlice';
+import { LogoutOutlined, DownloadOutlined } from '@ant-design/icons';
 import * as S from './SettingsOverlay.styles';
 
 export const SettingsOverlay: React.FC = ({ ...props }) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const dispatch = useAppDispatch();
   const { isPWASupported, event } = useAppSelector((state) => state.pwa);
@@ -25,6 +27,11 @@ export const SettingsOverlay: React.FC = ({ ...props }) => {
 
     (event as BeforeInstallPromptEvent).prompt();
   };
+
+  const handleLogoutClick = () => {
+    navigate('/logout');
+  };
+
   return (
     <S.SettingsOverlayMenu {...props}>
       <DropdownCollapse bordered={false} expandIconPosition="end" ghost defaultActiveKey="themePicker">
@@ -35,16 +42,28 @@ export const SettingsOverlay: React.FC = ({ ...props }) => {
           <NightModeSettings />
         </DropdownCollapse.Panel>} */}
       </DropdownCollapse>
-      <S.Text>
-        <Link to="/logout">{t('header.logout')}</Link>
-      </S.Text>
-      {isPWASupported && (
-        <S.PwaInstallWrapper>
-          <BaseButton block type="primary" onClick={handleInstallClick}>
+      
+      <S.ButtonWrapper>
+        {isPWASupported && (
+          <S.StyledButton
+            block
+            type="ghost"
+            onClick={handleInstallClick}
+            icon={<DownloadOutlined />}
+          >
             {t('common.pwa')}
-          </BaseButton>
-        </S.PwaInstallWrapper>
-      )}
+          </S.StyledButton>
+        )}
+        
+        <S.StyledButton
+          block
+          type="ghost"
+          onClick={handleLogoutClick}
+          icon={<LogoutOutlined />}
+        >
+          {t('header.logout')}
+        </S.StyledButton>
+      </S.ButtonWrapper>
     </S.SettingsOverlayMenu>
   );
 };

@@ -104,7 +104,7 @@ export const FlaggedPubkeysTable: React.FC<FlaggedPubkeysTableProps> = ({
   return (
     <>
       <div style={{ marginBottom: '1rem' }}>
-        <Input
+        <S.InputRoot
           placeholder="Search pubkeys"
           value={searchText}
           onChange={(e) => setSearchText(e.target.value)}

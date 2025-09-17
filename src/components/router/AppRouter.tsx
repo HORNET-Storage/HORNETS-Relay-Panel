@@ -148,6 +148,7 @@ export const AppRouter: React.FC = () => {
         {/* Public routes */}
         <Route path="/auth" element={<AuthLayoutFallback>{/* children if any */}</AuthLayoutFallback>}>
           <Route path="login" element={<LoginPage />} />
+          <Route path="sign-up" element={<SignUpPage />} />
           <Route path="forgot-password" element={<ForgotPasswordPage />} />
           <Route path="security-code" element={<SecurityCodePage />} />
           <Route path="new-password" element={<NewPasswordPage />} />
@@ -216,17 +217,6 @@ export const AppRouter: React.FC = () => {
             <Route path="notification" element={<NotificationsUI />} />
             <Route path="skeleton" element={<Skeletons />} />
           </Route>
-        </Route>
-        <Route element={<AuthLayout />}>
-          {/* Other auth routes */}
-          <Route
-            path="/auth/sign-up"
-            element={
-              <RequireAdminAuth>
-                <SignUpPage />
-              </RequireAdminAuth>
-            }
-          />
         </Route>
 
         <Route path="/auth/lock" element={

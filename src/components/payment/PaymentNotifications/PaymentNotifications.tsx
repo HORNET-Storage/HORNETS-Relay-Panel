@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { BaseCard } from '@app/components/common/BaseCard/BaseCard';
 import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
 import { BaseSelect } from '@app/components/common/selects/BaseSelect/BaseSelect';
 import { BaseSpace } from '@app/components/common/BaseSpace/BaseSpace';
@@ -18,8 +19,7 @@ interface PaymentNotificationsProps {
 
 export const PaymentNotifications: React.FC<PaymentNotificationsProps> = ({ className }) => {
   const { t } = useTranslation();
-  const [filter, setFilter] = useState<'all' | 'unread' | 'user'>('unread');
-  const [userPubkey, setUserPubkey] = useState<string>('');
+  const [filter, setFilter] = useState<'all' | 'unread'>('all');
 
   const { notifications, pagination, isLoading, fetchNotifications, markAsRead, markAllAsRead } =
     usePaymentNotifications();
@@ -29,52 +29,29 @@ export const PaymentNotifications: React.FC<PaymentNotificationsProps> = ({ clas
     fetchNotifications({
       page: 1,
       limit: pagination?.pageSize || 10,
-      filter: 'unread',
+      filter: 'all'
     });
   }, [fetchNotifications, pagination?.pageSize]);
 
   const handleFilterChange = (value: unknown) => {
-    const filterValue = value as 'all' | 'unread' | 'user';
+    const filterValue = value as 'all' | 'unread';
     setFilter(filterValue);
 
-    // Only fetch immediately for "all" and "unread" filters
-    // For "user" filter, wait for the user to click the Filter button
-    if (filterValue !== 'user') {
-      fetchNotifications({
-        page: 1,
-        limit: pagination?.pageSize || 10,
-        filter: filterValue,
-      });
-    }
+    fetchNotifications({
+      page: 1,
+      limit: pagination?.pageSize || 10,
+      filter: filterValue
+    });
   };
 
   const handlePageChange = (page: number) => {
     const params: PaymentNotificationParams = {
       page,
       limit: pagination?.pageSize || 10,
-      filter,
+      filter
     };
 
-    if (filter === 'user' && userPubkey) {
-      params.pubkey = userPubkey;
-    }
-
     fetchNotifications(params);
-  };
-
-  const handleUserPubkeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUserPubkey(e.target.value);
-  };
-
-  const handleUserPubkeyFilter = () => {
-    if (userPubkey && filter === 'user') {
-      fetchNotifications({
-        page: 1,
-        limit: pagination?.pageSize || 10,
-        filter: 'user',
-        pubkey: userPubkey,
-      });
-    }
   };
 
   const formatDate = (dateString: string): string => {
@@ -82,111 +59,63 @@ export const PaymentNotifications: React.FC<PaymentNotificationsProps> = ({ clas
     return date.toLocaleString();
   };
 
-  const formatAmount = (satoshis: number) => {
-    const btc = satoshis / 100000000;
-    return (
-      <S.AmountDisplay>
-        <S.SatAmount>{satoshis.toLocaleString()} sats</S.SatAmount>
-        <S.BtcAmount>({btc.toFixed(8)} BTC)</S.BtcAmount>
-      </S.AmountDisplay>
-    );
-  };
-
-  const formatExpirationDate = (dateString: string) => {
-    const expiration = new Date(dateString);
-    const now = new Date();
-    const daysUntilExpiration = Math.floor((expiration.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-
-    let color: 'default' | 'warning' | 'error' = 'default';
-    if (daysUntilExpiration <= 3) {
-      color = 'error';
-    } else if (daysUntilExpiration <= 7) {
-      color = 'warning';
-    }
-
-    return (
-      <S.ExpirationInfo color={color}>
-        {daysUntilExpiration <= 0
-          ? t('payment.notifications.expired', 'Expired')
-          : t('payment.notifications.expiresInDays', 'Expires in {{days}} days', { days: daysUntilExpiration })}
-        {' - '}
-        {formatDate(dateString)}
-      </S.ExpirationInfo>
-    );
-  };
-
   return (
-    <S.Root
-      className={className}
-      title={t('payment.notifications.title', 'Payment Notifications')}
-      padding="1.25rem 1.5rem"
-    >
-      <S.FiltersWrapper>
-        <BaseRow gutter={[16, 16]} align="middle">
-          <BaseCol xs={24} sm={10} md={12}>
-            <BaseSelect
-              value={filter}
-              onChange={handleFilterChange}
-              options={[
-                { value: 'all', label: t('payment.notifications.filters.all', 'All Payments') },
-                { value: 'unread', label: t('payment.notifications.filters.unread', 'Unread') },
-                { value: 'user', label: t('payment.notifications.filters.user', 'By User') },
-              ]}
-            />
-          </BaseCol>
-
-          {filter === 'user' && (
-            <>
-              <BaseCol xs={24} md={9}>
-                <S.UserInput
-                  placeholder={t('payment.notifications.userPlaceholder', 'Enter user pubkey')}
-                  value={userPubkey}
-                  onChange={handleUserPubkeyChange}
+    <BaseCard className={className} title={t('payment.notifications.title', 'Payment Notifications')} padding="0">
+      <S.ScrollableContent>
+        <S.ContentPadding>
+          <S.FiltersWrapper>
+            <BaseRow gutter={[16, 16]} align="middle">
+              <BaseCol xs={24} md={8}>
+                <BaseSelect
+                  value={filter}
+                  onChange={handleFilterChange}
+                  options={[
+                    { value: 'all', label: t('payment.notifications.filters.all', 'All Notifications') },
+                    { value: 'unread', label: t('payment.notifications.filters.unread', 'Unread') }
+                  ]}
                 />
               </BaseCol>
-              <BaseCol xs={24} md={3}>
-                <BaseButton type="primary" onClick={handleUserPubkeyFilter}>
-                  {t('payment.notifications.filter', 'Filter')}
-                </BaseButton>
-              </BaseCol>
-            </>
-          )}
-        </BaseRow>
-      </S.FiltersWrapper>
+            </BaseRow>
+          </S.FiltersWrapper>
 
-      {isLoading ? (
+          {isLoading ? (
         <div style={{ textAlign: 'center', padding: '40px 0' }}>
           <div style={{ fontSize: '28px', marginBottom: '16px' }}>⏳</div>
-          <S.Text style={{ fontSize: '16px' }}>{t('common.loading', 'Loading...')}</S.Text>
+          <S.Text style={{ fontSize: '16px' }}>
+            {t('common.loading', 'Loading...')}
+          </S.Text>
         </div>
       ) : notifications.length > 0 ? (
         <>
-          <BaseSpace direction="vertical" size={10} split={<div style={{ height: '1rem' }}></div>}>
+          <BaseSpace direction="vertical" size={10} split={<S.SplitDivider />}>
             {notifications.map((notification) => (
-              <S.NotificationItem
-                key={notification.id}
-                $isRead={notification.is_read}
-                $isNew={notification.is_new_subscriber}
-              >
+              <S.NotificationItem key={notification.id} $isRead={notification.is_read}>
                 <BaseNotification
                   type="info"
                   title={
-                    <S.NotificationHeader align="middle">
-                      <S.TierTag $tier={notification.subscription_tier}>{notification.subscription_tier}</S.TierTag>
+                    <BaseRow align="middle">
+                      <S.PaymentTypeTag $type={notification.is_new_subscriber ? 'new' : 'renewal'}>
+                        {notification.subscription_tier}
+                      </S.PaymentTypeTag>
                       {t(
                         notification.is_new_subscriber
                           ? 'payment.notifications.newSubscription'
                           : 'payment.notifications.renewalSubscription',
-                        notification.is_new_subscriber ? 'New Subscription' : 'Subscription Renewal',
+                        notification.is_new_subscriber ? 'New Subscription' : 'Subscription Renewal'
                       )}
                       {notification.is_new_subscriber && (
-                        <S.NewSubscriberBadge>{t('payment.notifications.new', 'NEW')}</S.NewSubscriberBadge>
+                        <S.PaymentCountBadge count={1} />
                       )}
-                    </S.NotificationHeader>
+                    </BaseRow>
                   }
                   description={
                     <S.NotificationContent>
                       <S.NotificationMeta>
+                        <S.MetaItem>
+                          <S.MetaLabel>Date:</S.MetaLabel>
+                          <S.MetaValue>{formatDate(notification.created_at)}</S.MetaValue>
+                        </S.MetaItem>
+
                         <S.MetaItem>
                           <S.MetaLabel>User:</S.MetaLabel>
                           <S.MetaValue>
@@ -195,48 +124,53 @@ export const PaymentNotifications: React.FC<PaymentNotificationsProps> = ({ clas
                               onClick={() => {
                                 navigator.clipboard.writeText(notification.pubkey);
                                 notificationController.success({
-                                  message: 'User pubkey copied to clipboard',
+                                  message: 'User pubkey copied to clipboard'
                                 });
                               }}
                             >
-                              Copy Pubkey
+                              Copy
                             </S.CopyButton>
                           </S.MetaValue>
                         </S.MetaItem>
+
                         <S.MetaItem>
-                          <S.MetaLabel>TX ID:</S.MetaLabel>
+                          <S.MetaLabel>Transaction:</S.MetaLabel>
                           <S.MetaValue>
                             {notification.tx_id.substring(0, 10)}...
                             <S.CopyButton
                               onClick={() => {
                                 navigator.clipboard.writeText(notification.tx_id);
                                 notificationController.success({
-                                  message: 'Transaction ID copied to clipboard',
+                                  message: 'Transaction ID copied to clipboard'
                                 });
                               }}
                             >
-                              Copy TX ID
+                              Copy
                             </S.CopyButton>
                           </S.MetaValue>
                         </S.MetaItem>
                       </S.NotificationMeta>
-                      <S.TransactionWrapper>
-                        <S.LeftSideTX>
-                          <S.MetaItem>
-                            <S.MetaValue className='date'>{formatDate(notification.created_at)}</S.MetaValue>
-                          </S.MetaItem>
-                        </S.LeftSideTX>
-                        <div>{formatAmount(notification.amount)}</div>
-                      </S.TransactionWrapper>
-                      <S.CardFooter>
-                        {formatExpirationDate(notification.expiration_date)}
 
-                        {!notification.is_read && (
-                          <S.MarkReadButton onClick={() => markAsRead(notification.id)} size="small" type="link">
-                            {t('payment.notifications.markAsRead', 'Mark as read')}
-                          </S.MarkReadButton>
-                        )}
-                      </S.CardFooter>
+                      <S.ContentContainer>
+                        <S.PaymentBanner $paymentType={notification.is_new_subscriber ? 'new' : 'renewal'}>
+                          💰 {notification.amount.toLocaleString()} sats ({(notification.amount / 100000000).toFixed(8)} BTC)
+                        </S.PaymentBanner>
+
+                        <S.PaymentDetails>
+                          <S.ExpirationInfo>
+                            Expires: {formatDate(notification.expiration_date)}
+                          </S.ExpirationInfo>
+                        </S.PaymentDetails>
+                      </S.ContentContainer>
+
+                      {!notification.is_read && (
+                        <S.MarkReadButton
+                          onClick={() => markAsRead(notification.id)}
+                          size="small"
+                        >
+                          {t('payment.notifications.markAsRead', 'Mark as read')}
+                        </S.MarkReadButton>
+                      )}
                     </S.NotificationContent>
                   }
                 />
@@ -247,7 +181,7 @@ export const PaymentNotifications: React.FC<PaymentNotificationsProps> = ({ clas
           <S.FooterWrapper>
             <BaseRow justify="space-between" align="middle">
               <BaseCol>
-                {notifications.some((n) => !n.is_read) && (
+                {notifications.some(n => !n.is_read) && (
                   <BaseButton type="default" onClick={() => markAllAsRead()}>
                     {t('payment.notifications.readAll', 'Mark all as read')}
                   </BaseButton>
@@ -268,37 +202,18 @@ export const PaymentNotifications: React.FC<PaymentNotificationsProps> = ({ clas
           </S.FooterWrapper>
         </>
       ) : (
-        <div
-          style={{
-            textAlign: 'center',
-            padding: '60px 0',
-            minHeight: '55vh',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
+        <div style={{ textAlign: 'center', padding: '60px 0' }}>
           <div style={{ fontSize: '32px', marginBottom: '16px' }}>💰</div>
           <S.Text style={{ display: 'block', marginBottom: '12px', fontWeight: 500, fontSize: '18px' }}>
             {t('payment.notifications.noNotifications', 'No payment notifications')}
           </S.Text>
-          <S.Text
-            style={{
-              display: 'block',
-              color: 'var(--text-light-color)',
-              fontSize: '14px',
-              maxWidth: '400px',
-              margin: '0 auto',
-            }}
-          >
-            {t(
-              'payment.notifications.emptyDescription',
-              'Payment notifications will appear here when users subscribe to your services',
-            )}
+          <S.Text style={{ display: 'block', color: 'var(--text-light-color)', fontSize: '14px', maxWidth: '400px', margin: '0 auto' }}>
+            {t('payment.notifications.emptyDescription', 'Payment notifications will appear here when users subscribe to your services')}
           </S.Text>
         </div>
-      )}
-    </S.Root>
+          )}
+        </S.ContentPadding>
+      </S.ScrollableContent>
+    </BaseCard>
   );
 };

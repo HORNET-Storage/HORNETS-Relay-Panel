@@ -9,7 +9,7 @@ interface HeaderProps {
 
 export default styled(BaseLayout.Content)<HeaderProps>`
   padding: ${LAYOUT.mobile.paddingVertical} ${LAYOUT.mobile.paddingHorizontal};
-  overflow: auto;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -28,7 +28,8 @@ export default styled(BaseLayout.Content)<HeaderProps>`
     ${(props) =>
       props?.$isTwoColumnsLayout &&
       css`
-        padding: 0;
+        padding: 0 1.8rem 0 ${LAYOUT.desktop.paddingHorizontal};  /* Remove top padding to eliminate gap */
+        padding-right: 0; /* Only remove right padding to allow right column to attach to edge */
       `}
   }
 `;

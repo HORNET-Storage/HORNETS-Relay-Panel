@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Input, Table, Space, Modal, Form, Select, message, Popconfirm } from 'antd';
 import { PlusOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import { LiquidBlueButton } from '@app/components/common/LiquidBlueButton';
 import { useAllowedUsersList, useAllowedUsersValidation } from '@app/hooks/useAllowedUsers';
 import { AllowedUsersSettings, AllowedUsersMode, AllowedUser } from '@app/types/allowedUsers.types';
 import * as S from './NPubManagement.styles';
@@ -149,13 +150,13 @@ export const NPubManagement: React.FC<NPubManagementProps> = ({
     <S.Container>
       <S.TabHeader>
         <Space>
-          <Button
-            type="primary"
+          <LiquidBlueButton
+            variant="primary"
             icon={<PlusOutlined />}
             onClick={() => setIsAddModalVisible(true)}
           >
             Add User
-          </Button>
+          </LiquidBlueButton>
         </Space>
       </S.TabHeader>
       

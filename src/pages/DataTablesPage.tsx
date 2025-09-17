@@ -8,6 +8,7 @@ import * as S from '@app/pages/uiComponentsPages/UIComponentsPage.styles';
 import { Balance } from '@app/components/relay-dashboard/Balance/Balance';
 import { TotalEarning } from '@app/components/relay-dashboard/totalEarning/TotalEarning';
 import { ActivityStory } from '@app/components/relay-dashboard/transactions/Transactions';
+import { DashboardWrapper } from '@app/pages/DashboardPages/DashboardPage.styles';
 const DataTablesPage: React.FC = () => {
   const { t } = useTranslation();
   const { isDesktop } = useResponsive();
@@ -18,23 +19,25 @@ const DataTablesPage: React.FC = () => {
         <Tables />
       </S.LeftSideCol>
       <S.RightSideCol xl={8} xxl={7}>
-        <div id="balance">
-          <Balance />
-        </div>
-        <S.Space />
-        <div id="total-earning">
-          <TotalEarning />
-        </div>
-        <S.Space />
-        <div id="activity-story">
-          <ActivityStory />
-        </div>
+        <S.RightSideContentWrapper>
+          <div id="balance" className="liquid-element">
+            <Balance />
+          </div>
+          <S.Space />
+          <div id="total-earning" className="liquid-element">
+            <TotalEarning />
+          </div>
+          <S.Space />
+          <div id="activity-story" className="liquid-element">
+            <ActivityStory />
+          </div>
+        </S.RightSideContentWrapper>
       </S.RightSideCol>
     </BaseRow>
   );
 
   return (
-    <>
+    <DashboardWrapper>
       <PageTitle>{t('Nostr Statistics')}</PageTitle>
       {isDesktop ? (
         desktopLayout
@@ -43,7 +46,7 @@ const DataTablesPage: React.FC = () => {
           <Tables />
         </>
       )}
-    </>
+    </DashboardWrapper>
   );
 };
 

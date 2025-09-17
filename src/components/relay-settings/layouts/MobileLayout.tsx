@@ -4,13 +4,14 @@ import React from 'react';
 import { BaseRow } from '@app/components/common/BaseRow/BaseRow';
 import { BaseCol } from '@app/components/common/BaseCol/BaseCol';
 import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
+import { LiquidBlueButton } from '@app/components/common/LiquidBlueButton';
 import * as S from '@app/pages/uiComponentsPages/UIComponentsPage.styles';
 import { NetworkSection } from '@app/components/relay-settings/sections/NetworkSection';
 import { KindsSection } from '@app/components/relay-settings/sections/KindsSection';
 import { MediaSection } from '@app/components/relay-settings/sections/MediaSection';
 import { ModerationSection } from '@app/components/relay-settings/sections/ModerationSection';
 import { CollapsibleSection } from '@app/components/relay-settings/shared/CollapsibleSection/CollapsibleSection';
-import { BaseSwitch } from '@app/components/common/BaseSwitch/BaseSwitch';
+import { LiquidToggle } from '@app/components/common/LiquidToggle/LiquidToggle';
 import { useTranslation } from 'react-i18next';
 
 interface MobileLayoutProps {
@@ -99,7 +100,7 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({
         <BaseRow gutter={[20, 24]}>
             <BaseCol span={24}>
                 <S.HeadingContainer>
-                    <S.LabelSpan>{'Options'}</S.LabelSpan>
+                    <S.LabelSpan>{'Relay Settings'}</S.LabelSpan>
                 </S.HeadingContainer>
 
                 <NetworkSection
@@ -129,9 +130,7 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({
                                 </div>
                                 
                                 <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
-                                    <BaseSwitch
-                                        checkedChildren="ON"
-                                        unCheckedChildren="OFF"
+                                    <LiquidToggle
                                         checked={allowUnregisteredKinds}
                                         onChange={onAllowUnregisteredKindsChange}
                                     />
@@ -175,14 +174,14 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({
                     audio={audio}
                 />
 
-                <BaseButton
-                    style={{ marginTop: '2rem' }}
-                    type="primary"
+                <LiquidBlueButton
+                    style={{ marginTop: '2rem', width: '100%' }}
+                    variant="primary"
                     loading={loadings[0]}
                     onClick={onSaveClick}
                 >
                     {t('buttons.saveSettings')}
-                </BaseButton>
+                </LiquidBlueButton>
             </BaseCol>
         </BaseRow>
     );

@@ -8,6 +8,7 @@ import axios from 'axios';
 import config from '@app/config/config';
 import { readToken } from '@app/services/localStorage.service'; // Assuming these services exist
 import { useHandleLogout } from '@app/hooks/authUtils';
+import { useFullscreenContainer } from '@app/hooks/useFullscreenContainer';
 
 interface TopUpBalanceModalProps extends TopUpDataProps {
   isOpen: boolean;
@@ -30,6 +31,7 @@ export const TopUpBalanceModal: React.FC<TopUpBalanceModalProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const handleLogout = useHandleLogout();
+  const fullscreenContainer = useFullscreenContainer();
 
   useEffect(() => {
     if (isOpen) {
@@ -63,6 +65,9 @@ export const TopUpBalanceModal: React.FC<TopUpBalanceModalProps> = ({
     }
   }, [isOpen, handleLogout]);
 
+  // Use fullscreen container if available, otherwise render to body
+  const portalContainer = fullscreenContainer || document.body;
+
   return ReactDOM.createPortal(
     <BaseModal centered={true} width={500} open={isOpen} onCancel={onOpenChange} footer={null} destroyOnClose>
       <BaseSpin spinning={isLoading}>
@@ -75,6 +80,6 @@ export const TopUpBalanceModal: React.FC<TopUpBalanceModalProps> = ({
         )}
       </BaseSpin>
     </BaseModal>,
-    document.body
+    portalContainer
   );
 };

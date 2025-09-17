@@ -143,8 +143,10 @@ export const ReportNotifications: React.FC<ReportNotificationsProps> = ({ classN
   };
 
   return (
-    <BaseCard className={className} title={t('report.notifications.title', 'Report Notifications')} padding="1.25rem">
-      <S.FiltersWrapper>
+    <BaseCard className={className} title={t('report.notifications.title', 'Report Notifications')} padding="0">
+      <S.ScrollableContent>
+        <S.ContentPadding>
+          <S.FiltersWrapper>
         <BaseRow gutter={[16, 16]} align="middle">
           <BaseCol xs={24} md={8}>
             <BaseSelect
@@ -290,7 +292,7 @@ export const ReportNotifications: React.FC<ReportNotificationsProps> = ({ classN
         </>
       ) : (
         <div style={{ textAlign: 'center', padding: '60px 0' }}>
-          <div style={{ fontSize: '32px', marginBottom: '16px' }}>🔍</div>
+          <div style={{ fontSize: '32px', marginBottom: '16px' }}>🚨</div>
           <S.Text style={{ display: 'block', marginBottom: '12px', fontWeight: 500, fontSize: '18px' }}>
             {t('report.notifications.noNotifications', 'No report notifications')}
           </S.Text>
@@ -364,7 +366,9 @@ export const ReportNotifications: React.FC<ReportNotificationsProps> = ({ classN
             <Paragraph>Loading content...</Paragraph>
           </div>
         )}
-      </Modal>
+        </Modal>
+        </S.ContentPadding>
+      </S.ScrollableContent>
     </BaseCard>
   );
 };

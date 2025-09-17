@@ -1,27 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { Collapse, Button, Space, Spin } from 'antd';
+import React, { useState } from 'react';
+import { Button, Space, Spin } from 'antd';
+import { LiquidBlueButton } from '@app/components/common/LiquidBlueButton';
 import { BaseRow } from '@app/components/common/BaseRow/BaseRow';
 import { BaseCol } from '@app/components/common/BaseCol/BaseCol';
-import styled from 'styled-components';
 import GeneralSettingsPanel from '../panels/GeneralSettingsPanel';
 import ImageModerationPanel from '../panels/ImageModerationPanel';
 import ContentFilterPanel from '../panels/ContentFilterPanel';
 import OllamaPanel from '../panels/OllamaPanel';
 import WalletPanel from '../panels/WalletPanel';
 import useGenericSettings from '@app/hooks/useGenericSettings';
-
-const { Panel } = Collapse;
-
-const SettingsContainer = styled.div`
-  margin-bottom: 2rem;
-`;
-
-const SaveButtonContainer = styled.div`
-  margin-top: 2rem;
-  margin-bottom: 2rem;
-  display: flex;
-  justify-content: center;
-`;
+import { CollapsibleSection } from '@app/components/relay-settings/shared/CollapsibleSection/CollapsibleSection';
+import { Balance } from '@app/components/relay-dashboard/Balance/Balance';
+import { TotalEarning } from '@app/components/relay-dashboard/totalEarning/TotalEarning';
+import { ActivityStory } from '@app/components/relay-dashboard/transactions/Transactions';
+import * as S from './AdvancedSettingsLayout.styles';
 
 interface AdvancedSettingsLayoutProps {
   loading?: boolean;
@@ -34,11 +26,10 @@ const AdvancedSettingsLayout: React.FC<AdvancedSettingsLayoutProps> = ({
 }) => {
   const [saveLoading, setSaveLoading] = useState(false);
   const [resetLoading, setResetLoading] = useState(false);
-  const [activeKeys, setActiveKeys] = useState<string[]>(['general', 'image-moderation']);
   
   // Use the generic settings hook to handle saving all settings
-  const { 
-    loading: hookLoading, 
+  const {
+    loading: hookLoading,
     error: hookError,
     saveSettings,
     fetchSettings
@@ -46,20 +37,6 @@ const AdvancedSettingsLayout: React.FC<AdvancedSettingsLayoutProps> = ({
   
   const loading = propLoading || hookLoading;
   const error = propError || (hookError ? hookError.toString() : null);
-
-  // Ensure image-moderation panel is expanded when needed
-  useEffect(() => {
-    // Check URL for any parameters indicating we should expand image moderation
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.has('section') && urlParams.get('section') === 'image-moderation') {
-      if (!activeKeys.includes('image-moderation')) {
-        setActiveKeys([...activeKeys, 'image-moderation']);
-      }
-    }
-    
-    // Log for debugging
-    console.log('AdvancedSettingsLayout - Active panels:', activeKeys);
-  }, [activeKeys]);
 
   const handleSave = async () => {
     console.log('Saving all settings...');
@@ -119,60 +96,67 @@ const AdvancedSettingsLayout: React.FC<AdvancedSettingsLayoutProps> = ({
   }
 
   return (
-    <BaseRow>
-      <BaseCol span={24}>
-        <SettingsContainer>
-          <Collapse 
-            accordion={false} 
-            activeKey={activeKeys} 
-            onChange={(keys) => {
-              console.log('Collapse panels changed:', keys);
-              setActiveKeys(keys as string[]);
-            }}
-          >
-            <Panel header="General Settings" key="general">
-              <GeneralSettingsPanel />
-            </Panel>
-            
-            <Panel header="Image Moderation" key="image-moderation">
-              <ImageModerationPanel />
-            </Panel>
-            
-            <Panel header="Content Filter" key="content-filter">
-              <ContentFilterPanel />
-            </Panel>
-            
-            <Panel header="Ollama" key="ollama">
-              <OllamaPanel />
-            </Panel>
-            
-            <Panel header="Wallet" key="wallet">
-              <WalletPanel />
-            </Panel>
-          </Collapse>
-        </SettingsContainer>
-        
-        <SaveButtonContainer>
-          <Space size="middle">
-            <Button 
-              type="primary" 
-              size="large" 
-              onClick={handleSave} 
-              loading={saveLoading}
-            >
-              Save All Settings
-            </Button>
-            <Button 
-              size="large" 
-              onClick={handleReset} 
-              loading={resetLoading}
-            >
-              Reset
-            </Button>
-          </Space>
-        </SaveButtonContainer>
-      </BaseCol>
-    </BaseRow>
+    <S.DashboardWrapper>
+      <BaseRow>
+        <S.LeftSideCol xl={16} xxl={17} id="desktop-content">
+          <CollapsibleSection header="General Settings">
+            <GeneralSettingsPanel />
+          </CollapsibleSection>
+          
+          <CollapsibleSection header="Image Moderation">
+            <ImageModerationPanel />
+          </CollapsibleSection>
+          
+          <CollapsibleSection header="Content Filter">
+            <ContentFilterPanel />
+          </CollapsibleSection>
+          
+          <CollapsibleSection header="Ollama">
+            <OllamaPanel />
+          </CollapsibleSection>
+          
+          <CollapsibleSection header="Wallet">
+            <WalletPanel />
+          </CollapsibleSection>
+          
+          <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'center' }}>
+            <Space size="middle">
+              <LiquidBlueButton
+                variant="primary"
+                size="large"
+                onClick={handleSave}
+                loading={saveLoading}
+              >
+                Save All Settings
+              </LiquidBlueButton>
+              <Button
+                size="large"
+                onClick={handleReset}
+                loading={resetLoading}
+              >
+                Reset
+              </Button>
+            </Space>
+          </div>
+        </S.LeftSideCol>
+
+        <S.RightSideCol xl={8} xxl={7}>
+          <div style={{ width: '100%', padding: '0 2rem', display: 'flex', flexDirection: 'column' }}>
+            <div id="balance" className="liquid-element">
+              <Balance />
+            </div>
+            <S.Space />
+            <div id="total-earning" className="liquid-element">
+              <TotalEarning />
+            </div>
+            <S.Space />
+            <div id="activity-story" className="liquid-element">
+              <ActivityStory />
+            </div>
+          </div>
+        </S.RightSideCol>
+      </BaseRow>
+    </S.DashboardWrapper>
   );
 };
 

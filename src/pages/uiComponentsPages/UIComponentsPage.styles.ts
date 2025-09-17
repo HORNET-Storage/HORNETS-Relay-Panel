@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { createGlobalStyle } from 'styled-components';
 import { BaseCard as CommonCard } from '@app/components/common/BaseCard/BaseCard';
 import { BaseCollapse } from '@app/components/common/BaseCollapse/BaseCollapse';
 import { LAYOUT, media } from '@app/styles/themes/constants';
@@ -25,6 +25,18 @@ export const Card = styled(CommonCard)`
   }
   &.ant-card-bordered {
     border: 1px solid var(--border-color);
+  }
+  
+  /* Apply permanent hover glow when inside CollapsibleSection (Relay Settings dropdown containers) */
+  .ant-collapse-content-box & {
+    box-shadow: var(--box-shadow-hover) !important;
+    transition: transform 0.3s ease;
+    
+    &:hover {
+      /* Keep the hover glow and add slight transform */
+      box-shadow: var(--box-shadow-hover) !important;
+      transform: translateY(-1px);
+    }
   }
 `;
 export const InfoCircleOutlinedIcon = styled(InfoCircleOutlined)`
@@ -80,21 +92,74 @@ export const CollapseWrapper = styled(BaseCollapse)`
 `;
 
 export const RightSideCol = styled(BaseCol)`
-  padding: ${LAYOUT.desktop.paddingVertical} ${LAYOUT.desktop.paddingHorizontal};
+  padding: ${LAYOUT.desktop.paddingVertical} 0;
   position: sticky;
-  top: 0;
+  top: -${LAYOUT.desktop.paddingVertical};  /* Move up to eliminate gap */
   display: flex;
   flex-direction: column;
-  height: calc(100vh - ${LAYOUT.desktop.headerHeight});
-  background-color: var(--sider-background-color);
+  height: calc(100vh - ${LAYOUT.desktop.headerHeight} + ${LAYOUT.desktop.paddingVertical});
+  padding-top: calc(${LAYOUT.desktop.paddingVertical} * 2);  /* Add extra top padding for content */
   overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 5;
+  background: rgba(0, 255, 255, 0.08);  /* Glass effect with 8% opacity */
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-left: 1px solid rgba(0, 255, 255, 0.15);
+  border-top-left-radius: 7px;  /* Rounded top-left corner matching Balance component */
+
+  /* Hide scrollbars completely */
+  &::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
+  }
+  
+  /* Firefox */
+  scrollbar-width: none;
+  
+  /* IE/Edge */
+  -ms-overflow-style: none;
+
+  .liquid-element {
+    animation: fadeInUp 0.6s ease-out;
+  }
+`;
+
+export const RightSideContentWrapper = styled.div`
+  width: 100%;
+  padding: 0 ${LAYOUT.desktop.paddingHorizontal};
+  display: flex;
+  flex-direction: column;
+  
+  @media only screen and ${media.xxl} {
+    padding: 0 2rem;
+  }
 `;
 
 export const LeftSideCol = styled(BaseCol)`
   @media only screen and ${media.xl} {
     padding: ${LAYOUT.desktop.paddingVertical} ${LAYOUT.desktop.paddingHorizontal};
     height: calc(100vh - ${LAYOUT.desktop.headerHeight});
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: rgba(0, 255, 255, 0.05);
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba(0, 255, 255, 0.3);
+      border-radius: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background: rgba(0, 255, 255, 0.5);
+    }
   }
 `;
 
@@ -176,4 +241,18 @@ export const LabelSpan = styled.span`
 `;
 export const HeadingContainer = styled.div`
   margin-bottom: 1.25rem;
+`;
+
+// Create global styles for animations
+export const LiquidAnimations = createGlobalStyle`
+  @keyframes fadeInUp {
+    0% {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 `;

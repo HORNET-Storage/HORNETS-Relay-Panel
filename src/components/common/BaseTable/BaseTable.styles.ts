@@ -4,19 +4,59 @@ import { FONT_SIZE } from '@app/styles/themes/constants';
 
 export const Table = styled(AntdTable)`
   & thead .ant-table-cell {
-    color: var(--primary-color);
+    color: rgba(0, 178, 178, 0.9);
     font-size: ${FONT_SIZE.xs};
     line-height: 1.25rem;
+    font-weight: 600;
+    background: linear-gradient(135deg,
+      rgba(0, 139, 178, 0.08) 0%,
+      rgba(0, 178, 178, 0.05) 100%);
+    text-shadow: 0 0 8px rgba(0, 178, 178, 0.3);
+    border-bottom: 2px solid rgba(0, 178, 178, 0.25);
+    position: relative;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(0, 178, 178, 0.4) 50%,
+        transparent 100%);
+    }
 
     & .anticon {
-      color: var(--primary-color);
+      color: rgba(0, 178, 178, 0.8);
+      filter: drop-shadow(0 0 3px rgba(0, 178, 178, 0.5));
     }
   }
+  
 
   & tbody .ant-table-cell {
-    color: var(--text-main-color);
+    color: rgba(255, 255, 255, 0.85);
     font-size: ${FONT_SIZE.xs};
     line-height: 1.25rem;
+    border-bottom: 1px solid rgba(0, 139, 178, 0.12);
+  }
+  
+  /* Ensure expanded rows have transparent background */
+  & .ant-table-expanded-row {
+    background: transparent !important;
+    background-color: transparent !important;
+    
+    > td {
+      background: transparent !important;
+      background-color: transparent !important;
+    }
+  }
+  
+  /* Remove any default white backgrounds on expansion cells */
+  & .ant-table-tbody > tr.ant-table-expanded-row > td {
+    background: transparent !important;
+    background-color: transparent !important;
   }
 
   & tbody .ant-table-row-expand-icon {
@@ -26,12 +66,28 @@ export const Table = styled(AntdTable)`
     margin-top: 0;
   }
 
-  // Override default antd selector
+  // Override default antd selector - remove vertical lines
   &
     .ant-table-thead
     > tr
     > th:not(:last-child):not(.ant-table-selection-column):not(.ant-table-row-expand-icon-cell):not([colspan])::before {
-    background-color: var(--primary-color);
+    display: none;
+  }
+  
+  /* Remove all vertical borders from Ant table cells */
+  & .ant-table-cell {
+    border-right: none !important;
+    border-left: none !important;
+  }
+  
+  & .ant-table-thead > tr > th {
+    border-right: none !important;
+    border-left: none !important;
+  }
+  
+  & .ant-table-tbody > tr > td {
+    border-right: none !important;
+    border-left: none !important;
   }
 
   & .ant-pagination-prev,

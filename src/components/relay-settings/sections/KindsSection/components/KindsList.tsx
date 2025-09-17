@@ -1,7 +1,7 @@
 // src/components/relay-settings/sections/KindsSection/components/KindsList.tsx
 
 import React from 'react';
-import { BaseCheckbox } from '@app/components/common/BaseCheckbox/BaseCheckbox';
+import { LiquidGlassCheckboxGroup, LiquidGlassCheckbox } from '@app/components/relay-settings/shared/LiquidGlassCheckbox/LiquidGlassCheckbox';
 import * as S from '@app/pages/uiComponentsPages/UIComponentsPage.styles';
 import { noteOptions, categories } from '@app/constants/relaySettings';
 import { themeObject } from '@app/styles/themes/themeVariables';
@@ -31,8 +31,8 @@ export const KindsList: React.FC<KindsListProps> = ({
   // The checkbox state determines if they're enabled or disabled
   
   return (
-    <BaseCheckbox.Group
-      className="large-label"
+    <LiquidGlassCheckboxGroup
+      className="liquid-glass-checkbox large-label"
       value={selectedKinds}
       onChange={(checkedValues) => onKindsChange(checkedValues as string[])}
       disabled={!isKindsActive}
@@ -42,22 +42,18 @@ export const KindsList: React.FC<KindsListProps> = ({
           <h3 className="checkboxHeader w-full">{group.name}</h3>
           <div className="custom-checkbox-group grid-checkbox-group large-label">
             {group.notes.map((note) => {
-              const isSelected = selectedKinds.includes(note.kindString);
-              const statusIcon = isSelected ? '✅' : '❌';
-              
               return (
-                <div 
-                  className="checkbox-container" 
-                  style={{ 
+                <div
+                  className="checkbox-container"
+                  style={{
                     paddingLeft: '1rem',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '0.5rem'
-                  }} 
+                  }}
                   key={note.kindString}
                 >
-                  <span style={{ fontSize: '1.2em', minWidth: '1.5rem' }}>{statusIcon}</span>
-                  <BaseCheckbox
+                  <LiquidGlassCheckbox
                     value={note.kindString}
                     disabled={!isKindsActive}
                   />
@@ -80,7 +76,7 @@ export const KindsList: React.FC<KindsListProps> = ({
           </div>
         </div>
       ))}
-    </BaseCheckbox.Group>
+    </LiquidGlassCheckboxGroup>
   );
 };
 

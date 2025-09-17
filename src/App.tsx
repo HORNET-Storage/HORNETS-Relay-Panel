@@ -11,26 +11,33 @@ import { useLanguage } from './hooks/useLanguage';
 import { useAutoNightMode } from './hooks/useAutoNightMode';
 import { usePWA } from './hooks/usePWA';
 import { useThemeWatcher } from './hooks/useThemeWatcher';
-import { useAppSelector } from './hooks/reduxHooks';
-import { themeObject } from './styles/themes/themeVariables';
+import { useFullscreenModalFix } from './hooks/useFullscreenModalFix';
 // NDK removed - login uses window.nostr directly, profile API uses panel API
 
 const App: React.FC = () => {
   const { language } = useLanguage();
-  const theme = useAppSelector((state) => state.theme.theme);
 
   usePWA();
 
   useAutoNightMode();
 
   useThemeWatcher();
+  
+  useFullscreenModalFix();
 
   return (
     <>
-      <meta name="theme-color" content={themeObject[theme].layoutBodyBg} />
+      <meta name="theme-color" content="#000000" />
       <GlobalStyle />
       <HelmetProvider>
-        <ConfigProvider locale={language === 'en' ? enUS : deDe}>
+        <ConfigProvider
+          locale={language === 'en' ? enUS : deDe}
+          getPopupContainer={() => {
+            // Always use root element for all Ant Design popups to support fullscreen
+            const root = document.getElementById('root');
+            return root || document.body;
+          }}
+        >
           <AppRouter />
         </ConfigProvider>
       </HelmetProvider>

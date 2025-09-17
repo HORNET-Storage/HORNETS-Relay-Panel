@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Input, InputNumber, Select, Tooltip, Button } from 'antd';
+import { Form, Input, InputNumber, Select, Tooltip, Button, Alert, Spin } from 'antd';
 import { SaveOutlined } from '@ant-design/icons';
 import { QuestionCircleOutlined } from '@ant-design/icons';
+import { LiquidBlueButton } from '@app/components/common/LiquidBlueButton';
 import useGenericSettings from '@app/hooks/useGenericSettings';
 import { SettingsGroupType } from '@app/types/settings.types';
-import BaseSettingsPanel from '../BaseSettingsPanel';
 
 const { Option } = Select;
 
@@ -99,30 +99,46 @@ const OllamaPanel: React.FC = () => {
   };
 
   return (
-    <BaseSettingsPanel
-      loading={loading}
-      error={error}
-      extra={
-        <Button 
-          type="primary" 
-          icon={<SaveOutlined />} 
+    <>
+      {error && (
+        <Alert
+          message="Error"
+          description={error.message}
+          type="error"
+          showIcon
+          style={{ marginBottom: '1rem' }}
+        />
+      )}
+      
+      <div style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'flex-end' }}>
+        <LiquidBlueButton
+          variant="primary"
+          icon={<SaveOutlined />}
           onClick={handlePanelSave}
           disabled={loading}
         >
           Save
-        </Button>
-      }
-    >
-      <Form
-        form={form}
-        layout="vertical"
-        onValuesChange={handleValuesChange}
-        initialValues={settings || {}}
-        onFinish={(values) => {
-          console.log('Form submitted with values:', values);
-          setIsUserEditing(false);
-        }}
-      >
+        </LiquidBlueButton>
+      </div>
+      
+      <Spin spinning={loading}>
+        <Form
+          form={form}
+          layout="vertical"
+          onValuesChange={handleValuesChange}
+          initialValues={settings || {}}
+          onFinish={(values) => {
+            console.log('Form submitted with values:', values);
+            setIsUserEditing(false);
+          }}
+          style={{
+            padding: 0,
+            margin: 0,
+            background: 'transparent',
+            border: 'none'
+          }}
+          colon={false}
+        >
         <Form.Item
           name="ollama_url"
           label={
@@ -194,19 +210,18 @@ const OllamaPanel: React.FC = () => {
         </Form.Item>
 
         <Form.Item>
-          <p style={{ 
+          <p style={{
             color: 'rgba(255, 255, 255, 0.8)',
             fontSize: '0.9em',
-            padding: '0.75rem',
-            backgroundColor: 'rgba(0, 0, 0, 0.1)',
-            borderLeft: '3px solid rgba(82, 196, 255, 0.8)',
-            borderRadius: '0 4px 4px 0'
+            padding: '0.75rem 0 0.75rem 0.75rem',
+            borderLeft: '3px solid rgba(82, 196, 255, 0.8)'
           }}>
             <span style={{ color: 'rgba(82, 196, 255, 1)' }}>Note:</span> Ollama provides AI model inference capabilities for the relay. Choose a model based on your performance needs and available resources.
           </p>
         </Form.Item>
-      </Form>
-    </BaseSettingsPanel>
+        </Form>
+      </Spin>
+    </>
   );
 };
 

@@ -35,42 +35,54 @@ export const TotalEarning: React.FC = () => {
 
 
   if (isLoading) {
-    return <div>{t('common.loading')}</div>;
+    return (
+      <div className="liquid-loading-container">
+        <div className="liquid-loader"></div>
+        <p className="liquid-text">{t('common.loading')}</p>
+      </div>
+    );
   }
 
   if (error) {
     return (
-      <div>
-        {t('common.error')}: {error}
+      <div className="liquid-error-container">
+        <h3 className="liquid-glow-text">{t('common.error')}:</h3>
+        <span className="liquid-text">{error}</span>
       </div>
     );
   }
 
   const formattedLatestRate = latestRate !== undefined && !isNaN(latestRate) ? Math.round(latestRate) : 0;
   return (
-    <NFTCard isSider>
+    <NFTCard isSider className="liquid-glass-card">
       <BaseRow gutter={[14, 14]}>
         <BaseCol span={24}>
           <BaseRow wrap={false} justify="space-between">
             <BaseCol>
-              <S.Title level={3}>{t('nft.bitcoinPrice')}</S.Title>
+              <S.Title level={3} className="liquid-glow-text">{t('nft.bitcoinPrice')}</S.Title>
             </BaseCol>
             <BaseCol>
-              <S.ValueText $color={isIncreased ? 'success' : 'error'}>
-                {isIncreased ? <CaretUpOutlined /> : <CaretDownOutlined />} {rateDifference.toFixed(2)}%
-              </S.ValueText>
+              <div className={`liquid-rate-indicator ${isIncreased ? 'success' : 'error'}`}>
+                {isIncreased ? <CaretUpOutlined /> : <CaretDownOutlined />}
+                <span>{rateDifference.toFixed(2)}</span>
+                <span className="percentage-symbol">%</span>
+              </div>
             </BaseCol>
           </BaseRow>
         </BaseCol>
 
         <BaseCol span={24}>
-          <S.Text>{getCurrencyPrice(`${formatNumberWithCommas(formattedLatestRate)}`, CurrencyTypeEnum.USD)}</S.Text>
+          <S.Text className="liquid-price-display">
+            {getCurrencyPrice(`${formatNumberWithCommas(formattedLatestRate)}`, CurrencyTypeEnum.USD)}
+          </S.Text>
         </BaseCol>
 
         <BaseCol span={24}>
           <BaseRow wrap={false} justify="space-between" gutter={[20, 20]}>
             <BaseCol flex={1}>
-              <TotalEarningChart xAxisData={days} earningData={totalEarningData} />
+              <div className="liquid-chart-container">
+                <TotalEarningChart xAxisData={days} earningData={totalEarningData} />
+              </div>
             </BaseCol>
           </BaseRow>
         </BaseCol>
