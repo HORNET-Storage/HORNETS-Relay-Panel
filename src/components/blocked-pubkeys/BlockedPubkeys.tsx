@@ -11,6 +11,7 @@ import { LockFilled } from '@ant-design/icons';
 import styled from 'styled-components';
 import { DashboardWrapper } from '@app/pages/DashboardPages/DashboardPage.styles';
 import { BaseRow } from '@app/components/common/BaseRow/BaseRow';
+import { PageTitle } from '@app/components/common/PageTitle/PageTitle';
 import { Balance } from '@app/components/relay-dashboard/Balance/Balance';
 import { TotalEarning } from '@app/components/relay-dashboard/totalEarning/TotalEarning';
 import { ActivityStory } from '@app/components/relay-dashboard/transactions/Transactions';
@@ -56,6 +57,7 @@ export const BlockedPubkeys: React.FC = () => {
 
   return (
     <DashboardWrapper>
+      <PageTitle>Content Moderation</PageTitle>
       <BaseRow>
         <PageStyles.LeftSideCol xl={16} xxl={17}>
           <S.BaseColRoot>
@@ -64,7 +66,7 @@ export const BlockedPubkeys: React.FC = () => {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div>
                     <Title level={3}>
-                      Access Control <LockFilled />
+                      Content Moderation <LockFilled />
                     </Title>
                     <Text style={{ color: 'var(--text-light-color)' }}>
                       Control access to your relay and manage flagged pubkeys

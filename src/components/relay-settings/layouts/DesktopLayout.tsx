@@ -105,7 +105,7 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({
                 <BaseRow gutter={[60, 60]}>
                     <BaseCol xs={24}>
                         <S.HeadingContainer>
-                            <S.LabelSpan>{'Options'}</S.LabelSpan>
+                            <S.LabelSpan>{'Relay Settings'}</S.LabelSpan>
                         </S.HeadingContainer>
 
                         <NetworkSection

@@ -32,7 +32,7 @@ export const Tables: React.FC = () => {
               style={{
                 background: 'linear-gradient(135deg, rgba(0, 178, 178, 0.12) 0%, rgba(0, 139, 178, 0.08) 100%)',
                 border: '2px solid rgba(0, 178, 178, 0.25)',
-                color: 'rgba(0, 178, 178, 0.9)',
+                color: 'rgba(255, 255, 255, 0.95)',
                 padding: '8px 16px',
                 borderRadius: '12px',
                 fontSize: '14px',

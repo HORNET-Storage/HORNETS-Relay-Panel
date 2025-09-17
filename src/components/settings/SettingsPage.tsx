@@ -9,6 +9,7 @@ import WalletSettings from './WalletSettings';
 import GeneralSettings from './GeneralSettings';
 import RelayInfoSettings from './RelayInfoSettings';
 import * as S from '@app/pages/DashboardPages/DashboardPage.styles';
+import * as PageStyles from '@app/pages/uiComponentsPages/UIComponentsPage.styles';
 import { CollapsibleSection } from '@app/components/relay-settings/shared/CollapsibleSection/CollapsibleSection';
 import { Balance } from '@app/components/relay-dashboard/Balance/Balance';
 import { TotalEarning } from '@app/components/relay-dashboard/totalEarning/TotalEarning';
@@ -16,11 +17,14 @@ import { ActivityStory } from '@app/components/relay-dashboard/transactions/Tran
 
 const SettingsPage: React.FC = () => {
   return (
-    <>
+    <S.DashboardWrapper>
       <PageTitle>Advanced Settings</PageTitle>
-      <S.DashboardWrapper>
-        <BaseRow>
-          <S.LeftSideCol xl={16} xxl={17} id="desktop-content">
+      <BaseRow>
+        <S.LeftSideCol xl={16} xxl={17} id="desktop-content">
+          <PageStyles.HeadingContainer>
+            <PageStyles.LabelSpan>Advanced Settings</PageStyles.LabelSpan>
+          </PageStyles.HeadingContainer>
+          
           <CollapsibleSection header="General Settings">
             <GeneralSettings />
           </CollapsibleSection>
@@ -44,26 +48,25 @@ const SettingsPage: React.FC = () => {
           <CollapsibleSection header="Wallet Settings">
             <WalletSettings />
           </CollapsibleSection>
-          </S.LeftSideCol>
+        </S.LeftSideCol>
 
-          <S.RightSideCol xl={8} xxl={7}>
-            <S.RightSideContentWrapper>
-              <div id="balance" className="liquid-element">
-                <Balance />
-              </div>
-              <S.Space />
-              <div id="total-earning" className="liquid-element">
-                <TotalEarning />
-              </div>
-              <S.Space />
-              <div id="activity-story" className="liquid-element">
-                <ActivityStory />
-              </div>
-            </S.RightSideContentWrapper>
-          </S.RightSideCol>
-        </BaseRow>
-      </S.DashboardWrapper>
-    </>
+        <S.RightSideCol xl={8} xxl={7}>
+          <S.RightSideContentWrapper>
+            <div id="balance" className="liquid-element">
+              <Balance />
+            </div>
+            <S.Space />
+            <div id="total-earning" className="liquid-element">
+              <TotalEarning />
+            </div>
+            <S.Space />
+            <div id="activity-story" className="liquid-element">
+              <ActivityStory />
+            </div>
+          </S.RightSideContentWrapper>
+        </S.RightSideCol>
+      </BaseRow>
+    </S.DashboardWrapper>
   );
 };
 

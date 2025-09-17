@@ -218,7 +218,7 @@ export const Card = styled(CommonCard)`
       rgba(0, 178, 178, 0.03) 100%);
     
     .ant-card-head-title {
-      color: rgba(0, 178, 178, 0.9);
+      color: rgba(255, 255, 255, 0.95);
       text-shadow:
         0 0 12px rgba(0, 178, 178, 0.4),
         0 2px 4px rgba(0, 0, 0, 0.4);
@@ -251,8 +251,31 @@ export const Card = styled(CommonCard)`
   div.ant-table-container,
   .ant-table.ant-table-bordered > .ant-table-container > .ant-table-content > table {
     border-radius: ${borderRad};
-    border: 1px solid rgba(0, 178, 178, 0.12);
+    border: none !important;
     overflow: hidden;
+  }
+  
+  /* Remove all table borders */
+  .ant-table {
+    border: none !important;
+  }
+  
+  .ant-table-container {
+    border: none !important;
+  }
+  
+  .ant-table-bordered {
+    border: none !important;
+  }
+  
+  .ant-table-bordered > .ant-table-container {
+    border: none !important;
+  }
+  
+  /* Remove any remaining left/right borders */
+  table {
+    border-left: none !important;
+    border-right: none !important;
   }
   
   .ant-table-container {

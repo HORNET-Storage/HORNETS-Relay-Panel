@@ -100,7 +100,7 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({
         <BaseRow gutter={[20, 24]}>
             <BaseCol span={24}>
                 <S.HeadingContainer>
-                    <S.LabelSpan>{'Options'}</S.LabelSpan>
+                    <S.LabelSpan>{'Relay Settings'}</S.LabelSpan>
                 </S.HeadingContainer>
 
                 <NetworkSection
