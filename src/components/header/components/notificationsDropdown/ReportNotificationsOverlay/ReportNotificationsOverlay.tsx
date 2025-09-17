@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { BaseNotification } from '@app/components/common/BaseNotification/BaseNotification';
 import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
 import { BaseSpace } from '@app/components/common/BaseSpace/BaseSpace';
@@ -15,6 +15,7 @@ interface ReportNotificationsOverlayProps {
   markAsRead: (id: number) => Promise<void>;
   markAllAsRead: () => Promise<void>;
   onRefresh: () => Promise<void>;
+  onClose?: () => void;
 }
 
 export const ReportNotificationsOverlay: React.FC<ReportNotificationsOverlayProps> = ({
@@ -22,9 +23,29 @@ export const ReportNotificationsOverlay: React.FC<ReportNotificationsOverlayProp
   markAsRead,
   markAllAsRead,
   onRefresh,
+  onClose,
   ...props
 }) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  
+  const handleViewAll = useCallback(() => {
+    if (onClose) {
+      onClose();
+    }
+    setTimeout(() => {
+      navigate('/report-notifications');
+    }, 0);
+  }, [onClose, navigate]);
+  
+  const handleViewDetails = useCallback(() => {
+    if (onClose) {
+      onClose();
+    }
+    setTimeout(() => {
+      navigate('/report-notifications');
+    }, 0);
+  }, [onClose, navigate]);
 
   const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
@@ -121,9 +142,12 @@ export const ReportNotificationsOverlay: React.FC<ReportNotificationsOverlayProp
           )}
 
           <div style={{ marginTop: '4px' }}>
-            <Link to="/report-notifications" style={{ fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.7)' }}>
+            <a
+              onClick={handleViewDetails}
+              style={{ fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.7)', cursor: 'pointer' }}
+            >
               {t('report.notifications.viewDetails', 'View details')}
-            </Link>
+            </a>
           </div>
         </div>
       }
@@ -167,8 +191,8 @@ export const ReportNotificationsOverlay: React.FC<ReportNotificationsOverlayProp
               </S.Btn>
             </BaseCol>
             <BaseCol span={24}>
-              <S.Btn type="link">
-                <Link to="/report-notifications">{t('report.notifications.viewAll', 'View all')}</Link>
+              <S.Btn type="link" onClick={handleViewAll}>
+                {t('report.notifications.viewAll', 'View all')}
               </S.Btn>
             </BaseCol>
           </BaseRow>

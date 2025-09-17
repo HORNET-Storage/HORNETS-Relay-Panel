@@ -106,6 +106,7 @@ export const NotificationsDropdown: React.FC = () => {
               refreshPaymentNotifications({ filter: 'unread' });
               return Promise.resolve();
             }}
+            onClose={() => setOpened(false)}
           />
         </div>
       ),
@@ -135,6 +136,7 @@ export const NotificationsDropdown: React.FC = () => {
               refreshReportNotifications({ filter: 'unread' });
               return Promise.resolve();
             }}
+            onClose={() => setOpened(false)}
           />
         </div>
       ),
@@ -144,6 +146,7 @@ export const NotificationsDropdown: React.FC = () => {
   return (
     <S.StyledNotificationPopover
       trigger="click"
+      open={isOpened}
       content={
         <S.NotificationContent>
           <Tabs

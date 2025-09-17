@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
 import { BaseRow } from '@app/components/common/BaseRow/BaseRow';
 import { BaseCol } from '@app/components/common/BaseCol/BaseCol';
@@ -12,6 +12,7 @@ interface PaymentNotificationsOverlayProps {
   markAsRead: (id: number) => Promise<void>;
   markAllAsRead: () => Promise<void>;
   onRefresh: () => Promise<void>;
+  onClose?: () => void;
 }
 
 export const PaymentNotificationsOverlay: React.FC<PaymentNotificationsOverlayProps> = ({
@@ -19,9 +20,29 @@ export const PaymentNotificationsOverlay: React.FC<PaymentNotificationsOverlayPr
   markAsRead,
   markAllAsRead,
   onRefresh,
+  onClose,
   ...props
 }) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  
+  const handleViewAll = useCallback(() => {
+    if (onClose) {
+      onClose();
+    }
+    setTimeout(() => {
+      navigate('/payment-notifications');
+    }, 0);
+  }, [onClose, navigate]);
+  
+  const handleViewDetails = useCallback(() => {
+    if (onClose) {
+      onClose();
+    }
+    setTimeout(() => {
+      navigate('/payment-notifications');
+    }, 0);
+  }, [onClose, navigate]);
   
   const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
@@ -100,9 +121,12 @@ export const PaymentNotificationsOverlay: React.FC<PaymentNotificationsOverlayPr
             {t('payment.notifications.expiration', 'Expires')}: {formatDate(notification.expiration_date)}
           </div> */}
           <S.ActionRow>
-            <Link to="/payment-notifications" style={{ fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.7)' }}>
+            <a
+              onClick={handleViewDetails}
+              style={{ fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.7)', cursor: 'pointer' }}
+            >
               {t('payment.notifications.viewDetails', 'View details')}
-            </Link>
+            </a>
           {!notification.is_read && (
             <BaseButton
               type="link"
@@ -164,8 +188,8 @@ export const PaymentNotificationsOverlay: React.FC<PaymentNotificationsOverlayPr
               </S.Btn>
             </BaseCol>
             <BaseCol span={24}>
-              <S.Btn type="link">
-                <Link to="/payment-notifications">{t('payment.notifications.viewAll', 'View all')}</Link>
+              <S.Btn type="link" onClick={handleViewAll}>
+                {t('payment.notifications.viewAll', 'View all')}
               </S.Btn>
             </BaseCol>
           </BaseRow>
