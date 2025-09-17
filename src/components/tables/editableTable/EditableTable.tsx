@@ -164,26 +164,14 @@ const EditableTable: React.FC<EditableTableProps> = ({
         const size = text.toFixed(3);
         const intensity = Math.min(text / 10, 1); // Scale intensity based on size
         return (
-          <div style={{
-            display: 'inline-block',
-            padding: '4px 12px',
-            background: `linear-gradient(135deg,
-              rgba(0, 178, 178, ${0.08 + intensity * 0.08}) 0%,
-              rgba(0, 139, 178, ${0.04 + intensity * 0.04}) 100%)`,
-            border: `1px solid rgba(0, 178, 178, ${0.2 + intensity * 0.2})`,
-            borderRadius: '8px',
-            color: 'rgba(0, 178, 178, 0.85)',
+          <span style={{
+            color: `rgba(0, 178, 178, ${0.85 + intensity * 0.15})`,
             fontWeight: 600,
             fontSize: '0.9rem',
-            boxShadow: `
-              0 2px 8px rgba(0, 178, 178, ${0.15 * intensity}),
-              inset 0 1px 2px rgba(0, 178, 178, ${0.15 + intensity * 0.15})`,
-            textShadow: `0 0 ${2 + intensity * 2}px rgba(0, 178, 178, 0.4)`,
-            transform: 'translateZ(0)',
-            transition: 'all 0.3s ease'
+            textShadow: `0 0 ${2 + intensity * 4}px rgba(0, 178, 178, 0.4)`
           }}>
             {size} GB
-          </div>
+          </span>
         );
       },
       sorter: true,
