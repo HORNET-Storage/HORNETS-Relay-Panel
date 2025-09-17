@@ -36,7 +36,7 @@ export const DesktopHeader: React.FC<DesktopHeaderProps> = ({ isTwoColumnsLayout
       {leftSide}
 
       <S.ProfileColumn xl={8} xxl={7} $isTwoColumnsLayout={isTwoColumnsLayout}>
-        <BaseRow align="middle" justify="end" gutter={[20, 0]}>
+        <BaseRow align="middle" justify="end" gutter={[5, 0]}>
           <BaseCol>
             <HeaderFullscreen />
           </BaseCol>
