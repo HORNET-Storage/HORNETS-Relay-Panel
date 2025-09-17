@@ -104,11 +104,17 @@ export const PaymentNotificationsOverlay: React.FC<PaymentNotificationsOverlayPr
               {t('payment.notifications.viewDetails', 'View details')}
             </Link>
           {!notification.is_read && (
-            <BaseButton 
-              type="link" 
-              size="small" 
+            <BaseButton
+              type="link"
+              size="small"
               onClick={() => markAsRead(notification.id)}
-              style={{ padding: '4px 0', height: 'auto', marginTop: '4px', fontSize: '0.85rem' }}
+              style={{
+                padding: '4px 0',
+                height: 'auto',
+                marginTop: '4px',
+                fontSize: '0.85rem',
+                color: '#00ffff'
+              }}
             >
               {t('payment.notifications.markAsRead', 'Mark as read')}
             </BaseButton>

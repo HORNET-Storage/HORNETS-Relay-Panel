@@ -109,7 +109,12 @@ export const ReportNotificationsOverlay: React.FC<ReportNotificationsOverlayProp
               type="link"
               size="small"
               onClick={() => markAsRead(notification.id)}
-              style={{ padding: '4px 0', height: 'auto', marginTop: '4px' }}
+              style={{
+                padding: '4px 0',
+                height: 'auto',
+                marginTop: '4px',
+                color: '#00ffff'
+              }}
             >
               {t('report.notifications.markAsRead', 'Mark as read')}
             </BaseButton>
