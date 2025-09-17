@@ -94,7 +94,7 @@ export const SignUpForm: React.FC = () => {
             {t('signup.alreadyHaveAccount')}
           </Auth.Text>
           <Link to="/auth/login" style={{ display: 'block', textDecoration: 'none' }}>
-            <Auth.SecondaryButton type="button" block>
+            <Auth.SecondaryButton type="default" block>
               {t('common.login')}
             </Auth.SecondaryButton>
           </Link>

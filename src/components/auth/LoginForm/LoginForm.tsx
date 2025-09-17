@@ -155,7 +155,7 @@ export const LoginForm: React.FC = () => {
             {t('login.noAccount')}
           </Auth.Text>
           <Link to="/auth/sign-up" style={{ display: 'block', textDecoration: 'none' }}>
-            <Auth.SecondaryButton type="button" block>
+            <Auth.SecondaryButton type="default" block>
               {t('common.createAccount')}
             </Auth.SecondaryButton>
           </Link>

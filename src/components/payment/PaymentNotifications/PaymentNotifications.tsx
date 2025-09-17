@@ -182,7 +182,7 @@ export const PaymentNotifications: React.FC<PaymentNotificationsProps> = ({ clas
             <BaseRow justify="space-between" align="middle">
               <BaseCol>
                 {notifications.some(n => !n.is_read) && (
-                  <BaseButton type="default" onClick={markAllAsRead}>
+                  <BaseButton type="default" onClick={() => markAllAsRead()}>
                     {t('payment.notifications.readAll', 'Mark all as read')}
                   </BaseButton>
                 )}
