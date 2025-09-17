@@ -169,8 +169,10 @@ export const NotificationsDropdown: React.FC = () => {
           icon={
             <LiquidBlueBadge
               count={totalUnreadCount > 0 ? totalUnreadCount : 0}
+              showZero={false}
               overflowCount={99}
               dot={false}
+              style={{ lineHeight: 1 }}
             >
               <BellOutlined />
             </LiquidBlueBadge>

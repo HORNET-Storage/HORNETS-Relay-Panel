@@ -61,9 +61,21 @@ export const StyledLiquidBadge = styled(Badge)`
   }
   
   &.notification-badge {
+    position: relative;
+    display: inline-block;
+    
     & .ant-badge-count {
-      right: 6px;
-      top: -12px;
+      position: absolute;
+      right: -8px;
+      top: -8px;
+      transform: none;
+    }
+    
+    /* Ensure the wrapper doesn't shift when badge appears/disappears */
+    & .ant-badge-count-sm {
+      position: absolute;
+      right: -8px;
+      top: -8px;
     }
   }
 `;
