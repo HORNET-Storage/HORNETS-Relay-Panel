@@ -4,19 +4,42 @@ import { FONT_SIZE } from '@app/styles/themes/constants';
 
 export const Table = styled(AntdTable)`
   & thead .ant-table-cell {
-    color: var(--primary-color);
+    color: rgba(0, 255, 255, 1);
     font-size: ${FONT_SIZE.xs};
     line-height: 1.25rem;
+    font-weight: 600;
+    background: linear-gradient(135deg,
+      rgba(0, 191, 255, 0.12) 0%,
+      rgba(0, 255, 255, 0.08) 100%);
+    text-shadow: 0 0 12px rgba(0, 255, 255, 0.5);
+    border-bottom: 2px solid rgba(0, 255, 255, 0.3);
+    position: relative;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(0, 255, 255, 0.6) 50%,
+        transparent 100%);
+    }
 
     & .anticon {
-      color: var(--primary-color);
+      color: rgba(0, 255, 255, 1);
+      filter: drop-shadow(0 0 4px rgba(0, 255, 255, 0.8));
     }
   }
+  
 
   & tbody .ant-table-cell {
-    color: var(--text-main-color);
+    color: rgba(255, 255, 255, 0.9);
     font-size: ${FONT_SIZE.xs};
     line-height: 1.25rem;
+    border-bottom: 1px solid rgba(0, 191, 255, 0.15);
   }
   
   /* Ensure expanded rows have transparent background */

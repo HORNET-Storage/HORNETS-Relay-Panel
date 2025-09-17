@@ -30,24 +30,42 @@ export const Tables: React.FC = () => {
               icon={allExpanded ? <ShrinkOutlined /> : <ExpandOutlined />}
               onClick={toggleAllExpanded}
               style={{
-                background: 'rgba(0, 255, 255, 0.1)',
-                border: '1px solid rgba(0, 255, 255, 0.3)',
-                color: 'rgba(0, 255, 255, 0.9)',
-                padding: '4px 12px',
-                borderRadius: '6px',
-                fontSize: '13px',
-                fontWeight: 500,
-                transition: 'all 0.3s ease',
+                background: 'linear-gradient(135deg, rgba(0, 255, 255, 0.15) 0%, rgba(0, 191, 255, 0.1) 100%)',
+                border: '2px solid rgba(0, 255, 255, 0.3)',
+                color: 'rgba(0, 255, 255, 1)',
+                padding: '8px 16px',
+                borderRadius: '12px',
+                fontSize: '14px',
+                fontWeight: 600,
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                boxShadow: `
+                  0 4px 12px rgba(0, 255, 255, 0.2),
+                  inset 0 1px 2px rgba(0, 255, 255, 0.3),
+                  inset 0 -1px 2px rgba(0, 191, 255, 0.2)`,
+                textShadow: '0 0 8px rgba(0, 255, 255, 0.6)',
+                transform: 'translateZ(0) perspective(1000px)',
+                transformStyle: 'preserve-3d',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(0, 255, 255, 0.2)';
+                e.currentTarget.style.background = 'linear-gradient(135deg, rgba(0, 255, 255, 0.25) 0%, rgba(0, 191, 255, 0.2) 100%)';
                 e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.5)';
-                e.currentTarget.style.boxShadow = '0 0 10px rgba(0, 255, 255, 0.3)';
+                e.currentTarget.style.boxShadow = `
+                  0 8px 24px rgba(0, 255, 255, 0.35),
+                  inset 0 2px 4px rgba(0, 255, 255, 0.4),
+                  inset 0 -2px 4px rgba(0, 191, 255, 0.3),
+                  0 0 40px rgba(0, 255, 255, 0.2)`;
+                e.currentTarget.style.transform = 'translateZ(0) perspective(1000px) translateY(-2px) scale(1.05)';
+                e.currentTarget.style.textShadow = '0 0 12px rgba(0, 255, 255, 0.8)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'rgba(0, 255, 255, 0.1)';
+                e.currentTarget.style.background = 'linear-gradient(135deg, rgba(0, 255, 255, 0.15) 0%, rgba(0, 191, 255, 0.1) 100%)';
                 e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.3)';
-                e.currentTarget.style.boxShadow = 'none';
+                e.currentTarget.style.boxShadow = `
+                  0 4px 12px rgba(0, 255, 255, 0.2),
+                  inset 0 1px 2px rgba(0, 255, 255, 0.3),
+                  inset 0 -1px 2px rgba(0, 191, 255, 0.2)`;
+                e.currentTarget.style.transform = 'translateZ(0) perspective(1000px)';
+                e.currentTarget.style.textShadow = '0 0 8px rgba(0, 255, 255, 0.6)';
               }}
             >
               {allExpanded ? 'Collapse All' : 'Expand All'}

@@ -112,11 +112,29 @@ const EditableTable: React.FC<EditableTableProps> = ({
       render: (text: string, record: KindData) => {
         const isExpanded = expandedRowKeys.includes(record.kindNumber);
         return (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ color: 'rgba(0, 191, 255, 1)', fontSize: '14px' }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}>
+            <span style={{
+              color: 'rgba(0, 255, 255, 1)',
+              fontSize: '14px',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '20px',
+              height: '20px',
+              flexShrink: 0
+            }}>
               {isExpanded ? <CaretDownOutlined /> : <CaretRightOutlined />}
             </span>
-            {text}
+            <span style={{
+              color: 'rgba(255, 255, 255, 0.95)',
+              fontWeight: isExpanded ? 600 : 500
+            }}>
+              {text}
+            </span>
           </div>
         );
       },
@@ -142,7 +160,32 @@ const EditableTable: React.FC<EditableTableProps> = ({
       dataIndex: 'totalSize',
       width: '15%',
       editable: false,
-      render: (text: number) => `${text.toFixed(3)} GB`,
+      render: (text: number) => {
+        const size = text.toFixed(3);
+        const intensity = Math.min(text / 10, 1); // Scale intensity based on size
+        return (
+          <div style={{
+            display: 'inline-block',
+            padding: '4px 12px',
+            background: `linear-gradient(135deg,
+              rgba(0, 255, 255, ${0.1 + intensity * 0.1}) 0%,
+              rgba(0, 191, 255, ${0.05 + intensity * 0.05}) 100%)`,
+            border: `1px solid rgba(0, 255, 255, ${0.3 + intensity * 0.3})`,
+            borderRadius: '8px',
+            color: 'rgba(0, 255, 255, 0.95)',
+            fontWeight: 600,
+            fontSize: '0.9rem',
+            boxShadow: `
+              0 2px 8px rgba(0, 255, 255, ${0.2 * intensity}),
+              inset 0 1px 2px rgba(0, 255, 255, ${0.2 + intensity * 0.2})`,
+            textShadow: `0 0 ${4 + intensity * 4}px rgba(0, 255, 255, 0.6)`,
+            transform: 'translateZ(0)',
+            transition: 'all 0.3s ease'
+          }}>
+            {size} GB
+          </div>
+        );
+      },
       sorter: true,
       sortOrder: sortField === 'totalSize' ? sortOrder : undefined,
     }
@@ -263,17 +306,35 @@ const EditableTable: React.FC<EditableTableProps> = ({
 
     return (
       <div style={{
-        padding: '20px',
-        background: 'rgba(0, 10, 20, 0.6)', // Dark background with transparency
-        borderRadius: '12px',
-        margin: '10px',
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)', // Safari support
-        border: '1px solid rgba(0, 255, 255, 0.15)',
-        boxShadow: '0 8px 32px rgba(0, 255, 255, 0.1), inset 0 1px 0 rgba(0, 255, 255, 0.2)',
+        padding: '24px',
+        background: `linear-gradient(135deg,
+          rgba(0, 10, 20, 0.8) 0%,
+          rgba(0, 20, 40, 0.6) 50%,
+          rgba(0, 10, 30, 0.7) 100%)`,
+        borderRadius: '16px',
+        margin: '16px',
+        backdropFilter: 'blur(30px) saturate(150%)',
+        WebkitBackdropFilter: 'blur(30px) saturate(150%)',
+        border: '2px solid rgba(0, 255, 255, 0.2)',
+        boxShadow: `
+          0 20px 40px rgba(0, 255, 255, 0.15),
+          0 10px 20px rgba(0, 191, 255, 0.1),
+          inset 0 2px 4px rgba(0, 255, 255, 0.3),
+          inset 0 -2px 4px rgba(0, 191, 255, 0.2),
+          0 0 80px rgba(0, 255, 255, 0.05)`,
         position: 'relative',
         overflow: 'hidden',
+        transform: 'translateZ(0) perspective(1000px)',
+        transformStyle: 'preserve-3d',
       }}>
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: '1px',
+          background: 'linear-gradient(90deg, transparent 0%, rgba(0, 255, 255, 0.6) 50%, transparent 100%)',
+        }} />
         {isTrendLoading ? (
           <div style={{
             height: '300px',
@@ -335,7 +396,11 @@ const EditableTable: React.FC<EditableTableProps> = ({
             <BaseTable
               size={isDesktop || isTablet ? 'middle' : 'small'}
               bordered
-              style={{ padding: isMobile ? ' 0 .5rem .5rem .5rem' : '0 1.5rem 1.5rem 1.5rem' }}
+              style={{
+                padding: isMobile ? ' 0 .5rem .5rem .5rem' : '0 1.5rem 1.5rem 1.5rem',
+                borderRadius: '12px',
+                overflow: 'hidden',
+              }}
               dataSource={sortedData}
               columns={columns}
               rowKey="kindNumber"
@@ -354,7 +419,10 @@ const EditableTable: React.FC<EditableTableProps> = ({
               loading={isLoading}
               onChange={handleChange}
               onRow={(record) => ({
-                style: { cursor: 'pointer' }
+                style: {
+                  cursor: 'pointer',
+                  transition: 'background 0.3s ease',
+                }
               })}
             />
           ) : (
