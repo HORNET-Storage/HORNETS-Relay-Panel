@@ -8,10 +8,11 @@ import { BaseCol } from '../common/BaseCol/BaseCol';
 export const HeaderActionWrapper = styled.div`
   cursor: pointer;
   position: relative;
-  display: inline-block;  /* Keep compact by default */
-  max-width: 350px;  /* Fixed max width at 350px to match search bar */
-  width: 100%;  /* Allow full width within max constraint */
-
+  display: inline-flex;  /* Use inline-flex for better alignment */
+  align-items: center;
+  justify-content: center;
+  /* Remove width constraints to allow natural sizing */
+  
   /* Remove any potential background or box behind header buttons */
   background: transparent !important;
   background-color: transparent !important;
@@ -101,8 +102,8 @@ export const ProfileColumn = styled(BaseCol)<ProfileColumn>`
       css`
         /* Remove background and padding that creates unwanted box behind buttons */
         background-color: transparent !important;
-        /* Remove padding to prevent spacing issues */
-        padding: 0 !important;
+        /* Add padding to the right to prevent settings gear from touching boundary */
+        padding: 0 1.5rem 0 0 !important;
         /* Ensure the buttons are not affected */
         display: flex;
         align-items: center;
@@ -118,6 +119,8 @@ export const ProfileColumn = styled(BaseCol)<ProfileColumn>`
     width: 100% !important;
     display: flex !important;
     justify-content: flex-end !important;
+    /* Add padding to the right to prevent settings gear from touching boundary */
+    padding-right: 1.5rem !important;
   }
 
   /* Additional override for all screen sizes - remove any possible background */
@@ -129,6 +132,8 @@ export const ProfileColumn = styled(BaseCol)<ProfileColumn>`
   border: none !important;
   /* Ensure right alignment */
   margin-left: auto !important;
+  /* Add padding to the right for all screen sizes */
+  padding-right: 1.5rem !important;
 `;
 
 export const GHButton = styled(GitHubButton)`

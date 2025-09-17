@@ -2,8 +2,6 @@ import styled from 'styled-components';
 import { BaseCard as CommonCard } from '@app/components/common/BaseCard/BaseCard';
 const borderRad = '12px';
 export const TablesWrapper = styled.div`
-  margin-top: 1.875rem;
-  
   /* Main table styling with glass morphism and 3D effects */
   .ant-table-wrapper {
     background: linear-gradient(135deg,
