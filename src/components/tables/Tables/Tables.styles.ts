@@ -2,23 +2,7 @@ import styled from 'styled-components';
 import { BaseCard as CommonCard } from '@app/components/common/BaseCard/BaseCard';
 const borderRad = '12px';
 export const TablesWrapper = styled.div`
-  /* Main table styling with glass morphism and 3D effects */
-  .ant-table-wrapper {
-    background: linear-gradient(135deg,
-      rgba(0, 139, 178, 0.06) 0%,
-      rgba(0, 178, 178, 0.03) 100%);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-radius: 16px;
-    padding: 2px;
-    box-shadow:
-      0 20px 40px rgba(0, 139, 178, 0.12),
-      0 10px 20px rgba(0, 178, 178, 0.08),
-      inset 0 2px 4px rgba(0, 178, 178, 0.15),
-      inset 0 -2px 4px rgba(0, 139, 178, 0.08);
-    transform: translateZ(0);
-    transform-style: preserve-3d;
-  }
+  /* Removed duplicate container styling - using Card component instead */
   
   /* Table header with 3D effect */
   .ant-table-thead > tr > th {
@@ -277,10 +261,6 @@ export const Card = styled(CommonCard)`
   }
   
   .ant-table-container {
-    box-shadow:
-      inset 0 2px 4px rgba(0, 178, 178, 0.08),
-      inset 0 -2px 4px rgba(0, 139, 178, 0.04);
-      
     table > thead > tr:first-child th:first-child {
       border-top-left-radius: ${borderRad};
     }
