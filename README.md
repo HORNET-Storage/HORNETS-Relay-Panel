@@ -56,12 +56,13 @@ The panel uses **NIP-07** ([window.nostr capability](https://nostr-nips.com/nip-
 
 ## Previews
 *All preview images are taken from the live demo*
+<img width="1920" height="1080" alt="chrome_NZAFG5O4rA" src="https://github.com/user-attachments/assets/c4b2e374-b8ea-4cab-b511-421547470830" />
+<img width="1920" height="1080" alt="chrome_wFoydaWYuo" src="https://github.com/user-attachments/assets/c828ea60-55c7-4d9c-957a-f7a52d4430be" />
+<img width="1920" height="1080" alt="chrome_mO4QySaRXA" src="https://github.com/user-attachments/assets/ab6651d7-420b-4275-a168-8d8be14e1baf" />
+<img width="1920" height="1080" alt="chrome_6chvJFlf28" src="https://github.com/user-attachments/assets/bba63458-4744-427b-bd4b-70a24f46fe90" />
+<img width="1920" height="1080" alt="chrome_QnRXAX6Tmx" src="https://github.com/user-attachments/assets/7575b13e-45b1-4515-b36c-b34815c40245" />
+<img width="1920" height="1080" alt="chrome_oNSgxeKxvQ" src="https://github.com/user-attachments/assets/f655b7de-d01f-4e42-9ecc-2fccab7b5e7c" />
 
-![image](https://github.com/HORNET-Storage/hornet-storage-panel/assets/138120736/e842844c-9010-4541-b84a-0487580107b9)
-
-![image](https://github.com/HORNET-Storage/hornet-storage-panel/assets/138120736/cd725852-be97-4851-b014-4de00aa445d1)
-
-![image](https://github.com/HORNET-Storage/hornet-storage-panel/assets/138120736/ff763518-d399-408b-b0b4-487292ef57d6)
 
 ---
 
