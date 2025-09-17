@@ -7,17 +7,17 @@ export const TablesWrapper = styled.div`
   /* Main table styling with glass morphism and 3D effects */
   .ant-table-wrapper {
     background: linear-gradient(135deg,
-      rgba(0, 191, 255, 0.08) 0%,
-      rgba(0, 255, 255, 0.04) 100%);
+      rgba(0, 139, 178, 0.06) 0%,
+      rgba(0, 178, 178, 0.03) 100%);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-radius: 16px;
     padding: 2px;
     box-shadow:
-      0 20px 40px rgba(0, 191, 255, 0.15),
-      0 10px 20px rgba(0, 255, 255, 0.1),
-      inset 0 2px 4px rgba(0, 255, 255, 0.2),
-      inset 0 -2px 4px rgba(0, 191, 255, 0.1);
+      0 20px 40px rgba(0, 139, 178, 0.12),
+      0 10px 20px rgba(0, 178, 178, 0.08),
+      inset 0 2px 4px rgba(0, 178, 178, 0.15),
+      inset 0 -2px 4px rgba(0, 139, 178, 0.08);
     transform: translateZ(0);
     transform-style: preserve-3d;
   }
@@ -25,13 +25,13 @@ export const TablesWrapper = styled.div`
   /* Table header with 3D effect */
   .ant-table-thead > tr > th {
     background: linear-gradient(135deg,
-      rgba(0, 191, 255, 0.15) 0%,
-      rgba(0, 255, 255, 0.1) 100%);
-    border-bottom: 2px solid rgba(0, 255, 255, 0.3);
-    color: rgba(0, 255, 255, 1);
+      rgba(0, 139, 178, 0.10) 0%,
+      rgba(0, 178, 178, 0.06) 100%);
+    border-bottom: 2px solid rgba(0, 178, 178, 0.25);
+    color: rgba(0, 178, 178, 0.9);
     font-weight: 600;
     text-shadow:
-      0 0 20px rgba(0, 255, 255, 0.5),
+      0 0 12px rgba(0, 178, 178, 0.3),
       0 2px 4px rgba(0, 0, 0, 0.3);
     position: relative;
     
@@ -44,7 +44,7 @@ export const TablesWrapper = styled.div`
       height: 1px;
       background: linear-gradient(90deg,
         transparent 0%,
-        rgba(0, 255, 255, 0.8) 50%,
+        rgba(0, 178, 178, 0.5) 50%,
         transparent 100%);
     }
   }
@@ -55,30 +55,30 @@ export const TablesWrapper = styled.div`
     
     &:hover {
       background: linear-gradient(135deg,
-        rgba(0, 191, 255, 0.12) 0%,
-        rgba(0, 255, 255, 0.08) 100%) !important;
+        rgba(0, 139, 178, 0.08) 0%,
+        rgba(0, 178, 178, 0.05) 100%) !important;
     }
     
     &.expanded-row {
       background: linear-gradient(135deg,
-        rgba(0, 191, 255, 0.15) 0%,
-        rgba(0, 255, 255, 0.1) 100%) !important;
+        rgba(0, 139, 178, 0.10) 0%,
+        rgba(0, 178, 178, 0.06) 100%) !important;
       
       td {
-        border-bottom: 2px solid rgba(0, 255, 255, 0.3) !important;
+        border-bottom: 2px solid rgba(0, 178, 178, 0.25) !important;
       }
     }
   }
   
   /* Table cells with depth */
   .ant-table-tbody > tr > td {
-    border-bottom: 1px solid rgba(0, 191, 255, 0.1);
+    border-bottom: 1px solid rgba(0, 139, 178, 0.08);
     transition: all 0.3s ease;
     position: relative;
     
     &:first-child {
       font-weight: 500;
-      color: rgba(0, 255, 255, 0.95);
+      color: rgba(0, 178, 178, 0.85);
     }
   }
   
@@ -94,8 +94,8 @@ export const TablesWrapper = styled.div`
       padding: 0 !important;
       background: transparent !important;
       background-color: transparent !important;
-      border-bottom: 2px solid rgba(0, 255, 255, 0.2) !important;
-      box-shadow: 0 4px 8px rgba(0, 191, 255, 0.1);
+      border-bottom: 2px solid rgba(0, 178, 178, 0.15) !important;
+      box-shadow: 0 4px 8px rgba(0, 139, 178, 0.08);
     }
     
     .ant-table-expanded-row-fixed {
@@ -108,34 +108,46 @@ export const TablesWrapper = styled.div`
     cursor: pointer;
   }
   
-  /* Expand icons with glow effect */
+  /* Remove any vertical borders from table cells */
+  .ant-table-cell {
+    border-right: none !important;
+    border-left: none !important;
+  }
+  
+  .ant-table-thead > tr > th,
+  .ant-table-tbody > tr > td {
+    border-right: none !important;
+    border-left: none !important;
+  }
+  
+  /* Expand icons with subtle glow effect */
   .anticon-caret-down,
   .anticon-caret-right {
-    color: rgba(0, 255, 255, 1);
+    color: rgba(0, 178, 178, 0.8);
     font-size: 14px;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    filter: drop-shadow(0 0 6px rgba(0, 255, 255, 0.8));
+    filter: drop-shadow(0 0 3px rgba(0, 178, 178, 0.4));
   }
   
   .anticon-caret-down {
     transform: rotateX(0deg);
-    filter: drop-shadow(0 0 8px rgba(0, 255, 255, 1));
+    filter: drop-shadow(0 0 4px rgba(0, 178, 178, 0.5));
   }
   
   .anticon-caret-right:hover {
-    transform: scale(1.2);
-    filter: drop-shadow(0 0 12px rgba(0, 255, 255, 1));
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 6px rgba(0, 178, 178, 0.6));
   }
   
   /* Sorting arrows with 3D effect */
   .ant-table-column-sorters {
     .anticon {
-      color: rgba(0, 255, 255, 0.6);
+      color: rgba(0, 178, 178, 0.5);
       transition: all 0.3s ease;
       
       &.active {
-        color: rgba(0, 255, 255, 1);
-        filter: drop-shadow(0 0 8px rgba(0, 255, 255, 1));
+        color: rgba(0, 178, 178, 0.8);
+        filter: drop-shadow(0 0 4px rgba(0, 178, 178, 0.6));
       }
     }
   }
@@ -170,13 +182,13 @@ export const Card = styled(CommonCard)`
     rgba(0, 20, 40, 0.9) 100%);
   backdrop-filter: blur(30px);
   -webkit-backdrop-filter: blur(30px);
-  border: 1px solid rgba(0, 255, 255, 0.2);
+  border: 1px solid rgba(0, 178, 178, 0.15);
   border-radius: 16px;
   box-shadow:
-    0 24px 48px rgba(0, 191, 255, 0.2),
-    0 12px 24px rgba(0, 255, 255, 0.15),
-    inset 0 2px 4px rgba(0, 255, 255, 0.3),
-    inset 0 -2px 4px rgba(0, 191, 255, 0.2);
+    0 24px 48px rgba(0, 139, 178, 0.15),
+    0 12px 24px rgba(0, 178, 178, 0.12),
+    inset 0 2px 4px rgba(0, 178, 178, 0.2),
+    inset 0 -2px 4px rgba(0, 139, 178, 0.15);
   transform: translateZ(0);
   transform-style: preserve-3d;
   position: relative;
@@ -190,25 +202,25 @@ export const Card = styled(CommonCard)`
     right: -1px;
     bottom: -1px;
     background: linear-gradient(135deg,
-      rgba(0, 255, 255, 0.4) 0%,
+      rgba(0, 178, 178, 0.25) 0%,
       transparent 30%,
       transparent 70%,
-      rgba(0, 191, 255, 0.4) 100%);
+      rgba(0, 139, 178, 0.25) 100%);
     border-radius: 16px;
     opacity: 0.6;
     z-index: -1;
   }
   
   .ant-card-head {
-    border-bottom: 2px solid rgba(0, 255, 255, 0.2);
+    border-bottom: 2px solid rgba(0, 178, 178, 0.15);
     background: linear-gradient(135deg,
-      rgba(0, 191, 255, 0.08) 0%,
-      rgba(0, 255, 255, 0.04) 100%);
+      rgba(0, 139, 178, 0.06) 0%,
+      rgba(0, 178, 178, 0.03) 100%);
     
     .ant-card-head-title {
-      color: rgba(0, 255, 255, 1);
+      color: rgba(0, 178, 178, 0.9);
       text-shadow:
-        0 0 20px rgba(0, 255, 255, 0.6),
+        0 0 12px rgba(0, 178, 178, 0.4),
         0 2px 4px rgba(0, 0, 0, 0.4);
       font-weight: 600;
       font-size: 1.2rem;
@@ -239,14 +251,14 @@ export const Card = styled(CommonCard)`
   div.ant-table-container,
   .ant-table.ant-table-bordered > .ant-table-container > .ant-table-content > table {
     border-radius: ${borderRad};
-    border: 1px solid rgba(0, 255, 255, 0.15);
+    border: 1px solid rgba(0, 178, 178, 0.12);
     overflow: hidden;
   }
   
   .ant-table-container {
     box-shadow:
-      inset 0 2px 4px rgba(0, 255, 255, 0.1),
-      inset 0 -2px 4px rgba(0, 191, 255, 0.05);
+      inset 0 2px 4px rgba(0, 178, 178, 0.08),
+      inset 0 -2px 4px rgba(0, 139, 178, 0.04);
       
     table > thead > tr:first-child th:first-child {
       border-top-left-radius: ${borderRad};
