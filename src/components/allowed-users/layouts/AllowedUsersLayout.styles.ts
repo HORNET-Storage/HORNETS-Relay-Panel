@@ -4,8 +4,10 @@ import { Card } from 'antd';
 
 export const Container = styled.div`
   padding: 1.5rem;
-  max-width: 1200px;
+  max-width: 100%;
+  width: 100%;
   margin: 0 auto;
+  min-height: calc(100vh - 80px);
 
   ${media.md} {
     padding: 1rem;
@@ -53,12 +55,19 @@ export const ErrorContainer = styled.div`
 
 export const SaveSection = styled.div`
   padding: 1.5rem;
-  background: var(--background-color-secondary);
+  background: rgba(0, 255, 255, 0.01);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
   border-radius: 8px;
-  border: 1px solid var(--border-color-base);
+  border: 1px solid rgba(0, 255, 255, 0.1);
   display: flex;
   justify-content: center;
   align-items: center;
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-color: rgba(0, 255, 255, 0.3);
+  }
 `;
 
 export const ChangesIndicator = styled.span`
@@ -67,7 +76,24 @@ export const ChangesIndicator = styled.span`
   font-style: italic;
 `;
 export const ContentCard = styled(Card)`
-  background: var(--secondary-background-color);
-  border-color: var(--border-base-color);
+  background: rgba(0, 255, 255, 0.01);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border: 1px solid rgba(0, 255, 255, 0.1);
+  border-radius: 8px;
+  transition: all 0.3s ease;
 
+  &:hover {
+    border-color: rgba(0, 255, 255, 0.3);
+    transform: translateY(-2px);
+  }
+
+  .ant-card-head {
+    background: transparent;
+    border-bottom: 1px solid rgba(0, 255, 255, 0.08);
+  }
+
+  .ant-card-body {
+    background: transparent;
+  }
 `;

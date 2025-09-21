@@ -80,7 +80,6 @@ const OllamaSettings: React.FC = () => {
 
   return (
     <BaseSettingsForm
-      title="Ollama Settings"
       loading={loading}
       error={error}
       onSave={handleSave}

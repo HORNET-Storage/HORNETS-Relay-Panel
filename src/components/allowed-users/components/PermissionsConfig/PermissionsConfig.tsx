@@ -69,9 +69,11 @@ export const PermissionsConfig: React.FC<PermissionsConfigProps> = ({
           description={modeConfig.description}
           type="info"
           showIcon
-          style={{ 
-            backgroundColor: '#25284B',
-            border: '1px solid #d9d9d9',
+          style={{
+            backgroundColor: 'rgba(0, 255, 255, 0.03)',
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)',
+            border: '1px solid rgba(0, 255, 255, 0.15)',
             color: '#d9d9d9'
           }}
         />
@@ -80,7 +82,6 @@ export const PermissionsConfig: React.FC<PermissionsConfigProps> = ({
           {/* Read Permission */}
           <Form.Item
             label={<span style={{ color: '#d9d9d9' }}>Read Permission</span>}
-            help={<span style={{ color: '#d9d9d9' }}>{isReadForced ? "This permission is automatically set based on the selected mode" : "Who can read from this relay"}</span>}
           >
             <S.ForcedSelectWrapper $isForced={isReadForced}>
               <Select
@@ -96,7 +97,6 @@ export const PermissionsConfig: React.FC<PermissionsConfigProps> = ({
           {/* Write Permission */}
           <Form.Item
             label={<span style={{ color: '#d9d9d9' }}>Write Permission</span>}
-            help={<span style={{ color: '#d9d9d9' }}>{isWriteForced ? "This permission is automatically set based on the selected mode" : "Who can write to this relay"}</span>}
           >
             <S.ForcedSelectWrapper $isForced={isWriteForced}>
               <Select

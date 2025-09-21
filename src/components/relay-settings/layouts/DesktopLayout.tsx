@@ -4,6 +4,7 @@ import React from 'react';
 import { BaseRow } from '@app/components/common/BaseRow/BaseRow';
 import { BaseCol } from '@app/components/common/BaseCol/BaseCol';
 import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
+import { LiquidBlueButton } from '@app/components/common/LiquidBlueButton';
 import { Balance } from '@app/components/relay-dashboard/Balance/Balance';
 import { TotalEarning } from '@app/components/relay-dashboard/totalEarning/TotalEarning';
 import { ActivityStory } from '@app/components/relay-dashboard/transactions/Transactions';
@@ -13,7 +14,7 @@ import { KindsSection } from '@app/components/relay-settings/sections/KindsSecti
 import { MediaSection } from '@app/components/relay-settings/sections/MediaSection';
 import { ModerationSection } from '@app/components/relay-settings/sections/ModerationSection';
 import { CollapsibleSection } from '@app/components/relay-settings/shared/CollapsibleSection/CollapsibleSection';
-import { BaseSwitch } from '@app/components/common/BaseSwitch/BaseSwitch';
+import { LiquidToggle } from '@app/components/common/LiquidToggle/LiquidToggle';
 import { useTranslation } from 'react-i18next';
 
 interface DesktopLayoutProps {
@@ -104,7 +105,7 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({
                 <BaseRow gutter={[60, 60]}>
                     <BaseCol xs={24}>
                         <S.HeadingContainer>
-                            <S.LabelSpan>{'Options'}</S.LabelSpan>
+                            <S.LabelSpan>{'Relay Settings'}</S.LabelSpan>
                         </S.HeadingContainer>
 
                         <NetworkSection
@@ -150,9 +151,7 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({
                                             </div>
                                         )}
                                     </div>
-                                    <BaseSwitch
-                                        checkedChildren="ON"
-                                        unCheckedChildren="OFF"
+                                    <LiquidToggle
                                         checked={allowUnregisteredKinds}
                                         onChange={onAllowUnregisteredKindsChange}
                                     />
@@ -181,29 +180,31 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({
                         audio={audio}
                     />
 
-                    <BaseButton
+                    <LiquidBlueButton
                         style={{ marginTop: '2rem', paddingBottom: '1rem' }}
-                        type="primary"
+                        variant="primary"
                         loading={loadings[0]}
                         onClick={onSaveClick}
                     >
                         {t('buttons.saveSettings')}
-                    </BaseButton>
+                    </LiquidBlueButton>
                 </BaseCol>
             </S.LeftSideCol>
 
             <S.RightSideCol xl={8} xxl={7}>
-                <div id="balance">
-                    <Balance />
-                </div>
-                <S.Space />
-                <div id="total-earning">
-                    <TotalEarning />
-                </div>
-                <S.Space />
-                <div id="activity-story">
-                    <ActivityStory />
-                </div>
+                <S.RightSideContentWrapper>
+                    <div id="balance" className="liquid-element">
+                        <Balance />
+                    </div>
+                    <S.Space />
+                    <div id="total-earning" className="liquid-element">
+                        <TotalEarning />
+                    </div>
+                    <S.Space />
+                    <div id="activity-story" className="liquid-element">
+                        <ActivityStory />
+                    </div>
+                </S.RightSideContentWrapper>
             </S.RightSideCol>
         </BaseRow>
     );

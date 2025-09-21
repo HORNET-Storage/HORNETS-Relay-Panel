@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BaseTable } from '@app/components/common/BaseTable/BaseTable';
-import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
 import { useTranslation } from 'react-i18next';
 import { BaseForm } from '@app/components/common/forms/BaseForm/BaseForm';
-import { BaseSpace } from '@app/components/common/BaseSpace/BaseSpace';
-import { Modal } from 'antd';
 import { Line } from 'react-chartjs-2';
 import { ChartOptions } from 'chart.js';
 import {
@@ -23,6 +20,8 @@ import useKindTrendData from '@app/hooks/useKindTrendData';
 import { Breakpoint } from 'antd/lib/_util/responsiveObserve';
 import { useResponsive } from '@app/hooks/useResponsive';
 import { BaseSkeleton } from '@app/components/common/BaseSkeleton/BaseSkeleton';
+import { CaretDownOutlined, CaretRightOutlined, ExpandOutlined, ShrinkOutlined } from '@ant-design/icons';
+import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
 
 interface KindData {
@@ -33,19 +32,25 @@ interface KindData {
   totalSize: number;
 }
 
-const EditableTable: React.FC = () => {
+interface EditableTableProps {
+  allExpanded?: boolean;
+  expandedKeys?: number[];
+  setExpandedKeys?: (keys: number[]) => void;
+}
+
+const EditableTable: React.FC<EditableTableProps> = ({
+  allExpanded: parentAllExpanded,
+  expandedKeys: parentExpandedKeys,
+  setExpandedKeys: parentSetExpandedKeys
+}) => {
   const [form] = BaseForm.useForm();
   const { t } = useTranslation();
   const { kindData: initialKindData, isLoading } = useKindData();
   const [sortedData, setSortedData] = useState<KindData[]>([]);
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [currentKindNumber, setCurrentKindNumber] = useState<number | null>(null);
+  const [expandedRowKeys, setExpandedRowKeys] = useState<number[]>([]);
   const [sortOrder, setSortOrder] = useState<'ascend' | 'descend'>('descend');
   const [sortField, setSortField] = useState<string>('totalSize');
   const { isMobile, isDesktop, isTablet } = useResponsive();
-
-  const { trendData, isLoading: isTrendLoading } = useKindTrendData(currentKindNumber);
-
 
   useEffect(() => {
     if (initialKindData && initialKindData.length > 0) {
@@ -66,18 +71,29 @@ const EditableTable: React.FC = () => {
     }
   }, [initialKindData, sortOrder, sortField]);
 
-  const showModal = (kindNumber: number) => {
-    if (kindNumber === null || kindNumber === undefined) {
-      return; // Don't open the modal if the kindNumber is not valid
+  // Handle expand all/collapse all from parent
+  useEffect(() => {
+    if (parentAllExpanded !== undefined && sortedData.length > 0) {
+      if (parentAllExpanded) {
+        const allKeys = sortedData.map((item) => item.kindNumber);
+        setExpandedRowKeys(allKeys);
+        if (parentSetExpandedKeys) parentSetExpandedKeys(allKeys);
+      } else {
+        setExpandedRowKeys([]);
+        if (parentSetExpandedKeys) parentSetExpandedKeys([]);
+      }
     }
-    setCurrentKindNumber(kindNumber);
-    setIsModalVisible(true);
-  };
+  }, [parentAllExpanded, sortedData, parentSetExpandedKeys]);
 
-
-  const handleCancel = () => {
-    setIsModalVisible(false);
-    setCurrentKindNumber(null);
+  const handleExpand = (expanded: boolean, record: KindData) => {
+    let newKeys: number[];
+    if (expanded) {
+      newKeys = [...expandedRowKeys, record.kindNumber];
+    } else {
+      newKeys = expandedRowKeys.filter(key => key !== record.kindNumber);
+    }
+    setExpandedRowKeys(newKeys);
+    if (parentSetExpandedKeys) parentSetExpandedKeys(newKeys);
   };
 
   const handleChange = (pagination: any, filters: any, sorter: any) => {
@@ -89,11 +105,39 @@ const EditableTable: React.FC = () => {
     {
       title: t('common.kindName'),
       dataIndex: 'kindName',
-      width: '25%',
+      width: '30%',
       editable: false,
       sorter: true,
-      zIndex: 0,
       sortOrder: sortField === 'kindName' ? sortOrder : undefined,
+      render: (text: string, record: KindData) => {
+        const isExpanded = expandedRowKeys.includes(record.kindNumber);
+        return (
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}>
+            <span style={{
+              color: 'rgba(0, 178, 178, 0.8)',
+              fontSize: '14px',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '20px',
+              height: '20px',
+              flexShrink: 0
+            }}>
+              {isExpanded ? <CaretDownOutlined /> : <CaretRightOutlined />}
+            </span>
+            <span style={{
+              color: 'rgba(255, 255, 255, 0.95)',
+              fontWeight: isExpanded ? 600 : 500
+            }}>
+              {text}
+            </span>
+          </div>
+        );
+      },
     },
     {
       title: t('common.nip'),
@@ -107,7 +151,7 @@ const EditableTable: React.FC = () => {
     {
       title: t('common.description'),
       dataIndex: 'description',
-      width: '30%',
+      width: '40%',
       editable: false,
       responsive: ['md'] as Breakpoint[],
     },
@@ -116,51 +160,29 @@ const EditableTable: React.FC = () => {
       dataIndex: 'totalSize',
       width: '15%',
       editable: false,
-      render: (text: number) => `${text.toFixed(3)} GB`, // Display GB with 3 decimal places
+      render: (text: number) => {
+        const size = text.toFixed(3);
+        const intensity = Math.min(text / 10, 1); // Scale intensity based on size
+        return (
+          <span style={{
+            color: `rgba(0, 178, 178, ${0.85 + intensity * 0.15})`,
+            fontWeight: 600,
+            fontSize: '0.9rem',
+            textShadow: `0 0 ${2 + intensity * 4}px rgba(0, 178, 178, 0.4)`
+          }}>
+            {size} GB
+          </span>
+        );
+      },
       sorter: true,
       sortOrder: sortField === 'totalSize' ? sortOrder : undefined,
-    },
-    {
-      title: t('tables.actions'),
-      dataIndex: 'actions',
-      width: '10%',
-      render: (_: string, record: any) => (
-        <BaseSpace>
-          <BaseButton size={'small'} type="ghost" onClick={() => showModal(record.kindNumber)}>
-            {t('common.kindGraph')}
-          </BaseButton>
-        </BaseSpace>
-      ),
-    },
+    }
   ];
 
-  const chartData = {
-    labels: trendData ? trendData.map((data: any) => data.month) : [],
-    datasets: [
-      {
-        label: currentKindNumber !== null ? `Kind ${currentKindNumber}` : 'No Data Available',
-        data: trendData ? trendData.map((data: any) => data.totalSize) : [],
-        fill: true,
-        backgroundColor: (context: any) => {
-          const ctx = context.chart.ctx;
-          const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-          gradient.addColorStop(0, 'rgba(75, 192, 192, 0.6)');
-          gradient.addColorStop(1, 'rgba(75, 192, 192, 0.1)');
-          return gradient;
-        },
-        borderColor: 'rgba(75, 192, 192, 1)',
-        pointBackgroundColor: 'rgba(75, 192, 192, 1)',
-        pointBorderColor: '#fff',
-        pointHoverBackgroundColor: '#fff',
-        pointHoverBorderColor: 'rgba(75, 192, 192, 1)',
-        tension: 0.4,
-      },
-    ],
-  };
-
-  const chartOptions: ChartOptions<'line'> = {
+  const getChartOptions = (): ChartOptions<'line'> => ({
     responsive: true,
     maintainAspectRatio: false,
+    backgroundColor: 'transparent',
     scales: {
       y: {
         beginAtZero: true,
@@ -168,19 +190,19 @@ const EditableTable: React.FC = () => {
           display: true,
           text: 'Total Size (GB)',
           font: {
-            size: 14,
+            size: 12,
             weight: 'bold',
           },
-          color: 'rgba(255, 255, 255, 0.8)',
+          color: 'rgba(255, 255, 255, 0.95)', // White text for titles like Bitcoin chart
         },
         ticks: {
           font: {
             size: 12,
           },
-          color: 'rgba(255, 255, 255, 0.6)',
+          color: 'rgba(255, 255, 255, 0.9)', // White text like Bitcoin chart
         },
         grid: {
-          color: 'rgba(255, 255, 255, 0.1)',
+          color: 'rgba(0, 255, 255, 0.15)', // Match Bitcoin borderBase
         },
       },
       x: {
@@ -188,19 +210,19 @@ const EditableTable: React.FC = () => {
           display: true,
           text: 'Month',
           font: {
-            size: 14,
+            size: 12,
             weight: 'bold',
           },
-          color: 'rgba(255, 255, 255, 0.8)',
+          color: 'rgba(255, 255, 255, 0.95)', // White text for titles like Bitcoin chart
         },
         ticks: {
           font: {
-            size: 12,
+            size: 11,
           },
-          color: 'rgba(255, 255, 255, 0.6)',
+          color: 'rgba(255, 255, 255, 0.9)', // White text like Bitcoin chart
         },
         grid: {
-          color: 'rgba(255, 255, 255, 0.1)',
+          color: 'rgba(0, 255, 255, 0.15)', // Match Bitcoin borderBase
         },
       },
     },
@@ -209,16 +231,27 @@ const EditableTable: React.FC = () => {
         position: 'top' as const,
         labels: {
           font: {
-            size: 14,
+            size: 13,
           },
-          color: 'rgba(255, 255, 255, 0.8)',
+          color: 'rgba(255, 255, 255, 0.95)', // White text for legend like Bitcoin chart
         },
+      },
+      filler: {
+        propagate: false,
       },
       tooltip: {
         callbacks: {
           label: (context: any) => `Total Size: ${context.raw.toFixed(3)} GB`,
         },
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        titleColor: '#06B6D4', // Primary color like Bitcoin chart
+        bodyColor: 'rgba(255, 255, 255, 0.95)',
+        borderColor: '#06B6D4',
+        borderWidth: 1,
       },
+    },
+    layout: {
+      padding: 0,
     },
     animation: {
       duration: 1000,
@@ -228,6 +261,119 @@ const EditableTable: React.FC = () => {
       mode: 'nearest' as const,
       intersect: true,
     },
+  });
+
+  const ChartRow: React.FC<{ record: KindData }> = ({ record }) => {
+    const { trendData, isLoading: isTrendLoading } = useKindTrendData(record.kindNumber);
+    
+    const chartData = {
+      labels: trendData ? trendData.map((data: any) => data.month) : [],
+      datasets: [
+        {
+          label: `Kind ${record.kindNumber}`,
+          data: trendData ? trendData.map((data: any) => data.totalSize) : [],
+          fill: true,
+          backgroundColor: (context: any) => {
+            const ctx = context.chart.ctx;
+            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, 'rgba(0, 255, 255, 0.15)'); // Match Bitcoin chart gradient
+            gradient.addColorStop(1, 'rgba(0, 255, 255, 0.05)'); // Subtle fade
+            return gradient;
+          },
+          borderColor: '#06B6D4', // Match liquid blue theme primary color (from Bitcoin chart)
+          pointBackgroundColor: '#06B6D4',
+          pointBorderColor: 'rgba(255, 255, 255, 0.95)', // White border like Bitcoin chart
+          pointHoverBackgroundColor: 'rgba(255, 255, 255, 0.95)',
+          pointHoverBorderColor: '#06B6D4',
+          tension: 0.4,
+          pointRadius: 4,
+          pointHoverRadius: 6,
+        },
+      ],
+    };
+
+    return (
+      <div style={{
+        padding: '24px',
+        background: `linear-gradient(135deg,
+          rgba(0, 10, 20, 0.8) 0%,
+          rgba(0, 20, 40, 0.6) 50%,
+          rgba(0, 10, 30, 0.7) 100%)`,
+        borderRadius: '16px',
+        margin: '16px',
+        backdropFilter: 'blur(30px) saturate(150%)',
+        WebkitBackdropFilter: 'blur(30px) saturate(150%)',
+        border: '2px solid rgba(0, 178, 178, 0.15)',
+        boxShadow: `
+          0 20px 40px rgba(0, 178, 178, 0.12),
+          0 10px 20px rgba(0, 139, 178, 0.08),
+          inset 0 2px 4px rgba(0, 178, 178, 0.2),
+          inset 0 -2px 4px rgba(0, 139, 178, 0.15),
+          0 0 60px rgba(0, 178, 178, 0.04)`,
+        position: 'relative',
+        overflow: 'hidden',
+        transform: 'translateZ(0) perspective(1000px)',
+        transformStyle: 'preserve-3d',
+      }}>
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: '1px',
+          background: 'linear-gradient(90deg, transparent 0%, rgba(0, 178, 178, 0.4) 50%, transparent 100%)',
+        }} />
+        {isTrendLoading ? (
+          <div style={{
+            height: '300px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'rgba(255, 255, 255, 0.6)'
+          }}>
+            Loading chart data...
+          </div>
+        ) : trendData && trendData.length > 0 ? (
+          <div style={{
+            height: '300px',
+            position: 'relative',
+            backgroundColor: 'transparent'
+          }}>
+            <style>{`
+              .chart-container-${record.kindNumber} {
+                background: transparent !important;
+              }
+              .chart-container-${record.kindNumber} canvas {
+                background: transparent !important;
+                background-color: transparent !important;
+              }
+              .chart-container-${record.kindNumber} > div {
+                background: transparent !important;
+              }
+            `}</style>
+            <div
+              className={`chart-container-${record.kindNumber}`}
+              style={{
+                background: 'transparent',
+                height: '100%'
+              }}
+            >
+              <Line data={chartData} options={getChartOptions()} />
+            </div>
+          </div>
+        ) : (
+          <div style={{
+            height: '100px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'rgba(255, 255, 255, 0.6)'
+          }}>
+            {t('common.noTrendDataAvailable')}
+          </div>
+        )}
+      </div>
+    );
   };
 
   return (
@@ -238,455 +384,42 @@ const EditableTable: React.FC = () => {
             <BaseTable
               size={isDesktop || isTablet ? 'middle' : 'small'}
               bordered
-              style={{ padding: isMobile ? ' 0 .5rem .5rem .5rem' : '0 1.5rem 1.5rem 1.5rem' }}
+              style={{
+                padding: isMobile ? ' 0 .5rem .5rem .5rem' : '0 1.5rem 1.5rem 1.5rem',
+                borderRadius: '12px',
+                overflow: 'hidden',
+              }}
               dataSource={sortedData}
               columns={columns}
-              rowClassName="editable-row"
+              rowKey="kindNumber"
+              rowClassName={(record) => {
+                const isExpanded = expandedRowKeys.includes(record.kindNumber);
+                return `editable-row ${isExpanded ? 'expanded-row' : ''}`;
+              }}
+              expandable={{
+                expandedRowRender: (record) => <ChartRow record={record} />,
+                expandedRowKeys: expandedRowKeys,
+                onExpand: handleExpand,
+                expandRowByClick: true,
+                showExpandColumn: false,
+              }}
               pagination={false}
               loading={isLoading}
               onChange={handleChange}
+              onRow={(record) => ({
+                style: {
+                  cursor: 'pointer',
+                  transition: 'background 0.3s ease',
+                }
+              })}
             />
           ) : (
             <div>{'No Data Available'}</div>
           )
         }
       </BaseForm>
-      <Modal
-        title={`Kind ${currentKindNumber || 'N/A'}`}
-        open={isModalVisible}
-        onCancel={handleCancel}
-        footer={null}
-        width={800}
-      >
-        {isTrendLoading ? (
-          <div>Loading...</div>
-        ) : trendData && trendData.length > 0 ? (
-          <div style={{ height: '400px' }}>
-            <Line data={chartData} options={chartOptions} />
-          </div>
-        ) : (
-          <div>{t('common.noTrendDataAvailable')}</div>
-        )}
-      </Modal>
-
     </div>
   );
 };
 
 export default EditableTable;
-
-// import React, { useState, useEffect } from 'react';
-// import { BaseTable } from '@app/components/common/BaseTable/BaseTable';
-// import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
-// import { useTranslation } from 'react-i18next';
-// import { BaseForm } from '@app/components/common/forms/BaseForm/BaseForm';
-// import { BaseSpace } from '@app/components/common/BaseSpace/BaseSpace';
-// import { Modal } from 'antd';
-// import { Line } from 'react-chartjs-2';
-// import {
-//   Chart as ChartJS,
-//   CategoryScale,
-//   LinearScale,
-//   PointElement,
-//   LineElement,
-//   Title,
-//   Tooltip,
-//   Legend,
-//   Filler,
-// } from 'chart.js';
-// import useKindData from '@app/hooks/useKindData';
-// import useKindTrendData from '@app/hooks/useKindTrendData';
-// import { Breakpoint } from 'antd/lib/_util/responsiveObserve';
-
-// ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
-
-// interface KindData {
-//   kindName: string;
-//   kindNumber: number;
-//   nip: string;
-//   description: string;
-//   totalSize: number;
-// }
-
-// const EditableTable: React.FC = () => {
-//   const [form] = BaseForm.useForm();
-//   const { t } = useTranslation();
-//   const { kindData: initialKindData, isLoading } = useKindData();
-//   const [sortedData, setSortedData] = useState<KindData[]>([]);
-//   const [isModalVisible, setIsModalVisible] = useState(false);
-//   const [currentKindNumber, setCurrentKindNumber] = useState<number | null>(null);
-//   const [sortOrder, setSortOrder] = useState<'ascend' | 'descend'>('descend');
-//   const [sortField, setSortField] = useState<string>('totalSize');
-
-//   const { trendData, isLoading: isTrendLoading } = useKindTrendData(currentKindNumber || 0);
-
-//   useEffect(() => {
-//     if (initialKindData && initialKindData.length > 0) {
-//       const sorted = [...initialKindData].sort((a: KindData, b: KindData) => {
-//         if (sortField === 'totalSize') {
-//           return sortOrder === 'descend' ? b.totalSize - a.totalSize : a.totalSize - b.totalSize;
-//         } else if (sortField === 'nip') {
-//           return sortOrder === 'descend' ? b.nip.localeCompare(a.nip) : a.nip.localeCompare(b.nip);
-//         } else {
-//           return sortOrder === 'descend' ? b.kindNumber - a.kindNumber : a.kindNumber - b.kindNumber;
-//         }
-//       });
-//       setSortedData(sorted);
-//     } else {
-//       setSortedData([]);
-//     }
-//   }, [initialKindData, sortOrder, sortField]);
-
-//   const showModal = (kindNumber: number) => {
-//     setCurrentKindNumber(kindNumber);
-//     setIsModalVisible(true);
-//   };
-
-//   const handleCancel = () => {
-//     setIsModalVisible(false);
-//     setCurrentKindNumber(null);
-//   };
-
-//   const handleChange = (pagination: any, filters: any, sorter: any) => {
-//     setSortOrder(sorter.order);
-//     setSortField(sorter.field);
-//   };
-
-//   const columns = [
-//     {
-//       title: t('common.kindName'),
-//       dataIndex: 'kindName',
-//       width: '25%',
-//       editable: false,
-//       sorter: {
-//         compare: (a: KindData, b: KindData) => a.kindNumber - b.kindNumber,
-//       },
-//       sortOrder: sortField === 'kindNumber' ? sortOrder : undefined,
-//     },
-//     {
-//       title: t('common.nip'),
-//       dataIndex: 'nip',
-//       width: '15%',
-//       editable: false,
-//       sorter: true,
-//       sortOrder: sortField === 'nip' ? sortOrder : undefined,
-//       responsive: ['lg'] as Breakpoint[],
-//     },
-//     {
-//       title: t('common.description'),
-//       dataIndex: 'description',
-//       width: '30%',
-//       editable: false,
-//       responsive: ['md'] as Breakpoint[],
-//     },
-//     {
-//       title: t('common.totalSize'),
-//       dataIndex: 'totalSize',
-//       width: '15%',
-//       editable: false,
-//       render: (text: number) => `${text.toFixed(3)} GB`, // Display GB with 3 decimal places
-//       sorter: true,
-//       sortOrder: sortField === 'totalSize' ? sortOrder : undefined,
-//     },
-//     {
-//       title: t('tables.actions'),
-//       dataIndex: 'actions',
-//       width: '15%',
-//       render: (_: string, record: any) => (
-//         <BaseSpace>
-//           <BaseButton type="ghost" onClick={() => showModal(record.kindNumber)}>
-//             {t('common.kindGraph')}
-//           </BaseButton>
-//         </BaseSpace>
-//       ),
-//     },
-//   ];
-
-//   const chartData = {
-//     labels: trendData ? trendData.map((data: any) => data.month) : [],
-//     datasets: [
-//       {
-//         label: currentKindNumber !== null ? `Kind ${currentKindNumber}` : 'No Data Available',
-//         data: trendData ? trendData.map((data: any) => data.totalSize) : [],
-//         fill: true,
-//         backgroundColor: 'rgba(75, 192, 192, 0.2)',
-//         borderColor: 'rgba(75, 192, 192, 1)',
-//         pointBackgroundColor: 'rgba(75, 192, 192, 1)',
-//         pointBorderColor: '#fff',
-//         pointHoverBackgroundColor: '#fff',
-//         pointHoverBorderColor: 'rgba(75, 192, 192, 1)',
-//       },
-//     ],
-//   };
-
-//   const chartOptions = {
-//     responsive: true,
-//     maintainAspectRatio: false,
-//     scales: {
-//       y: {
-//         beginAtZero: true,
-//         title: {
-//           display: true,
-//           text: 'Total Size (GB)',
-//         },
-//       },
-//       x: {
-//         title: {
-//           display: true,
-//           text: 'Month',
-//         },
-//       },
-//     },
-//     plugins: {
-//       legend: {
-//         position: 'top' as const,
-//       },
-//       tooltip: {
-//         callbacks: {
-//           label: (context: any) => `${context.raw.toFixed(3)} GB`,
-//         },
-//       },
-//     },
-//   };
-
-//   return (
-//     <div>
-//       <BaseForm form={form} component={false}>
-//         {sortedData.length > 0 ? (
-//           <BaseTable
-//             bordered
-//             dataSource={sortedData}
-//             columns={columns}
-//             rowClassName="editable-row"
-//             pagination={false}
-//             loading={isLoading}
-//             onChange={handleChange}
-//           />
-//         ) : (
-//           <div>{'No Data Available'}</div>
-//         )}
-//       </BaseForm>
-//       <Modal
-//         title={`Kind ${currentKindNumber}`}
-//         open={isModalVisible}
-//         onCancel={handleCancel}
-//         footer={null}
-//         width={800}
-//       >
-//         {isTrendLoading ? (
-//           <div>Loading...</div>
-//         ) : trendData && trendData.length > 0 ? (
-//           <div style={{ height: '400px' }}>
-//             <Line data={chartData} options={chartOptions} />
-//           </div>
-//         ) : (
-//           <div>{t('common.noTrendDataAvailable')}</div>
-//         )}
-//       </Modal>
-//     </div>
-//   );
-// };
-
-// export default EditableTable;
-
-// import React, { useState, useEffect } from 'react';
-// import { BaseTable } from '@app/components/common/BaseTable/BaseTable';
-// import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
-// import { useTranslation } from 'react-i18next';
-// import { BaseForm } from '@app/components/common/forms/BaseForm/BaseForm';
-// import { BaseSpace } from '@app/components/common/BaseSpace/BaseSpace';
-// import { Modal } from 'antd';
-// import { Line } from 'react-chartjs-2';
-// import {
-//   Chart as ChartJS,
-//   CategoryScale,
-//   LinearScale,
-//   PointElement,
-//   LineElement,
-//   Title,
-//   Tooltip,
-//   Legend,
-//   Filler,
-// } from 'chart.js';
-// import useKindData from '@app/hooks/useKindData';
-// import useKindTrendData from '@app/hooks/useKindTrendData';
-
-// ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
-
-// interface KindData {
-//   kindName: string;
-//   kindNumber: number;
-//   nip: string;
-//   description: string;
-//   totalSize: number;
-// }
-
-// const EditableTable: React.FC = () => {
-//   const [form] = BaseForm.useForm();
-//   const { t } = useTranslation();
-//   const { kindData: initialKindData, isLoading } = useKindData();
-//   const [sortedData, setSortedData] = useState<KindData[]>(initialKindData);
-//   const [isModalVisible, setIsModalVisible] = useState(false);
-//   const [currentKindNumber, setCurrentKindNumber] = useState<number | null>(null);
-//   const [sortOrder, setSortOrder] = useState<'ascend' | 'descend'>('descend');
-//   const [sortField, setSortField] = useState<string>('totalSize');
-
-//   const { trendData, isLoading: isTrendLoading } = useKindTrendData(currentKindNumber || 0);
-
-//   useEffect(() => {
-//     const sorted = [...initialKindData].sort((a: KindData, b: KindData) => {
-//       if (sortField === 'totalSize') {
-//         return sortOrder === 'descend' ? b.totalSize - a.totalSize : a.totalSize - b.totalSize;
-//       } else if (sortField === 'nip') {
-//         return sortOrder === 'descend' ? b.nip.localeCompare(a.nip) : a.nip.localeCompare(b.nip);
-//       } else {
-//         return sortOrder === 'descend' ? b.kindNumber - a.kindNumber : a.kindNumber - b.kindNumber;
-//       }
-//     });
-//     setSortedData(sorted);
-//   }, [initialKindData, sortOrder, sortField]);
-
-//   const showModal = (kindNumber: number) => {
-//     setCurrentKindNumber(kindNumber);
-//     setIsModalVisible(true);
-//   };
-
-//   const handleCancel = () => {
-//     setIsModalVisible(false);
-//     setCurrentKindNumber(null);
-//   };
-
-//   const handleChange = (pagination: any, filters: any, sorter: any) => {
-//     setSortOrder(sorter.order);
-//     setSortField(sorter.field);
-//   };
-
-//   const columns = [
-//     {
-//       title: t('common.kindName'),
-//       dataIndex: 'kindName',
-//       width: '25%',
-//       editable: false,
-//       sorter: {
-//         compare: (a: KindData, b: KindData) => a.kindNumber - b.kindNumber,
-//       },
-//       sortOrder: sortField === 'kindNumber' ? sortOrder : undefined,
-//     },
-//     {
-//       title: t('common.nip'),
-//       dataIndex: 'nip',
-//       width: '15%',
-//       editable: false,
-//       sorter: true,
-//       sortOrder: sortField === 'nip' ? sortOrder : undefined,
-//     },
-//     {
-//       title: t('common.description'),
-//       dataIndex: 'description',
-//       width: '30%',
-//       editable: false,
-//     },
-//     {
-//       title: t('common.totalSize'),
-//       dataIndex: 'totalSize',
-//       width: '15%',
-//       editable: false,
-//       render: (text: number) => `${text.toFixed(3)} GB`, // Display GB with 3 decimal places
-//       sorter: true,
-//       sortOrder: sortField === 'totalSize' ? sortOrder : undefined,
-//     },
-//     {
-//       title: t('tables.actions'),
-//       dataIndex: 'actions',
-//       width: '15%',
-//       render: (_: string, record: any) => (
-//         <BaseSpace>
-//           <BaseButton type="ghost" onClick={() => showModal(record.kindNumber)}>
-//             {t('common.kindGraph')}
-//           </BaseButton>
-//         </BaseSpace>
-//       ),
-//     },
-//   ];
-
-//   const chartData = {
-//     labels: trendData.map((data: any) => data.month),
-//     datasets: [
-//       {
-//         label: `Kind ${currentKindNumber}`,
-//         data: trendData.map((data: any) => data.totalSize),
-//         fill: true,
-//         backgroundColor: 'rgba(75, 192, 192, 0.2)',
-//         borderColor: 'rgba(75, 192, 192, 1)',
-//         pointBackgroundColor: 'rgba(75, 192, 192, 1)',
-//         pointBorderColor: '#fff',
-//         pointHoverBackgroundColor: '#fff',
-//         pointHoverBorderColor: 'rgba(75, 192, 192, 1)',
-//       },
-//     ],
-//   };
-
-//   const chartOptions = {
-//     responsive: true,
-//     maintainAspectRatio: false,
-//     scales: {
-//       y: {
-//         beginAtZero: true,
-//         title: {
-//           display: true,
-//           text: 'Total Size (GB)',
-//         },
-//       },
-//       x: {
-//         title: {
-//           display: true,
-//           text: 'Month',
-//         },
-//       },
-//     },
-//     plugins: {
-//       legend: {
-//         position: 'top' as const,
-//       },
-//       tooltip: {
-//         callbacks: {
-//           label: (context: any) => `${context.raw.toFixed(3)} GB`,
-//         },
-//       },
-//     },
-//   };
-
-//   return (
-//     <div>
-//       <BaseForm form={form} component={false}>
-//         <BaseTable
-//           bordered
-//           dataSource={sortedData}
-//           columns={columns}
-//           rowClassName="editable-row"
-//           pagination={false}
-//           loading={isLoading}
-//           scroll={{ x: 800 }}
-//           onChange={handleChange}
-//         />
-//       </BaseForm>
-//       <Modal
-//         title={`Kind ${currentKindNumber} Trend`}
-//         visible={isModalVisible}
-//         onCancel={handleCancel}
-//         footer={null}
-//         width={800}
-//       >
-//         {isTrendLoading ? (
-//           <div>Loading...</div>
-//         ) : (
-//           <div style={{ height: '400px' }}>
-//             <Line data={chartData} options={chartOptions} />
-//           </div>
-//         )}
-//       </Modal>
-//     </div>
-//   );
-// };
-
-// export default EditableTable;

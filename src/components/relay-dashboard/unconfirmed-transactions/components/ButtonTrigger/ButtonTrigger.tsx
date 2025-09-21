@@ -19,7 +19,7 @@ const ButtonTrigger: React.FC <ButtonTriggerProps> = ({amount}) => {
 
   return (
     <>
-      <S.TopUpButton type={theme === 'dark' ? 'ghost' : 'primary'} block onClick={handleButtonClick}>
+      <S.TopUpButton type="primary" block onClick={handleButtonClick}>
         Unconfirmed Transactions
       </S.TopUpButton>
       <UnconfirmedTxModal isOpen={isModalOpen} onOpenChange={handleModalClose} />

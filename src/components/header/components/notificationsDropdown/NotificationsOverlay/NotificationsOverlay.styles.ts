@@ -30,7 +30,7 @@ export const NotificationsList = styled.div`
   }
   
   &::-webkit-scrollbar-thumb {
-    background-color: var(--primary-color);
+    background-color: rgba(255, 255, 255, 0.3);
     border-radius: 3px;
   }
 `;
@@ -50,6 +50,40 @@ export const LinkBtn = styled(BaseButton)`
 
 export const Btn = styled(BaseButton)`
   width: 100%;
+  
+  &.ant-btn-ghost {
+    color: #00ffff;
+    border-color: rgba(0, 255, 255, 0.3);
+    background: rgba(0, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    
+    &:hover:not(:disabled) {
+      color: #00ffff !important;
+      border-color: rgba(0, 255, 255, 0.5) !important;
+      background: rgba(0, 255, 255, 0.1) !important;
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+    }
+    
+    &:active {
+      background: rgba(0, 255, 255, 0.15) !important;
+    }
+  }
+  
+  &.ant-btn-link {
+    color: #00ffff;
+    
+    a {
+      color: #00ffff;
+      
+      &:hover {
+        color: #40ffff;
+      }
+    }
+    
+    &:hover:not(:disabled) {
+      color: #40ffff !important;
+    }
+  }
 `;
 
 export const Text = styled(BaseTypography.Text)`

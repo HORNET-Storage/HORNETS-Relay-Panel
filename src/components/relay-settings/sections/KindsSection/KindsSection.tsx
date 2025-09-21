@@ -1,7 +1,7 @@
 // src/components/relay-settings/sections/KindsSection/KindsSection.tsx
 
 import React from 'react';
-import { BaseSwitch } from '@app/components/common/BaseSwitch/BaseSwitch';
+import { LiquidToggle } from '@app/components/common/LiquidToggle/LiquidToggle';
 import * as S from '@app/pages/uiComponentsPages/UIComponentsPage.styles';
 import { CollapsibleSection } from '../../shared/CollapsibleSection/CollapsibleSection';
 import { KindsList } from './components/KindsList';
@@ -42,9 +42,7 @@ export const KindsSection: React.FC<KindsSectionProps> = ({
       <S.Card>
         <div className="flex-col w-full">
           <div className="switch-container">
-            <BaseSwitch
-              checkedChildren="ON"
-              unCheckedChildren="OFF"
+            <LiquidToggle
               checked={isKindsActive}
               onChange={() => onKindsActiveChange(!isKindsActive)}
             />

@@ -9,7 +9,7 @@ export const CreatorButton = styled.button<StoriesInternalProps>`
   width: 100%;
   align-items: center;
   text-align: center;
-  background: 0 0;
+  background: transparent;
   border: 0;
   cursor: pointer;
   border-radius: 50%;
@@ -17,8 +17,8 @@ export const CreatorButton = styled.button<StoriesInternalProps>`
   min-width: 5rem;
   aspect-ratio: 1 / 1;
   overflow: hidden;
-
-  border: 3px solid ${(props) => (!props.$viewed ? 'var(--primary-color)' : 'var(--text-superLight-color)')};
+  position: relative;
+  border: 3px solid ${(props) => (!props.$viewed ? 'rgba(0, 255, 255, 0.5)' : 'rgba(255, 255, 255, 0.2)')};
 `;
 
 export const Avatar = styled.img`

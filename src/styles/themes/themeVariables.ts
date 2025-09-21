@@ -2,119 +2,112 @@ import { ThemeType } from '@app/interfaces/interfaces';
 import { hexToRGB } from '@app/utils/utils';
 import { css } from 'styled-components';
 import { BASE_COLORS } from './constants';
-import { darkColorsTheme, antDarkColorsTheme } from './dark/darkTheme';
-import { lightColorsTheme } from './light/lightTheme';
+import { liquidBlueTheme, antLiquidBlueTheme } from './liquidBlue/liquidBlueTheme';
 
 export const themeObject = {
-  light: lightColorsTheme,
-  dark: darkColorsTheme,
+  'liquid-blue': liquidBlueTheme,
 };
 
 export const antThemeObject = {
-  light: {},
-  dark: antDarkColorsTheme,
+  'liquid-blue': antLiquidBlueTheme,
 };
 
-const getThemeVariables = (theme: ThemeType) => css`
-  color-scheme: ${theme};
-  --primary-color: ${themeObject[theme].primary};
-  --primary1-color: ${themeObject[theme].primary1};
-  --primary-gradient-color: ${themeObject[theme].primaryGradient};
+const getThemeVariables = () => css`
+  color-scheme: dark;
+  --primary-color: ${liquidBlueTheme.primary};
+  --primary1-color: ${liquidBlueTheme.primary1};
+  --primary-gradient-color: ${liquidBlueTheme.primaryGradient};
   --info-color: var(--primary-color);
-  --secondary-color: ${themeObject[theme].secondary};
-  --error-color: ${themeObject[theme].error};
-  --warning-color: ${themeObject[theme].warning};
-  --success-color: ${themeObject[theme].success};
-  --background-color: ${themeObject[theme].background};
-  --secondary-background-color: ${themeObject[theme].secondaryBackground};
-  --secondary-background-selected-color: ${themeObject[theme].secondaryBackgroundSelected};
-  --additional-background-color: ${themeObject[theme].additionalBackground};
-  --collapse-background-color: ${themeObject[theme].collapseBackground};
-  --timeline-background-color: ${themeObject[theme].timelineBackground};
-  --spinner-base-color: ${themeObject[theme].spinnerBase};
-  --sider-background-color: ${themeObject[theme].siderBackground};
-  --shadow-color: ${themeObject[theme].shadow};
-  --border-color: ${themeObject[theme].border};
-  --border-nft-color: ${themeObject[theme].borderNft};
-  --scroll-color: ${themeObject[theme].scroll};
+  --secondary-color: ${liquidBlueTheme.secondary};
+  --error-color: ${liquidBlueTheme.error};
+  --warning-color: ${liquidBlueTheme.warning};
+  --success-color: ${liquidBlueTheme.success};
+  --background-color: ${liquidBlueTheme.background};
+  --secondary-background-color: ${liquidBlueTheme.secondaryBackground};
+  --secondary-background-selected-color: ${liquidBlueTheme.secondaryBackgroundSelected};
+  --additional-background-color: ${liquidBlueTheme.additionalBackground};
+  --collapse-background-color: ${liquidBlueTheme.collapseBackground};
+  --timeline-background-color: ${liquidBlueTheme.timelineBackground};
+  --spinner-base-color: ${liquidBlueTheme.spinnerBase};
+  --sider-background-color: ${liquidBlueTheme.siderBackground};
+  --shadow-color: ${liquidBlueTheme.shadow};
+  --border-color: ${liquidBlueTheme.border};
+  --border-nft-color: ${liquidBlueTheme.borderNft};
+  --scroll-color: ${liquidBlueTheme.scroll};
 
-  --primary-rgb-color: ${hexToRGB(themeObject[theme].primary)};
-  --info-rgb-color: ${hexToRGB(themeObject[theme].primary)};
-  --secondary-rgb-color: ${hexToRGB(themeObject[theme].secondary)};
-  --error-rgb-color: ${hexToRGB(themeObject[theme].error)};
-  --warning-rgb-color: ${hexToRGB(themeObject[theme].warning)};
-  --success-rgb-color: ${hexToRGB(themeObject[theme].success)};
-  --background-rgb-color: ${hexToRGB(themeObject[theme].background)};
+  --primary-rgb-color: 0, 255, 255;
+  --info-rgb-color: 0, 255, 255;
+  --secondary-rgb-color: 0, 221, 255;
+  --error-rgb-color: 239, 68, 68;
+  --warning-rgb-color: 245, 158, 11;
+  --success-rgb-color: 6, 182, 212;
+  --background-rgb-color: 20, 184, 166;
 
-  --text-main-color: ${themeObject[theme].textMain};
-  --text-light-color: ${themeObject[theme].textLight};
-  --text-superLight-color: ${themeObject[theme].textSuperLight};
-  --text-secondary-color: ${themeObject[theme].textSecondary};
-  --text-dark-color: ${themeObject[theme].textDark};
-  --text-nft-light-color: ${themeObject[theme].textNftLight};
-  --text-sider-primary-color: ${themeObject[theme].textSiderPrimary};
-  --text-sider-secondary-color: ${themeObject[theme].textSiderSecondary};
-  --subtext-color: ${themeObject[theme].subText};
+  --text-main-color: ${liquidBlueTheme.textMain};
+  --text-light-color: ${liquidBlueTheme.textLight};
+  --text-superLight-color: ${liquidBlueTheme.textSuperLight};
+  --text-secondary-color: ${liquidBlueTheme.textSecondary};
+  --text-dark-color: ${liquidBlueTheme.textDark};
+  --text-nft-light-color: ${liquidBlueTheme.textNftLight};
+  --text-sider-primary-color: ${liquidBlueTheme.textSiderPrimary};
+  --text-sider-secondary-color: ${liquidBlueTheme.textSiderSecondary};
+  --subtext-color: ${liquidBlueTheme.subText};
 
-  --dashboard-map-background-color: ${themeObject[theme].dashboardMapBackground};
-  --dashboard-map-circle-color: ${themeObject[theme].dashboardMapCircleColor};
-  --dashboard-map-control-disabled-background-color: ${themeObject[theme].dashboardMapControlDisabledBackground};
+  --dashboard-map-background-color: ${liquidBlueTheme.dashboardMapBackground};
+  --dashboard-map-circle-color: ${liquidBlueTheme.dashboardMapCircleColor};
+  --dashboard-map-control-disabled-background-color: ${liquidBlueTheme.dashboardMapControlDisabledBackground};
 
-  --chart-tooltip-label-color: ${themeObject[theme].chartTooltipLabel};
-  --chart-color1: ${themeObject[theme].chartColor1};
-  --chart-rgb-color1: ${hexToRGB(themeObject[theme].chartColor1)};
-  --chart-color1-tint: ${themeObject[theme].chartColor1Tint};
-  --chart-color2: ${themeObject[theme].chartColor2};
-  --chart-color2-tint: ${themeObject[theme].chartColor2Tint};
-  --chart-color3: ${themeObject[theme].chartColor3};
-  --chart-color3-tint: ${themeObject[theme].chartColor3Tint};
-  --chart-color4: ${themeObject[theme].chartColor4};
-  --chart-color4-tint: ${themeObject[theme].chartColor4Tint};
-  --chart-color5: ${themeObject[theme].chartColor5};
-  --chart-rgb-color5: ${hexToRGB(themeObject[theme].chartColor5)};
-  --chart-color5-tint: ${themeObject[theme].chartColor5Tint};
-  --chart-axis-label-color: ${themeObject[theme].chartAxisLabel};
+  --chart-tooltip-label-color: ${liquidBlueTheme.chartTooltipLabel};
+  --chart-color1: ${liquidBlueTheme.chartColor1};
+  --chart-rgb-color1: 0, 255, 255;
+  --chart-color1-tint: ${liquidBlueTheme.chartColor1Tint};
+  --chart-color2: ${liquidBlueTheme.chartColor2};
+  --chart-color2-tint: ${liquidBlueTheme.chartColor2Tint};
+  --chart-color3: ${liquidBlueTheme.chartColor3};
+  --chart-color3-tint: ${liquidBlueTheme.chartColor3Tint};
+  --chart-color4: ${liquidBlueTheme.chartColor4};
+  --chart-color4-tint: ${liquidBlueTheme.chartColor4Tint};
+  --chart-color5: ${liquidBlueTheme.chartColor5};
+  --chart-rgb-color5: 0, 221, 255;
+  --chart-color5-tint: ${liquidBlueTheme.chartColor5Tint};
+  --chart-axis-label-color: ${liquidBlueTheme.chartAxisLabel};
 
-  --notification-success-color: ${themeObject[theme].notificationSuccess};
-  --notification-primary-color: ${themeObject[theme].notificationPrimary};
-  --notification-warning-color: ${themeObject[theme].notificationWarning};
-  --notification-error-color: ${themeObject[theme].notificationError};
+  --notification-success-color: ${liquidBlueTheme.notificationSuccess};
+  --notification-primary-color: ${liquidBlueTheme.notificationPrimary};
+  --notification-warning-color: ${liquidBlueTheme.notificationWarning};
+  --notification-error-color: ${liquidBlueTheme.notificationError};
 
-  --icon-color: ${themeObject[theme].icon};
-  --icon-hover-color: ${themeObject[theme].iconHover};
-  --box-shadow: ${themeObject[theme].boxShadow};
-  --box-shadow-hover: ${themeObject[theme].boxShadowHover};
-  --box-shadow-nft-color: ${themeObject[theme].boxShadowNft};
-  --box-shadow-nft-secondary-color: ${themeObject[theme].boxShadowNftSecondary};
+  --icon-color: ${liquidBlueTheme.icon};
+  --icon-hover-color: ${liquidBlueTheme.iconHover};
+  --box-shadow: ${liquidBlueTheme.boxShadow};
+  --box-shadow-hover: ${liquidBlueTheme.boxShadowHover};
+  --box-shadow-nft-color: ${liquidBlueTheme.boxShadowNft};
+  --box-shadow-nft-secondary-color: ${liquidBlueTheme.boxShadowNftSecondary};
 
-  --heading-color: ${themeObject[theme].heading};
-  --item-hover-bg: ${themeObject[theme].itemHoverBg};
-  --background-base-color: ${themeObject[theme].backgroundColorBase};
-  --border-base-color: ${themeObject[theme].borderBase};
-  --disabled-color: ${themeObject[theme].disable};
-  --disabled-bg-color: ${themeObject[theme].disabledBg};
-  --layout-body-bg-color: ${themeObject[theme].layoutBodyBg};
-  --layout-header-bg-color: ${themeObject[theme].layoutHeaderBg};
-  --layout-sider-bg-color: ${themeObject[theme].layoutSiderBg};
-  --input-placeholder-color: ${themeObject[theme].inputPlaceholder};
-  --input-bg-color: ${themeObject[theme].inputBg};
-  --avatar-bg: ${themeObject[theme].avatarBg};
-  --alert-text-color: ${themeObject[theme].alertTextColor};
-  --breadcrumb-color: ${themeObject[theme].breadcrumb};
+  --heading-color: ${liquidBlueTheme.heading};
+  --item-hover-bg: ${liquidBlueTheme.itemHoverBg};
+  --background-base-color: ${liquidBlueTheme.backgroundColorBase};
+  --border-base-color: ${liquidBlueTheme.borderBase};
+  --disabled-color: ${liquidBlueTheme.disable};
+  --disabled-bg-color: ${liquidBlueTheme.disabledBg};
+  --layout-body-bg-color: ${liquidBlueTheme.layoutBodyBg};
+  --layout-header-bg-color: ${liquidBlueTheme.layoutHeaderBg};
+  --layout-sider-bg-color: ${liquidBlueTheme.layoutSiderBg};
+  --input-placeholder-color: ${liquidBlueTheme.inputPlaceholder};
+  --input-bg-color: ${liquidBlueTheme.inputBg};
+  --avatar-bg: ${liquidBlueTheme.avatarBg};
+  --alert-text-color: ${liquidBlueTheme.alertTextColor};
+  --breadcrumb-color: ${liquidBlueTheme.breadcrumb};
 `;
 
-export const lightThemeVariables = css`
-  ${getThemeVariables('light')}
-`;
-
-export const darkThemeVariables = css`
-  ${getThemeVariables('dark')}
-  --ant-success-color-deprecated-bg: ${antThemeObject['dark'].successBg} !important;
-  --ant-success-color-deprecated-border: ${antThemeObject['dark'].successBorder} !important;
+export const liquidBlueThemeVariables = css`
+  ${getThemeVariables()}
+  --ant-success-color-deprecated-bg: ${antLiquidBlueTheme.successBg} !important;
+  --ant-success-color-deprecated-border: ${antLiquidBlueTheme.successBorder} !important;
 `;
 
 export const commonThemeVariables = css`
-  color-scheme: light dark;
+  color-scheme: dark;
   --white: ${BASE_COLORS.white};
   --black: ${BASE_COLORS.black};
   --green: ${BASE_COLORS.green};

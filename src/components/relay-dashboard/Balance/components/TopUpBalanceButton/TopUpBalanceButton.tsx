@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
+import { DownloadOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { useAppSelector } from '@app/hooks/reduxHooks';
 import { TopUpBalanceModal } from '../TopUpBalanceModal/TopUpBalanceModal';
 import * as S from './TopUpBalanceButton.styles';
 
 export const TopUpBalanceButton: React.FC = () => {
   const { t } = useTranslation();
-  const { theme } = useAppSelector((state) => state.theme);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleButtonClick = () => {
@@ -23,7 +22,12 @@ export const TopUpBalanceButton: React.FC = () => {
 
   return (
     <>
-      <S.TopUpButton type={theme === 'dark' ? 'ghost' : 'primary'} block onClick={handleButtonClick}>
+      <S.TopUpButton
+        type="primary"
+        block
+        onClick={handleButtonClick}
+        icon={<DownloadOutlined />}
+      >
         {t('nft.receivingAddresses')}
       </S.TopUpButton>
       <TopUpBalanceModal

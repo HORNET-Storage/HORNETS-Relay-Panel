@@ -55,18 +55,18 @@ export const SignUpForm: React.FC = () => {
       <Form form={form} layout="vertical" onFinish={handleSubmit} initialValues={initValues}>
         <S.Title>{t('common.signUp')}</S.Title>
         <S.HiddenInput>
-          <Form.Item name="npub" label="Npub" rules={[{ required: true, message: 'Npub is required' }]}>
+          <Auth.FormItem name="npub" label="Npub" rules={[{ required: true, message: 'Npub is required' }]}>
             <Auth.FormInput placeholder="Enter your Npub key" />
-          </Form.Item>
+          </Auth.FormItem>
         </S.HiddenInput>
-        <Form.Item
+        <Auth.FormItem
           label={t('common.password')}
           name="password"
           rules={[{ required: true, message: t('common.requiredField') }]}
         >
           <Auth.FormInputPassword placeholder={t('common.password')} />
-        </Form.Item>
-        <Form.Item
+        </Auth.FormItem>
+        <Auth.FormItem
           label={t('common.confirmPassword')}
           name="confirmPassword"
           dependencies={['password']}
@@ -83,19 +83,21 @@ export const SignUpForm: React.FC = () => {
           ]}
         >
           <Auth.FormInputPassword placeholder={t('common.confirmPassword')} />
-        </Form.Item>
-        <Form.Item noStyle>
+        </Auth.FormItem>
+        <Auth.FormItem noStyle>
           <Auth.SubmitButton type="primary" htmlType="submit" loading={isLoading}>
             {t('common.signUp')}
           </Auth.SubmitButton>
-        </Form.Item>
+        </Auth.FormItem>
         <Auth.FooterWrapper>
-          <Auth.Text>
-            {t('signup.alreadyHaveAccount')}{' '}
-            <Link to="/auth/login">
-              <Auth.LinkText>{t('common.here')}</Auth.LinkText>
-            </Link>
+          <Auth.Text style={{ marginBottom: '1rem' }}>
+            {t('signup.alreadyHaveAccount')}
           </Auth.Text>
+          <Link to="/auth/login" style={{ display: 'block', textDecoration: 'none' }}>
+            <Auth.SecondaryButton type="default" block>
+              {t('common.login')}
+            </Auth.SecondaryButton>
+          </Link>
         </Auth.FooterWrapper>
       </Form>
     </Auth.FormWrapper>

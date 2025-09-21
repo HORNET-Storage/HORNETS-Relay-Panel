@@ -5,9 +5,8 @@ interface ThemeState {
   theme: ThemeType;
 }
 
-//const preferredTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-
-export const defaultTheme = 'dark';// Removing Support for preferred theme detection for launch 
+// Liquid Blue is the only theme
+export const defaultTheme: ThemeType = 'liquid-blue';
 
 localStorage.setItem('theme', defaultTheme);
 

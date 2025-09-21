@@ -1,12 +1,12 @@
 import React from 'react';
 import { GithubOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
-import { useAppSelector } from '@app/hooks/reduxHooks';
 import { BASE_COLORS } from '@app/styles/themes/constants';
 import { BaseButton as BaseButton } from '@app/components/common/BaseButton/BaseButton';
 
 export const GitHubButton: React.FC = (props) => {
-  const theme = useAppSelector((state) => state.theme.theme);
+  // For liquid-blue theme, use light appearance
+  const isDark = false;
 
   return (
     <Button
@@ -14,7 +14,7 @@ export const GitHubButton: React.FC = (props) => {
       href="https://github.com/altence/lightence-admin"
       icon={<GithubIcon />}
       target="_blank"
-      $isDark={theme === 'dark'}
+      $isDark={isDark}
       {...props}
     >
       GitHub

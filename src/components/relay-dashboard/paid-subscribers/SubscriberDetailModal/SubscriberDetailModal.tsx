@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Modal, message, Spin, Typography } from 'antd';
+import { message, Spin, Typography } from 'antd';
+import { BaseModal } from '@app/components/common/BaseModal/BaseModal';
 import {
   KeyOutlined,
   CalendarOutlined,
@@ -97,7 +98,7 @@ export const SubscriberDetailModal: React.FC<SubscriberDetailModalProps> = ({ su
   const subscribedLabel = subscribed ? 'Subscribed' : 'Not Subscribed';
 
   return (
-    <Modal
+    <BaseModal
       open={isVisible}
       onCancel={onClose}
       footer={null}
@@ -169,6 +170,6 @@ export const SubscriberDetailModal: React.FC<SubscriberDetailModalProps> = ({ su
           </S.InfoCard>
         )}
       </S.InfoSection>
-    </Modal>
+    </BaseModal>
   );
 };

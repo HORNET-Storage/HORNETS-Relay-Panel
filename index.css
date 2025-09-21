@@ -1,0 +1,3932 @@
+/* Import KaTeX CSS for LaTeX math rendering */
+@import 'katex/dist/katex.min.css';
+@import "./liquid-glass.css";
+
+/* Import Fira Code and Tiempos fonts from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Tiempos+Text:ital,wght@0,400;0,500;1,400&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --middle-header-height: 4.5em;
+  --titlebar-height: 2em;
+  /* Default value */
+}
+
+html {
+  font-size: 15px;
+}
+
+.btn,
+.input {
+  @apply rounded-md;
+}
+
+/*Mui Switch*/
+
+/*  Constant style */
+.MuiSwitch-root .MuiSwitch-track {
+  @apply !bg-base-100;
+}
+
+/*  Online*/
+.MuiSwitch-switchBase.Mui-checked {
+  @apply !text-success brightness-90;
+}
+
+.MuiSwitch-root.switch-checked-online .MuiSwitch-track {
+  @apply !bg-success;
+}
+/* Connecting */
+ .MuiSwitch-root.connecting .MuiSwitch-switchBase {
+  @apply !text-warning/85 brightness-75
+}
+
+.MuiSwitch-root.connecting .MuiSwitch-track {
+  @apply !bg-warning/70;
+}
+
+/*  Offline*/
+ .MuiSwitch-root.offline .MuiSwitch-switchBase {
+  @apply !text-error/85 brightness-75
+}
+
+.MuiSwitch-root.offline .MuiSwitch-track {
+  @apply !bg-error/70;
+}
+
+/* Default theme */
+.btn-primary {
+  @apply text-base-content bg-gradient-to-t from-secondary to-primary;
+  border-width: 0px;
+  transition: background 0.3s ease;
+}
+
+.btn-neutral {
+  @apply bg-neutral border-none;
+}
+
+.btn-neutral:hover {
+  @apply bg-neutral opacity-90;
+}
+
+[data-theme="light"] .btn-neutral {
+  @apply bg-neutral border-none text-white;
+}
+
+.btn-code-blame {
+  text-transform: none !important;
+  font-weight: 600 !important;
+  font-size: 1rem !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  border-width: 1px !important;
+}
+
+.btn-settings-upload {
+  min-height: 2rem;
+  height: 2.5rem;
+  max-height: 2.5rem;
+}
+
+[data-theme="dark"] .btn-code-blame {
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+[data-theme="light"] .btn-code-blame {
+  border-color: rgba(0, 0, 0, 0.15) !important;
+}
+
+[data-theme="light"] .btn-code-blame.unselected {
+  border-color: rgba(0, 0, 0, 0.15) !important;
+  color: black !important;
+}
+
+.btn-file-content {
+  opacity: 60% !important;
+}
+
+[data-theme="light"] .btn-file-content {
+  opacity: 60% !important;
+  color: black !important;
+}
+
+[data-theme="dark"] .btn-file-content {
+  @apply !fill-text-primary;
+  opacity: 60% !important;
+}
+
+.btn-primary:hover {
+  @apply bg-gradient-to-t from-secondary to-primary opacity-90;
+}
+
+/* Dark theme */
+[data-theme="dark"] .btn-primary {
+  @apply bg-gradient-to-t from-secondary to-primary;
+}
+
+[data-theme="dark"] .btn-primary:hover {
+  @apply bg-gradient-to-t from-secondary to-primary opacity-90;
+}
+
+/* Light theme */
+[data-theme="light"] .btn-primary {
+  @apply bg-gradient-to-t from-secondary to-primary text-white;
+}
+
+[data-theme="light"] .btn-primary:hover {
+  @apply bg-gradient-to-t from-secondary to-primary opacity-90;
+}
+
+/* Iris theme */
+[data-theme="iris"] .btn-primary {
+  @apply bg-gradient-to-t from-secondary to-primary;
+}
+
+[data-theme="iris"] .btn-primary:hover {
+  @apply bg-gradient-to-t from-secondary to-primary;
+  box-shadow: 0 0 10px var(--tw-gradient-from);
+}
+
+iframe {
+  @apply max-w-full;
+}
+
+/* FORCE HIDE ALL SCROLLBARS - MAXIMUM SPECIFICITY */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video, main, button, input, select, textarea,
+*, *::before, *::after {
+  /* Firefox */
+  scrollbar-width: none !important;
+  /* IE/Edge */
+  -ms-overflow-style: none !important;
+}
+
+/* Webkit browsers - ALL elements and pseudo-elements */
+html::-webkit-scrollbar, body::-webkit-scrollbar, div::-webkit-scrollbar,
+*::-webkit-scrollbar, *::before::-webkit-scrollbar, *::after::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+  display: none !important;
+}
+
+/* Ensure Ant Design components also hide scrollbars */
+.ant-layout::-webkit-scrollbar,
+.ant-layout-content::-webkit-scrollbar,
+.ant-layout-sider::-webkit-scrollbar,
+.ant-card::-webkit-scrollbar,
+.ant-card-body::-webkit-scrollbar,
+.ant-modal::-webkit-scrollbar,
+.ant-modal-body::-webkit-scrollbar,
+.ant-table::-webkit-scrollbar,
+.ant-table-body::-webkit-scrollbar,
+.ant-select-dropdown::-webkit-scrollbar,
+.ant-dropdown::-webkit-scrollbar,
+.ant-drawer::-webkit-scrollbar,
+.ant-drawer-body::-webkit-scrollbar,
+.ant-menu::-webkit-scrollbar,
+.ant-list::-webkit-scrollbar,
+.ant-collapse::-webkit-scrollbar,
+.ant-tabs-content::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+  display: none !important;
+}
+
+/* Firefox/IE for Ant Design components */
+.ant-layout,
+.ant-layout-content,
+.ant-layout-sider,
+.ant-card,
+.ant-card-body,
+.ant-modal,
+.ant-modal-body,
+.ant-table,
+.ant-table-body,
+.ant-select-dropdown,
+.ant-dropdown,
+.ant-drawer,
+.ant-drawer-body,
+.ant-menu,
+.ant-list,
+.ant-collapse,
+.ant-tabs-content {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+/* For elements that should explicitly show scrollbars, add class .show-scrollbar */
+.show-scrollbar {
+  /* Firefox */
+  scrollbar-width: thin !important;
+  /* IE/Edge */
+  -ms-overflow-style: auto !important;
+}
+
+.show-scrollbar::-webkit-scrollbar {
+  width: 8px !important;
+  height: 8px !important;
+  display: block !important;
+}
+
+.show-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-radius: 4px !important;
+}
+
+.show-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-radius: 4px !important;
+}
+
+/* Custom scrollbar for FileContent component */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+}
+
+/* Utility class to prevent text selection and highlighting */
+.no-highlight {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Apply no-highlight to all UI chrome by default */
+nav, header, aside, .btn, .menu, .navbar, .sidebar, .dropdown, 
+.modal-box, .badge, .tabs, .form-control, .input, .select, 
+.toggle, .checkbox, .radio, .range, .file-input, .breadcrumbs,
+.pagination, .steps, .alert, .toast, .loading, .progress, .radial-progress,
+.countdown, .stat, .divider, .mask, .skeleton, .collapse,
+.carousel, .indicator, .swap, .tooltip, .drawer, .rating,
+.artboard, .phone-mockup, .window-mockup, .browser-mockup,
+.code-mockup, .kbd, .link-hover, .link-primary, .link-secondary,
+.btn-group, .join, .stack, .avatar-group,
+/* Profile-specific UI elements */
+.followers-info, .follower-count, .follow-button, .profile-stats,
+.tab-navigation, .user-actions, .profile-badges, .social-links {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Allow text selection only in content areas */
+.highlight-allowed, .prose, [role="main"] article, .post-content {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+/* Force no selection on UI elements even within highlight-allowed areas */
+.highlight-allowed .no-highlight,
+.highlight-allowed .btn,
+.highlight-allowed .badge,
+.highlight-allowed .tabs,
+.highlight-allowed button,
+.highlight-allowed .avatar-group,
+.highlight-allowed [class*="btn-"],
+.highlight-allowed [class*="flex"][class*="gap-"],
+.highlight-allowed .cursor-pointer {
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+  -webkit-touch-callout: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+/* src/shared/styles/scrollbar.css */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  /* Internet Explorer 10+ */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+  /* Safari and Chrome */
+}
+
+/* Fix modal scrollbar compensation issue */
+/* Reserve space for scrollbar to prevent layout shift without showing it */
+html {
+  scrollbar-gutter: stable;
+}
+
+/* Prevent layout shift when dialog opens by maintaining overflow */
+dialog[open] {
+  /* Ensure the dialog doesn't affect body scrollbar */
+  overflow: auto;
+}
+
+/* Prevent body from losing scrollbar space when modal opens */
+body:has(dialog[open]) {
+  /* Maintain normal overflow behavior */
+  overflow: auto !important;
+  /* Prevent any margin adjustments */
+  margin-right: 0 !important;
+}
+
+/* Hide scrollbars completely when modals are open - cross-browser */
+html:has(dialog[open])::-webkit-scrollbar {
+  display: none !important;
+}
+
+html:has(dialog[open]) {
+  /* Reserve space but hide scrollbar completely */
+  overflow-y: scroll !important;
+  scrollbar-width: none !important; /* Firefox */
+  -ms-overflow-style: none !important; /* IE/Edge */
+}
+
+/* Ensure body doesn't get overflow hidden when modal opens */
+body:has(dialog[open]) {
+  overflow-y: visible !important;
+}
+
+
+/* modals */
+
+.modal-box {
+  max-width: fit-content !important;
+}
+
+/* mui tabs */
+
+.MuiTab-root.Mui-selected {
+  color: #c6c8d3 !important;
+}
+
+/* Electron window controls */
+.app-drag-region {
+  -webkit-app-region: drag;
+  -webkit-user-select: none;
+}
+
+.app-no-drag {
+  -webkit-app-region: no-drag;
+}
+
+.safeContentBrowser {
+  height: calc(100vh - var(--middle-header-height));
+}
+
+.safeContentElectron {
+  height: calc(100vh - var(--middle-header-height) - var(--titlebar-height));
+}
+
+.searchBox {
+  @apply border-[--border-color] border-[2px] !rounded-md !bg-base-100
+}
+
+/* ============================================= */
+/* SELECTIVE SEARCHBOX BEVEL REMOVAL */
+/* ============================================= */
+
+/* Only remove bevel effect from UserToolbar search inputs (top-right search) */
+.fixed.z-50.right-5 input.bg-base-300,
+.fixed.z-50.right-5 input[class*="bg-base-300"],
+.fixed.z-50.right-5 .bg-base-300 input {
+  box-shadow: none !important;
+}
+
+/* Remove bevel effect from search page UserToolbar */
+body:has(header:contains("Search")) .fixed.z-50.right-5 input.bg-base-300,
+body:has(header:contains("Search")) .fixed.z-50.right-5 input[class*="bg-base-300"],
+body:has(header:contains("Search")) .fixed.z-50.right-5 .bg-base-300 input {
+  box-shadow: none !important;
+}
+
+/* Enhanced focus state for UserToolbar search inputs */
+.fixed.z-50.right-5 input:focus,
+.fixed.z-50.right-5 input:focus-visible {
+  --tw-ring-color: var(--primary) !important;
+  --tw-ring-offset-color: transparent !important;
+  box-shadow:
+    0 0 0 2px var(--primary, #007AFF),
+    0 0 15px rgba(0, 122, 255, 0.3) !important;
+  outline: 2px solid var(--primary, #007AFF) !important;
+  outline-offset: 0 !important;
+  border-color: var(--primary, #007AFF) !important;
+  transition: all 0.2s ease !important;
+}
+
+/* Theme-specific focus glow colors */
+[data-theme="liquid-glass"] .fixed.z-50.right-5 input:focus {
+  box-shadow:
+    0 0 0 2px rgba(255, 255, 255, 0.5),
+    0 0 20px rgba(255, 255, 255, 0.3) !important;
+  outline-color: rgba(255, 255, 255, 0.5) !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
+}
+
+[data-theme="liquid-blue"] .fixed.z-50.right-5 input:focus {
+  box-shadow:
+    0 0 0 2px rgba(0, 255, 255, 0.6),
+    0 0 20px rgba(0, 255, 255, 0.4) !important;
+  outline-color: rgba(0, 255, 255, 0.6) !important;
+  border-color: rgba(0, 255, 255, 0.6) !important;
+}
+
+/* Fix for FollowList search input (thread viewer) - use internal glow to prevent clipping */
+.sticky.top-0.z-9 input[placeholder="Search profiles..."]:focus,
+.sticky.top-0.z-9 input[placeholder="Search profiles..."]:focus-visible {
+  /* Remove external outline and ring */
+  outline: none !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-color: transparent !important;
+  
+  /* Use internal box-shadow for glow effect */
+  box-shadow:
+    inset 0 0 0 2px var(--primary, #007AFF),
+    inset 0 0 12px rgba(0, 122, 255, 0.25) !important;
+  border-color: var(--primary, #007AFF) !important;
+  transition: all 0.2s ease !important;
+}
+
+/* Theme-specific internal glow for FollowList search */
+[data-theme="liquid-glass"] .sticky.top-0.z-9 input[placeholder="Search profiles..."]:focus {
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.5),
+    inset 0 0 15px rgba(255, 255, 255, 0.25) !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
+}
+
+[data-theme="liquid-blue"] .sticky.top-0.z-9 input[placeholder="Search profiles..."]:focus {
+  box-shadow:
+    inset 0 0 0 2px rgba(0, 255, 255, 0.6),
+    inset 0 0 15px rgba(0, 255, 255, 0.35) !important;
+  border-color: rgba(0, 255, 255, 0.6) !important;
+}
+
+[data-theme="dark"] .sticky.top-0.z-9 input[placeholder="Search profiles..."]:focus {
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.4),
+    inset 0 0 12px rgba(255, 255, 255, 0.2) !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+}
+
+[data-theme="dim"] .sticky.top-0.z-9 input[placeholder="Search profiles..."]:focus {
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.35),
+    inset 0 0 12px rgba(255, 255, 255, 0.15) !important;
+  border-color: rgba(255, 255, 255, 0.35) !important;
+}
+
+[data-theme="light"] .sticky.top-0.z-9 input[placeholder="Search profiles..."]:focus {
+  box-shadow:
+    inset 0 0 0 2px rgba(0, 122, 255, 0.8),
+    inset 0 0 12px rgba(0, 122, 255, 0.2) !important;
+  border-color: rgba(0, 122, 255, 0.8) !important;
+}
+
+/* Liquid Glass Theme Definition */
+[data-theme="liquid-glass"] {
+  /* Override base colors for liquid glass theme */
+  --base-100: rgba(255, 255, 255, 0.02);
+  --base-200: rgba(255, 255, 255, 0.04);
+  --base-300: rgba(255, 255, 255, 0.06);
+  --base-content: rgba(255, 255, 255, 0.95);
+  --neutral: rgba(255, 255, 255, 0.05);
+  --neutral-content: rgba(255, 255, 255, 0.95);
+  --primary: #007AFF;
+  --secondary: #AF52DE;
+  --accent: #32D2FF;
+  --info: #30B0C7;
+  --success: #34C759;
+  --warning: #FFCC00;
+  --error: #FF3B30;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --text-primary: rgba(255, 255, 255, 0.95);
+  --text-secondary: rgba(255, 255, 255, 0.75);
+  --text-tertiary: rgba(255, 255, 255, 0.55);
+}
+
+/* Liquid Blue Theme Definition - Tony Stark/Jarvis AI Futuristic Blue */
+[data-theme="liquid-blue"] {
+  /* Bright Neon Turquoise/Teal Color Palette */
+  --primary: #00FFFF;        /* Electric cyan - bright neon */
+  --secondary: #00FFAA;      /* Neon turquoise */
+  --accent: #00DDFF;         /* Bright neon teal */
+  --info: #14B8A6;           /* Teal */
+  --success: #06B6D4;        /* Cyan */
+  --warning: #F59E0B;        /* Amber warnings */
+  --error: #EF4444;          /* Red for errors */
+
+  /* Base colors with bright turquoise/teal tint */
+  --base-100: rgba(20, 184, 166, 0.08);
+  --base-200: rgba(94, 234, 212, 0.12);
+  --base-300: rgba(153, 246, 228, 0.16);
+  --base-content: rgba(255, 255, 255, 0.95);
+  --neutral: rgba(20, 184, 166, 0.1);
+  --neutral-content: rgba(255, 255, 255, 0.95);
+
+  /* Border and text colors with bright turquoise glow */
+  --border-color: rgba(20, 184, 166, 0.15);
+  --text-primary: rgba(255, 255, 255, 0.95);    /* Keep text white */
+  --text-secondary: rgba(255, 255, 255, 0.9);   /* Keep text white */
+  --text-tertiary: rgba(255, 255, 255, 0.8);    /* Keep text white */
+
+  /* Futuristic tab colors - neon turquoise */
+  --tab-primary-rgb: 0, 255, 255;      /* Electric cyan */
+  --tab-secondary-rgb: 0, 255, 170;    /* Neon turquoise */
+}
+
+/* Beautiful gradient background */
+[data-theme="liquid-glass"] html {
+  background: linear-gradient(135deg, var(--lg-gradient-start, #1e0033) 0%, var(--lg-gradient-end, #01579b) 100%) fixed !important;
+  min-height: 100vh;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+/* LIQUID BLUE BACKGROUND ANIMATIONS - MATCHING DASHBOARD */
+@keyframes liquidBackground {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1) rotate(0deg);
+  }
+  25% {
+    opacity: 0.8;
+    transform: scale(1.1) rotate(90deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2) rotate(180deg);
+  }
+  75% {
+    opacity: 0.8;
+    transform: scale(1.1) rotate(270deg);
+  }
+}
+
+@keyframes liquidFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Liquid Blue Futuristic Background - Neon Turquoise */
+[data-theme="liquid-blue"] html {
+  background: linear-gradient(135deg,
+    #0d9488 0%,      /* Bright teal start */
+    #14b8a6 25%,    /* Turquoise */
+    #00FFFF 50%,    /* Electric cyan core */
+    #5eead4 75%,    /* Light turquoise */
+    #99f6e4 100%    /* Very light teal */
+  ) fixed !important;
+  min-height: 100vh;
+  color: rgba(255, 255, 255, 0.95);
+  position: relative;
+}
+
+/* Enhanced floating orbs for Arc Reactor Energy */
+[data-theme="liquid-blue"] html::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    /* Bright neon turquoise core */
+    radial-gradient(circle at 30% 70%, rgba(0, 255, 255, 1) 0%, transparent 30%),
+    /* Energy nodes - bright turquoise/teal */
+    radial-gradient(circle at 70% 30%, rgba(0, 255, 170, 0.9) 0%, transparent 35%),
+    radial-gradient(circle at 50% 10%, rgba(20, 184, 166, 0.8) 0%, transparent 40%),
+    radial-gradient(circle at 20% 40%, rgba(94, 234, 212, 0.7) 0%, transparent 45%),
+    radial-gradient(circle at 80% 80%, rgba(153, 246, 228, 0.6) 0%, transparent 50%),
+    /* Energy streams - neon turquoise */
+    linear-gradient(45deg, transparent 45%, rgba(0, 255, 255, 0.2) 50%, transparent 55%),
+    linear-gradient(-45deg, transparent 40%, rgba(0, 255, 170, 0.15) 50%, transparent 60%);
+  z-index: -1;
+  pointer-events: none;
+  animation: arc-reactor-glow 15s ease-in-out infinite;
+}
+
+/* Disable animation when motion setting is enabled */
+[data-theme="liquid-blue"][data-disable-motion="true"] html::before {
+  animation: none;
+}
+
+@keyframes arc-reactor-glow {
+  0%, 100% {
+    opacity: 0.7;
+    filter: brightness(1.2) contrast(1.1);
+  }
+  25% {
+    opacity: 0.9;
+    filter: brightness(1.4) contrast(1.2);
+  }
+  50% {
+    opacity: 1;
+    filter: brightness(1.6) contrast(1.3);
+  }
+  75% {
+    opacity: 0.9;
+    filter: brightness(1.4) contrast(1.2);
+  }
+}
+
+/* Floating orbs effect overlay */
+[data-theme="liquid-glass"] body {
+  position: relative;
+  min-height: 100vh;
+  background: transparent !important;
+}
+
+[data-theme="liquid-glass"] body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    radial-gradient(circle at 15% 50%, rgba(138, 43, 226, 0.4) 0%, transparent 35%),
+    radial-gradient(circle at 85% 30%, rgba(33, 150, 243, 0.35) 0%, transparent 40%),
+    radial-gradient(circle at 50% 90%, rgba(124, 77, 255, 0.3) 0%, transparent 45%),
+    radial-gradient(circle at 20% 20%, rgba(100, 181, 246, 0.25) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(94, 53, 177, 0.3) 0%, transparent 50%);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Make backgrounds transparent to show gradient */
+[data-theme="liquid-glass"] .bg-base-100,
+[data-theme="liquid-glass"] .bg-base-200,
+[data-theme="liquid-glass"] .bg-base-300 {
+  background-color: transparent !important;
+}
+
+[data-theme="liquid-glass"] main,
+[data-theme="liquid-glass"] section {
+  background: transparent !important;
+}
+
+/* Liquid Blue Theme - Transparent Backgrounds */
+[data-theme="liquid-blue"] .bg-base-100,
+[data-theme="liquid-blue"] .bg-base-200,
+[data-theme="liquid-blue"] .bg-base-300 {
+  background-color: transparent !important;
+}
+
+/* Fix ProfileHeader dark box in liquid blue theme */
+[data-theme="liquid-blue"] .flex.flex-col.w-full.bg-base-200 {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Remove animated background effects from profile pages in liquid themes */
+[data-theme="liquid-blue"] section.h-min-content html::before,
+[data-theme="liquid-glass"] section.h-min-content html::before {
+  display: none !important;
+}
+
+[data-theme="liquid-blue"] section.h-min-content main::before,
+[data-theme="liquid-blue"] section.h-min-content main::after,
+[data-theme="liquid-glass"] section.h-min-content main::before,
+[data-theme="liquid-glass"] section.h-min-content main::after {
+  display: none !important;
+}
+
+[data-theme="liquid-blue"] main,
+[data-theme="liquid-blue"] section {
+  background: transparent !important;
+}
+
+/* Create glass effect for left sidebar WITHOUT affecting width */
+[data-theme="liquid-glass"] .flex.flex-col.h-full.self-end {
+  position: relative;
+  isolation: isolate;
+  /* NO WIDTH DECLARATIONS - let children determine width */
+}
+
+/* Glass background effect - visual only */
+[data-theme="liquid-glass"] .flex.flex-col.h-full.self-end::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 0 16px 0 0;
+  z-index: -1;
+  box-shadow:
+    0 0 20px rgba(138, 43, 226, 0.15),
+    0 0 40px rgba(33, 150, 243, 0.1),
+    inset 0 2px 3px rgba(255, 255, 255, 0.2),
+    inset 0 -2px 3px rgba(0, 0, 0, 0.15),
+    0 12px 40px rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+}
+
+/* Animated jelly border - visual only */
+[data-theme="liquid-glass"] .flex.flex-col.h-full.self-end::after {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  bottom: -3px;
+  right: -3px;
+  background: linear-gradient(
+    45deg,
+    rgba(138, 43, 226, 0.25),
+    rgba(33, 150, 243, 0.25),
+    rgba(124, 77, 255, 0.25),
+    rgba(138, 43, 226, 0.25)
+  );
+  background-size: 300% 300%;
+  border-radius: 0 19px 0 0;
+  z-index: -2;
+  filter: blur(6px);
+  opacity: 0.7;
+  animation: subtle-jelly-border 10s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Disable animation when motion setting is enabled */
+[data-theme="liquid-glass"][data-disable-motion="true"] .flex.flex-col.h-full.self-end::after {
+  animation: none;
+}
+
+@keyframes subtle-jelly-border {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  25% {
+    background-position: 50% 25%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  75% {
+    background-position: 50% 75%;
+  }
+}
+
+/* Glass highlight - visual only */
+[data-theme="liquid-glass"] .flex.flex-col.h-full.self-end > div:first-child::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 120px;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.12) 0%,
+    rgba(255, 255, 255, 0.05) 30%,
+    transparent 100%
+  );
+  border-radius: 0 16px 0 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Make sidebars transparent to show glass effect */
+[data-theme="liquid-glass"] .w-20.overflow-x-hidden.border-r,
+[data-theme="liquid-glass"] .bg-base-100.sticky.h-full.left-0.top-0 {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Ensure content is above glass effects */
+[data-theme="liquid-glass"] .flex.flex-col.h-full.self-end > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Fix overflow issues and height for left sidebar glass effects */
+[data-theme="liquid-glass"] .flex.flex-col.h-full.self-end {
+  overflow: hidden;
+  contain: layout style paint;
+  /* Make sidebar fill full viewport height to eliminate black gap */
+  min-height: 100vh;
+  height: 100vh;
+}
+
+/* Prevent glass pseudo-elements from extending beyond sidebar bounds */
+[data-theme="liquid-glass"] .flex.flex-col.h-full.self-end::before,
+[data-theme="liquid-glass"] .flex.flex-col.h-full.self-end::after {
+  contain: layout style paint;
+  overflow: hidden;
+}
+
+/* Reduce opacity of glass background to prevent dark areas */
+[data-theme="liquid-glass"] .flex.flex-col.h-full.self-end::before {
+  background: rgba(255, 255, 255, 0.02) !important; /* Much lighter background */
+}
+
+/* Prevent glass effects from causing scrollbars by ensuring they don't extend beyond viewport */
+[data-theme="liquid-glass"] *::before,
+[data-theme="liquid-glass"] *::after {
+  box-sizing: border-box;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+/* Ensure glass effects don't affect document flow */
+[data-theme="liquid-glass"] .flex.flex-col.h-full.self-end::before,
+[data-theme="liquid-glass"] .flex.flex-col.h-full.self-end::after {
+  position: absolute;
+  pointer-events: none;
+}
+
+/* Make SideBarToolBar background transparent */
+[data-theme="liquid-glass"] .flex.items-center.justify-center.h-1\/6 {
+  background: transparent !important;
+}
+
+[data-theme="liquid-glass"] .grid.grid-cols-2.gap-2.p-2 {
+  background: transparent !important;
+}
+
+/* Style SideBarToolBar buttons - transparent with no borders */
+[data-theme="liquid-glass"] .grid.grid-cols-2.gap-2.p-2 button,
+[data-theme="liquid-glass"] .grid.grid-cols-2.gap-2.p-2 a,
+[data-theme="liquid-glass"] .grid.grid-flow-col.grid-rows-2.grid-cols-2 button,
+[data-theme="liquid-glass"] .grid.grid-flow-col.grid-rows-2.grid-cols-2 a {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+  transition: box-shadow 0.2s ease !important;
+}
+
+/* SideBarToolBar glass effect on icons */
+[data-theme="liquid-glass"] .grid.grid-cols-2.gap-2.p-2 svg,
+[data-theme="liquid-glass"] .grid.grid-cols-2.gap-2.p-2 a svg,
+[data-theme="liquid-glass"] .grid.grid-flow-col.grid-rows-2.grid-cols-2 svg,
+[data-theme="liquid-glass"] .grid.grid-flow-col.grid-rows-2.grid-cols-2 a svg {
+  opacity: 0.95;
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.4)) blur(0.5px);
+  transition: all 0.3s ease;
+}
+
+/* SideBarToolBar hover effects - enhanced icon glow */
+[data-theme="liquid-glass"] .grid.grid-cols-2.gap-2.p-2 button:hover svg,
+[data-theme="liquid-glass"] .grid.grid-cols-2.gap-2.p-2 a:hover svg,
+[data-theme="liquid-glass"] .grid.grid-flow-col.grid-rows-2.grid-cols-2 button:hover svg,
+[data-theme="liquid-glass"] .grid.grid-flow-col.grid-rows-2.grid-cols-2 a:hover svg {
+  opacity: 1;
+  filter: drop-shadow(0 0 8px rgba(138, 43, 226, 0.5)) drop-shadow(0 0 12px rgba(33, 150, 243, 0.4)) blur(0.5px) !important;
+}
+
+/* FEEDS BUTTON ONLY (3rd position in 2x2 grid) - conjoined glow system */
+/* When hovering over Feeds icon - glow both icon and text */
+[data-theme="liquid-glass"] .grid.grid-cols-2.gap-2.p-2 button:nth-child(3):has(svg:hover) svg,
+[data-theme="liquid-glass"] .grid.grid-cols-2.gap-2.p-2 button:nth-child(3):has(svg:hover) span,
+[data-theme="liquid-glass"] .grid.grid-flow-col.grid-rows-2.grid-cols-2 button:nth-child(3):has(svg:hover) svg,
+[data-theme="liquid-glass"] .grid.grid-flow-col.grid-rows-2.grid-cols-2 button:nth-child(3):has(svg:hover) span {
+  filter: drop-shadow(0 0 12px rgba(138, 43, 226, 0.8)) drop-shadow(0 0 18px rgba(33, 150, 243, 0.7)) drop-shadow(0 0 24px rgba(255, 255, 255, 0.6)) !important;
+}
+
+/* When hovering over Feeds text - glow both text and icon */
+[data-theme="liquid-glass"] .grid.grid-cols-2.gap-2.p-2 button:nth-child(3):has(span:hover) svg,
+[data-theme="liquid-glass"] .grid.grid-cols-2.gap-2.p-2 button:nth-child(3):has(span:hover) span,
+[data-theme="liquid-glass"] .grid.grid-flow-col.grid-rows-2.grid-cols-2 button:nth-child(3):has(span:hover) svg,
+[data-theme="liquid-glass"] .grid.grid-flow-col.grid-rows-2.grid-cols-2 button:nth-child(3):has(span:hover) span {
+  filter: drop-shadow(0 0 12px rgba(138, 43, 226, 0.8)) drop-shadow(0 0 18px rgba(33, 150, 243, 0.7)) drop-shadow(0 0 24px rgba(255, 255, 255, 0.6)) !important;
+}
+
+/* NEW POST BUTTON ONLY - conjoined glow system */
+/* When hovering over new post icon - glow both icon and text */
+[data-theme="liquid-glass"] .grid.grid-cols-2.gap-2.p-2 button:has(div[class*="rounded-md"]:hover) div[class*="rounded-md"],
+[data-theme="liquid-glass"] .grid.grid-flow-col.grid-rows-2.grid-cols-2 button:has(div[class*="rounded-md"]:hover) div[class*="rounded-md"] {
+  box-shadow: 0 0 8px rgba(138, 43, 226, 0.6), 0 0 12px rgba(33, 150, 243, 0.5), 0 0 16px rgba(255, 255, 255, 0.4) !important;
+}
+
+/* When hovering over new post text - glow both text and icon */
+[data-theme="liquid-glass"] .grid.grid-cols-2.gap-2.p-2 button:has(span:hover) div[class*="rounded-md"],
+[data-theme="liquid-glass"] .grid.grid-flow-col.grid-rows-2.grid-cols-2 button:has(span:hover) div[class*="rounded-md"] {
+  box-shadow: 0 0 8px rgba(138, 43, 226, 0.6), 0 0 12px rgba(33, 150, 243, 0.5), 0 0 16px rgba(255, 255, 255, 0.4) !important;
+}
+
+/* Hover and active states removed */
+
+/* Active/selected state highlight removed */
+
+/* Style the New Post button gradient background - remove borders */
+[data-theme="liquid-glass"] .grid.grid-flow-col.grid-rows-2.grid-cols-2 .bg-gradient-to-t {
+  background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
+  border-radius: 0.5rem !important; /* Slightly rounder for softer look */
+  border: none !important;
+}
+
+/* Remove inner glow pseudo-elements - keep buttons clean */
+
+/* Create unified jelly glass container for feed + right nav */
+[data-theme="liquid-glass"] main {
+  position: relative;
+  background: transparent !important;
+  overflow: visible;
+  isolation: isolate;
+  align-self: stretch !important;
+  margin-top: 0 !important;
+  border-left: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+/* Liquid Blue Main Container - Futuristic AI Interface */
+[data-theme="liquid-blue"] main {
+  position: relative;
+  background: transparent !important;
+  overflow: visible;
+  isolation: isolate;
+  align-self: stretch !important;
+  margin-top: 0 !important;
+  border-left: 1px solid rgba(0, 255, 255, 0.2);
+}
+
+/* Unified glass background spanning feed and right nav */
+[data-theme="liquid-glass"] main::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 0; /* Removed rounded edges */
+  z-index: 0;
+  box-shadow:
+    0 0 20px rgba(33, 150, 243, 0.15),
+    0 0 40px rgba(138, 43, 226, 0.1),
+    inset 0 2px 3px rgba(255, 255, 255, 0.2),
+    inset 0 -2px 3px rgba(0, 0, 0, 0.15),
+    0 12px 40px rgba(0, 0, 0, 0.2);
+}
+
+/* Animated jelly border for unified feed + right nav */
+[data-theme="liquid-glass"] main::after {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  right: -3px;
+  bottom: -3px;
+  background: linear-gradient(
+    45deg,
+    rgba(33, 150, 243, 0.25),
+    rgba(124, 77, 255, 0.25),
+    rgba(138, 43, 226, 0.25),
+    rgba(33, 150, 243, 0.25)
+  );
+  background-size: 300% 300%;
+  border-radius: 0; /* Removed rounded edges */
+  z-index: -1;
+  filter: blur(6px);
+  opacity: 0.7;
+  animation: subtle-jelly-border 10s ease-in-out infinite;
+}
+
+/* Disable animation when motion setting is enabled */
+[data-theme="liquid-glass"][data-disable-motion="true"] main::after {
+  animation: none;
+}
+
+/* Ensure MainFeed and RightColumn fill available height */
+[data-theme="liquid-glass"] main > div {
+  height: 100%;
+}
+
+/* Make all main content children position relative for proper stacking */
+[data-theme="liquid-glass"] main > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Top glass highlight for feed/right nav */
+[data-theme="liquid-glass"] main::before {
+  border-radius: 0; /* Removed rounded edges */
+}
+
+/* Remove borders between feed and right nav to unify them */
+[data-theme="liquid-glass"] .w-1\/3.block .bg-base-200,
+[data-theme="liquid-glass"] .w-full.sticky .bg-base-200 {
+  background: transparent !important;
+  border: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Make feed area transparent to show unified glass */
+[data-theme="liquid-glass"] main > div:first-child {
+  background: transparent !important;
+}
+
+/* Make right column transparent */
+[data-theme="liquid-glass"] .w-1\/3.block {
+  background: transparent !important;
+}
+
+/* Additional glass highlight for top of feed/right nav area */
+[data-theme="liquid-glass"] main > div:first-child::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 120px;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.04) 30%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 2;
+  border-radius: 0; /* Square corners to prevent visible rounded edge */
+}
+
+/* Glass styles for components */
+[data-theme="liquid-glass"] .lg-glass {
+  background: rgba(255, 255, 255, var(--lg-glass-opacity, 0.03)) !important;
+  backdrop-filter: blur(var(--lg-blur-amount, 20px)) !important;
+  -webkit-backdrop-filter: blur(var(--lg-blur-amount, 20px)) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* ============================================= */
+/* LIQUID BLUE THEME - FUTURISTIC AI STYLING */
+/* ============================================= */
+
+/* Main glass container with blue tint */
+[data-theme="liquid-blue"] main::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 0;
+  z-index: 0;
+  box-shadow:
+    0 0 20px rgba(0, 255, 255, 0.2),
+    0 0 40px rgba(0, 255, 170, 0.15),
+    inset 0 2px 3px rgba(0, 255, 255, 0.15),
+    inset 0 -2px 3px rgba(0, 0, 0, 0.1),
+    0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* Animated blue jelly border */
+[data-theme="liquid-blue"] main::after {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  right: -3px;
+  bottom: -3px;
+  background: linear-gradient(
+    45deg,
+    rgba(0, 122, 255, 0.25),
+    rgba(6, 182, 212, 0.25),
+    rgba(0, 212, 255, 0.25),
+    rgba(0, 122, 255, 0.25)
+  );
+  background-size: 300% 300%;
+  border-radius: 0;
+  z-index: -1;
+  filter: blur(6px);
+  opacity: 0.7;
+  animation: liquid-blue-jelly 12s ease-in-out infinite;
+}
+
+/* Disable animation when motion setting is enabled */
+[data-theme="liquid-blue"][data-disable-motion="true"] main::after {
+  animation: none;
+}
+
+@keyframes liquid-blue-jelly {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  25% {
+    background-position: 50% 25%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  75% {
+    background-position: 50% 75%;
+  }
+}
+
+/* Ensure main content is above glass effects */
+[data-theme="liquid-blue"] main > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Liquid Blue Theme - Navigation Sidebar */
+[data-theme="liquid-blue"] .menu a[class*="bg-base-300"] {
+  background: rgba(0, 255, 255, 0.15) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  color: white !important;
+  box-shadow:
+    inset 0 1px 2px rgba(0, 255, 255, 0.2),
+    0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="liquid-blue"] .menu a[class*="bg-base-300"]:hover {
+  background: rgba(0, 255, 255, 0.2) !important;
+  border-color: rgba(0, 255, 255, 0.3);
+}
+
+[data-theme="liquid-blue"] .menu a:not([class*="bg-base-300"]):hover {
+  background: rgba(0, 255, 255, 0.08);
+  border: 1px solid rgba(0, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+[data-theme="liquid-blue"] .menu a svg,
+[data-theme="liquid-blue"] .menu a .w-6.h-6 {
+  color: currentColor !important;
+}
+
+[data-theme="liquid-blue"] .menu a[class*="bg-base-300"] svg,
+[data-theme="liquid-blue"] .menu a[class*="bg-base-300"] .w-6.h-6 {
+  color: white !important;
+}
+
+[data-theme="liquid-blue"] .menu a:not([class*="bg-base-300"]) svg,
+[data-theme="liquid-blue"] .menu a:not([class*="bg-base-300"]) .w-6.h-6 {
+  color: rgba(255, 255, 255, 0.75) !important;
+}
+
+[data-theme="liquid-blue"] .menu a:not([class*="bg-base-300"]):hover svg,
+[data-theme="liquid-blue"] .menu a:not([class*="bg-base-300"]):hover .w-6.h-6 {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+[data-theme="liquid-blue"] .menu a span[class*="text-white"] {
+  color: white !important;
+}
+
+[data-theme="liquid-blue"] .menu a span[class*="text-base-content/75"] {
+  color: rgba(255, 255, 255, 0.75) !important;
+}
+
+[data-theme="liquid-blue"] .menu a:hover span[class*="text-base-content"] {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Top blue highlight */
+[data-theme="liquid-blue"] main > div:first-child::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 120px;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 255, 255, 0.15) 0%,
+    rgba(0, 255, 170, 0.08) 30%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 2;
+  border-radius: 0;
+}
+
+/* Remove borders between feed and right nav */
+[data-theme="liquid-blue"] .w-1\/3.block .bg-base-200,
+[data-theme="liquid-blue"] .w-full.sticky .bg-base-200 {
+  background: transparent !important;
+  border: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Make feed area transparent */
+[data-theme="liquid-blue"] main > div:first-child {
+  background: transparent !important;
+}
+
+/* Make right column transparent */
+[data-theme="liquid-blue"] .w-1\/3.block {
+  background: transparent !important;
+}
+
+/* Add bevel effect to right column in liquid glass theme */
+[data-theme="liquid-glass"] .w-1\/3.block {
+  position: sticky !important;
+  top: 0 !important;
+  background: transparent !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border-left: 0.5px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 16px 0 0 0 !important;
+  box-shadow:
+    inset 0 2px 3px rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Add bevel effect to right column in liquid blue theme */
+[data-theme="liquid-blue"] .w-1\/3.block {
+  position: sticky !important;
+  top: 0 !important;
+  background: transparent !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border-left: 1px solid rgba(0, 255, 255, 0.2) !important;
+  border-radius: 16px 0 0 0 !important;
+  box-shadow:
+    inset 0 2px 3px rgba(0, 255, 255, 0.15) !important;
+}
+
+/* Liquid Blue Button Styles */
+[data-theme="liquid-blue"] .btn {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  background: rgba(0, 255, 255, 0.08);
+  color: white;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-theme="liquid-blue"] .btn:hover {
+  border-color: rgba(0, 255, 255, 0.4);
+  background: rgba(0, 255, 255, 0.12);
+  transform: translateY(-1px);
+}
+
+[data-theme="liquid-blue"] .btn-primary {
+  background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
+  border: none !important;
+  color: white !important;
+  box-shadow: 0 8px 24px rgba(0, 255, 255, 0.3);
+}
+
+[data-theme="liquid-blue"] .btn-primary:hover {
+  box-shadow: 0 12px 32px rgba(0, 255, 255, 0.4);
+  opacity: 1 !important;
+}
+
+/* Liquid Blue Theme - Home Feed Textarea Icons Hover Effects */
+[data-theme="liquid-blue"] .HomeFeedTextarea-container [class*="hover:text-primary"]:hover {
+  color: rgba(0, 255, 255, 0.9) !important;
+}
+
+[data-theme="liquid-blue"] .HomeFeedTextarea-container svg:hover {
+  color: rgba(0, 255, 255, 0.9) !important;
+}
+
+[data-theme="liquid-blue"] .HomeFeedTextarea-container button:hover svg {
+  color: rgba(0, 255, 255, 0.9) !important;
+}
+
+/* Liquid Blue Input Styles */
+[data-theme="liquid-blue"] .input,
+[data-theme="liquid-blue"] .select,
+[data-theme="liquid-blue"] .textarea {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 122, 255, 0.2);
+  background: rgba(0, 122, 255, 0.06) !important;
+  color: white;
+}
+
+[data-theme="liquid-blue"] .input:focus,
+[data-theme="liquid-blue"] .select:focus,
+[data-theme="liquid-blue"] .textarea:focus {
+  border-color: rgba(0, 255, 255, 0.6);
+  background: rgba(0, 122, 255, 0.08) !important;
+  outline: none;
+  box-shadow: 0 0 20px rgba(0, 122, 255, 0.3);
+}
+
+/* Liquid Blue Modal Styles */
+[data-theme="liquid-blue"] .modal-box {
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  background: rgba(0, 122, 255, 0.08) !important;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
+}
+
+/* Liquid Blue Card Styles */
+[data-theme="liquid-blue"] .card {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 122, 255, 0.2);
+  background: rgba(0, 122, 255, 0.03) !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-theme="liquid-blue"] .card:hover {
+  border-color: rgba(0, 122, 255, 0.4);
+  transform: translateY(-4px);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.2);
+}
+
+/* Liquid Blue Tab Styles */
+[data-theme="liquid-blue"] .tab {
+  color: rgba(255, 255, 255, 0.7);
+  transition: all 0.3s ease;
+}
+
+[data-theme="liquid-blue"] .tab.tab-active {
+  color: white;
+  background: rgba(0, 122, 255, 0.1);
+  border-radius: 8px;
+}
+
+/* Feed item glass effect */
+[data-theme="liquid-blue"] .feed-item,
+[data-theme="liquid-blue"] article:not(.profile-bio-article) {
+  background: rgba(0, 122, 255, 0.02);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 122, 255, 0.08);
+  transition: all 0.3s ease;
+}
+
+[data-theme="liquid-blue"] .feed-item:hover,
+[data-theme="liquid-blue"] article:not(.profile-bio-article):hover {
+  background: rgba(0, 122, 255, 0.04);
+  border-color: rgba(0, 122, 255, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* Liquid Blue Sidebar Glass Effects */
+[data-theme="liquid-blue"] .flex.flex-col.h-full.self-end {
+  position: relative;
+  isolation: isolate;
+}
+
+[data-theme="liquid-blue"] .flex.flex-col.h-full.self-end::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: rgba(0, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 0 16px 0 0;
+  z-index: -1;
+  box-shadow:
+    0 0 20px rgba(0, 255, 255, 0.2),
+    0 0 40px rgba(0, 255, 170, 0.15),
+    inset 0 2px 3px rgba(0, 255, 255, 0.15),
+    inset 0 -2px 3px rgba(0, 0, 0, 0.1),
+    0 12px 40px rgba(0, 0, 0, 0.15);
+  pointer-events: none;
+}
+
+[data-theme="liquid-blue"] .flex.flex-col.h-full.self-end::after {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  bottom: -3px;
+  right: -3px;
+  background: linear-gradient(
+    45deg,
+    rgba(0, 122, 255, 0.25),
+    rgba(0, 165, 255, 0.25),
+    rgba(0, 136, 255, 0.25),
+    rgba(0, 122, 255, 0.25)
+  );
+  background-size: 300% 300%;
+  border-radius: 0 19px 0 0;
+  z-index: -2;
+  filter: blur(6px);
+  opacity: 0.7;
+  animation: liquid-blue-jelly 12s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Disable animation when motion setting is enabled */
+[data-theme="liquid-blue"][data-disable-motion="true"] .flex.flex-col.h-full.self-end::after {
+  animation: none;
+}
+
+/* Sidebar glass highlight */
+[data-theme="liquid-blue"] .flex.flex-col.h-full.self-end > div:first-child::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 120px;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 255, 255, 0.12) 0%,
+    rgba(0, 255, 170, 0.05) 30%,
+    transparent 100%
+  );
+  border-radius: 0 16px 0 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Ensure content is above glass effects */
+[data-theme="liquid-blue"] .flex.flex-col.h-full.self-end > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Fix left sidebar positioning - prevent overflow issues */
+[data-theme="liquid-blue"] .flex.flex-col.h-full.self-end {
+  overflow: hidden;
+  contain: layout style paint;
+  /* Make sidebar fill full viewport height to eliminate black gap */
+  min-height: 100vh;
+  height: 100vh;
+}
+
+/* Prevent glass pseudo-elements from extending beyond sidebar bounds */
+[data-theme="liquid-blue"] .flex.flex-col.h-full.self-end::before,
+[data-theme="liquid-blue"] .flex.flex-col.h-full.self-end::after {
+  contain: layout style paint;
+  overflow: hidden;
+}
+
+/* Adjust opacity of glass background for better visibility */
+[data-theme="liquid-blue"] .flex.flex-col.h-full.self-end::before {
+  background: rgba(0, 255, 255, 0.10) !important; /* Enhanced transparency */
+}
+
+/* Ensure glass effects don't affect document flow */
+[data-theme="liquid-blue"] .flex.flex-col.h-full.self-end::before,
+[data-theme="liquid-blue"] .flex.flex-col.h-full.self-end::after {
+  position: absolute;
+  pointer-events: none;
+}
+
+/* Ensure glass effects don't cause scrollbars */
+[data-theme="liquid-blue"] *::before,
+[data-theme="liquid-blue"] *::after {
+  box-sizing: border-box;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+/* Style SideBarToolBar buttons */
+[data-theme="liquid-blue"] .grid.grid-cols-2.gap-2.p-2 button,
+[data-theme="liquid-blue"] .grid.grid-cols-2.gap-2.p-2 a,
+[data-theme="liquid-blue"] .grid.grid-flow-col.grid-rows-2.grid-cols-2 button,
+[data-theme="liquid-blue"] .grid.grid-flow-col.grid-rows-2.grid-cols-2 a {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: none !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+  transition: box-shadow 0.2s ease !important;
+}
+
+/* SideBarToolBar glass effect on icons */
+[data-theme="liquid-blue"] .grid.grid-cols-2.gap-2.p-2 svg,
+[data-theme="liquid-blue"] .grid.grid-cols-2.gap-2.p-2 a svg,
+[data-theme="liquid-blue"] .grid.grid-flow-col.grid-rows-2.grid-cols-2 svg,
+[data-theme="liquid-blue"] .grid.grid-flow-col.grid-rows-2.grid-cols-2 a svg {
+  opacity: 0.95;
+  filter: drop-shadow(0 0 6px rgba(0, 255, 255, 0.4)) blur(0.5px);
+  transition: all 0.3s ease;
+}
+
+/* SideBarToolBar hover effects - cyan icon glow */
+[data-theme="liquid-blue"] .grid.grid-cols-2.gap-2.p-2 button:hover svg,
+[data-theme="liquid-blue"] .grid.grid-cols-2.gap-2.p-2 a:hover svg,
+[data-theme="liquid-blue"] .grid.grid-flow-col.grid-rows-2.grid-cols-2 button:hover svg,
+[data-theme="liquid-blue"] .grid.grid-flow-col.grid-rows-2.grid-cols-2 a:hover svg {
+  opacity: 1;
+  filter: drop-shadow(0 0 8px rgba(0, 255, 255, 0.6)) drop-shadow(0 0 12px rgba(0, 255, 170, 0.5)) blur(0.5px) !important;
+}
+
+/* FEEDS BUTTON ONLY (3rd position in 2x2 grid) - conjoined cyan glow system */
+/* When hovering over Feeds icon - glow both icon and text */
+[data-theme="liquid-blue"] .grid.grid-cols-2.gap-2.p-2 button:nth-child(3):has(svg:hover) svg,
+[data-theme="liquid-blue"] .grid.grid-cols-2.gap-2.p-2 button:nth-child(3):has(svg:hover) span,
+[data-theme="liquid-blue"] .grid.grid-flow-col.grid-rows-2.grid-cols-2 button:nth-child(3):has(svg:hover) svg,
+[data-theme="liquid-blue"] .grid.grid-flow-col.grid-rows-2.grid-cols-2 button:nth-child(3):has(svg:hover) span {
+  filter: drop-shadow(0 0 12px rgba(0, 255, 255, 0.8)) drop-shadow(0 0 18px rgba(0, 255, 170, 0.7)) drop-shadow(0 0 24px rgba(0, 255, 255, 0.6)) !important;
+}
+
+/* When hovering over Feeds text - glow both text and icon */
+[data-theme="liquid-blue"] .grid.grid-cols-2.gap-2.p-2 button:nth-child(3):has(span:hover) svg,
+[data-theme="liquid-blue"] .grid.grid-cols-2.gap-2.p-2 button:nth-child(3):has(span:hover) span,
+[data-theme="liquid-blue"] .grid.grid-flow-col.grid-rows-2.grid-cols-2 button:nth-child(3):has(span:hover) svg,
+[data-theme="liquid-blue"] .grid.grid-flow-col.grid-rows-2.grid-cols-2 button:nth-child(3):has(span:hover) span {
+  filter: drop-shadow(0 0 12px rgba(0, 255, 255, 0.8)) drop-shadow(0 0 18px rgba(0, 255, 170, 0.7)) drop-shadow(0 0 24px rgba(0, 255, 255, 0.6)) !important;
+}
+
+/* NEW POST BUTTON ONLY - conjoined cyan glow system */
+/* When hovering over new post icon - glow both icon and text */
+[data-theme="liquid-blue"] .grid.grid-cols-2.gap-2.p-2 button:has(div[class*="rounded-md"]:hover) div[class*="rounded-md"],
+[data-theme="liquid-blue"] .grid.grid-flow-col.grid-rows-2.grid-cols-2 button:has(div[class*="rounded-md"]:hover) div[class*="rounded-md"] {
+  box-shadow: 0 0 8px rgba(0, 255, 255, 0.6), 0 0 12px rgba(0, 255, 170, 0.5), 0 0 16px rgba(0, 255, 255, 0.4) !important;
+}
+
+/* When hovering over new post text - glow both text and icon */
+[data-theme="liquid-blue"] .grid.grid-cols-2.gap-2.p-2 button:has(span:hover) div[class*="rounded-md"],
+[data-theme="liquid-blue"] .grid.grid-flow-col.grid-rows-2.grid-cols-2 button:has(span:hover) div[class*="rounded-md"] {
+  box-shadow: 0 0 8px rgba(0, 255, 255, 0.6), 0 0 12px rgba(0, 255, 170, 0.5), 0 0 16px rgba(0, 255, 255, 0.4) !important;
+}
+
+/* Hover and active states removed */
+
+/* Active/selected state highlight removed */
+
+/* Make SideBarToolBar background transparent */
+[data-theme="liquid-blue"] .flex.items-center.justify-center.h-1\/6 {
+  background: transparent !important;
+}
+
+[data-theme="liquid-blue"] .grid.grid-cols-2.gap-2.p-2 {
+  background: transparent !important;
+}
+
+/* Ensure proper vertical alignment of containers */
+[data-theme="liquid-blue"] .flex.relative.min-h-\[calc\(100vh-6em\)\] {
+  align-items: stretch !important;
+}
+
+/* Align both containers to start at the same position */
+[data-theme="liquid-blue"] .flex.relative.min-h-\[calc\(100vh-6em\)\] > * {
+  align-self: stretch !important;
+}
+
+/* Fix right column spacing */
+[data-theme="liquid-blue"] .border-l.border-\[var\(--border-color\)\].mt-\[4em\] {
+  margin-top: 4em !important;
+  background: transparent !important;
+  border-color: rgba(0, 255, 255, 0.08) !important;
+}
+
+/* Enhanced HomeFeedTextarea glow for liquid blue theme */
+[data-theme="liquid-blue"] .HomeFeedTextarea-container:focus-within {
+  ring-color: rgba(0, 255, 255, 0.4) !important;
+  box-shadow: 0 0 0 2px rgba(0, 255, 255, 0.4), 0 0 20px rgba(0, 255, 255, 0.3) !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* Enhanced SearchBox effects for liquid blue theme */
+[data-theme="liquid-blue"] .dropdown-content.menu {
+  background: linear-gradient(135deg, rgba(0, 255, 255, 0.12) 0%, rgba(0, 255, 255, 0.08) 100%) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(0, 255, 255, 0.3) !important;
+  box-shadow:
+    0 8px 32px rgba(0, 255, 255, 0.15),
+    0 0 0 1px rgba(255, 255, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+[data-theme="liquid-blue"] input:focus {
+  ring-color: rgba(0, 255, 255, 0.6) !important;
+  box-shadow:
+    0 0 0 2px rgba(0, 255, 255, 0.6),
+    0 0 25px rgba(0, 255, 255, 0.4),
+    0 0 50px rgba(0, 255, 255, 0.2) !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* Enhanced search mode buttons for liquid blue theme */
+[data-theme="liquid-blue"] .dropdown-content.menu button {
+  background: rgba(0, 255, 255, 0.08) !important;
+  border: 1px solid rgba(0, 255, 255, 0.25) !important;
+  color: rgba(0, 255, 255, 0.9) !important;
+  backdrop-filter: blur(10px) !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+[data-theme="liquid-blue"] .dropdown-content.menu button:hover {
+  background: rgba(0, 255, 255, 0.15) !important;
+  border-color: rgba(0, 255, 255, 0.4) !important;
+  color: rgba(0, 255, 255, 1) !important;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.4) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Liquid Blue Theme - Search dropdown item hover effects */
+[data-theme="liquid-blue"] .dropdown-content.menu [class*="cursor-pointer"]:hover,
+[data-theme="liquid-blue"] .dropdown-content.menu div[class*="flex"][class*="items-center"]:hover {
+  background: rgba(0, 255, 255, 0.08) !important;
+}
+
+/* Liquid Blue Theme - Search mode button hover effects */
+[data-theme="liquid-blue"] .dropdown-content.menu button[class*="thread-dropdown-btn"]:hover {
+  background: rgba(0, 255, 255, 0.08) !important;
+  border-color: rgba(0, 255, 255, 0.15) !important;
+}
+
+
+/* Enhanced dropdown caret for liquid blue theme - only in MiddleHeader context */
+[data-theme="liquid-blue"] header div[class*="justify-center"] svg.MuiSvgIcon-root {
+  color: rgba(255, 255, 255, 0.7) !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* Blue on hover over the specific clickable area (title + caret container) */
+[data-theme="liquid-blue"] header div[class*="justify-center"]:hover svg.MuiSvgIcon-root {
+  color: rgba(0, 255, 255, 0.9) !important;
+  filter: drop-shadow(0 0 3px rgba(0, 255, 255, 0.4)) !important;
+}
+
+/* Enhanced feed tabs dropdown for liquid blue theme */
+[data-theme="liquid-blue"] header div.absolute.top-full.left-1\/2.transform.-translate-x-1\/2.mt-1.py-2.bg-base-200.rounded-lg.shadow-lg.min-w-\[120px\].z-50 {
+  background: linear-gradient(135deg, rgba(0, 255, 255, 0.18) 0%, rgba(0, 255, 255, 0.12) 100%) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(0, 255, 255, 0.35) !important;
+  box-shadow:
+    0 8px 32px rgba(0, 255, 255, 0.2),
+    0 0 0 1px rgba(255, 255, 255, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+[data-theme="liquid-blue"] header div.absolute.top-full.left-1\/2.transform.-translate-x-1\/2.mt-1.py-2.bg-base-200.rounded-lg.shadow-lg.min-w-\[120px\].z-50 button {
+  color: rgba(255, 255, 255, 1) !important;
+  backdrop-filter: blur(10px) !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+[data-theme="liquid-blue"] header div.absolute.top-full.left-1\/2.transform.-translate-x-1\/2.mt-1.py-2.bg-base-200.rounded-lg.shadow-lg.min-w-\[120px\].z-50 button:hover {
+  background: rgba(0, 255, 255, 0.2) !important;
+  color: white !important;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.4) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Liquid Glass Theme - Enhanced Glass Effects */
+/* Enhanced SearchBox effects for liquid glass theme */
+[data-theme="liquid-glass"] .dropdown-content.menu {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.06) 100%) !important;
+  backdrop-filter: blur(25px) !important;
+  -webkit-backdrop-filter: blur(25px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(255, 255, 255, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Liquid Glass Theme - Search dropdown item hover effects */
+[data-theme="liquid-glass"] .dropdown-content.menu [class*="cursor-pointer"]:hover,
+[data-theme="liquid-glass"] .dropdown-content.menu div[class*="flex"][class*="items-center"]:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Liquid Glass Theme - Search mode button hover effects */
+[data-theme="liquid-glass"] .dropdown-content.menu button[class*="px-3 py-1"]:hover,
+[data-theme="liquid-glass"] .dropdown-content.menu button[class*="thread-dropdown-btn"]:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme="liquid-glass"] input:focus {
+  ring-color: rgba(255, 255, 255, 0.5) !important;
+  box-shadow:
+    0 0 0 2px rgba(255, 255, 255, 0.5),
+    0 0 25px rgba(255, 255, 255, 0.4),
+    0 0 50px rgba(255, 255, 255, 0.3) !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* Enhanced search mode buttons for liquid glass theme */
+[data-theme="liquid-glass"] .dropdown-content.menu button {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: blur(10px) !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+[data-theme="liquid-glass"] .dropdown-content.menu button:hover {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  color: rgba(255, 255, 255, 1) !important;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.4) !important;
+  transform: translateY(-1px) !important;
+}
+
+[data-theme="liquid-glass"] .dropdown-content.menu button.bg-primary {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.8) 100%) !important;
+  border-color: rgba(255, 255, 255, 1) !important;
+  color: rgba(0, 0, 0, 0.8) !important;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Enhanced dropdown caret for liquid glass theme */
+[data-theme="liquid-glass"] header div[class*="justify-center"] svg.MuiSvgIcon-root {
+  color: rgba(255, 255, 255, 0.7) !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* Remove any glow effects from SubPageSearchBar dropdown */
+.absolute.mt-2.w-full.bg-base-300.rounded-lg.shadow-lg.z-10.p-3.border input,
+.absolute.mt-2.w-full.bg-base-300.rounded-lg.shadow-lg.z-10.p-3.border,
+.absolute.mt-2.w-full.bg-base-300.rounded-lg.shadow-lg.z-10.p-3.border * {
+  box-shadow: none !important;
+  filter: none !important;
+  text-shadow: none !important;
+}
+
+/* SubPageSearchBar dropdown glass effects */
+[data-theme="liquid-glass"] .bg-base-300.rounded-lg.shadow-lg.z-10.p-3.border.border-\[var\(--border-color\)\] {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.06) 100%) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(255, 255, 255, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+}
+
+[data-theme="liquid-blue"] .bg-base-300.rounded-lg.shadow-lg.z-10.p-3.border.border-\[var\(--border-color\)\] {
+  background: linear-gradient(135deg, rgba(0, 255, 255, 0.12) 0%, rgba(0, 255, 255, 0.08) 100%) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(0, 255, 255, 0.3) !important;
+  box-shadow:
+    0 8px 32px rgba(0, 255, 255, 0.2),
+    0 0 0 1px rgba(255, 255, 255, 0.15),
+    inset 0 1px 0 rgba(0, 255, 255, 0.2) !important;
+}
+
+/* Dark theme SubPageSearchBar dropdown */
+[data-theme="dark"] .bg-base-300.rounded-lg.shadow-lg.z-10.p-3.border.border-\[var\(--border-color\)\] {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%) !important;
+  backdrop-filter: blur(15px) !important;
+  -webkit-backdrop-filter: blur(15px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow:
+    0 6px 24px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(255, 255, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Dim theme SubPageSearchBar dropdown */
+[data-theme="dim"] .bg-base-300.rounded-lg.shadow-lg.z-10.p-3.border.border-\[var\(--border-color\)\] {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.03) 100%) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(255, 255, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+}
+
+/* Blue theme SubPageSearchBar dropdown */
+[data-theme="light"] .bg-base-300.rounded-lg.shadow-lg.z-10.p-3.border.border-\[var\(--border-color\)\] {
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.08) 0%, rgba(0, 0, 0, 0.04) 100%) !important;
+  backdrop-filter: blur(15px) !important;
+  -webkit-backdrop-filter: blur(15px) !important;
+  border: 1px solid rgba(0, 0, 0, 0.12) !important;
+  box-shadow:
+    0 6px 24px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+}
+
+/* Enhanced clickable time frame buttons in search dropdown */
+.bg-base-300.rounded-lg.shadow-lg.z-10.p-3.border.border-\[var\(--border-color\)\] button[class*="px-3 py-1 rounded-full text-sm"] {
+  border: 1px solid rgba(0, 0, 0, 0.12) !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  cursor: pointer !important;
+  font-weight: 500 !important;
+}
+
+/* Hover state for time frame buttons */
+.bg-base-300.rounded-lg.shadow-lg.z-10.p-3.border.border-\[var\(--border-color\)\] button[class*="px-3 py-1 rounded-full text-sm"]:hover {
+  border-color: rgba(0, 0, 0, 0.25) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Selected state for time frame buttons */
+.bg-base-300.rounded-lg.shadow-lg.z-10.p-3.border.border-\[var\(--border-color\)\] button[class*="bg-[#00FFFF]"] {
+  border-color: rgba(0, 255, 255, 0.6) !important;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.2) !important;
+}
+
+/* Theme-specific time frame button styling */
+[data-theme="liquid-glass"] .bg-base-300.rounded-lg.shadow-lg.z-10.p-3.border.border-\[var\(--border-color\)\] button[class*="px-3 py-1 rounded-full text-sm"] {
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+[data-theme="liquid-glass"] .bg-base-300.rounded-lg.shadow-lg.z-10.p-3.border.border-\[var\(--border-color\)\] button[class*="px-3 py-1 rounded-full text-sm"]:hover {
+  border-color: rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme="liquid-glass"] .bg-base-300.rounded-lg.shadow-lg.z-10.p-3.border.border-\[var\(--border-color\)\] button[class*="bg-[#00FFFF]"] {
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.15) !important;
+}
+
+[data-theme="liquid-blue"] .bg-base-300.rounded-lg.shadow-lg.z-10.p-3.border.border-\[var\(--border-color\)\] button[class*="px-3 py-1 rounded-full text-sm"] {
+  border-color: rgba(0, 255, 255, 0.15) !important;
+}
+
+[data-theme="liquid-blue"] .bg-base-300.rounded-lg.shadow-lg.z-10.p-3.border.border-\[var\(--border-color\)\] button[class*="px-3 py-1 rounded-full text-sm"]:hover {
+  border-color: rgba(0, 255, 255, 0.25) !important;
+  box-shadow: 0 2px 8px rgba(0, 255, 255, 0.1) !important;
+}
+
+[data-theme="dark"] .bg-base-300.rounded-lg.shadow-lg.z-10.p-3.border.border-\[var\(--border-color\)\] button[class*="px-3 py-1 rounded-full text-sm"] {
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+[data-theme="dark"] .bg-base-300.rounded-lg.shadow-lg.z-10.p-3.border.border-\[var\(--border-color\)\] button[class*="px-3 py-1 rounded-full text-sm"]:hover {
+  border-color: rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-theme="dim"] .bg-base-300.rounded-lg.shadow-lg.z-10.p-3.border.border-\[var\(--border-color\)\] button[class*="px-3 py-1 rounded-full text-sm"] {
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+[data-theme="dim"] .bg-base-300.rounded-lg.shadow-lg.z-10.p-3.border.border-\[var\(--border-color\)\] button[class*="px-3 py-1 rounded-full text-sm"]:hover {
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.06) !important;
+}
+
+[data-theme="liquid-glass"] header div[class*="justify-center"]:hover svg.MuiSvgIcon-root {
+  color: rgba(255, 255, 255, 0.9) !important;
+  filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.5)) !important;
+}
+
+/* Enhanced feed tabs dropdown for liquid glass theme - Purple Glass Effect */
+[data-theme="liquid-glass"] header div.absolute.top-full.left-1\/2.transform.-translate-x-1\/2.mt-1.py-2.bg-base-200.rounded-lg.shadow-lg.min-w-\[120px\].z-50 {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.25) 0%, rgba(147, 51, 234, 0.2) 100%) !important;
+  backdrop-filter: blur(25px) !important;
+  -webkit-backdrop-filter: blur(25px) !important;
+  border: 1px solid rgba(168, 85, 247, 0.4) !important;
+  box-shadow:
+    0 12px 40px rgba(147, 51, 234, 0.25),
+    0 0 0 1px rgba(255, 255, 255, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
+  border-radius: 12px !important;
+}
+
+[data-theme="liquid-glass"] header div.absolute.top-full.left-1\/2.transform.-translate-x-1\/2.mt-1.py-2.bg-base-200.rounded-lg.shadow-lg.min-w-\[120px\].z-50 button {
+  color: rgba(255, 255, 255, 1) !important;
+  backdrop-filter: blur(10px) !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.025em !important;
+}
+
+[data-theme="liquid-glass"] header div.absolute.top-full.left-1\/2.transform.-translate-x-1\/2.mt-1.py-2.bg-base-200.rounded-lg.shadow-lg.min-w-\[120px\].z-50 button:hover {
+  background: rgba(168, 85, 247, 0.3) !important;
+  color: white !important;
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.5) !important;
+  transform: translateY(-2px) !important;
+  border: 1px solid rgba(168, 85, 247, 0.5) !important;
+}
+
+/* Active/selected button state for liquid glass theme */
+[data-theme="liquid-glass"] header div.absolute.top-full.left-1\/2.transform.-translate-x-1\/2.mt-1.py-2.bg-base-200.rounded-lg.shadow-lg.min-w-\[120px\].z-50 button.active {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.5) 0%, rgba(147, 51, 234, 0.4) 100%) !important;
+  color: white !important;
+  box-shadow: 0 0 25px rgba(168, 85, 247, 0.6) !important;
+  border: 1px solid rgba(168, 85, 247, 0.6) !important;
+}
+
+/* Enhanced feed tabs dropdown for liquid blue theme */
+[data-theme="liquid-blue"] header div.absolute.top-full {
+  background: linear-gradient(135deg, rgba(0, 255, 255, 0.18) 0%, rgba(0, 255, 255, 0.12) 100%) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(0, 255, 255, 0.35) !important;
+  box-shadow:
+    0 8px 32px rgba(0, 255, 255, 0.2),
+    0 0 0 1px rgba(255, 255, 255, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+[data-theme="liquid-blue"] header div.absolute.top-full button {
+  color: rgba(255, 255, 255, 1) !important;
+  backdrop-filter: blur(10px) !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+[data-theme="liquid-blue"] header div.absolute.top-full button:hover {
+  background: rgba(0, 255, 255, 0.2) !important;
+  color: white !important;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.4) !important;
+  transform: translateY(-1px) !important;
+}
+
+
+/* ============================================= */
+/* RELAY SETTINGS - LIQUID GLASS THEME APPLICATION */
+/* ============================================= */
+
+/* Apply liquid glass theme to all relay settings buttons */
+[data-theme="liquid-glass"] .relay-settings-button,
+[data-theme="liquid-glass"] button.btn,
+[data-theme="liquid-glass"] .ant-btn {
+  background: rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.12) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  }
+}
+
+/* Liquid Glass Theme - Switch/Toggle Components in Relay Settings */
+[data-theme="liquid-glass"] .ant-switch,
+[data-theme="liquid-glass"] .ant-switch-checked {
+  background: rgba(138, 43, 226, 0.2) !important; /* Purple tint */
+
+  &.ant-switch-checked {
+    background: linear-gradient(135deg, rgba(138, 43, 226, 0.6), rgba(33, 150, 243, 0.5)) !important;
+    box-shadow: 0 0 8px rgba(138, 43, 226, 0.4);
+  }
+}
+
+/* Liquid Glass Theme - Input fields and selects in relay settings */
+[data-theme="liquid-glass"] .ant-input,
+[data-theme="liquid-glass"] .ant-select-selector,
+[data-theme="liquid-glass"] .ant-select-selection-item,
+[data-theme="liquid-glass"] textarea.ant-input {
+  background: rgba(255, 255, 255, 0.06) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+  }
+
+  &:focus,
+  &:focus-visible {
+    background: rgba(255, 255, 255, 0.12) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1) !important;
+    outline: none !important;
+  }
+}
+
+/* Liquid Glass Theme - Dropdown/Select items in relay settings */
+[data-theme="liquid-glass"] .ant-select-dropdown,
+[data-theme="liquid-glass"] .ant-dropdown-content {
+  background: rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="liquid-glass"] .ant-select-dropdown .ant-select-item,
+[data-theme="liquid-glass"] .ant-dropdown-menu-item {
+  color: rgba(255, 255, 255, 0.9) !important;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+  }
+
+  &.ant-select-item-option-selected,
+  &.ant-select-item-option-active {
+    background: rgba(138, 43, 226, 0.2) !important;
+    color: white !important;
+  }
+}
+
+/* Liquid Glass Theme - Warning/Error elements in relay settings */
+[data-theme="liquid-glass"] .warning-container,
+[data-theme="liquid-glass"] .error-message {
+  background: rgba(255, 77, 79, 0.05) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  border: 1px solid rgba(255, 77, 79, 0.15) !important;
+  border-radius: 8px;
+  color: rgba(255, 77, 79, 0.9) !important;
+}
+
+/* Liquid Glass Theme - Labels and text in relay settings */
+[data-theme="liquid-glass"] .relay-settings-label,
+[data-theme="liquid-glass"] .setting-description,
+[data-theme="liquid-glass"] h4,
+[data-theme="liquid-glass"] p {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+[data-theme="liquid-glass"] .setting-description,
+[data-theme="liquid-glass"] p {
+  color: rgba(255, 255, 255, 0.75) !important;
+}
+
+/* ============================================= */
+/* LIQUID BLUE - COMPONENT-BASED STYLING */
+/* ============================================= */
+
+/*
+ * Color consistency is now handled directly in NavSideBar component
+ * using explicit RGBA values that match the liquid blue theme.
+ * These CSS overrides have been removed to prevent conflicts.
+ */
+
+/* Button styles */
+[data-theme="liquid-glass"] .btn {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
+  color: white;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-theme="liquid-glass"] .btn:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-2px);
+}
+
+[data-theme="liquid-glass"] .btn-primary {
+  background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
+  border: none !important;
+  color: white !important;
+  box-shadow: 0 8px 24px rgba(0, 122, 255, 0.3);
+}
+
+[data-theme="liquid-glass"] .btn-primary:hover {
+  box-shadow: 0 12px 32px rgba(0, 122, 255, 0.4);
+  opacity: 1 !important;
+}
+
+[data-theme="liquid-glass"] .btn-neutral {
+  background: rgba(255, 255, 255, 0.06) !important;
+  color: white !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme="liquid-glass"] .btn-neutral:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Input styles */
+[data-theme="liquid-glass"] .input,
+[data-theme="liquid-glass"] .select,
+[data-theme="liquid-glass"] .textarea {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.06) !important;
+  color: white;
+}
+
+[data-theme="liquid-glass"] .input:focus,
+[data-theme="liquid-glass"] .select:focus,
+[data-theme="liquid-glass"] .textarea:focus {
+  border-color: rgba(0, 122, 255, 0.5);
+  background: rgba(255, 255, 255, 0.08) !important;
+  outline: none;
+}
+
+/* Modal styles */
+[data-theme="liquid-glass"] .modal-box {
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
+}
+
+/* Card styles */
+[data-theme="liquid-glass"] .card {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03) !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-theme="liquid-glass"] .card:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-4px);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.2);
+}
+
+/* Dropdown styles */
+[data-theme="liquid-glass"] .dropdown-content {
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+/* Tab styles */
+[data-theme="liquid-glass"] .tab {
+  color: rgba(255, 255, 255, 0.7);
+  transition: all 0.3s ease;
+}
+
+[data-theme="liquid-glass"] .tab.tab-active {
+  color: white;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+}
+
+/* Badge styles */
+[data-theme="liquid-glass"] .badge {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+/* Menu item styles */
+[data-theme="liquid-glass"] .menu li > a:hover,
+[data-theme="liquid-glass"] .menu li > button:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: white;
+}
+
+[data-theme="liquid-glass"] .menu li > a.active,
+[data-theme="liquid-glass"] .menu li > button.active {
+  background: rgba(255, 255, 255, 0.12);
+  color: white;
+}
+
+/* Avatar styles */
+[data-theme="liquid-glass"] .avatar {
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Scrollbar styles for liquid glass theme */
+[data-theme="liquid-glass"] ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+[data-theme="liquid-glass"] ::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 5px;
+}
+
+[data-theme="liquid-glass"] ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="liquid-glass"] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Feed item glass effect */
+[data-theme="liquid-glass"] .feed-item,
+[data-theme="liquid-glass"] article:not(.profile-bio-article) {
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.3s ease;
+}
+
+[data-theme="liquid-glass"] .feed-item:hover,
+[data-theme="liquid-glass"] article:not(.profile-bio-article):hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.12);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* Remove article styling from profile bio */
+[data-theme="liquid-glass"] .flex.flex-col.gap-2.no-highlight article,
+[data-theme="liquid-glass"] .profile-bio-article {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  transition: none !important;
+}
+
+[data-theme="liquid-glass"] .flex.flex-col.gap-2.no-highlight article:hover,
+[data-theme="liquid-glass"] .profile-bio-article:hover {
+  background: transparent !important;
+  transform: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+/* Tooltip styles */
+[data-theme="liquid-glass"] .tooltip::before {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: rgba(255, 255, 255, 0.12) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white !important;
+}
+
+/* Progress bar styles */
+[data-theme="liquid-glass"] .progress {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="liquid-glass"] .progress::-webkit-progress-value {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+}
+
+/* Toggle styles */
+[data-theme="liquid-glass"] .toggle {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="liquid-glass"] .toggle:checked {
+  background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
+  border-color: transparent;
+}
+
+/* Divider styles */
+[data-theme="liquid-glass"] .divider {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+[data-theme="liquid-glass"] .divider::before,
+[data-theme="liquid-glass"] .divider::after {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* NavSideBar item styling for liquid glass theme */
+[data-theme="liquid-glass"] .menu a[class*="bg-base-300"] {
+  background: rgba(255, 255, 255, 0.12) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: white !important;
+  box-shadow:
+    inset 0 1px 2px rgba(255, 255, 255, 0.2),
+    0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="liquid-glass"] .menu a:not([class*="bg-base-300"]):hover {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Ensure proper icon colors in nav items */
+[data-theme="liquid-glass"] .menu a svg,
+[data-theme="liquid-glass"] .menu a .w-6.h-6 {
+  color: currentColor !important;
+}
+
+/* Style RightColumn sections for liquid glass */
+[data-theme="liquid-glass"] .section,
+[data-theme="liquid-glass"] [class*="Section"] {
+  background: rgba(255, 255, 255, 0.03) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+}
+
+/* Ensure proper vertical alignment of containers */
+[data-theme="liquid-glass"] .flex.relative.min-h-\[calc\(100vh-6em\)\] {
+  align-items: stretch !important;
+}
+
+/* Align both containers to start at the same position */
+[data-theme="liquid-glass"] .flex.relative.min-h-\[calc\(100vh-6em\)\] > * {
+  align-self: stretch !important;
+}
+
+/* ============================================= */
+/* NOTIFICATION PAGE - MATCH MAIN FEED STYLE */
+/* ============================================= */
+
+/* Remove special glass effects from notification page - let it be clean like main feed */
+[data-theme="liquid-glass"] section.flex.flex-1.w-full.justify-center {
+  background: transparent !important;
+}
+
+/* Keep MiddleHeader's original frost effect */
+[data-theme="liquid-glass"] .hidden.cursor-pointer.md\:flex.sticky.top-\[2em\].h-\[4em\].z-40.w-full.bg-base-100.bg-opacity-80.backdrop-blur-sm {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+/* ============================================= */
+/* MAINFEED TOP HEADER STRIP (White Frost Effect) */
+/* ============================================= */
+/* This creates a frosted white strip at the top of the MainFeed area only,
+   not affecting the sidebars or their content (Relay icons, Nestr logo) */
+
+/* Apply frosted white strip only to MainFeed's top section */
+[data-theme="liquid-glass"] main::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2rem; /* 32px - matches TitleBar height */
+  
+  /* Frosted white glass effect matching Search page MiddleHeader */
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  
+  /* Visual definition */
+  border-bottom: none; /* Removed border for seamless transition */
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.05); /* Removed inset shadow to eliminate line */
+  
+  /* Proper layering */
+  z-index: 1; /* Above main background but below content */
+  pointer-events: none;
+  border-radius: 16px 0 0 0; /* Top-left corner rounded for header strip */
+}
+
+/* Remove pseudo-elements that were adding extra glass effects */
+
+/* Keep notification page content simple and clean */
+[data-theme="liquid-glass"] section.flex.flex-1.w-full.justify-center .flex.flex-col > div {
+  background: transparent !important;
+}
+
+/* Make notification feed container transparent to avoid double blur */
+[data-theme="liquid-glass"] section.flex.flex-1.w-full.justify-center .overflow-y-scroll {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  box-shadow: none !important;
+}
+
+/* Style individual notification items with subtle effect to avoid excessive blur */
+[data-theme="liquid-glass"] .border-b.border-\[--border-color\].p-4 {
+  background: rgba(255, 255, 255, 0.01);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+  margin-bottom: 8px;
+  border-radius: 8px;
+}
+
+[data-theme="liquid-glass"] .border-b.border-\[--border-color\].p-4:hover {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.08);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Remove glass effect from notification filters section - keep it clean */
+[data-theme="liquid-glass"] .h-\[50vh\].min-h-\[300px\] {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Make notification RightColumn container transparent to avoid double blur */
+[data-theme="liquid-glass"] section.flex.flex-1.w-full.justify-center + div {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-left-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Remove extra highlights to match main feed simplicity */
+
+/* ============================================= */
+/* TITLEBAR STYLING FOR LIQUID GLASS THEME */
+/* ============================================= */
+
+/* Make TitleBar completely transparent */
+[data-theme="liquid-glass"] .w-full.h-8.flex.items-center.bg-base-100.select-none.z-10.fixed.top-0.left-0.right-0 {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+}
+
+/* Style window control buttons with subtle glass effect */
+[data-theme="liquid-glass"] .w-full.h-8.flex.items-center.bg-base-100.select-none.z-10.fixed.top-0.left-0.right-0 button {
+  color: rgba(255, 255, 255, 0.9) !important;
+  transition: all 0.2s ease;
+  position: relative;
+  z-index: 1;
+}
+
+/* Ensure draggable region and logo text stay above pseudo-elements */
+[data-theme="liquid-glass"] .w-full.h-8.flex.items-center.bg-base-100.select-none.z-10.fixed.top-0.left-0.right-0 > div {
+  position: relative;
+  z-index: 1;
+}
+
+/* Hover states for window controls */
+[data-theme="liquid-glass"] .w-full.h-8.flex.items-center.bg-base-100.select-none.z-10.fixed.top-0.left-0.right-0 button:hover {
+  color: white !important;
+}
+
+/* Minimize and Maximize button hover */
+[data-theme="liquid-glass"] .w-full.h-8.flex.items-center.bg-base-100.select-none.z-10.fixed.top-0.left-0.right-0 button.hover\:bg-base-300:hover {
+  background: rgba(255, 255, 255, 0.15) !important;
+}
+
+/* Close button hover maintains red */
+[data-theme="liquid-glass"] .w-full.h-8.flex.items-center.bg-base-100.select-none.z-10.fixed.top-0.left-0.right-0 button.hover\:bg-red-500:hover {
+  background: rgba(239, 68, 68, 0.8) !important;
+  color: white !important;
+}
+
+/* ============================================= */
+/* USER TOOLBAR LIQUID GLASS STYLING */
+/* ============================================= */
+
+/* Apply consistent liquid glass styling to UserToolbar across all pages */
+[data-theme="liquid-glass"] .fixed.z-50.right-5 {
+  /* Ensure consistent positioning and appearance */
+  background: transparent !important;
+}
+
+/* Glass effect for UserToolbar on AI Assistant page */
+[data-theme="liquid-glass"] body:has(.ai-assistant-container) .fixed.z-50.right-5 input,
+[data-theme="liquid-glass"] body:has(.ai-assistant-container) .fixed.z-50.right-5 .searchBox {
+  background: rgba(255, 255, 255, 0.06) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Style the UserToolbar buttons on AI Assistant page */
+[data-theme="liquid-glass"] body:has(.ai-assistant-container) .fixed.z-50.right-5 button.border {
+  background: rgba(255, 255, 255, 0.06) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme="liquid-glass"] body:has(.ai-assistant-container) .fixed.z-50.right-5 button.border:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Style AIAssistantHeader buttons for liquid glass theme - more subtle, less frosty */
+[data-theme="liquid-glass"] body:has(.ai-assistant-container) header .btn {
+  /* Reduce glass effect, increase opacity for better visibility */
+  opacity: 0.9 !important;
+  /* Only add subtle glass, don't override backgrounds */
+  backdrop-filter: blur(2px) !important;
+  -webkit-backdrop-filter: blur(2px) !important;
+}
+
+/* Ensure non-gradient buttons keep their original backgrounds */
+[data-theme="liquid-glass"] body:has(.ai-assistant-container) header .btn:not(.bg-gradient-to-r) {
+  background: inherit !important;
+}
+
+[data-theme="liquid-glass"] body:has(.ai-assistant-container) header .btn:hover {
+  /* Keep original hover effects, just add subtle glass */
+  backdrop-filter: blur(3px) !important;
+  -webkit-backdrop-filter: blur(3px) !important;
+  opacity: 1 !important;
+}
+
+/* Ensure hover effects are preserved for all button types */
+[data-theme="liquid-glass"] body:has(.ai-assistant-container) header .btn:hover {
+  background: inherit !important;
+  border-color: inherit !important;
+}
+
+[data-theme="liquid-glass"] body:has(.ai-assistant-container) header .btn.bg-gradient-to-r {
+  /* Remove all glass effects from gradient buttons to preserve original look */
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  opacity: 1 !important;
+}
+
+/* Restore rounded corners for AI Assistant header buttons */
+[data-theme="liquid-glass"] body:has(.ai-assistant-container) header .btn {
+  border-radius: 0.5rem !important; /* Restore rounded corners */
+}
+
+/* Ensure gradient buttons keep their rounded styling */
+[data-theme="liquid-glass"] body:has(.ai-assistant-container) header .btn.bg-gradient-to-r {
+  border-radius: 0.5rem !important;
+}
+
+[data-theme="liquid-glass"] body:has(.ai-assistant-container) header .btn.bg-gradient-to-r:hover {
+  opacity: 0.9 !important;
+  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Remove any internal boxes or backgrounds from search inputs */
+.fixed.z-50.right-5 input,
+.fixed.z-50.right-5 .searchBox,
+.fixed.z-50.right-5 textarea,
+.fixed.z-50.right-5 select {
+  /* Remove any internal pseudo-elements that might create boxes */
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+  border: none !important;
+  outline: none !important;
+  /* Remove any padding that might create spacing for internal boxes */
+  padding: 0 !important;
+  /* Remove any borders or spacing issues */
+  margin: 0 !important;
+  /* Ensure the input itself is not creating the box effect */
+  position: relative;
+}
+
+/* Remove ALL background styling from UserToolbar search inputs - including focus states */
+.fixed.z-50.right-5 input,
+.fixed.z-50.right-5 textarea,
+.fixed.z-50.right-5 select,
+.fixed.z-50.right-5 .searchBox input {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+}
+
+/* Override ALL input focus states that might show background color */
+.fixed.z-50.right-5 input:focus,
+.fixed.z-50.right-5 input:focus-visible,
+.fixed.z-50.right-5 input:active,
+.fixed.z-50.right-5 input:hover,
+.fixed.z-50.right-5 textarea:focus,
+.fixed.z-50.right-5 textarea:focus-visible,
+.fixed.z-50.right-5 select:focus,
+.fixed.z-50.right-5 select:focus-visible,
+.fixed.z-50.right-5 .searchBox input:focus,
+.fixed.z-50.right-5 .searchBox input:focus-visible {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Style the UserToolbar search box for liquid glass theme - only apply to the container */
+[data-theme="liquid-glass"] .fixed.z-50.right-5 .searchBox {
+  background: rgba(255, 255, 255, 0.06) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  padding: 0.5rem 1rem !important; /* Restore appropriate padding */
+}
+
+/* Ensure the input itself inside the searchBox has no background */
+[data-theme="liquid-glass"] .fixed.z-50.right-5 .searchBox input {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Style the UserToolbar buttons (wallet, notifications) */
+[data-theme="liquid-glass"] .fixed.z-50.right-5 button.border {
+  background: rgba(255, 255, 255, 0.06) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme="liquid-glass"] .fixed.z-50.right-5 button.border:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Fix UserToolbar positioning and appearance on AI Assistant page */
+/* The UserToolbar is rendered before ai-assistant-container, not after */
+[data-theme="liquid-glass"] body:has(.ai-assistant-container) .fixed.z-50.right-5 {
+  /* Ensure the UserToolbar maintains consistent positioning */
+  position: fixed !important;
+  z-index: 50 !important;
+  right: 1.25rem !important;
+  background: transparent !important;
+}
+
+/* Ensure UserToolbar components have proper glass effect on AI Assistant page */
+[data-theme="liquid-glass"] body:has(.ai-assistant-container) .fixed.z-50.right-5 input,
+[data-theme="liquid-glass"] body:has(.ai-assistant-container) .fixed.z-50.right-5 .searchBox {
+  background: rgba(255, 255, 255, 0.06) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Style the UserToolbar buttons on AI Assistant page */
+[data-theme="liquid-glass"] body:has(.ai-assistant-container) .fixed.z-50.right-5 button.border {
+  background: rgba(255, 255, 255, 0.06) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme="liquid-glass"] body:has(.ai-assistant-container) .fixed.z-50.right-5 button.border:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* ============================================= */
+/* FEED SWITCHER WITH MODAL-STYLE GLASS EFFECT */
+/* ============================================= */
+/* Main dropdown container with EXTREME saturation */
+[data-theme="liquid-glass"] .bg-base-200.rounded-lg.shadow-lg.min-w-\[120px\] {
+  /* Extreme glass blur with MAXIMUM saturation */
+  backdrop-filter: blur(24px) saturate(600%) brightness(1.2) contrast(1.1) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(600%) brightness(1.2) contrast(1.1) !important;
+  background: linear-gradient(
+    135deg,
+    rgba(138, 43, 226, 0.9),
+    rgba(33, 150, 243, 0.85),
+    rgba(124, 77, 255, 0.8),
+    rgba(255, 255, 255, 0.75)
+  ) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3) !important;
+  will-change: backdrop-filter !important;
+}
+
+/* Thread dropdown now properly centered */
+[data-theme="liquid-glass"] .absolute.top-full.left-1\/2.transform.-translate-x-1\/2,
+[data-theme="liquid-blue"] .absolute.top-full.left-1\/2.transform.-translate-x-1\/2 {
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  margin-left: 0 !important;
+}
+
+/* Individual dropdown items with enhanced readability */
+[data-theme="liquid-glass"] .bg-base-200.rounded-lg.shadow-lg button {
+  color: white !important;
+  text-shadow:
+    0 3px 10px rgba(0, 0, 0, 0.9),
+    0 2px 5px rgba(0, 0, 0, 0.8),
+    0 1px 2px rgba(0, 0, 0, 0.7),
+    0 0 25px rgba(255, 255, 255, 0.4) !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.5px !important;
+  background: transparent !important; /* Removed dark background */
+}
+
+/* Hover state with enhanced saturation and readability */
+[data-theme="liquid-glass"] .bg-base-200.rounded-lg.shadow-lg button:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(138, 43, 226, 0.45),
+    rgba(33, 150, 243, 0.4),
+    rgba(124, 77, 255, 0.35)
+  ) !important;
+  color: white !important;
+  transform: translateY(-1px) !important;
+  text-shadow:
+    0 5px 15px rgba(0, 0, 0, 1),
+    0 3px 8px rgba(0, 0, 0, 0.9),
+    0 1px 3px rgba(0, 0, 0, 0.8),
+    0 0 40px rgba(255, 255, 255, 0.6) !important;
+  filter: saturate(150%) !important;
+}
+
+/* COMPREHENSIVE FIX FOR SEARCH DROPDOWN PROFILE HOVER RECTANGLE */
+/* Override ALL backgrounds on hover in search dropdown for profile elements */
+[data-theme="liquid-glass"] .dropdown-content a[data-npub]:hover *,
+[data-theme="liquid-blue"] .dropdown-content a[data-npub]:hover *,
+[data-theme="liquid-glass"] .dropdown-content [data-npub]:hover,
+[data-theme="liquid-blue"] .dropdown-content [data-npub]:hover,
+[data-theme="liquid-glass"] .dropdown-content .flex.flex-row.items-center.gap-2:has(span.hover\:underline):hover,
+[data-theme="liquid-blue"] .dropdown-content .flex.flex-row.items-center.gap-2:has(span.hover\:underline):hover {
+  background: none !important;
+  background-color: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Remove hover backgrounds from specific elements harboring the rectangle */
+[data-theme="liquid-glass"] .dropdown-content span:hover,
+[data-theme="liquid-blue"] .dropdown-content span:hover,
+[data-theme="liquid-glass"] .dropdown-content div:hover,
+[data-theme="liquid-blue"] .dropdown-content div:hover,
+[data-theme="liquid-glass"] .dropdown-content a:hover,
+[data-theme="liquid-blue"] .dropdown-content a:hover {
+  background: none !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+  border: none !important;
+}
+
+/* Force transparent backgrounds on hover for ANY child of profile rows in dropdown */
+[data-theme="liquid-glass"] .dropdown-content .flex.flex-row.items-center.gap-2:hover > *,
+[data-theme="liquid-glass"] .dropdown-content .flex.flex-row.items-center.gap-2:hover > * > *,
+[data-theme="liquid-blue"] .dropdown-content .flex.flex-row.items-center.gap-2:hover > *,
+[data-theme="liquid-blue"] .dropdown-content .flex.flex-row.items-center.gap-2:hover > * > * {
+  background: none !important;
+  background-color: transparent !important;
+}
+
+/* Fix name hover effects in search dropdown - remove background rectangle but keep underline */
+/* This targets the Name component's hover styling without affecting the section hover */
+[data-theme="liquid-glass"] .dropdown-content span.hover\:underline:hover,
+[data-theme="liquid-blue"] .dropdown-content span.hover\:underline:hover {
+  background: none !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+  border: none !important;
+}
+
+/* Comprehensive fix for any remaining background blocks on underlined hover text */
+/* Target all possible background sources including pseudo-elements and parent containers */
+[data-theme="liquid-glass"] .dropdown-content span:hover,
+[data-theme="liquid-glass"] .dropdown-content span:hover *,
+[data-theme="liquid-glass"] .dropdown-content div:hover,
+[data-theme="liquid-glass"] .dropdown-content div:hover *,
+[data-theme="liquid-blue"] .dropdown-content span:hover,
+[data-theme="liquid-blue"] .dropdown-content span:hover *,
+[data-theme="liquid-blue"] .dropdown-content div:hover,
+[data-theme="liquid-blue"] .dropdown-content div:hover * {
+  background: none !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  border: none !important;
+  outline: none !important;
+  text-decoration: underline !important; /* Force underline to remain */
+}
+
+/* Additional specificity for profile hover highlights */
+[data-theme="liquid-glass"] .dropdown-content .flex.flex-row.items-center.gap-2:hover,
+[data-theme="liquid-glass"] .dropdown-content .flex.flex-row.items-center.gap-2:hover *,
+[data-theme="liquid-blue"] .dropdown-content .flex.flex-row.items-center.gap-2:hover,
+[data-theme="liquid-blue"] .dropdown-content .flex.flex-row.items-center.gap-2:hover * {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  outline: none !important;
+}
+
+/* Remove any highlight effects from text selection or focus rings */
+[data-theme="liquid-glass"] .dropdown-content .flex.flex-row.items-center.gap-2 span:focus,
+[data-theme="liquid-blue"] .dropdown-content .flex.flex-row.items-center.gap-2 span:focus {
+  outline: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Remove unwanted background styling from hover cursor pointer effects */
+[data-theme="liquid-glass"] .dropdown-content span.hover\:cursor-pointer:hover,
+[data-theme="liquid-blue"] .dropdown-content span.hover\:cursor-pointer:hover {
+  background: none !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+  border: none !important;
+}
+
+/* Theme selector - dark dropdown for readability in liquid glass theme */
+[data-theme="liquid-glass"] .select.select-primary option {
+  background: rgba(20, 20, 30, 0.95) !important; /* Light black background */
+  color: white !important; /* White text */
+  font-weight: 600 !important;
+}
+
+/* Selected/highlighted option */
+[data-theme="liquid-glass"] .select.select-primary option:checked,
+[data-theme="liquid-glass"] .select.select-primary option:hover {
+  background: rgba(40, 40, 60, 0.95) !important; /* Slightly lighter when selected */
+  color: white !important;
+}
+
+
+/* Ensure proper margins and spacing for notification page */
+[data-theme="liquid-glass"] .mt-\[4em\] {
+  margin-top: 4em !important;
+}
+
+/* Style notification filter grid items - keep subtle but remove glass container effect */
+[data-theme="liquid-glass"] .grid.grid-cols-2.gap-3 button {
+  background: rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-theme="liquid-glass"] .grid.grid-cols-2.gap-3 button:hover {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+/* Style enabled filter buttons */
+[data-theme="liquid-glass"] .grid.grid-cols-2.gap-3 button.bg-base-300 {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+/* ============================================= */
+/* REPOSITORY AND BOOKMARKS PAGES GLASS EFFECT */
+/* ============================================= */
+
+/* Apply glass effect to repository/bookmarks page structure */
+[data-theme="liquid-glass"] .flex:has(> div:has(> .border-t.border-l.border-b.border-\[var\(--border-color\)\].rounded-bl-lg.rounded-tl-lg)) {
+  position: relative;
+  background: transparent !important;
+  overflow: visible;
+  isolation: isolate;
+}
+
+/* Glass background for repository/bookmarks pages */
+[data-theme="liquid-glass"] .flex:has(> div:has(> .border-t.border-l.border-b.border-\[var\(--border-color\)\].rounded-bl-lg.rounded-tl-lg))::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 0; /* Removed rounded edges */
+  z-index: 0;
+  box-shadow:
+    0 0 20px rgba(33, 150, 243, 0.15),
+    0 0 40px rgba(138, 43, 226, 0.1),
+    inset 0 2px 3px rgba(255, 255, 255, 0.2),
+    inset 0 -2px 3px rgba(0, 0, 0, 0.15),
+    0 12px 40px rgba(0, 0, 0, 0.2);
+}
+
+/* Animated jelly border for repository/bookmarks pages */
+[data-theme="liquid-glass"] .flex:has(> div:has(> .border-t.border-l.border-b.border-\[var\(--border-color\)\].rounded-bl-lg.rounded-tl-lg))::after {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  right: -3px;
+  bottom: -3px;
+  background: linear-gradient(
+    45deg,
+    rgba(33, 150, 243, 0.25),
+    rgba(124, 77, 255, 0.25),
+    rgba(138, 43, 226, 0.25),
+    rgba(33, 150, 243, 0.25)
+  );
+  background-size: 300% 300%;
+  border-radius: 0; /* Removed rounded edges */
+  z-index: -1;
+  filter: blur(6px);
+  opacity: 0.7;
+  animation: subtle-jelly-border 10s ease-in-out infinite;
+}
+
+/* Make children relative for proper stacking */
+[data-theme="liquid-glass"] .flex:has(> div:has(> .border-t.border-l.border-b.border-\[var\(--border-color\)\].rounded-bl-lg.rounded-tl-lg)) > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Style the content area for repositories/bookmarks */
+[data-theme="liquid-glass"] .border-t.border-l.border-b.border-\[var\(--border-color\)\].rounded-bl-lg.rounded-tl-lg {
+  background: transparent !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Style individual repo/bookmark cards */
+[data-theme="liquid-glass"] .border-t.border-l.border-b.border-\[var\(--border-color\)\].rounded-bl-lg.rounded-tl-lg > * {
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+}
+
+[data-theme="liquid-glass"] .border-t.border-l.border-b.border-\[var\(--border-color\)\].rounded-bl-lg.rounded-tl-lg > *:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+  transform: translateY(-2px);
+}
+
+/* ============================================= */
+/* MIDDLEHEADER GLASS EFFECT WITHOUT ROUNDED CORNERS */
+/* ============================================= */
+
+/* MiddleHeader - match Header Strip styling with square corners */
+[data-theme="liquid-glass"] header.sticky {
+  /* Match the Header Strip frost effect */
+  background: rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  border-bottom: none; /* No border for seamless transition */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); /* Match Header Strip */
+  /* Force square corners */
+  border-radius: 0 !important;
+  /* Ensure proper layout */
+  position: sticky;
+  width: 100%;
+  pointer-events: auto;
+}
+
+/* Ensure the inner content is properly layered */
+[data-theme="liquid-glass"] header.sticky > div {
+  background: transparent;
+  position: relative;
+  z-index: 1;
+  border-radius: 0 !important;
+}
+
+/* Remove any pseudo-element borders */
+[data-theme="liquid-glass"] header.sticky::before {
+  display: none; /* Remove pseudo-element entirely */
+}
+
+/* Override any child element rounded corners */
+[data-theme="liquid-glass"] header.sticky * {
+  border-radius: 0 !important;
+}
+
+/* Top glass highlight for repository/bookmarks pages */
+[data-theme="liquid-glass"] .flex:has(> div:has(> .border-t.border-l.border-b.border-\[var\(--border-color\)\].rounded-bl-lg.rounded-tl-lg)) > div:first-child::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 120px;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.04) 30%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 2;
+  border-radius: 0; /* Removed rounded edges */
+}
+
+/* Fix right column spacing */
+[data-theme="liquid-glass"] .border-l.border-\[var\(--border-color\)\].mt-\[4em\] {
+  margin-top: 4em !important;
+  background: transparent !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Custom scrollbar for organization members list */
+.custom-organization-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0.05);
+}
+
+.custom-organization-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.custom-organization-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+  margin: 2px;
+}
+
+.custom-organization-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.08) 100%);
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.custom-organization-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.2) 100%);
+  border-color: rgba(0, 0, 0, 0.15);
+}
+
+.custom-organization-scrollbar::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Dark theme scrollbar for organization members */
+[data-theme="dark"] .custom-organization-scrollbar {
+  scrollbar-color: rgba(255, 255, 255, 0.25) rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .custom-organization-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .custom-organization-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.15) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .custom-organization-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0.25) 100%);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Blue theme scrollbar for organization members (formerly Light) */
+[data-theme="light"] .custom-organization-scrollbar {
+  scrollbar-color: rgba(255, 255, 255, 0.25) rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="light"] .custom-organization-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="light"] .custom-organization-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.15) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="light"] .custom-organization-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0.25) 100%);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Dark Blue theme scrollbar for organization members (formerly Dim) */
+[data-theme="dim"] .custom-organization-scrollbar {
+  scrollbar-color: rgba(255, 255, 255, 0.2) rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dim"] .custom-organization-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dim"] .custom-organization-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dim"] .custom-organization-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.2) 100%);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Liquid Glass theme scrollbar for organization members */
+[data-theme="liquid-glass"] .custom-organization-scrollbar {
+  scrollbar-color: rgba(255, 255, 255, 0.2) rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="liquid-glass"] .custom-organization-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="liquid-glass"] .custom-organization-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.12) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="liquid-glass"] .custom-organization-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.2) 100%);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Liquid Blue theme scrollbar for organization members */
+[data-theme="liquid-blue"] .custom-organization-scrollbar {
+  scrollbar-color: rgba(0, 255, 255, 0.25) rgba(0, 255, 255, 0.1);
+}
+
+[data-theme="liquid-blue"] .custom-organization-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 255, 255, 0.1);
+}
+
+[data-theme="liquid-blue"] .custom-organization-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(0, 255, 255, 0.25) 0%, rgba(0, 255, 255, 0.15) 100%);
+  border: 1px solid rgba(0, 255, 255, 0.18);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+[data-theme="liquid-blue"] .custom-organization-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(0, 255, 255, 0.35) 0%, rgba(0, 255, 255, 0.25) 100%);
+  border-color: rgba(0, 255, 255, 0.25);
+}
+
+/* Liquid Glass Theme - Purple selector with lighter background */
+[data-theme="liquid-glass"] .theme-selector {
+  background: rgba(30, 30, 45, 0.85) !important;
+  color: white !important;
+  border: 1px solid rgba(168, 85, 247, 0.4) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+}
+
+[data-theme="liquid-glass"] .theme-selector:focus {
+  background: rgba(35, 35, 50, 0.85) !important;
+  border-color: rgba(168, 85, 247, 0.6) !important;
+  box-shadow: 0 0 15px rgba(168, 85, 247, 0.4) !important;
+}
+
+[data-theme="liquid-glass"] .theme-selector option {
+  background: rgba(30, 30, 45, 0.85) !important;
+  color: white !important;
+  border: none !important;
+}
+
+[data-theme="liquid-glass"] .theme-selector option:hover,
+[data-theme="liquid-glass"] .theme-selector option:focus {
+  background: rgba(45, 45, 65, 0.85) !important;
+  color: white !important;
+}
+
+/* Liquid Blue Theme - Cyan selector with lighter background */
+[data-theme="liquid-blue"] .theme-selector {
+  background: rgba(30, 30, 45, 0.85) !important;
+  color: white !important;
+  border: 1px solid rgba(0, 255, 255, 0.4) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+}
+
+[data-theme="liquid-blue"] .theme-selector:focus {
+  background: rgba(35, 35, 50, 0.85) !important;
+  border-color: rgba(0, 255, 255, 0.6) !important;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.4) !important;
+}
+
+/* Theme-dependent focus styles for theme selector */
+[data-theme="liquid-glass"] .theme-selector:focus {
+  border-color: rgba(168, 85, 247, 0.6) !important;
+  box-shadow: 0 0 15px rgba(168, 85, 247, 0.4) !important;
+}
+
+[data-theme="dark"] .theme-selector:focus {
+  border-color: rgba(255, 255, 255, 0.6) !important;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.3) !important;
+}
+
+[data-theme="dim"] .theme-selector:focus {
+  border-color: rgba(255, 255, 255, 0.5) !important;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.25) !important;
+}
+
+[data-theme="light"] .theme-selector:focus {
+  border-color: rgba(0, 0, 0, 0.6) !important;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+[data-theme="liquid-blue"] .theme-selector option {
+  background: rgba(30, 30, 45, 0.85) !important;
+  color: white !important;
+  border: none !important;
+}
+
+[data-theme="liquid-blue"] .theme-selector option:hover,
+[data-theme="liquid-blue"] .theme-selector option:focus {
+  background: rgba(45, 45, 65, 0.85) !important;
+  color: white !important;
+}
+
+/* Liquid Blue Theme - UserToolbar button hover glow effects */
+[data-theme="liquid-blue"] .border.border-1.rounded-md.border-\[--border-color\].p-2.flex.items-center.justify-center.cursor-pointer.hover\:bg-base-300.border-2:hover {
+  background: rgba(0, 255, 255, 0.08) !important;
+  border-color: rgba(0, 255, 255, 0.2) !important;
+  box-shadow:
+    inset 0 1px 3px rgba(0, 255, 255, 0.1),
+    0 0 2px rgba(0, 255, 255, 0.15) !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  border-radius: 8px !important;
+}
+
+[data-theme="liquid-blue"] .border.border-1.rounded-md.border-\[--border-color\].p-2.flex.items-center.justify-center.cursor-pointer.hover\:bg-base-300.border-2:hover svg,
+[data-theme="liquid-blue"] .border.border-1.rounded-md.border-\[--border-color\].p-2.flex.items-center.justify-center.cursor-pointer.hover\:bg-base-300.border-2:hover .text-gray-300 {
+  color: rgba(0, 255, 255, 0.9) !important;
+  filter: drop-shadow(0 0 5px rgba(0, 255, 255, 0.5)) !important;
+}
+
+[data-theme="liquid-blue"] .border.border-1.rounded-md.border-\[--border-color\].p-2.flex.items-center.justify-center.cursor-pointer.hover\:bg-base-300.border-2:hover .indicator-item {
+  background: rgba(0, 255, 255, 0.8) !important;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.6) !important;
+}
+
+/* Liquid Blue Theme - Bell icon specific styling */
+[data-theme="liquid-blue"] .text-gray-300.opacity-75:hover {
+  color: rgba(0, 255, 255, 0.9) !important;
+  filter: drop-shadow(0 0 5px rgba(0, 255, 255, 0.5)) !important;
+}
+
+/* Feed item animation for consistency - used by both feed items and notification items */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Liquid Blue Theme - Wallet icon specific styling */
+[data-theme="liquid-blue"] button:hover .text-gray-300.opacity-75 {
+  color: rgba(0, 255, 255, 0.9) !important;
+  filter: drop-shadow(0 0 4px rgba(0, 255, 255, 0.4)) !important;
+}
+
+/* Liquid Blue Theme - Wallet button specific hover effects */
+[data-theme="liquid-blue"] button[class*="wallet"]:hover {
+  background: rgba(0, 255, 255, 0.08) !important;
+  border-color: rgba(0, 255, 255, 0.25) !important;
+  box-shadow:
+    inset 0 1px 2px rgba(0, 255, 255, 0.12),
+    0 0 4px rgba(0, 255, 255, 0.2) !important;
+}
+
+/* Liquid Blue Theme - Remove unwanted hover effects from bio section */
+[data-theme="liquid-blue"] .flex.flex-col.gap-2.no-highlight article:hover,
+[data-theme="liquid-blue"] .profile-bio-article:hover {
+  background: transparent !important;
+  border: none !important;
+  transform: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
+[data-theme="liquid-blue"] .flex.flex-col.gap-2.no-highlight article,
+[data-theme="liquid-blue"] .profile-bio-article {
+  border: none !important;
+  transition: none !important;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Fix Liquid Blue theme tab underline color */
+[data-theme="liquid-blue"] .tab[class*="border-b-2"][class*="border-[var(--border-primary)]"] {
+  border-color: rgba(0, 255, 255, 0.6) !important;
+}
+
+/* Fix tab transitions to use same color as final state - no flicker */
+[data-theme="liquid-glass"] .tab {
+  transition: border-color 0.15s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+[data-theme="liquid-glass"] .tab[class*="border-b-2"] {
+  border-color: rgba(168, 85, 247, 0.6) !important;
+}
+
+[data-theme="liquid-glass"] .tab:not([class*="border-b-2"]) {
+  border-color: transparent !important;
+}
+
+[data-theme="liquid-blue"] .tab {
+  transition: border-color 0.15s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+[data-theme="liquid-blue"] .tab[class*="border-b-2"] {
+  border-color: rgba(0, 255, 255, 0.6) !important;
+}
+
+[data-theme="liquid-blue"] .tab:not([class*="border-b-2"]) {
+  border-color: transparent !important;
+}
+
+/* Improve badge styling in liquid blue theme */
+[data-theme="liquid-blue"] .badge {
+  background: rgba(0, 255, 255, 0.15) !important;
+  border: 1px solid rgba(0, 255, 255, 0.3) !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+  box-shadow: 0 0 8px rgba(0, 255, 255, 0.2) !important;
+}
+
+/* Improve following/repos/relays button backgrounds in liquid blue theme */
+[data-theme="liquid-blue"] .btn-neutral {
+  background: rgba(0, 255, 255, 0.08) !important;
+  border: 1px solid rgba(0, 255, 255, 0.2) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  transform: none !important;
+}
+
+[data-theme="liquid-blue"] .btn-neutral:hover {
+  background: rgba(0, 255, 255, 0.12) !important;
+  border-color: rgba(0, 255, 255, 0.35) !important;
+  color: white !important;
+  box-shadow: 0 0 8px rgba(0, 255, 255, 0.25) !important;
+  transform: none !important;
+}
+
+/* Replace lifting animation with glow in Liquid Glass theme */
+[data-theme="liquid-glass"] .btn-neutral {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  transform: none !important;
+}
+
+[data-theme="liquid-glass"] .btn-neutral:hover {
+  transform: none !important;
+  box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.2), 0 0 8px rgba(255, 255, 255, 0.15) !important;
+}
+
+/* Use mention color for links in all themes - consistent with @ names */
+.text-primary {
+  color: rgb(59 130 246) !important; /* Classic hyperlink blue */
+}
+
+.text-primary:hover {
+  color: rgb(37 99 235) !important; /* Darker blue on hover */
+}
+
+/* Note: Animation disabling is now handled directly in the animation definitions above */
+
+/* ============================================= */
+/* RECENT REPOSITORIES THEME-SPECIFIC HOVER EFFECTS */
+/* ============================================= */
+
+/* Liquid Glass Theme - Recent Repositories Hover */
+[data-theme="liquid-glass"] .recent-repo-item:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow:
+    0 0 15px rgba(138, 43, 226, 0.2),
+    0 0 30px rgba(33, 150, 243, 0.1),
+    inset 0 1px 3px rgba(255, 255, 255, 0.1),
+    inset 0 -1px 3px rgba(0, 0, 0, 0.05) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+}
+
+/* Liquid Blue Theme - Recent Repositories Hover */
+[data-theme="liquid-blue"] .recent-repo-item:hover {
+  background: rgba(0, 255, 255, 0.08) !important;
+  border-color: rgba(0, 255, 255, 0.2) !important;
+  border: 1px solid rgba(0, 255, 255, 0.15) !important;
+  box-shadow:
+    0 0 15px rgba(0, 255, 255, 0.2),
+    0 0 30px rgba(0, 255, 170, 0.15),
+    inset 0 1px 3px rgba(0, 255, 255, 0.1),
+    inset 0 -1px 3px rgba(0, 0, 0, 0.05) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+}
+
+/* Theme-specific remove button hover states */
+[data-theme="liquid-glass"] .recent-repo-item .remove-button:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 0 8px rgba(244, 63, 94, 0.3) !important;
+  color: rgba(244, 63, 94, 0.9) !important;
+}
+
+[data-theme="liquid-blue"] .recent-repo-item .remove-button:hover {
+  background: rgba(0, 255, 255, 0.1) !important;
+  box-shadow: 0 0 8px rgba(244, 63, 94, 0.5) !important;
+  color: rgba(244, 63, 94, 0.9) !important;
+}
+
+/* Theme-specific repository name hover colors */
+[data-theme="liquid-glass"] .recent-repo-item .repo-name-link:hover {
+  color: rgba(168, 85, 247, 0.9) !important; /* Purple-500 for liquid glass */
+}
+
+[data-theme="liquid-blue"] .recent-repo-item .repo-name-link:hover {
+  color: rgba(0, 255, 255, 0.9) !important; /* Cyan-300 for liquid blue */
+}
+
+/* Theme-specific repository owner name hover colors */
+[data-theme="liquid-glass"] .recent-repo-item .repo-owner-name:hover {
+  color: rgba(168, 85, 247, 0.9) !important; /* Purple-500 for liquid glass */
+}
+
+[data-theme="liquid-blue"] .recent-repo-item .repo-owner-name:hover {
+  color: rgba(0, 255, 255, 0.9) !important; /* Cyan-300 for liquid blue */
+}
+
+/* File Explorer Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.file-explorer-item {
+  animation: fadeInUp 0.3s ease-out forwards;
+}
+
+/* Theme-specific File Explorer hover states */
+[data-theme="liquid-glass"] .file-explorer-item:hover {
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0.08),
+    rgba(255, 255, 255, 0.04)
+  ) !important;
+  box-shadow:
+    0 4px 12px rgba(168, 85, 247, 0.15),
+    0 2px 4px rgba(168, 85, 247, 0.1) !important;
+  backdrop-filter: blur(10px);
+}
+
+[data-theme="liquid-blue"] .file-explorer-item:hover {
+  background: linear-gradient(
+    to right,
+    rgba(0, 255, 255, 0.08),
+    rgba(0, 255, 255, 0.04)
+  ) !important;
+  box-shadow:
+    0 4px 12px rgba(0, 255, 255, 0.15),
+    0 2px 4px rgba(0, 255, 255, 0.1) !important;
+  backdrop-filter: blur(10px);
+}
+
+/* Default theme File Explorer hover */
+.file-explorer-item:hover {
+  background: linear-gradient(
+    to right,
+    rgba(var(--base-200), 0.8),
+    rgba(var(--base-200), 0.4)
+  );
+}
+
+/* File name hover colors for themes */
+[data-theme="liquid-glass"] .file-explorer-item:hover .group-hover\:text-primary {
+  color: rgba(168, 85, 247, 0.9) !important;
+}
+
+[data-theme="liquid-blue"] .file-explorer-item:hover .group-hover\:text-primary {
+  color: rgba(0, 255, 255, 0.9) !important;
+}
+
+[data-theme="liquid-glass"] .file-explorer-item:hover .group-hover\:text-accent {
+  color: rgba(236, 72, 153, 0.9) !important;
+}
+
+[data-theme="liquid-blue"] .file-explorer-item:hover .group-hover\:text-accent {
+  color: rgba(34, 211, 238, 0.9) !important;
+}
+
+/* ============================================= */
+/* LIQUID BLUE THEME - FIX SETTINGS PAGE HOVER COLORS */
+/* ============================================= */
+
+/* Fix settings page navigation button hover colors in liquid blue theme */
+[data-theme="liquid-blue"] .px-2\.5.py-1\.5.flex.justify-between.items-center.border.border-custom:hover {
+  background: rgba(0, 255, 255, 0.08) !important;
+  border-color: rgba(0, 255, 255, 0.2) !important;
+}
+
+/* Fix notification filter button hover colors in liquid blue theme */
+[data-theme="liquid-blue"] .grid.grid-cols-2.gap-3 button:hover {
+  background: rgba(0, 255, 255, 0.08) !important;
+  border-color: rgba(0, 255, 255, 0.2) !important;
+}
+
+/* Fix notification items hover colors in liquid blue theme */
+[data-theme="liquid-blue"] .flex.flex-col.p-4.md\:px-8.border-b.border-\[var\(--border-color\)\].transition-colors.duration-300.cursor-pointer:hover {
+  background: rgba(0, 255, 255, 0.08) !important;
+  border-color: rgba(0, 255, 255, 0.2) !important;
+}
+
+/* Fix recent search items hover colors in liquid blue theme */
+[data-theme="liquid-blue"] .grid.grid-cols-\[1fr\,auto\].items-center.w-full.p-2.hover\:bg-base-200.rounded-lg.gap-2:hover {
+  background: rgba(0, 255, 255, 0.08) !important;
+  border-color: rgba(0, 255, 255, 0.2) !important;
+}
+
+/* Fix recent repository items hover colors in liquid blue theme */
+[data-theme="liquid-blue"] .flex.justify-between.items-center.w-full.p-2.hover\:bg-base-200.rounded-lg:hover {
+  background: rgba(0, 255, 255, 0.08) !important;
+  border-color: rgba(0, 255, 255, 0.2) !important;
+}
+
+/* ============================================= */
+/* LIQUID BLUE THEME - REDUCE BRIGHTNESS OF PRIMARY BUTTONS */
+/* ============================================= */
+
+/* Reduce brightness of Create Repository button */
+[data-theme="liquid-blue"] .btn.btn-primary:has(.text-base-content) {
+  filter: brightness(0.7) !important;
+}
+
+[data-theme="liquid-blue"] .btn.btn-primary:has(.text-base-content):hover {
+  filter: brightness(0.8) !important;
+}
+
+/* Reduce brightness of Create Organization button */
+[data-theme="liquid-blue"] .btn.btn-primary.min-h-\[2\.3rem\].h-\[1\.5rem\] {
+  filter: brightness(0.7) !important;
+}
+
+[data-theme="liquid-blue"] .btn.btn-primary.min-h-\[2\.3rem\].h-\[1\.5rem\]:hover {
+  filter: brightness(0.8) !important;
+}
+
+/* Reduce brightness of Post button */
+[data-theme="liquid-blue"] .flex.items-center.justify-center.xl\:justify-start.py-2.w-full.gap-4.cursor-pointer.rounded-md.group:has(.bg-gradient-to-t) {
+  filter: brightness(0.7) !important;
+}
+
+[data-theme="liquid-blue"] .flex.items-center.justify-center.xl\:justify-start.py-2.w-full.gap-4.cursor-pointer.rounded-md.group:has(.bg-gradient-to-t):hover {
+  filter: brightness(0.8) !important;
+}
+
+/* ============================================= */
+/* EMOJI PICKER STYLING AND ANIMATIONS */
+/* ============================================= */
+
+/* Enhanced emoji picker animations */
+.emoji-picker-container {
+  filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.15));
+  border-radius: 12px;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Animation keyframes for smooth emoji picker entrance */
+@keyframes emojiPickerFadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.9) translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Apply animation when opening */
+.emoji-picker-container[style*="opacity: 1"] {
+  animation: emojiPickerFadeIn 0.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Theme-specific emoji picker styling */
+[data-theme="liquid-blue"] .emoji-picker-container {
+  background: rgba(0, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+}
+
+[data-theme="liquid-glass"] .emoji-picker-container {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .emoji-picker-container {
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="light"] .emoji-picker-container {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Emoji hover animations */
+.emoji-picker-container button {
+  transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.emoji-picker-container button:hover {
+  transform: scale(1.15) !important;
+}
+
+/* Category tabs hover effects */
+.emoji-picker-container .epr-emoji-category-label {
+  transition: opacity 0.2s ease !important;
+}
+
+.emoji-picker-container .epr-emoji-category-label:hover {
+  opacity: 0.8 !important;
+}
+
+/* Search input styling */
+.emoji-picker-container .epr-search-container input {
+  transition: all 0.2s ease !important;
+}
+
+.emoji-picker-container .epr-search-container input:focus {
+  transform: scale(1.02) !important;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25) !important;
+}
+
+/* ============================================= */
+/* SEARCHBOX THEME OVERRIDES */
+/* ============================================= */
+
+/* Universal selected search mode button styling for all themes */
+.dropdown-content.menu button.bg-primary {
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.8) 0%, rgba(34, 197, 94, 0.7) 100%) !important; /* Turquoise to green-blue gradient */
+  color: white !important;
+  border: 1px solid rgba(20, 184, 166, 0.6) !important; /* Turquoise border */
+  box-shadow: 0 0 0 1px rgba(20, 184, 166, 0.4) !important; /* Subtle turquoise glow */
+  font-weight: 600 !important; /* Slightly bolder text */
+}
+
+.dropdown-content.menu button.bg-primary:hover {
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.9) 0%, rgba(34, 197, 94, 0.8) 100%) !important; /* Enhanced gradient on hover */
+  box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.5) !important; /* Enhanced turquoise glow on hover */
+  color: white !important; /* Keep text white on hover */
+}
+
+/* Make unselected search mode buttons inherit theme-appropriate colors */
+.dropdown-content.menu button:not(.bg-primary) {
+  color: inherit !important;
+  font-weight: 500 !important;
+}
+
+/* ============================================= */
+/* THREAD DROPDOWN BUTTONS - MAXIMUM SPECIFICITY OVERRIDE */
+/* ============================================= */
+
+/* -------------------------------- */
+/* SOLID FILLED THEME BUTTONS - No Glass/Translucency */
+/* -------------------------------- */
+
+/* Liquid Glass: Muted unselected buttons - feel "unselected" not bright */
+[data-theme="liquid-glass"] .dropdown-content.menu .thread-dropdown-btn:not(.bg-primary),
+[data-theme="liquid-glass"] .menu li > .thread-dropdown-btn:not(.bg-primary) {
+  background: #374151 !important; /* MUTED dark gray - feels unselected */
+  color: white !important; /* White text */
+  border: 1px solid #6B7280 !important; /* Muted border */
+  backdrop-filter: none !important; /* Solid, no glass */
+  -webkit-backdrop-filter: none !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15) !important;
+}
+
+[data-theme="liquid-glass"] .dropdown-content.menu .thread-dropdown-btn:not(.bg-primary):hover,
+[data-theme="liquid-glass"] .menu li > .thread-dropdown-btn:not(.bg-primary):hover {
+  background: #4B5563 !important; /* Slightly brighter gray on hover */
+  border-color: #9CA3AF !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Liquid Blue: Muted unselected buttons - feel "unselected" with subtle hint */
+[data-theme="liquid-blue"] .dropdown-content.menu .thread-dropdown-btn:not(.bg-primary),
+[data-theme="liquid-blue"] .menu li > .thread-dropdown-btn:not(.bg-primary) {
+  background: #475569 !important; /* MUTED slate - feels unselected */
+  color: white !important; /* White text */
+  border: 1px solid #64748B !important; /* Muted slate border */
+  backdrop-filter: none !important; /* Solid, no glass */
+  -webkit-backdrop-filter: none !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15) !important;
+}
+
+[data-theme="liquid-blue"] .dropdown-content.menu .thread-dropdown-btn:not(.bg-primary):hover,
+[data-theme="liquid-blue"] .menu li > .thread-dropdown-btn:not(.bg-primary):hover {
+  background: #5B6470 !important; /* Slightly brighter slate on hover */
+  border-color: #94A3B8 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Override selected buttons using theme primary/secondary gradients - same as .btn-primary */
+[data-theme="liquid-glass"] .dropdown-content.menu .thread-dropdown-btn.bg-primary,
+[data-theme="liquid-glass"] .menu li > .thread-dropdown-btn.bg-primary {
+  background: linear-gradient(135deg, var(--secondary), var(--primary)) !important; /* Purple gradient: secondary first (AF52DE → 007AFF) */
+  color: white !important; /* White text */
+  border: none !important; /* No border like liquid blue .btn-primary */
+  box-shadow: 0 6px 20px rgba(127, 61, 255, 0.3) !important; /* Purple shadow */
+}
+
+[data-theme="liquid-glass"] .dropdown-content.menu .thread-dropdown-btn.bg-primary:hover,
+[data-theme="liquid-glass"] .menu li > .thread-dropdown-btn.bg-primary:hover {
+  background: linear-gradient(135deg, var(--secondary), var(--primary)) !important; /* Same purple gradient */
+  opacity: 0.9 !important; /* Same as liquid blue hover */
+  box-shadow: 0 8px 24px rgba(127, 61, 255, 0.4) !important; /* Enhanced purple shadow */
+  transform: translateY(-1px) !important; /* Subtle lift */
+}
+
+[data-theme="liquid-blue"] .dropdown-content.menu .thread-dropdown-btn.bg-primary,
+[data-theme="liquid-blue"] .menu li > .thread-dropdown-btn.bg-primary {
+  background: linear-gradient(135deg, var(--primary), var(--secondary)) !important; /* Cyan gradient: primary first (00FFFF → 00FFAA) */
+  color: white !important; /* White text */
+  border: none !important; /* No border like liquid blue .btn-primary */
+  box-shadow: 0 8px 24px rgba(0, 255, 255, 0.3) !important; /* Cyan shadow exactly like .btn-primary */
+}
+
+[data-theme="liquid-blue"] .dropdown-content.menu .thread-dropdown-btn.bg-primary:hover,
+[data-theme="liquid-blue"] .menu li > .thread-dropdown-btn.bg-primary:hover {
+  background: linear-gradient(135deg, var(--primary), var(--secondary)) !important; /* Same cyan gradient */
+  opacity: 0.9 !important; /* Same as liquid blue hover */
+  box-shadow: 0 12px 32px rgba(0, 255, 255, 0.4) !important; /* Enhanced cyan shadow like .btn-primary:hover */
+  transform: translateY(-2px) !important; /* Same lift as .btn-primary:hover */
+}
+
+/* ============================================= */
+/* THREAD DROPDOWN BUTTON POSITIONING - MOVE LEFT */
+/* ============================================= */
+
+/* Reduce thread dropdown width for better proportion - moderate size */
+[data-theme="liquid-glass"] .dropdown-content.menu.shadow-2xl.bg-black\/80.rounded-box.p-3.w-full.border,
+[data-theme="liquid-blue"] .dropdown-content.menu.shadow-2xl.bg-black\/80.rounded-box.p-3.w-full.border {
+  width: 341px !important; /* 341px width */
+  max-width: 95vw !important; /* Prevent overflow on small screens */
+}
+
+/* Reduce space to the right of people and strangers icons */
+[data-theme="liquid-glass"] .people-btn,
+[data-theme="liquid-glass"] .strangers-btn,
+[data-theme="liquid-blue"] .people-btn,
+[data-theme="liquid-blue"] .strangers-btn {
+  gap: 0.125rem !important; /* Much tighter gap between icon and text */
+}
+
+/* Move thread dropdown buttons slightly left for better alignment */
+[data-theme="liquid-glass"] .dropdown-content.menu .thread-dropdown-btn,
+[data-theme="liquid-glass"] .menu li > .thread-dropdown-btn {
+  padding-left: 0.5rem !important; /* Reduce left padding */
+  margin-left: -0.3rem !important; /* Add negative left margin */
+}
+
+[data-theme="liquid-blue"] .dropdown-content.menu .thread-dropdown-btn,
+[data-theme="liquid-blue"] .menu li > .thread-dropdown-btn {
+  padding-left: 0.5rem !important; /* Reduce left padding */
+  margin-left: -0.3rem !important; /* Add negative left margin */
+}
+
+/* Ensure container accommodates the adjusted positioning */
+[data-theme="liquid-glass"] .dropdown-content.menu li:has(.thread-dropdown-btn),
+[data-theme="liquid-blue"] .dropdown-content.menu li:has(.thread-dropdown-btn) {
+  padding-left: 0.3rem !important; /* Reduce container left padding */
+}
+
+/* Ensure emoji and image buttons use teal hover color in liquid-blue theme */
+[data-theme="liquid-blue"] .HomeFeedTextarea-container button:hover svg,
+[data-theme="liquid-blue"] .HomeFeedTextarea-container svg:hover,
+[data-theme="liquid-blue"] button:hover svg[class*="text-secondary"],
+[data-theme="liquid-blue"] svg[class*="text-secondary"]:hover {
+  color: rgb(20, 184, 166) !important; /* teal-400 */
+}
+
+/* ============================================= */
+/* THINKING INDICATOR ANIMATIONS */
+/* ============================================= */
+
+/* Sleek professional pulse animation for both themes */
+/* ============================================= */
+/* RELAY SETTINGS PAGE - LIQUID BLUE BACKDROP */
+/* ============================================= */
+
+/* Apply Liquid Blue gradient to Relay Settings page - MATCHING DASHBOARD STYLE */
+[class*="relay-settings"],
+[class*="RelaySettings"],
+[data-*="relay-settings"],
+[data-*="relaysettings"],
+.h-screen.w-full.flex.relative:has(.bg-base-100.overflow-y-auto),
+.h-screen.w-full.flex:has(.bg-base-100.overflow-y-auto) {
+  /* Match the relay dashboard background pattern - start with dark base */
+  background: #000000 !important;
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+
+  /* Multi-layer liquid blue gradient background - MATCHING DASHBOARD */
+  &::before {
+    content: '';
+    position: fixed;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background:
+      radial-gradient(circle at 20% 50%, rgba(0, 255, 255, 0.15) 0%, transparent 40%),
+      radial-gradient(circle at 80% 20%, rgba(0, 255, 170, 0.12) 0%, transparent 45%),
+      radial-gradient(circle at 60% 80%, rgba(20, 184, 166, 0.12) 0%, transparent 45%),
+      radial-gradient(circle at 40% 40%, rgba(0, 221, 255, 0.08) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+    animation: liquidBackground 30s ease infinite, rotate 60s linear infinite;
+  }
+
+  /* Additional animated gradient layer - MATCHING DASHBOARD */
+  &::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg,
+      rgba(0, 255, 255, 0.03) 0%,
+      rgba(0, 255, 170, 0.03) 25%,
+      rgba(20, 184, 166, 0.03) 50%,
+      rgba(0, 221, 255, 0.03) 75%,
+      rgba(0, 255, 255, 0.03) 100%);
+    background-size: 400% 400%;
+    animation: liquidFlow 20s ease infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Ensure content is above background layers */
+  > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  color: rgba(255, 255, 255, 0.95);
+}
+
+/* Make all relay settings content areas transparent to show the gradient */
+[class*="relay-settings"] .bg-base-100,
+[class*="RelaySettings"] .bg-base-100,
+[data-*="relay-settings"] .bg-base-100,
+[data-*="relaysettings"] .bg-base-100,
+.h-screen.w-full.flex.relative .bg-base-100.overflow-y-auto,
+.h-screen.w-full.flex .bg-base-100.overflow-y-auto {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Ensure glass components still look great against the gradient */
+[class*="relay-settings"] [data-theme*="liquid"],
+[class*="RelaySettings"] [data-theme*="liquid"],
+[data-*="relay-settings"] [data-theme*="liquid"],
+[data-*="relaysettings"] [data-theme*="liquid"] {
+  background: transparent !important;
+}
+
+/* The existing relay settings theme overrides are already comprehensive */
+
+@keyframes sleekPulse {
+  0%, 60%, 100% {
+    opacity: 0.4;
+    transform: scale(0.9);
+  }
+  30% {
+    opacity: 0.8;
+    transform: scale(1.1);
+  }
+}

@@ -1,237 +1,435 @@
-import styled from 'styled-components';
-import { BaseCard } from '@app/components/common/BaseCard/BaseCard';
-import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
-import { BaseTypography } from '@app/components/common/BaseTypography/BaseTypography';
-import { BaseInput } from '@app/components/common/inputs/BaseInput/BaseInput';
-import { BORDER_RADIUS, FONT_SIZE, FONT_WEIGHT, media } from '@app/styles/themes/constants';
-import { Card } from 'antd';
-import { BaseRow } from '@app/components/common/BaseRow/BaseRow';
+import styled, { css } from 'styled-components';
+import { Input, Button, Divider, Badge, Tag } from 'antd';
+import { FONT_SIZE, BORDER_RADIUS, FONT_WEIGHT, LAYOUT } from '@app/styles/themes/constants';
+
+export const ScrollableWrapper = styled.div`
+  height: calc(100vh - ${LAYOUT.desktop.headerHeight} - 4rem);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 0.5rem;
+  
+  /* Hide scrollbars completely while maintaining functionality */
+  &::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
+  }
+  
+  /* Firefox */
+  scrollbar-width: none;
+  
+  /* IE/Edge */
+  -ms-overflow-style: none;
+`;
+
+export const ScrollableContent = styled.div`
+  height: calc(100vh - ${LAYOUT.desktop.headerHeight} - 8rem);
+  overflow-y: auto;
+  overflow-x: hidden;
+  
+  /* Hide scrollbars completely while maintaining functionality */
+  &::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
+  }
+  
+  /* Firefox */
+  scrollbar-width: none;
+  
+  /* IE/Edge */
+  -ms-overflow-style: none;
+`;
+
+export const ContentPadding = styled.div`
+  padding: 1.25rem;
+`;
 
 export const FiltersWrapper = styled.div`
   margin-bottom: 1.5rem;
 `;
 
-export const FooterWrapper = styled.div`
-  margin-top: 1.5rem;
+export const SplitDivider = styled(Divider)`
+  margin: 0.5rem 0;
 `;
 
-export const SplitDivider = styled.div`
-  height: 1px;
-  background-color: var(--border-color);
-  width: 100%;
-`;
-
-export const NotificationItem = styled(Card)<{ $isRead: boolean; $isNew?: boolean }>`
+export const NotificationItem = styled.div<{ $isRead: boolean }>`
+  padding: 0;
+  margin-bottom: 1rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
-  transition: all 0.3s ease;
-  width: 100%;
-  background-color: var(--additional-background-color);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  
+  /* Remove all background styling - let BaseNotification handle the visuals */
+  background: transparent;
   border: none;
-  .ant-space {
-    background-color: transparent;
-  }
-  .anticon-info-circle {
-    color: var(--text-light-color);
-    width: 2.4rem;
-    padding: 0 0.2rem;
-  }
-  ${(props) =>
-    !props.$isRead &&
-    `
-    border-radius: ${BORDER_RADIUS};
-    position: relative;
-    
-    &::before {
-      content: '';
-      position: absolute;
-      left: -1.1rem;
-      top: 2.4rem;
-      transform: translateY(-50%);
-      width: 0.5rem;
-      height: 0.5rem;
-      border-radius: 50%;
-      background-color: var(--primary-color);
-
-      @media only screen and ${media.lg} {
-        left: -2rem;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  
+  /* Add left indicator for unread state */
+  ${({ $isRead }) =>
+    !$isRead &&
+    css`
+      &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 3px;
+        height: 60%;
+        background: linear-gradient(
+          to bottom,
+          rgba(45, 212, 191, 0.6),
+          rgba(6, 182, 212, 0.8),
+          rgba(45, 212, 191, 0.6)
+        );
+        border-radius: 0 2px 2px 0;
+        box-shadow: 0 0 10px rgba(6, 182, 212, 0.4);
+        animation: unreadGlow 2s ease-in-out infinite;
       }
-    }
-  `}
+      
+      @keyframes unreadGlow {
+        0%, 100% {
+          box-shadow: 0 0 10px rgba(6, 182, 212, 0.4);
+        }
+        50% {
+          box-shadow: 0 0 20px rgba(45, 212, 191, 0.6);
+        }
+      }
+    `}
 
-  ${(props) =>
-    props.$isNew &&
-    `
-    border-left: 3px solid var(--success-color) !important;
-  `}
+  &:hover {
+    transform: translateY(-2px);
+  }
 `;
-export const NotificationHeader = styled(BaseRow)`
-  color: var(--text-main-color);
-  font-size: ${FONT_SIZE.md};
-`;
+
 export const NotificationContent = styled.div`
-  padding-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+`;
+
+export const NotificationText = styled.div`
+  font-size: ${FONT_SIZE.md};
+  color: var(--text-main-color);
 `;
 
 export const NotificationMeta = styled.div`
   display: flex;
-
   flex-wrap: wrap;
-  gap: 0.75rem;
-  margin-bottom: 0.5rem;
+  gap: 1rem;
+  font-size: ${FONT_SIZE.xs};
+  color: var(--text-light-color);
+  margin-bottom: 0.75rem;
 `;
 
-export const MetaItem = styled.div`
-  color: var(--text-light-color);
-  font-size: ${FONT_SIZE.xs};
-  display: flex;
+export const MetaItem = styled.span`
+  display: inline-flex;
   align-items: center;
+  gap: 0.25rem;
 `;
 
 export const MetaLabel = styled.span`
   font-weight: ${FONT_WEIGHT.semibold};
   margin-right: 0.5rem;
-  font-size: ${FONT_SIZE.md};
 `;
 
 export const MetaValue = styled.span`
   display: inline-flex;
-  font-size: ${FONT_SIZE.md};
   align-items: center;
-  &:not(.date){
-    color: var(--text-main-color);
-  }
-
 `;
 
-export const CopyButton = styled(BaseButton)`
+export const CopyButton = styled(Button)`
   margin-left: 0.5rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   font-size: ${FONT_SIZE.xs};
   padding: 2px 6px;
-  height: 24px;
+  height: 20px;
   border-radius: ${BORDER_RADIUS};
-  background-color: var(--background-color);
+  
+  /* Liquid glass effect matching theme */
+  background: linear-gradient(to bottom right,
+    rgba(20, 184, 166, 0.15),
+    rgba(6, 182, 212, 0.12),
+    rgba(34, 197, 94, 0.15)
+  );
+  color: rgba(45, 212, 191, 0.9);
+  border: 1px solid rgba(45, 212, 191, 0.25);
+  backdrop-filter: blur(5px);
+  transition: all 0.3s ease;
 
   &:hover {
-    background-color: var(--secondary-background-color);
+    background: linear-gradient(to bottom right,
+      rgba(20, 184, 166, 0.20),
+      rgba(6, 182, 212, 0.18),
+      rgba(34, 197, 94, 0.20)
+    );
+    color: rgba(45, 212, 191, 1);
+    border-color: rgba(45, 212, 191, 0.4);
+    box-shadow: 0 0 10px rgba(6, 182, 212, 0.2);
+    transform: scale(1.05);
   }
 `;
 
-export const MarkReadButton = styled(BaseButton)`
-  padding: 0;
-  height: auto;
-  font-size: ${FONT_SIZE.xs};
-`;
-
-export const UserInput = styled(BaseInput)`
-  width: 100%;
-  background-color: var(--input-bg-color);
-`;
-
-export const Text = styled(BaseTypography.Text)`
-  &:not(:last-child) {
-    margin-bottom: 0.5rem;
-  }
-`;
-
-export const TierTag = styled.span<{ $tier: string }>`
-  display: inline-block;
-  padding: 0.25rem 0.5rem;
+export const ContentContainer = styled.div`
+  margin-top: 0.75rem;
+  max-width: 100%;
   border-radius: ${BORDER_RADIUS};
-  font-size: ${FONT_SIZE.xs};
-  font-weight: ${FONT_WEIGHT.semibold};
-  margin-right: 0.5rem;
-  background-color: var(--primary-color);
-  color: var(--text-secondary-color);
-  text-transform: uppercase;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  position: relative;
 `;
 
-export const NewSubscriberBadge = styled.span`
+export const PaymentBanner = styled.div<{ $paymentType: string }>`
+  padding: 6px 12px;
+  font-size: ${FONT_SIZE.xs};
+  font-weight: ${FONT_WEIGHT.medium};
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
   display: flex;
   align-items: center;
-  padding: 0.5rem;
-  border-radius: ${BORDER_RADIUS};
-  font-size: ${FONT_SIZE.xs};
-  font-weight: ${FONT_WEIGHT.semibold};
-  margin-left: 0.5rem;
-  background-color: var(--success-color);
-  height: 1.5rem;
-  color: var(--text-secondary-color);
+  gap: 6px;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+
+  ${({ $paymentType }) => {
+    if ($paymentType === 'new') {
+      return css`
+        background: linear-gradient(to bottom right,
+          rgba(20, 184, 166, 0.20),
+          rgba(6, 182, 212, 0.18),
+          rgba(34, 197, 94, 0.20)
+        );
+        color: rgba(45, 212, 191, 1);
+        border: 1px solid rgba(45, 212, 191, 0.3);
+        box-shadow:
+          inset 0 2px 6px rgba(45, 212, 191, 0.2),
+          0 0 12px rgba(6, 182, 212, 0.15);
+          
+        &::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 50%;
+          background: linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.08) 0%,
+            transparent 100%
+          );
+          pointer-events: none;
+        }
+      `;
+    }
+    return css`
+      background: linear-gradient(to bottom right,
+        rgba(20, 184, 166, 0.12),
+        rgba(6, 182, 212, 0.10),
+        rgba(34, 197, 94, 0.12)
+      );
+      color: rgba(255, 255, 255, 0.85);
+      border: 1px solid rgba(45, 212, 191, 0.2);
+    `;
+  }}
 `;
 
-export const AmountDisplay = styled.div`
-  display: flex;
-  font-size: ${FONT_SIZE.lg};
-  flex-direction: column;
-  align-items: flex-end;
-`;
-
-export const SatAmount = styled.span`
-  font-weight: ${FONT_WEIGHT.semibold};
-`;
-
-export const BtcAmount = styled.span`
-  font-size: ${FONT_SIZE.xs};
-  color: var(--text-light-color);
+export const PaymentDetails = styled.div`
+  width: 100%;
 `;
 
 export const ExpirationInfo = styled.div`
-  margin-top: 0.5rem;
   font-size: ${FONT_SIZE.xs};
   color: var(--text-light-color);
-  font-weight: ${FONT_WEIGHT.regular};
-
-  ${(props) =>
-    props.color === 'warning' &&
-    `
-    color: var(--warning-color);
-  `}
-
-  ${(props) =>
-    props.color === 'error' &&
-    `
-    color: var(--error-color);
-  `}
 `;
-export const Root = styled(BaseCard)`
-  padding: 0;
-  padding-top: 1.25rem;
-  min-width: fit-content;
 
-  .ant-space.ant-space-horizontal {
-    width: 100%;
+export const MarkReadButton = styled(Button)`
+  align-self: flex-start;
+  margin-top: 0.5rem;
+  
+  /* Liquid glass button styling */
+  background: linear-gradient(to bottom right,
+    rgba(20, 184, 166, 0.20),
+    rgba(6, 182, 212, 0.15),
+    rgba(34, 197, 94, 0.20)
+  ) !important;
+  
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(45, 212, 191, 0.25) !important;
+  color: rgba(45, 212, 191, 0.95) !important;
+  
+  box-shadow:
+    inset 0 2px 8px rgba(45, 212, 191, 0.25),
+    0 0 12px rgba(6, 182, 212, 0.15);
+  
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  &:hover {
+    background: linear-gradient(to bottom right,
+      rgba(20, 184, 166, 0.25),
+      rgba(6, 182, 212, 0.20),
+      rgba(34, 197, 94, 0.25)
+    ) !important;
+    
+    border-color: rgba(45, 212, 191, 0.35) !important;
+    transform: translateY(-1px);
+    
+    box-shadow:
+      inset 0 3px 10px rgba(45, 212, 191, 0.30),
+      0 0 20px rgba(6, 182, 212, 0.20);
   }
-  margin-left: 5%;
-  margin-right: 5%;
-  @media only screen and ${media.lg} {
-    > .ant-card-head,
-    > .ant-card-body {
-      margin-left: 18%;
-      margin-right: 18%;
+  
+  &:active {
+    transform: translateY(0);
+  }
+`;
+
+export const UserInput = styled(Input)`
+  width: 100%;
+`;
+
+export const FooterWrapper = styled.div`
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+`;
+
+export const Text = styled.span`
+  font-size: ${FONT_SIZE.md};
+  font-weight: ${FONT_WEIGHT.regular};
+  color: var(--text-main-color);
+`;
+
+export const RedDot = styled.span`
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--error-color);
+  margin-left: 5px;
+`;
+
+export const PaymentCountBadge = styled(Badge)`
+  margin-left: 0.5rem;
+  
+  .ant-badge-count {
+    /* Liquid glass morphism badge matching Paid Subscribers theme */
+    background: linear-gradient(135deg,
+      rgba(20, 184, 166, 0.85),  /* from-teal-500 */
+      rgba(6, 182, 212, 0.80),   /* to-cyan-500 */
+      rgba(45, 212, 191, 0.85)   /* accent cyan */
+    );
+    color: rgba(0, 20, 30, 0.95);  /* Dark text for contrast */
+    font-weight: 700;
+    font-size: 11px;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(45, 212, 191, 0.4);
+    box-shadow:
+      inset 0 1px 4px rgba(255, 255, 255, 0.25),
+      0 0 12px rgba(45, 212, 191, 0.5),
+      0 0 24px rgba(6, 182, 212, 0.3),
+      0 2px 8px rgba(0, 0, 0, 0.15);
+    position: relative;
+    overflow: hidden;
+    animation: pulseGlow 2s ease-in-out infinite;
+    
+    /* Glass overlay for depth */
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 40%;
+      background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.15) 0%,
+        transparent 100%
+      );
+      pointer-events: none;
+    }
+    
+    @keyframes pulseGlow {
+      0%, 100% {
+        box-shadow:
+          inset 0 1px 4px rgba(255, 255, 255, 0.25),
+          0 0 12px rgba(45, 212, 191, 0.5),
+          0 0 24px rgba(6, 182, 212, 0.3),
+          0 2px 8px rgba(0, 0, 0, 0.15);
+      }
+      50% {
+        box-shadow:
+          inset 0 1px 4px rgba(255, 255, 255, 0.25),
+          0 0 18px rgba(45, 212, 191, 0.7),
+          0 0 36px rgba(6, 182, 212, 0.5),
+          0 2px 10px rgba(0, 0, 0, 0.2);
+      }
     }
   }
-`;
-export const TransactionWrapper = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-  margin-top: 1.5rem;
-  min-width: 65vw;
-  @media only screen and ${media.lg} {
-    min-width: 40vw;
-`;
-export const LeftSideTX = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+  
+  /* Hover effect on the badge count */
+  &:hover .ant-badge-count {
+    transform: scale(1.1);
+    box-shadow:
+      inset 0 1px 6px rgba(255, 255, 255, 0.3),
+      0 0 20px rgba(45, 212, 191, 0.7),
+      0 0 40px rgba(6, 182, 212, 0.5),
+      0 3px 12px rgba(0, 0, 0, 0.2);
+  }
 `;
 
-export const CardFooter = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+export const PaymentTypeTag = styled(Tag)<{ $type: string }>`
+  border-radius: 12px;
+  font-size: ${FONT_SIZE.xs};
+  font-weight: ${FONT_WEIGHT.semibold};
+  text-transform: uppercase;
+  margin-right: 8px;
+  backdrop-filter: blur(5px);
+  transition: all 0.3s ease;
+
+  ${({ $type }) => {
+    if ($type === 'new') {
+      return css`
+        color: rgba(45, 212, 191, 1);
+        background: linear-gradient(135deg,
+          rgba(20, 184, 166, 0.18),
+          rgba(6, 182, 212, 0.15)
+        );
+        border: 1px solid rgba(45, 212, 191, 0.35);
+        box-shadow: 0 0 8px rgba(6, 182, 212, 0.2);
+        
+        &:hover {
+          background: linear-gradient(135deg,
+            rgba(20, 184, 166, 0.25),
+            rgba(6, 182, 212, 0.20)
+          );
+          box-shadow: 0 0 12px rgba(6, 182, 212, 0.3);
+        }
+      `;
+    }
+    return css`
+      color: rgba(255, 255, 255, 0.85);
+      background: linear-gradient(135deg,
+        rgba(45, 212, 191, 0.08),
+        rgba(6, 182, 212, 0.06)
+      );
+      border: 1px solid rgba(45, 212, 191, 0.2);
+      
+      &:hover {
+        background: linear-gradient(135deg,
+          rgba(45, 212, 191, 0.12),
+          rgba(6, 182, 212, 0.10)
+        );
+        border-color: rgba(45, 212, 191, 0.3);
+      }
+    `;
+  }}
 `;

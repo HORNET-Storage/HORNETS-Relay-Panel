@@ -50,7 +50,6 @@ const WalletSettings: React.FC = () => {
 
   return (
     <BaseSettingsForm
-      title="Wallet Settings"
       loading={loading}
       error={error}
       onSave={handleSave}

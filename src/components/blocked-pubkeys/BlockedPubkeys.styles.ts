@@ -2,12 +2,9 @@ import styled from 'styled-components';
 import Card from 'antd/lib/card/Card';
 import { Input } from 'antd';
 import { BaseCol } from '../common/BaseCol/BaseCol';
-export const InputRoot = styled(Input)`
-  background-color: var(--layout-sider-bg-color);
-  & input {
-    background-color: var(--layout-sider-bg-color);
-  }
-`;
+
+/* Let global styles handle the search input - no custom overrides needed */
+export const InputRoot = styled(Input)``;
 export const BaseColRoot = styled(BaseCol)`
   overflow: auto;
   border-radius: 8px;

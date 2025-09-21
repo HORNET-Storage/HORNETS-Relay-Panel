@@ -1,7 +1,7 @@
 // src/components/relay-settings/sections/NetworkSection/components/FileStorageToggle.tsx
 
 import React from 'react';
-import { BaseCheckbox } from '@app/components/common/BaseCheckbox/BaseCheckbox';
+import { BaseSwitch } from '@app/components/common/BaseSwitch/BaseSwitch';
 import * as S from '@app/pages/uiComponentsPages/UIComponentsPage.styles';
 import { useTranslation } from 'react-i18next';
 
@@ -21,13 +21,16 @@ export const FileStorageToggle: React.FC<FileStorageToggleProps> = ({
       <S.LabelSpan style={{ marginBottom: '1rem' }}>
         {t('File Storage')}
       </S.LabelSpan>
-      <BaseCheckbox
-        checked={isActive}
-        onChange={(e) => onChange(e.target.checked)}
-        style={{ fontSize: '.85rem' }}
-      >
-        Enable/Disable
-      </BaseCheckbox>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <BaseSwitch
+          className="networkSwitch liquid-switch"
+          checked={isActive}
+          onChange={onChange}
+        />
+        <span style={{ fontSize: '.85rem' }}>
+          {isActive ? 'Enabled' : 'Disabled'}
+        </span>
+      </div>
     </div>
   );
 };

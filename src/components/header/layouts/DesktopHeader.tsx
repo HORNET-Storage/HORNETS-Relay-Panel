@@ -16,7 +16,7 @@ export const DesktopHeader: React.FC<DesktopHeaderProps> = ({ isTwoColumnsLayout
   const leftSide = isTwoColumnsLayout ? (
     <S.SearchColumn xl={16} xxl={17}>
       <BaseRow justify="space-between">
-        <BaseCol xl={15} xxl={12}>
+        <BaseCol xl={14} xxl={12}>  {/* Extended another 15% to ~60-65% width */}
           <HeaderSearch />
         </BaseCol>
         <BaseCol></BaseCol>
@@ -24,7 +24,7 @@ export const DesktopHeader: React.FC<DesktopHeaderProps> = ({ isTwoColumnsLayout
     </S.SearchColumn>
   ) : (
     <>
-      <BaseCol lg={10} xxl={8}>
+      <BaseCol lg={12} xxl={10}>  {/* Further extended for non-two-column layout */}
         <HeaderSearch />
       </BaseCol>
       <BaseCol></BaseCol>
@@ -36,21 +36,17 @@ export const DesktopHeader: React.FC<DesktopHeaderProps> = ({ isTwoColumnsLayout
       {leftSide}
 
       <S.ProfileColumn xl={8} xxl={7} $isTwoColumnsLayout={isTwoColumnsLayout}>
-        <BaseRow align="middle" justify="end" gutter={[5, 5]}>
+        <BaseRow align="middle" justify="end" gutter={[6, 0]}>
           <BaseCol>
-            <BaseRow gutter={[{ xxl: 5 }, { xxl: 5 }]}>
-              <BaseCol>
-                <HeaderFullscreen />
-              </BaseCol>
+            <HeaderFullscreen />
+          </BaseCol>
 
-              <BaseCol>
-                <NotificationsDropdown />
-              </BaseCol>
+          <BaseCol>
+            <NotificationsDropdown />
+          </BaseCol>
 
-              <BaseCol>
-                <SettingsDropdown />
-              </BaseCol>
-            </BaseRow>
+          <BaseCol>
+            <SettingsDropdown />
           </BaseCol>
         </BaseRow>
       </S.ProfileColumn>

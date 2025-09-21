@@ -20,7 +20,8 @@ export const Description = styled(BaseTypography.Text)`
 `;
 
 export const SpaceWrapper = styled(BaseSpace)<SpacewWrapperProps>`
-  background-color: var(--background-color);
+  /* Remove background - transparent by default */
+  background: transparent;
 
   & ${Title}, span[role='img'] {
     ${(props) => {
@@ -36,6 +37,10 @@ export const SpaceWrapper = styled(BaseSpace)<SpacewWrapperProps>`
             color: var(--${props.type}-color);
           `;
         case 'info':
+          return css`
+            /* Liquid cyan theme colors to match Paid Subscribers */
+            color: rgba(45, 212, 191, 0.95);
+          `;
         case 'mention':
           return css`
             color: var(--primary-color);

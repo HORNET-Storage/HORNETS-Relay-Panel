@@ -14,13 +14,13 @@ const MODE_INFO = {
     label: 'Only Me',
     subtitle: '[Free]',
     description: 'Personal relay for single user with unlimited access',
-    color: '#fa541c'
+    color: '#1890ff'
   },
   'invite-only': {
     label: 'Invite Only',
     subtitle: '[Free]',
     description: 'Invite-only access with manual NPUB management',
-    color: '#722ed1'
+    color: '#1890ff'
   },
   'public': {
     label: 'Public Relay',
@@ -32,7 +32,7 @@ const MODE_INFO = {
     label: 'Subscription',
     subtitle: '[Paid]',
     description: 'Subscription-based access control',
-    color: '#52c41a'
+    color: '#1890ff'
   }
 };
 

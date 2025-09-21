@@ -19,16 +19,20 @@ export const SendBody = styled(BaseRow)`
 export const FormSpacer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.5rem;
+  padding: 1rem;
 `;
 export const FormHeader = styled.span`
   display: flex;
-  font-size: 2rem;
+  font-size: 1.8rem;
+  font-weight: 600;
   align-items: center;
   text-align: center;
   justify-content: center;
   width: 100%;
-  padding-bottom: 1rem;
+  padding-bottom: 1.5rem;
+  color: #0ff;
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
 `;
 
 export const InputHeader = styled.span`
@@ -45,7 +49,7 @@ export const RBFWrapper = styled.div`
 
 export const InputWrapper = styled.div`
   display: flex;
-  min-width: 25vw;
+  width: 100%;
   flex-direction: column;
   gap: 0.5rem;
 `;
@@ -75,7 +79,6 @@ export const Recipient = styled.span`
 export const ErrorText = styled.small`
   color: var(--error-color);
   display: flex;
-  op
   flex-direction: row;
   align-items: center;
 `;

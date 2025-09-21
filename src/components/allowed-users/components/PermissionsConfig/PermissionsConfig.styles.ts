@@ -101,26 +101,36 @@ export const ForcedSelectWrapper = styled.div<{ $isForced: boolean }>`
   .ant-select {
     width: 100%;
     .ant-select-arrow{
-      color: ${(props) => (!props.$isForced ? `var(--text-main-color)` : `var(--text-light-color)`)};
+      color: ${(props) => (!props.$isForced ? `rgba(0, 255, 255, 0.7)` : `rgba(0, 255, 255, 0.4)`)};
     }
     .ant-select-selector {
-      background-color: ${(props) => (props.$isForced ? '#1a1d35' : '#25284B')} !important;
-      border: ${(props) => (props.$isForced ? '1px solid #434343' : '1px solid #d9d9d9')} !important;
-      color: ${(props) => (props.$isForced ? '#8c8c8c' : '#d9d9d9')} !important;
+      background-color: ${(props) => (props.$isForced ? 'rgba(0, 255, 255, 0.02)' : 'rgba(0, 255, 255, 0.04)')} !important;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: ${(props) => (props.$isForced ? '1px solid rgba(0, 255, 255, 0.1)' : '1px solid rgba(0, 255, 255, 0.2)')} !important;
+      color: ${(props) => (props.$isForced ? 'rgba(255, 255, 255, 0.6)' : 'rgba(255, 255, 255, 0.9)')} !important;
+      transition: all 0.3s ease;
     }
 
     .ant-select-selection-item {
-      color: ${(props) => (props.$isForced ? '#8c8c8c' : '#d9d9d9')} !important;
+      color: ${(props) => (props.$isForced ? 'rgba(255, 255, 255, 0.6)' : 'rgba(255, 255, 255, 0.9)')} !important;
+    }
+
+    &:not(.ant-select-disabled):hover .ant-select-selector {
+      border-color: rgba(0, 255, 255, 0.4) !important;
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
     }
 
     &.ant-select-disabled {
       .ant-select-selector {
-        background-color: ${(props) => (props.$isForced ? '#1a1d35' : '#25284B')} !important;
-        border: ${(props) => (props.$isForced ? '1px solid #434343' : '1px solid #d9d9d9')} !important;
+        background-color: ${(props) => (props.$isForced ? 'rgba(0, 255, 255, 0.02)' : 'rgba(0, 255, 255, 0.04)')} !important;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: ${(props) => (props.$isForced ? '1px solid rgba(0, 255, 255, 0.1)' : '1px solid rgba(0, 255, 255, 0.2)')} !important;
       }
 
       .ant-select-selection-item {
-        color: ${(props) => (props.$isForced ? '#8c8c8c' : '#d9d9d9')} !important;
+        color: ${(props) => (props.$isForced ? 'rgba(255, 255, 255, 0.6)' : 'rgba(255, 255, 255, 0.9)')} !important;
       }
     }
   }

@@ -36,11 +36,16 @@ export const BaseModal: BaseModalInterface = ({
     );
   }
 
+  // Determine the container based on fullscreen status
+  const getModalContainer = document.fullscreenElement
+    ? () => document.fullscreenElement as HTMLElement
+    : false;
+
   return (
-    <Modal 
-      getContainer={false} 
-      width={modalSize} 
-      open={isOpen} 
+    <Modal
+      getContainer={getModalContainer}
+      width={modalSize}
+      open={isOpen}
       {...props}
     >
       {children}

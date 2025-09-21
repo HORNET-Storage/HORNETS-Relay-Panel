@@ -132,10 +132,12 @@ export const RelayOwnerConfig: React.FC<RelayOwnerConfigProps> = ({
         description="In only-me mode, only the relay owner can write to this relay. Set your NPUB below to identify yourself as the owner."
         type="info"
         showIcon
-        style={{ 
+        style={{
           marginBottom: '1.5rem',
-          backgroundColor: '#25284B',
-          border: '1px solid #d9d9d9',
+          backgroundColor: 'rgba(0, 255, 255, 0.03)',
+          backdropFilter: 'blur(10px)',
+          WebkitBackdropFilter: 'blur(10px)',
+          border: '1px solid rgba(0, 255, 255, 0.15)',
           color: '#d9d9d9'
         }}
       />

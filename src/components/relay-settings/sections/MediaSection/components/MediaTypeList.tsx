@@ -1,7 +1,7 @@
 // src/components/relay-settings/sections/MediaSection/components/MediaTypeList.tsx
 
 import React from 'react';
-import { BaseCheckbox } from '@app/components/common/BaseCheckbox/BaseCheckbox';
+import { LiquidGlassCheckboxGroup } from '@app/components/relay-settings/shared/LiquidGlassCheckbox/LiquidGlassCheckbox';
 import * as S from '@app/pages/uiComponentsPages/UIComponentsPage.styles';
 import { themeObject } from '@app/styles/themes/themeVariables';
 import { useAppSelector } from '@app/hooks/reduxHooks';
@@ -27,30 +27,25 @@ export const MediaTypeList: React.FC<MediaTypeListProps> = ({
   const theme = useAppSelector((state) => state.theme.theme);
 
   const options = formats.map((format) => {
-    const isSelected = selectedFormats.includes(format.mime);
-    const statusIcon = isSelected ? '✅' : '❌';
-    
     return {
       label: (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <span style={{ fontSize: '1.2em', minWidth: '1.5rem' }}>{statusIcon}</span>
-          <S.CheckboxLabel
-            style={{
-              color: themeObject[theme].textMain
-            }}
-            isActive={true}
-          >
-            {format.ext.toUpperCase()}
-          </S.CheckboxLabel>
-        </div>
+        <S.CheckboxLabel
+          style={{
+            color: themeObject[theme].textMain,
+            marginLeft: '0.5rem'
+          }}
+          isActive={true}
+        >
+          {format.ext.toUpperCase()}
+        </S.CheckboxLabel>
       ),
       value: format.mime
     };
   });
 
   return (
-    <BaseCheckbox.Group
-      className="custom-checkbox-group grid-checkbox-group"
+    <LiquidGlassCheckboxGroup
+      className="liquid-glass-checkbox custom-checkbox-group grid-checkbox-group"
       options={options}
       value={selectedFormats}
       onChange={(checkedValues) => onChange(checkedValues as string[])}
