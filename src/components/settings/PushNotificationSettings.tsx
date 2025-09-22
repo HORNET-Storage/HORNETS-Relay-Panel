@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Input, InputNumber, Switch, Tooltip, Card, Divider } from 'antd';
-import { 
-  QuestionCircleOutlined, 
-  BellOutlined, 
-  AppleOutlined, 
-  AndroidOutlined, 
+import { Form, Input, InputNumber, Tooltip, Card } from 'antd';
+import {
+  QuestionCircleOutlined,
+  BellOutlined,
+  AppleOutlined,
+  AndroidOutlined,
   SettingOutlined,
   KeyOutlined,
   FileTextOutlined
 } from '@ant-design/icons';
+import { LiquidToggle } from '@app/components/common/LiquidToggle';
 import useGenericSettings from '@app/hooks/useGenericSettings';
 import { SettingsGroupType } from '@app/types/settings.types';
 import BaseSettingsForm from './BaseSettingsForm';
@@ -98,7 +99,7 @@ const PushNotificationSettings: React.FC = () => {
             }
             valuePropName="checked"
           >
-            <Switch />
+            <LiquidToggle />
           </Form.Item>
         </Card>
 
@@ -251,7 +252,7 @@ const PushNotificationSettings: React.FC = () => {
             }
             valuePropName="checked"
           >
-            <Switch />
+            <LiquidToggle />
           </Form.Item>
 
           <Form.Item
@@ -362,7 +363,7 @@ const PushNotificationSettings: React.FC = () => {
             }
             valuePropName="checked"
           >
-            <Switch />
+            <LiquidToggle />
           </Form.Item>
         </Card>
 
@@ -388,7 +389,7 @@ const PushNotificationSettings: React.FC = () => {
             }
             valuePropName="checked"
           >
-            <Switch />
+            <LiquidToggle />
           </Form.Item>
 
           <Form.Item
