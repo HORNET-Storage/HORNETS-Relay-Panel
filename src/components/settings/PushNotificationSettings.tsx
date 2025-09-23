@@ -16,7 +16,7 @@ const Container = styled.div`
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(0, 255, 255, 0.1);
   border-radius: 8px;
-  padding: 1.5rem;
+  padding: 1.5rem 1.5rem 0.5rem 1.5rem;
   margin-bottom: 1rem;
 `;
 
@@ -408,7 +408,7 @@ const PushNotificationSettings: React.FC = () => {
               prefix={<FileTextOutlined />}
             />
           </Form.Item>
-        <Form.Item>
+        <Form.Item style={{ marginBottom: 0 }}>
           <p style={{
             color: 'rgba(255, 255, 255, 0.8)',
             fontSize: '0.9em',

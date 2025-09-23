@@ -5,7 +5,7 @@ import { useHandleLogout } from './authUtils';
 import { useProfileAPI } from './useProfileAPI';
 
 // Import the profile images for dummy data
-import profile1 from '@app/assets/images/profile1.webp';
+import profile1 from '@app/assets/images/profile1.png';
 import profile2 from '@app/assets/images/profile2.jpg';
 import profile3 from '@app/assets/images/profile3.webp';
 import profile4 from '@app/assets/images/profile4.webp';
