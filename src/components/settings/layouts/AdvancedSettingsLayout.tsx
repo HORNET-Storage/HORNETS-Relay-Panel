@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { Button, Space, Spin } from 'antd';
 import { LiquidBlueButton } from '@app/components/common/LiquidBlueButton';
 import { BaseRow } from '@app/components/common/BaseRow/BaseRow';
-import { BaseCol } from '@app/components/common/BaseCol/BaseCol';
 import GeneralSettingsPanel from '../panels/GeneralSettingsPanel';
 import ImageModerationPanel from '../panels/ImageModerationPanel';
 import ContentFilterPanel from '../panels/ContentFilterPanel';
 import OllamaPanel from '../panels/OllamaPanel';
 import WalletPanel from '../panels/WalletPanel';
+import PushNotificationPanel from '../panels/PushNotificationPanel';
 import useGenericSettings from '@app/hooks/useGenericSettings';
 import { CollapsibleSection } from '@app/components/relay-settings/shared/CollapsibleSection/CollapsibleSection';
 import { Balance } from '@app/components/relay-dashboard/Balance/Balance';
@@ -117,6 +117,10 @@ const AdvancedSettingsLayout: React.FC<AdvancedSettingsLayoutProps> = ({
           
           <CollapsibleSection header="Wallet">
             <WalletPanel />
+          </CollapsibleSection>
+
+          <CollapsibleSection header="Push Notifications">
+            <PushNotificationPanel />
           </CollapsibleSection>
           
           <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'center' }}>

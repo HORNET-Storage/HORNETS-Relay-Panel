@@ -1,13 +1,13 @@
 import React from 'react';
 import { PageTitle } from '@app/components/common/PageTitle/PageTitle';
 import { BaseRow } from '@app/components/common/BaseRow/BaseRow';
-import { BaseCol } from '@app/components/common/BaseCol/BaseCol';
 import ImageModerationSettings from './ImageModerationSettings';
 import ContentFilterSettings from './ContentFilterSettings';
 import OllamaSettings from './OllamaSettings';
 import WalletSettings from './WalletSettings';
 import GeneralSettings from './GeneralSettings';
 import RelayInfoSettings from './RelayInfoSettings';
+import PushNotificationSettings from './PushNotificationSettings';
 import * as S from '@app/pages/DashboardPages/DashboardPage.styles';
 import * as PageStyles from '@app/pages/uiComponentsPages/UIComponentsPage.styles';
 import { CollapsibleSection } from '@app/components/relay-settings/shared/CollapsibleSection/CollapsibleSection';
@@ -47,6 +47,10 @@ const SettingsPage: React.FC = () => {
           
           <CollapsibleSection header="Wallet Settings">
             <WalletSettings />
+          </CollapsibleSection>
+
+          <CollapsibleSection header="Push Notifications">
+            <PushNotificationSettings />
           </CollapsibleSection>
         </S.LeftSideCol>
 
