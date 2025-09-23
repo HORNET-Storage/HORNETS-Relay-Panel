@@ -43,20 +43,20 @@ export const LineRaceChart: React.FC = () => {
         color: new graphic.LinearGradient(0, 0, 1, 0, [
           {
             offset: 0,
-            color: 'rgba(51, 156, 253, 0.9)',
+            color: 'rgba(142, 48, 235, 0.9)',
           },
           {
             offset: 1,
-            color: 'rgba(51, 156, 253, 0.6)',
+            color: 'rgba(142, 48, 235, 0.6)',
           },
         ]),
         width: 3,
-        shadowColor: 'rgba(51, 156, 253, 0.3)',
+        shadowColor: 'rgba(142, 48, 235, 0.3)',
         shadowBlur: 10,
         shadowOffsetY: 3,
       },
       itemStyle: {
-        color: 'rgba(51, 156, 253, 0.9)',
+        color: 'rgba(142, 48, 235, 0.9)',
         borderColor: 'rgba(255, 255, 255, 0.9)',
         borderWidth: 2,
       },
@@ -65,11 +65,11 @@ export const LineRaceChart: React.FC = () => {
         color: new graphic.LinearGradient(0, 0, 0, 1, [
           {
             offset: 0,
-            color: 'rgba(51, 156, 253, 0.3)',
+            color: 'rgba(142, 48, 235, 0.3)',
           },
           {
             offset: 1,
-            color: 'rgba(51, 156, 253, 0.05)',
+            color: 'rgba(142, 48, 235, 0.05)',
           },
         ]),
       },
@@ -90,13 +90,13 @@ export const LineRaceChart: React.FC = () => {
         showSymbol: true,
         lineStyle: {
           width: 4,
-          shadowColor: 'rgba(51, 156, 253, 0.6)',
+          shadowColor: 'rgba(142, 48, 235, 0.6)',
           shadowBlur: 15,
         },
         itemStyle: {
           borderColor: '#fff',
           borderWidth: 3,
-          shadowColor: 'rgba(51, 156, 253, 0.5)',
+          shadowColor: 'rgba(142, 48, 235, 0.5)',
           shadowBlur: 10,
         },
       },
@@ -274,20 +274,20 @@ export const LineRaceChart: React.FC = () => {
         color: new graphic.LinearGradient(0, 0, 1, 0, [
           {
             offset: 0,
-            color: 'rgba(142, 48, 235, 0.9)',
+            color: 'rgba(51, 156, 253, 0.9)',
           },
           {
             offset: 1,
-            color: 'rgba(142, 48, 235, 0.6)',
+            color: 'rgba(51, 156, 253, 0.6)',
           },
         ]),
         width: 3,
-        shadowColor: 'rgba(142, 48, 235, 0.3)',
+        shadowColor: 'rgba(51, 156, 253, 0.3)',
         shadowBlur: 10,
         shadowOffsetY: 3,
       },
       itemStyle: {
-        color: 'rgba(142, 48, 235, 0.9)',
+        color: 'rgba(51, 156, 253, 0.9)',
         borderColor: 'rgba(255, 255, 255, 0.9)',
         borderWidth: 2,
       },
@@ -296,11 +296,11 @@ export const LineRaceChart: React.FC = () => {
         color: new graphic.LinearGradient(0, 0, 0, 1, [
           {
             offset: 0,
-            color: 'rgba(142, 48, 235, 0.3)',
+            color: 'rgba(51, 156, 253, 0.3)',
           },
           {
             offset: 1,
-            color: 'rgba(142, 48, 235, 0.05)',
+            color: 'rgba(51, 156, 253, 0.05)',
           },
         ]),
       },
@@ -321,13 +321,13 @@ export const LineRaceChart: React.FC = () => {
         showSymbol: true,
         lineStyle: {
           width: 4,
-          shadowColor: 'rgba(142, 48, 235, 0.6)',
+          shadowColor: 'rgba(51, 156, 253, 0.6)',
           shadowBlur: 15,
         },
         itemStyle: {
           borderColor: '#fff',
           borderWidth: 3,
-          shadowColor: 'rgba(142, 48, 235, 0.5)',
+          shadowColor: 'rgba(51, 156, 253, 0.5)',
           shadowBlur: 10,
         },
       },
@@ -373,10 +373,10 @@ export const LineRaceChart: React.FC = () => {
         });
         
         const colorMap: Record<string, string> = {
-          [t('categories.npubs')]: 'rgba(51, 156, 253, 0.9)',
+          [t('categories.npubs')]: 'rgba(142, 48, 235, 0.9)',
           [t('categories.lightningABV')]: 'rgba(253, 156, 51, 0.9)',
           [t('categories.bolt')]: 'rgba(25, 230, 141, 0.9)',
-          [t('categories.lightningAndDHT')]: 'rgba(142, 48, 235, 0.9)',
+          [t('categories.lightningAndDHT')]: 'rgba(51, 156, 253, 0.9)',
         };
         
         let content = `
