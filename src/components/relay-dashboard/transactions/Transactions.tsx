@@ -242,7 +242,6 @@ export const ActivityStory: React.FC = () => {
       <TitleContainer>
         <S.Title level={2} className="liquid-glow-text">{t('nft.yourTransactions')}</S.Title>
         <ViewTransactions
-          style={{ color: liquidBlueTheme.primary }}
           bordered={false}
           onClick={showModal}
           className="liquid-button-text"
