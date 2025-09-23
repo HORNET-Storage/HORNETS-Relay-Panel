@@ -56,7 +56,7 @@ The panel uses **NIP-07** ([window.nostr capability](https://nostr-nips.com/nip-
 
 ## Previews
 *All preview images are taken from the live demo*
-<img width="1920" height="1080" alt="chrome_NZAFG5O4rA" src="https://github.com/user-attachments/assets/c4b2e374-b8ea-4cab-b511-421547470830" />
+<img width="1920" height="1080" alt="chrome_v28q2YhoVn" src="https://github.com/user-attachments/assets/cfa13048-4f15-443b-af88-8cfc86133dcc" />
 <img width="1920" height="1080" alt="chrome_wFoydaWYuo" src="https://github.com/user-attachments/assets/c828ea60-55c7-4d9c-957a-f7a52d4430be" />
 <img width="1920" height="1080" alt="chrome_mO4QySaRXA" src="https://github.com/user-attachments/assets/ab6651d7-420b-4275-a168-8d8be14e1baf" />
 <img width="1920" height="1080" alt="chrome_6chvJFlf28" src="https://github.com/user-attachments/assets/bba63458-4744-427b-bd4b-70a24f46fe90" />
