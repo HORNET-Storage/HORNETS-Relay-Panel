@@ -1,17 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Input, InputNumber, Switch, Tooltip, Card } from 'antd';
-import { 
-  QuestionCircleOutlined, 
-  BellOutlined, 
-  AppleOutlined, 
-  AndroidOutlined, 
-  SettingOutlined,
-  KeyOutlined,
-  FileTextOutlined
+import { Form, Input, InputNumber, Switch, Tooltip, Alert, Spin, Divider } from 'antd';
+import {
+  QuestionCircleOutlined
 } from '@ant-design/icons';
 import useGenericSettings from '@app/hooks/useGenericSettings';
 import { SettingsGroupType } from '@app/types/settings.types';
-import BaseSettingsPanel from '../BaseSettingsPanel';
 
 const PushNotificationPanel: React.FC = () => {
   console.log('PushNotificationPanel - Component rendering');
@@ -69,58 +62,67 @@ const PushNotificationPanel: React.FC = () => {
   };
 
   return (
-    <BaseSettingsPanel
-      loading={loading}
-      error={error}
-    >
-      <Form
-        form={form}
-        layout="vertical"
-        onValuesChange={handleValuesChange}
-        initialValues={settings || {}}
-        onFinish={(values) => {
-          console.log('Form submitted with values:', values);
-          setIsUserEditing(false);
-        }}
-      >
-        {/* Main Configuration */}
-        <Card 
-          title={
-            <span>
-              <BellOutlined style={{ marginRight: 8 }} />
-              General Configuration
-            </span>
-          } 
-          style={{ marginBottom: 16 }}
-          size="small"
+    <>
+      {error && (
+        <Alert
+          message="Error"
+          description={error.message}
+          type="error"
+          showIcon
+          style={{ marginBottom: '1rem' }}
+        />
+      )}
+      
+      <Spin spinning={loading}>
+        <Form
+          form={form}
+          layout="vertical"
+          onValuesChange={handleValuesChange}
+          initialValues={settings || {}}
+          onFinish={(values) => {
+            console.log('Form submitted with values:', values);
+            setIsUserEditing(false);
+          }}
+          style={{
+            padding: 0,
+            margin: 0,
+            background: 'transparent',
+            border: 'none'
+          }}
+          colon={false}
         >
-          <Form.Item
-            name="enabled"
-            label={
-              <span>
-                Enable Push Notifications&nbsp;
-                <Tooltip title="Master toggle for the push notification service">
-                  <QuestionCircleOutlined />
-                </Tooltip>
-              </span>
-            }
-            valuePropName="checked"
-          >
-            <Switch />
-          </Form.Item>
-        </Card>
+        {/* Main Configuration */}
+        <Divider orientation="left" style={{
+          borderColor: 'rgba(82, 196, 255, 0.3)',
+          fontSize: '0.95em',
+          marginTop: 0
+        }}>
+          General Configuration
+        </Divider>
+        
+        <Form.Item
+          name="enabled"
+          label={
+            <span>
+              Enable Push Notifications&nbsp;
+              <Tooltip title="Master toggle for the push notification service">
+                <QuestionCircleOutlined />
+              </Tooltip>
+            </span>
+          }
+          valuePropName="checked"
+        >
+          <Switch />
+        </Form.Item>
 
         {/* Service Configuration */}
-        <Card 
-          title={
-            <span>
-              <SettingOutlined style={{ marginRight: 8 }} />
-              Service Configuration
-            </span>
-          } 
-          style={{ marginBottom: 16 }}
-          size="small"
-        >
+        <Divider orientation="left" style={{
+          borderColor: 'rgba(82, 196, 255, 0.3)',
+          fontSize: '0.95em'
+        }}>
+          Service Configuration
+        </Divider>
+        
           <Form.Item
             name="service_worker_count"
             label={
@@ -208,9 +210,8 @@ const PushNotificationPanel: React.FC = () => {
               }
             ]}
           >
-            <Input 
-              placeholder="e.g., 1s, 500ms, 2m" 
-              prefix={<SettingOutlined />}
+            <Input
+              placeholder="e.g., 1s, 500ms, 2m"
             />
           </Form.Item>
 
@@ -236,19 +237,15 @@ const PushNotificationPanel: React.FC = () => {
               max={1000}
             />
           </Form.Item>
-        </Card>
 
         {/* APNs Configuration */}
-        <Card 
-          title={
-            <span>
-              <AppleOutlined style={{ marginRight: 8 }} />
-              Apple Push Notification Service (APNs)
-            </span>
-          } 
-          style={{ marginBottom: 16 }}
-          size="small"
-        >
+        <Divider orientation="left" style={{
+          borderColor: 'rgba(82, 196, 255, 0.3)',
+          fontSize: '0.95em'
+        }}>
+          Apple Push Notification Service (APNs)
+        </Divider>
+        
           <Form.Item
             name="apns_enabled"
             label={
@@ -278,9 +275,8 @@ const PushNotificationPanel: React.FC = () => {
               { required: false, message: 'Please enter the APNs key file path' }
             ]}
           >
-            <Input 
-              placeholder="e.g., /path/to/AuthKey_XXXXXXXXXX.p8" 
-              prefix={<KeyOutlined />}
+            <Input
+              placeholder="e.g., /path/to/AuthKey_XXXXXXXXXX.p8"
             />
           </Form.Item>
 
@@ -302,24 +298,19 @@ const PushNotificationPanel: React.FC = () => {
               }
             ]}
           >
-            <Input 
-              placeholder="e.g., com.yourcompany.yourapp" 
-              prefix={<AppleOutlined />}
+            <Input
+              placeholder="e.g., com.yourcompany.yourapp"
             />
           </Form.Item>
-        </Card>
 
         {/* FCM Configuration */}
-        <Card 
-          title={
-            <span>
-              <AndroidOutlined style={{ marginRight: 8 }} />
-              Firebase Cloud Messaging (FCM)
-            </span>
-          } 
-          style={{ marginBottom: 16 }}
-          size="small"
-        >
+        <Divider orientation="left" style={{
+          borderColor: 'rgba(82, 196, 255, 0.3)',
+          fontSize: '0.95em'
+        }}>
+          Firebase Cloud Messaging (FCM)
+        </Divider>
+        
           <Form.Item
             name="fcm_enabled"
             label={
@@ -349,14 +340,13 @@ const PushNotificationPanel: React.FC = () => {
               { required: false, message: 'Please enter the FCM credentials file path' }
             ]}
           >
-            <Input 
-              placeholder="e.g., /path/to/firebase-service-account.json" 
-              prefix={<FileTextOutlined />}
+            <Input
+              placeholder="e.g., /path/to/firebase-service-account.json"
             />
           </Form.Item>
-        </Card>
-      </Form>
-    </BaseSettingsPanel>
+        </Form>
+      </Spin>
+    </>
   );
 };
 

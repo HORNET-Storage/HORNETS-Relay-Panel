@@ -1,19 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Input, InputNumber, Tooltip, Card } from 'antd';
+import { Form, Input, InputNumber, Tooltip, Alert, Spin, Divider, Card } from 'antd';
 import {
   QuestionCircleOutlined,
-  BellOutlined,
-  AppleOutlined,
-  AndroidOutlined,
-  SettingOutlined,
   KeyOutlined,
   FileTextOutlined
 } from '@ant-design/icons';
 import { LiquidToggle } from '@app/components/common/LiquidToggle';
 import useGenericSettings from '@app/hooks/useGenericSettings';
 import { SettingsGroupType } from '@app/types/settings.types';
-import BaseSettingsForm from './BaseSettingsForm';
-import * as S from './Settings.styles';
+import styled from 'styled-components';
+
+const Container = styled.div`
+  background: rgba(0, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+`;
 
 const PushNotificationSettings: React.FC = () => {
   const {
@@ -50,43 +55,46 @@ const PushNotificationSettings: React.FC = () => {
     updateSettings(changedValues);
   };
 
-  // Modified save function to reset the editing flag
-  const handleSave = async () => {
-    await saveSettings();
-    setIsUserEditing(false); // Reset after saving
-  };
 
   return (
-    <BaseSettingsForm
-      title="Push Notification Settings"
-      loading={loading}
-      error={error}
-      onSave={handleSave}
-      onReset={() => {
-        fetchSettings();
-        setIsUserEditing(false);
-      }}
-    >
-      <Form
-        form={form}
-        layout="vertical"
-        onValuesChange={handleValuesChange}
-        initialValues={settings || {}}
-        onFinish={(values) => {
-          console.log('Form submitted with values:', values);
-          setIsUserEditing(false);
-        }}
-      >
-        {/* Main Configuration */}
-        <Card 
-          title={
-            <span>
-              <BellOutlined style={{ marginRight: 8 }} />
-              General Configuration
-            </span>
-          } 
-          style={{ marginBottom: 16 }}
+    <Container>
+      {error && (
+        <Alert
+          message="Error"
+          description={error.message}
+          type="error"
+          showIcon
+          style={{ marginBottom: '1rem' }}
+        />
+      )}
+      
+      <Spin spinning={loading}>
+        <Form
+          form={form}
+          layout="vertical"
+          onValuesChange={handleValuesChange}
+          initialValues={settings || {}}
+          onFinish={(values) => {
+            console.log('Form submitted with values:', values);
+            setIsUserEditing(false);
+          }}
+          style={{
+            padding: 0,
+            margin: 0,
+            background: 'transparent',
+            border: 'none'
+          }}
+          colon={false}
         >
+        {/* Main Configuration */}
+        <Divider orientation="left" style={{
+          borderColor: 'rgba(82, 196, 255, 0.3)',
+          fontSize: '0.95em',
+          marginTop: 0
+        }}>
+          General Configuration
+        </Divider>
+        
           <Form.Item
             name="enabled"
             label={
@@ -101,18 +109,14 @@ const PushNotificationSettings: React.FC = () => {
           >
             <LiquidToggle />
           </Form.Item>
-        </Card>
-
         {/* Service Configuration */}
-        <Card 
-          title={
-            <span>
-              <SettingOutlined style={{ marginRight: 8 }} />
-              Service Configuration
-            </span>
-          } 
-          style={{ marginBottom: 16 }}
-        >
+        <Divider orientation="left" style={{
+          borderColor: 'rgba(82, 196, 255, 0.3)',
+          fontSize: '0.95em'
+        }}>
+          Service Configuration
+        </Divider>
+        
           <Form.Item
             name="service_worker_count"
             label={
@@ -202,7 +206,6 @@ const PushNotificationSettings: React.FC = () => {
           >
             <Input
               placeholder="e.g., 1s, 500ms, 2m"
-              prefix={<SettingOutlined />}
             />
           </Form.Item>
 
@@ -228,18 +231,14 @@ const PushNotificationSettings: React.FC = () => {
               max={1000}
             />
           </Form.Item>
-        </Card>
-
         {/* APNs Configuration */}
-        <Card 
-          title={
-            <span>
-              <AppleOutlined style={{ marginRight: 8 }} />
-              Apple Push Notification Service (APNs)
-            </span>
-          } 
-          style={{ marginBottom: 16 }}
-        >
+        <Divider orientation="left" style={{
+          borderColor: 'rgba(82, 196, 255, 0.3)',
+          fontSize: '0.95em'
+        }}>
+          Apple Push Notification Service (APNs)
+        </Divider>
+        
           <Form.Item
             name="apns_enabled"
             label={
@@ -347,7 +346,6 @@ const PushNotificationSettings: React.FC = () => {
           >
             <Input
               placeholder="com.your.app"
-              prefix={<AppleOutlined />}
             />
           </Form.Item>
 
@@ -365,18 +363,14 @@ const PushNotificationSettings: React.FC = () => {
           >
             <LiquidToggle />
           </Form.Item>
-        </Card>
-
         {/* FCM Configuration */}
-        <Card 
-          title={
-            <span>
-              <AndroidOutlined style={{ marginRight: 8 }} />
-              Firebase Cloud Messaging (FCM)
-            </span>
-          } 
-          style={{ marginBottom: 16 }}
-        >
+        <Divider orientation="left" style={{
+          borderColor: 'rgba(82, 196, 255, 0.3)',
+          fontSize: '0.95em'
+        }}>
+          Firebase Cloud Messaging (FCM)
+        </Divider>
+        
           <Form.Item
             name="fcm_enabled"
             label={
@@ -414,24 +408,21 @@ const PushNotificationSettings: React.FC = () => {
               prefix={<FileTextOutlined />}
             />
           </Form.Item>
-        </Card>
-
         <Form.Item>
-          <p style={{ 
+          <p style={{
             color: 'rgba(255, 255, 255, 0.8)',
             fontSize: '0.9em',
-            padding: '0.75rem',
-            backgroundColor: 'rgba(0, 0, 0, 0.1)',
-            borderLeft: '3px solid rgba(82, 196, 255, 0.8)',
-            borderRadius: '0 4px 4px 0'
+            padding: '0.75rem 0 0.75rem 0.75rem',
+            borderLeft: '3px solid rgba(82, 196, 255, 0.8)'
           }}>
-            <span style={{ color: 'rgba(82, 196, 255, 1)' }}>Note:</span> Push notification settings are saved to the configuration file 
-            and the push notification service automatically reloads with the new configuration. 
+            <span style={{ color: 'rgba(82, 196, 255, 1)' }}>Note:</span> Push notification settings are saved to the configuration file
+            and the push notification service automatically reloads with the new configuration.
             At least one service (APNs or FCM) should be enabled if push notifications are enabled.
           </p>
         </Form.Item>
-      </Form>
-    </BaseSettingsForm>
+        </Form>
+      </Spin>
+    </Container>
   );
 };
 
