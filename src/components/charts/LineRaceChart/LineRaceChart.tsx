@@ -354,16 +354,6 @@ export const LineRaceChart: React.FC = () => {
       ...getDefaultTooltipStyles(themeObject[theme]),
       order: 'valueDesc',
       trigger: 'axis',
-      backgroundColor: 'rgba(0, 0, 0, 0.9)',
-      borderColor: 'rgba(0, 255, 255, 0.5)',
-      borderWidth: 1,
-      padding: 10,
-      textStyle: {
-        color: liquidBlueTheme.textMain,
-        fontSize: 12,
-      },
-      shadowColor: 'rgba(0, 255, 255, 0.3)',
-      shadowBlur: 10,
       axisPointer: {
         type: 'cross',
         crossStyle: {
@@ -373,6 +363,48 @@ export const LineRaceChart: React.FC = () => {
           color: 'rgba(0, 255, 255, 0.3)',
           width: 1,
         },
+      },
+      formatter: function(params: any[]) {
+        if (!params || params.length === 0) return '';
+        
+        const monthName = new Date(params[0].name + '-01').toLocaleDateString('en-US', {
+          month: 'short',
+          year: 'numeric'
+        });
+        
+        const colorMap: Record<string, string> = {
+          [t('categories.npubs')]: 'rgba(51, 156, 253, 0.9)',
+          [t('categories.lightningABV')]: 'rgba(253, 156, 51, 0.9)',
+          [t('categories.bolt')]: 'rgba(25, 230, 141, 0.9)',
+          [t('categories.lightningAndDHT')]: 'rgba(142, 48, 235, 0.9)',
+        };
+        
+        let content = `
+          <div style="padding: 4px;">
+            <div style="color: rgba(0, 255, 255, 0.9); font-weight: 500; margin-bottom: 8px; border-bottom: 1px solid rgba(0, 255, 255, 0.2); padding-bottom: 6px;">
+              ${monthName}
+            </div>
+        `;
+        
+        // Sort by value descending for better readability
+        const sortedParams = [...params].sort((a, b) => b.value[1] - a.value[1]);
+        
+        sortedParams.forEach(param => {
+          const color = colorMap[param.seriesName] || 'rgba(0, 255, 255, 0.9)';
+          const gradientStyle = `background: linear-gradient(135deg, ${color}, ${color.replace('0.9', '0.4')})`;
+          const value = param.value[1];
+          
+          content += `
+            <div style="display: flex; align-items: center; margin-bottom: 4px;">
+              <span style="width: 10px; height: 10px; border-radius: 50%; ${gradientStyle}; display: inline-block; margin-right: 8px;"></span>
+              <span style="color: rgba(255, 255, 255, 0.85); flex: 1;">${param.seriesName}: </span>
+              <span style="color: ${color}; font-weight: 600; margin-left: auto;">${value.toLocaleString()}</span>
+            </div>
+          `;
+        });
+        
+        content += '</div>';
+        return content;
       },
     },
     xAxis: {

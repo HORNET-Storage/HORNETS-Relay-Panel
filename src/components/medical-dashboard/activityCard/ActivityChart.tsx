@@ -219,11 +219,11 @@ export const ActivityChart: React.FC = () => {
     color: new graphic.LinearGradient(0, 0, 0, 1, [
       {
         offset: 0,
-        color: 'rgba(51, 156, 253, 0.7)',
+        color: 'rgba(0, 255, 255, 0.85)',
       },
       {
         offset: 1,
-        color: 'rgba(51, 156, 253, 0.15)',
+        color: 'rgba(0, 255, 255, 0.2)',
       },
     ]),
     grid: {
@@ -278,7 +278,24 @@ export const ActivityChart: React.FC = () => {
       trigger: 'axis',
       formatter: (params: any) => {
         const currentItem = params[0];
-        return `${currentItem.name}: ${currentItem.value.toFixed(3)} GB`; // Include the month in the tooltip
+        const value = currentItem.value.toFixed(3);
+        const monthName = new Date(currentItem.name + '-01').toLocaleDateString('en-US', {
+          month: 'short',
+          year: 'numeric'
+        });
+        
+        return `
+          <div style="padding: 4px;">
+            <div style="color: rgba(0, 255, 255, 0.9); font-weight: 500; margin-bottom: 4px;">
+              ${monthName}
+            </div>
+            <div style="display: flex; align-items: center;">
+              <span style="width: 12px; height: 12px; border-radius: 50%; background: linear-gradient(135deg, rgba(0, 255, 255, 0.85), rgba(0, 255, 255, 0.4)); display: inline-block; margin-right: 8px;"></span>
+              <span style="color: rgba(255, 255, 255, 0.9);">Data Usage: </span>
+              <span style="color: rgba(0, 255, 255, 0.9); font-weight: 600; margin-left: 4px;">${value} GB</span>
+            </div>
+          </div>
+        `;
       },
     },
     graphic: noData

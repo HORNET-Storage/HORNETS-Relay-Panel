@@ -21,6 +21,8 @@ interface DefaultTooltipStyles {
   borderColor: string;
   borderWidth: number;
   borderRadius: number;
+  backgroundColor?: string;
+  extraCssText?: string;
   textStyle: {
     fontWeight: number;
     fontSize: number;
@@ -37,13 +39,15 @@ export const getChartColors = (theme: ITheme): string[] => [
 ];
 
 export const getDefaultTooltipStyles = (theme: ITheme): DefaultTooltipStyles => ({
-  borderColor: theme.chartColor1,
-  borderWidth: 2,
-  borderRadius: Number.parseInt(BORDER_RADIUS),
+  borderColor: 'rgba(0, 255, 255, 0.6)',
+  borderWidth: 1,
+  borderRadius: 8,
+  backgroundColor: 'rgba(0, 12, 24, 0.95)',
+  extraCssText: 'backdrop-filter: blur(10px); box-shadow: 0 8px 32px rgba(0, 255, 255, 0.15);',
   textStyle: {
-    fontWeight: 600,
-    fontSize: 16,
-    color: theme.chartColor1,
+    fontWeight: 400,
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.95)',
   },
 });
 

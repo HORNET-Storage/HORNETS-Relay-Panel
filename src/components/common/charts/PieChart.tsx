@@ -73,7 +73,34 @@ export const PieChart: React.FC<PieChartProps> = ({ option, data, name, showLege
     tooltip: {
       ...getDefaultTooltipStyles(themeObject[theme]),
       trigger: 'item',
-      formatter: (params: any) => `${params.name}: ${params.data.originalValue.toFixed(3)} GB (${params.percent}%)`,
+      formatter: (params: any) => {
+        const value = params.data.originalValue.toFixed(3);
+        const categoryKey = categoryMap[params.name];
+        
+        // Get the base color for the category
+        const colorMap: Record<DataCategory, string> = {
+          kinds: 'rgba(142, 48, 235, 0.9)',
+          photos: 'rgba(247, 147, 26, 0.9)',
+          videos: 'rgba(33, 150, 243, 0.9)',
+          gitNestr: 'rgba(25, 230, 141, 0.9)',
+          audio: 'rgba(233, 75, 47, 0.9)',
+          misc: 'rgba(245, 209, 73, 0.9)',
+        };
+        
+        const categoryColor = colorMap[categoryKey] || 'rgba(0, 255, 255, 0.9)';
+        const gradientStyle = `background: linear-gradient(135deg, ${categoryColor}, ${categoryColor.replace('0.9', '0.4')})`;
+        
+        return `
+          <div style="padding: 4px;">
+            <div style="display: flex; align-items: center;">
+              <span style="width: 10px; height: 10px; border-radius: 50%; ${gradientStyle}; display: inline-block; margin-right: 8px;"></span>
+              <span style="color: rgba(255, 255, 255, 0.85);">${params.name}: </span>
+              <span style="color: ${categoryColor}; font-weight: 600; margin-left: 4px;">${value} GB</span>
+              <span style="color: rgba(0, 255, 255, 0.7); margin-left: 4px;">(${params.percent}%)</span>
+            </div>
+          </div>
+        `;
+      },
     },
     legend: {
       show: showLegend,

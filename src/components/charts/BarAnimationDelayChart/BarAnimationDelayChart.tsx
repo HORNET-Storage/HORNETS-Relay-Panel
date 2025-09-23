@@ -92,7 +92,38 @@ export const BarAnimationDelayChart: React.FC = () => {
       ...getDefaultTooltipStyles(themeObject[theme]),
       trigger: 'axis',
       formatter: function (params: any[]) {
-        return params.map((param) => `${param.seriesName}: ${param.data.toFixed(3)} GB`).join('<br/>');
+        if (!params || params.length === 0) return '';
+        
+        const monthName = new Date(params[0].name + '-01').toLocaleDateString('en-US', {
+          month: 'short',
+          year: 'numeric'
+        });
+        
+        let content = `
+          <div style="padding: 4px;">
+            <div style="color: rgba(0, 255, 255, 0.9); font-weight: 500; margin-bottom: 8px; border-bottom: 1px solid rgba(0, 255, 255, 0.2); padding-bottom: 6px;">
+              ${monthName}
+            </div>
+        `;
+        
+        params.forEach((param, index) => {
+          const value = param.data.toFixed(3);
+          const color = index === 0 ? 'rgba(0, 255, 255, 0.85)' : 'rgba(255, 200, 50, 0.7)';
+          const iconColor = index === 0 ?
+            'background: linear-gradient(135deg, rgba(0, 255, 255, 0.85), rgba(0, 255, 255, 0.4))' :
+            'background: linear-gradient(135deg, rgba(255, 200, 50, 0.7), rgba(255, 200, 50, 0.3))';
+          
+          content += `
+            <div style="display: flex; align-items: center; margin-bottom: 4px;">
+              <span style="width: 10px; height: 10px; border-radius: 50%; ${iconColor}; display: inline-block; margin-right: 8px;"></span>
+              <span style="color: rgba(255, 255, 255, 0.85); min-width: 50px;">${param.seriesName}: </span>
+              <span style="color: ${color}; font-weight: 600; margin-left: auto;">${value} GB</span>
+            </div>
+          `;
+        });
+        
+        content += '</div>';
+        return content;
       },
     },
     xAxis: {
@@ -134,11 +165,11 @@ export const BarAnimationDelayChart: React.FC = () => {
           color: new graphic.LinearGradient(0, 0, 0, 1, [
             {
               offset: 0,
-              color: 'rgba(51, 156, 253, 0.7)',
+              color: 'rgba(0, 255, 255, 0.85)',
             },
             {
               offset: 1,
-              color: 'rgba(51, 156, 253, 0.15)',
+              color: 'rgba(0, 255, 255, 0.2)',
             },
           ]),
         },
@@ -160,11 +191,11 @@ export const BarAnimationDelayChart: React.FC = () => {
           color: new graphic.LinearGradient(0, 0, 0, 1, [
             {
               offset: 0,
-              color: 'rgba(253, 156, 51, 0.7)',
+              color: 'rgba(255, 200, 50, 0.7)',
             },
             {
               offset: 1,
-              color: 'rgba(253, 156, 51, 0.15)',
+              color: 'rgba(255, 200, 50, 0.15)',
             },
           ]),
         },
