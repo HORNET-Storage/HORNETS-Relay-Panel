@@ -9,7 +9,10 @@ import profile1 from '@app/assets/images/profile1.png';
 import profile2 from '@app/assets/images/profile2.jpg';
 import profile3 from '@app/assets/images/profile3.webp';
 import profile4 from '@app/assets/images/profile4.webp';
-import profile5 from '@app/assets/images/profile5.jpg';
+import pfp from '@app/assets/images/pfp.jpg';
+import mediaUpload from '@app/assets/images/media-upload.jpg';
+import oilPaintGandalf from '@app/assets/images/OilPaintGandalf.png';
+import nostrGif from '@app/assets/images/nostr.build_0f74feb77e9d4e23b60f00188a02873ad0c2d15a176260817c1c96c6f88d2fa3.gif';
 import profile6 from '@app/assets/images/profile6.jpg';
 import profile7 from '@app/assets/images/profile7.jpg';
 import profile8 from '@app/assets/images/profile8.gif';
@@ -39,10 +42,13 @@ const dummyProfiles: SubscriberProfile[] = [
   { pubkey: 'dummy-6', picture: profile13, name: 'Demo User 6', about: 'Demo subscriber' },
   { pubkey: 'dummy-7', picture: profile8, name: 'Demo User 7', about: 'Demo subscriber' },
   { pubkey: 'dummy-8', picture: profile12, name: 'Demo User 8', about: 'Demo subscriber' },
-  { pubkey: 'dummy-9', picture: profile5, name: 'Demo User 9', about: 'Demo subscriber' },
+  { pubkey: 'dummy-9', picture: profile11, name: 'Demo User 9', about: 'Demo subscriber' },
   { pubkey: 'dummy-10', picture: profile4, name: 'Demo User 10', about: 'Demo subscriber' },
   { pubkey: 'dummy-11', picture: profile9, name: 'Demo User 11', about: 'Demo subscriber' },
-  { pubkey: 'dummy-12', picture: profile11, name: 'Demo User 12', about: 'Demo subscriber' },
+  { pubkey: 'dummy-12', picture: pfp, name: 'Demo User 12', about: 'Demo subscriber' },
+  { pubkey: 'dummy-13', picture: mediaUpload, name: 'Demo User 13', about: 'Demo subscriber' },
+  { pubkey: 'dummy-14', picture: oilPaintGandalf, name: 'Demo User 14', about: 'Demo subscriber' },
+  { pubkey: 'dummy-15', picture: nostrGif, name: 'Demo User 15', about: 'Demo subscriber' },
 ];
 
 // Simple cache for subscriber list pagination (not profiles - those are cached in profileCache)
