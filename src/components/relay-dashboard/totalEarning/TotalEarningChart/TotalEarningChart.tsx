@@ -126,7 +126,7 @@ export const TotalEarningChart: React.FC<TotalEarningChartProps> = ({ xAxisData,
       },
       splitLine: {
         lineStyle: {
-          color: '#444',
+          color: themeObject[theme].chartAxisLabel,
         },
       },
       axisLabel: {
