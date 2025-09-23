@@ -1,14 +1,17 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { BaseCard } from '@app/components/common/BaseCard/BaseCard';
-import { BaseChart } from '@app/components/common/charts/BaseChart';
+import { BaseChart, getDefaultTooltipStyles } from '@app/components/common/charts/BaseChart';
 import { useAppSelector } from '@app/hooks/reduxHooks';
 import { liquidBlueTheme } from '@app/styles/themes/liquidBlue/liquidBlueTheme';
+import { themeObject } from '@app/styles/themes/themeVariables';
 import useLineChartData from '@app/hooks/useLineChartData';
+import { graphic } from 'echarts';
 
 export const LineRaceChart: React.FC = () => {
   const { data, isLoading } = useLineChartData();
   const { t } = useTranslation();
+  const theme = useAppSelector((state) => state.theme.theme);
 
   if (isLoading) {
     return (
@@ -33,9 +36,42 @@ export const LineRaceChart: React.FC = () => {
       type: 'line',
       data: noData ? [] : data.map((item) => [item.month, item.profiles]),
       showSymbol: false,
+      symbol: 'circle',
+      symbolSize: 8,
+      smooth: 0.4,
       lineStyle: {
-        color: liquidBlueTheme.chartColor1, // Use liquid blue theme colors
+        color: new graphic.LinearGradient(0, 0, 1, 0, [
+          {
+            offset: 0,
+            color: 'rgba(51, 156, 253, 0.9)',
+          },
+          {
+            offset: 1,
+            color: 'rgba(51, 156, 253, 0.6)',
+          },
+        ]),
         width: 3,
+        shadowColor: 'rgba(51, 156, 253, 0.3)',
+        shadowBlur: 10,
+        shadowOffsetY: 3,
+      },
+      itemStyle: {
+        color: 'rgba(51, 156, 253, 0.9)',
+        borderColor: 'rgba(255, 255, 255, 0.9)',
+        borderWidth: 2,
+      },
+      areaStyle: {
+        opacity: 0.15,
+        color: new graphic.LinearGradient(0, 0, 0, 1, [
+          {
+            offset: 0,
+            color: 'rgba(51, 156, 253, 0.3)',
+          },
+          {
+            offset: 1,
+            color: 'rgba(51, 156, 253, 0.05)',
+          },
+        ]),
       },
       endLabel: {
         show: !noData,
@@ -43,17 +79,25 @@ export const LineRaceChart: React.FC = () => {
         color: liquidBlueTheme.textMain,
         fontSize: 12,
         fontWeight: 'bold',
+        textShadowBlur: 2,
+        textShadowColor: 'rgba(0, 0, 0, 0.5)',
       },
       labelLayout: {
         moveOverlap: 'shiftY',
       },
       emphasis: {
         focus: 'series',
+        showSymbol: true,
         lineStyle: {
-          color: liquidBlueTheme.chartColor1,
           width: 4,
-          shadowColor: liquidBlueTheme.chartColor1,
-          shadowBlur: 8,
+          shadowColor: 'rgba(51, 156, 253, 0.6)',
+          shadowBlur: 15,
+        },
+        itemStyle: {
+          borderColor: '#fff',
+          borderWidth: 3,
+          shadowColor: 'rgba(51, 156, 253, 0.5)',
+          shadowBlur: 10,
         },
       },
       encode: {
@@ -69,9 +113,42 @@ export const LineRaceChart: React.FC = () => {
       type: 'line',
       data: noData ? [] : data.map((item) => [item.month, item.lightning_addr]),
       showSymbol: false,
+      symbol: 'circle',
+      symbolSize: 8,
+      smooth: 0.4,
       lineStyle: {
-        color: liquidBlueTheme.chartColor2, // Use liquid blue theme colors
+        color: new graphic.LinearGradient(0, 0, 1, 0, [
+          {
+            offset: 0,
+            color: 'rgba(253, 156, 51, 0.9)',
+          },
+          {
+            offset: 1,
+            color: 'rgba(253, 156, 51, 0.6)',
+          },
+        ]),
         width: 3,
+        shadowColor: 'rgba(253, 156, 51, 0.3)',
+        shadowBlur: 10,
+        shadowOffsetY: 3,
+      },
+      itemStyle: {
+        color: 'rgba(253, 156, 51, 0.9)',
+        borderColor: 'rgba(255, 255, 255, 0.9)',
+        borderWidth: 2,
+      },
+      areaStyle: {
+        opacity: 0.15,
+        color: new graphic.LinearGradient(0, 0, 0, 1, [
+          {
+            offset: 0,
+            color: 'rgba(253, 156, 51, 0.3)',
+          },
+          {
+            offset: 1,
+            color: 'rgba(253, 156, 51, 0.05)',
+          },
+        ]),
       },
       endLabel: {
         show: !noData,
@@ -79,17 +156,25 @@ export const LineRaceChart: React.FC = () => {
         color: liquidBlueTheme.textMain,
         fontSize: 12,
         fontWeight: 'bold',
+        textShadowBlur: 2,
+        textShadowColor: 'rgba(0, 0, 0, 0.5)',
       },
       labelLayout: {
         moveOverlap: 'shiftY',
       },
       emphasis: {
         focus: 'series',
+        showSymbol: true,
         lineStyle: {
-          color: liquidBlueTheme.chartColor2,
           width: 4,
-          shadowColor: liquidBlueTheme.chartColor2,
-          shadowBlur: 8,
+          shadowColor: 'rgba(253, 156, 51, 0.6)',
+          shadowBlur: 15,
+        },
+        itemStyle: {
+          borderColor: '#fff',
+          borderWidth: 3,
+          shadowColor: 'rgba(253, 156, 51, 0.5)',
+          shadowBlur: 10,
         },
       },
       encode: {
@@ -105,9 +190,42 @@ export const LineRaceChart: React.FC = () => {
       type: 'line',
       data: noData ? [] : data.map((item) => [item.month, item.dht_key]),
       showSymbol: false,
+      symbol: 'circle',
+      symbolSize: 8,
+      smooth: 0.4,
       lineStyle: {
-        color: liquidBlueTheme.chartColor3, // Use liquid blue theme colors
+        color: new graphic.LinearGradient(0, 0, 1, 0, [
+          {
+            offset: 0,
+            color: 'rgba(25, 230, 141, 0.9)',
+          },
+          {
+            offset: 1,
+            color: 'rgba(25, 230, 141, 0.6)',
+          },
+        ]),
         width: 3,
+        shadowColor: 'rgba(25, 230, 141, 0.3)',
+        shadowBlur: 10,
+        shadowOffsetY: 3,
+      },
+      itemStyle: {
+        color: 'rgba(25, 230, 141, 0.9)',
+        borderColor: 'rgba(255, 255, 255, 0.9)',
+        borderWidth: 2,
+      },
+      areaStyle: {
+        opacity: 0.15,
+        color: new graphic.LinearGradient(0, 0, 0, 1, [
+          {
+            offset: 0,
+            color: 'rgba(25, 230, 141, 0.3)',
+          },
+          {
+            offset: 1,
+            color: 'rgba(25, 230, 141, 0.05)',
+          },
+        ]),
       },
       endLabel: {
         show: !noData,
@@ -115,17 +233,25 @@ export const LineRaceChart: React.FC = () => {
         color: liquidBlueTheme.textMain,
         fontSize: 12,
         fontWeight: 'bold',
+        textShadowBlur: 2,
+        textShadowColor: 'rgba(0, 0, 0, 0.5)',
       },
       labelLayout: {
         moveOverlap: 'shiftY',
       },
       emphasis: {
         focus: 'series',
+        showSymbol: true,
         lineStyle: {
-          color: liquidBlueTheme.chartColor3,
           width: 4,
-          shadowColor: liquidBlueTheme.chartColor3,
-          shadowBlur: 8,
+          shadowColor: 'rgba(25, 230, 141, 0.6)',
+          shadowBlur: 15,
+        },
+        itemStyle: {
+          borderColor: '#fff',
+          borderWidth: 3,
+          shadowColor: 'rgba(25, 230, 141, 0.5)',
+          shadowBlur: 10,
         },
       },
       encode: {
@@ -141,9 +267,42 @@ export const LineRaceChart: React.FC = () => {
       type: 'line',
       data: noData ? [] : data.map((item) => [item.month, item.lightning_and_dht]),
       showSymbol: false,
+      symbol: 'circle',
+      symbolSize: 8,
+      smooth: 0.4,
       lineStyle: {
-        color: liquidBlueTheme.chartColor4, // Use liquid blue theme colors
+        color: new graphic.LinearGradient(0, 0, 1, 0, [
+          {
+            offset: 0,
+            color: 'rgba(142, 48, 235, 0.9)',
+          },
+          {
+            offset: 1,
+            color: 'rgba(142, 48, 235, 0.6)',
+          },
+        ]),
         width: 3,
+        shadowColor: 'rgba(142, 48, 235, 0.3)',
+        shadowBlur: 10,
+        shadowOffsetY: 3,
+      },
+      itemStyle: {
+        color: 'rgba(142, 48, 235, 0.9)',
+        borderColor: 'rgba(255, 255, 255, 0.9)',
+        borderWidth: 2,
+      },
+      areaStyle: {
+        opacity: 0.15,
+        color: new graphic.LinearGradient(0, 0, 0, 1, [
+          {
+            offset: 0,
+            color: 'rgba(142, 48, 235, 0.3)',
+          },
+          {
+            offset: 1,
+            color: 'rgba(142, 48, 235, 0.05)',
+          },
+        ]),
       },
       endLabel: {
         show: !noData,
@@ -151,17 +310,25 @@ export const LineRaceChart: React.FC = () => {
         color: liquidBlueTheme.textMain,
         fontSize: 12,
         fontWeight: 'bold',
+        textShadowBlur: 2,
+        textShadowColor: 'rgba(0, 0, 0, 0.5)',
       },
       labelLayout: {
         moveOverlap: 'shiftY',
       },
       emphasis: {
         focus: 'series',
+        showSymbol: true,
         lineStyle: {
-          color: liquidBlueTheme.chartColor4,
           width: 4,
-          shadowColor: liquidBlueTheme.chartColor4,
-          shadowBlur: 8,
+          shadowColor: 'rgba(142, 48, 235, 0.6)',
+          shadowBlur: 15,
+        },
+        itemStyle: {
+          borderColor: '#fff',
+          borderWidth: 3,
+          shadowColor: 'rgba(142, 48, 235, 0.5)',
+          shadowBlur: 10,
         },
       },
       encode: {
@@ -184,15 +351,29 @@ export const LineRaceChart: React.FC = () => {
       },
     ],
     tooltip: {
+      ...getDefaultTooltipStyles(themeObject[theme]),
       order: 'valueDesc',
       trigger: 'axis',
-      backgroundColor: 'rgba(0, 0, 0, 0.8)',
-      borderColor: liquidBlueTheme.primary,
+      backgroundColor: 'rgba(0, 0, 0, 0.9)',
+      borderColor: 'rgba(0, 255, 255, 0.5)',
+      borderWidth: 1,
+      padding: 10,
       textStyle: {
         color: liquidBlueTheme.textMain,
+        fontSize: 12,
       },
-      shadowColor: liquidBlueTheme.shadow,
-      shadowBlur: 8,
+      shadowColor: 'rgba(0, 255, 255, 0.3)',
+      shadowBlur: 10,
+      axisPointer: {
+        type: 'cross',
+        crossStyle: {
+          color: 'rgba(0, 255, 255, 0.3)',
+        },
+        lineStyle: {
+          color: 'rgba(0, 255, 255, 0.3)',
+          width: 1,
+        },
+      },
     },
     xAxis: {
       type: 'category',
@@ -207,8 +388,11 @@ export const LineRaceChart: React.FC = () => {
       },
       axisLine: {
         lineStyle: {
-          color: liquidBlueTheme.border,
+          color: 'rgba(0, 255, 255, 0.3)',
         },
+      },
+      splitLine: {
+        show: false,
       },
     },
     yAxis: {
@@ -221,13 +405,13 @@ export const LineRaceChart: React.FC = () => {
       },
       axisLine: {
         lineStyle: {
-          color: liquidBlueTheme.border,
+          color: 'rgba(0, 255, 255, 0.3)',
         },
       },
       splitLine: {
         lineStyle: {
-          color: liquidBlueTheme.borderBase,
-          opacity: 0.3,
+          color: 'rgba(0, 255, 255, 0.15)',
+          type: 'dashed',
         },
       },
     },
@@ -236,6 +420,11 @@ export const LineRaceChart: React.FC = () => {
       right: 78,
       top: 20,
       bottom: 60,
+      backgroundColor: 'transparent',
+      borderColor: 'rgba(0, 255, 255, 0.1)',
+      borderWidth: 1,
+      shadowColor: 'rgba(0, 255, 255, 0.1)',
+      shadowBlur: 10,
     },
     series: seriesList,
     graphic: noData
