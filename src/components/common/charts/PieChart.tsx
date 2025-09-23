@@ -1,10 +1,11 @@
 import React from 'react';
 import { EChartsOption } from 'echarts-for-react';
-import { BaseChart, BaseChartProps } from '@app/components/common/charts/BaseChart';
+import { BaseChart, BaseChartProps, getDefaultTooltipStyles } from '@app/components/common/charts/BaseChart';
 import { useAppSelector } from '@app/hooks/reduxHooks';
 import { themeObject } from '@app/styles/themes/themeVariables';
 import { BASE_COLORS } from '@app/styles/themes/constants';
 import { useTranslation } from 'react-i18next';
+import { graphic } from 'echarts';
 
 interface PieChartProps extends BaseChartProps {
   option?: EChartsOption;
@@ -35,14 +36,27 @@ export const PieChart: React.FC<PieChartProps> = ({ option, data, name, showLege
 
   const logTransformedData = applyLogTransform(data);
 
-  // Define a set of colors for the pie chart
-  const colors: Record<DataCategory, string> = {
-    kinds: '#8e30eb', // Purple
-    photos: '#F7931A', // Satoshi Orange
-    videos: '#2196f3', // Blue
-    gitNestr: '#19E68D', // Cyan
-    audio: '#E94B2F', // Red
-    misc: '#F5D149', // Yellow
+  // Define gradient colors for the pie chart with liquid glass theme
+  const getGradientColor = (color1: string, color2: string) => {
+    return new graphic.LinearGradient(0, 0, 1, 1, [
+      {
+        offset: 0,
+        color: color1,
+      },
+      {
+        offset: 1,
+        color: color2,
+      },
+    ]);
+  };
+
+  const colors: Record<DataCategory, any> = {
+    kinds: getGradientColor('rgba(142, 48, 235, 0.9)', 'rgba(142, 48, 235, 0.4)'), // Purple gradient
+    photos: getGradientColor('rgba(247, 147, 26, 0.9)', 'rgba(247, 147, 26, 0.4)'), // Orange gradient
+    videos: getGradientColor('rgba(33, 150, 243, 0.9)', 'rgba(33, 150, 243, 0.4)'), // Blue gradient
+    gitNestr: getGradientColor('rgba(25, 230, 141, 0.9)', 'rgba(25, 230, 141, 0.4)'), // Cyan gradient
+    audio: getGradientColor('rgba(233, 75, 47, 0.9)', 'rgba(233, 75, 47, 0.4)'), // Red gradient
+    misc: getGradientColor('rgba(245, 209, 73, 0.9)', 'rgba(245, 209, 73, 0.4)'), // Yellow gradient
   };
 
   // Map translated names to DataCategory keys
@@ -57,8 +71,9 @@ export const PieChart: React.FC<PieChartProps> = ({ option, data, name, showLege
 
   const defaultPieOption = {
     tooltip: {
+      ...getDefaultTooltipStyles(themeObject[theme]),
       trigger: 'item',
-      formatter: (params: any) => `${params.name}: ${params.data.originalValue} (${params.percent}%)`,
+      formatter: (params: any) => `${params.name}: ${params.data.originalValue.toFixed(3)} GB (${params.percent}%)`,
     },
     legend: {
       show: showLegend,
@@ -77,24 +92,32 @@ export const PieChart: React.FC<PieChartProps> = ({ option, data, name, showLege
         radius: ['100%', '70%'], // Donut chart effect
         avoidLabelOverlap: false,
         itemStyle: {
-          borderRadius: 5,
-          borderColor: BASE_COLORS.white,
+          borderRadius: 10,
+          borderColor: 'rgba(255, 255, 255, 0.2)',
           borderWidth: 2,
+          shadowBlur: 15,
+          shadowColor: 'rgba(0, 255, 255, 0.3)',
+          shadowOffsetX: 0,
+          shadowOffsetY: 0,
         },
         label: {
           show: false,
         },
         emphasis: {
           itemStyle: {
-            shadowBlur: 10,
+            shadowBlur: 25,
             shadowOffsetX: 0,
-            shadowColor: 'rgba(0, 0, 0, 0.5)',
+            shadowColor: 'rgba(0, 255, 255, 0.5)',
+            borderWidth: 3,
+            borderColor: 'rgba(255, 255, 255, 0.8)',
           },
           label: {
             show: true,
             fontSize: '18',
             fontWeight: 'bold',
             color: themeObject[theme].textMain,
+            textShadowBlur: 3,
+            textShadowColor: 'rgba(0, 0, 0, 0.8)',
           },
         },
         labelLine: {

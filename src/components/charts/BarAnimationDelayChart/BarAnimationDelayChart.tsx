@@ -1,11 +1,12 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { BaseCard } from '@app/components/common/BaseCard/BaseCard';
-import { BaseChart } from '@app/components/common/charts/BaseChart';
+import { BaseChart, getDefaultTooltipStyles } from '@app/components/common/charts/BaseChart';
 import { useAppSelector } from '@app/hooks/reduxHooks';
 import { themeObject } from '@app/styles/themes/themeVariables';
 import useBarChartData from '@app/hooks/useBarChartData';
 import { useResponsive } from '@app/hooks/useResponsive';
+import { graphic } from 'echarts';
 
 // Helper function to get the last six months from the current date
 const getLastSixMonths = () => {
@@ -88,9 +89,10 @@ export const BarAnimationDelayChart: React.FC = () => {
       containLabel: true,
     },
     tooltip: {
+      ...getDefaultTooltipStyles(themeObject[theme]),
       trigger: 'axis',
       formatter: function (params: any[]) {
-        return params.map((param) => `${param.seriesName}: ${param.data} GB`).join('<br/>');
+        return params.map((param) => `${param.seriesName}: ${param.data.toFixed(3)} GB`).join('<br/>');
       },
     },
     xAxis: {
@@ -126,12 +128,25 @@ export const BarAnimationDelayChart: React.FC = () => {
         name: t('charts.notes'),
         type: 'bar',
         data: data1,
-        color: themeObject[theme].chartColor2,
+        barMaxWidth: 40,
+        itemStyle: {
+          borderRadius: 7,
+          color: new graphic.LinearGradient(0, 0, 0, 1, [
+            {
+              offset: 0,
+              color: 'rgba(51, 156, 253, 0.7)',
+            },
+            {
+              offset: 1,
+              color: 'rgba(51, 156, 253, 0.15)',
+            },
+          ]),
+        },
         legendHoverLink: isDesktop ? true : false,
         emphasis: {
           disable: true,
         },
-        barGap: '-10%', // Slightly overlap bars
+        barGap: '10%',
         barCategoryGap: '30%',
         animationDelay: (idx: number) => idx * 10,
       },
@@ -139,12 +154,25 @@ export const BarAnimationDelayChart: React.FC = () => {
         name: t('charts.media'),
         type: 'bar',
         data: data2,
-        color: themeObject[theme].chartColor3,
+        barMaxWidth: 40,
+        itemStyle: {
+          borderRadius: 7,
+          color: new graphic.LinearGradient(0, 0, 0, 1, [
+            {
+              offset: 0,
+              color: 'rgba(253, 156, 51, 0.7)',
+            },
+            {
+              offset: 1,
+              color: 'rgba(253, 156, 51, 0.15)',
+            },
+          ]),
+        },
         emphasis: {
           disable: true,
         },
         legendHoverLink: isDesktop ? true : false,
-        barGap: '-10%', // Slightly overlap bars
+        barGap: '10%',
         barCategoryGap: '30%',
         animationDelay: (idx: number) => idx * 10 + 100,
       },
