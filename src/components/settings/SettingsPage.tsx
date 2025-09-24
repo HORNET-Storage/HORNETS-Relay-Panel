@@ -7,7 +7,7 @@ import OllamaSettings from './OllamaSettings';
 import WalletSettings from './WalletSettings';
 import GeneralSettings from './GeneralSettings';
 import RelayInfoSettings from './RelayInfoSettings';
-import PushNotificationSettings from './PushNotificationSettings';
+import PushNotificationPanel from './panels/PushNotificationPanel';
 import * as S from '@app/pages/DashboardPages/DashboardPage.styles';
 import * as PageStyles from '@app/pages/uiComponentsPages/UIComponentsPage.styles';
 import { CollapsibleSection } from '@app/components/relay-settings/shared/CollapsibleSection/CollapsibleSection';
@@ -50,7 +50,7 @@ const SettingsPage: React.FC = () => {
           </CollapsibleSection>
 
           <CollapsibleSection header="Push Notifications">
-            <PushNotificationSettings />
+            <PushNotificationPanel />
           </CollapsibleSection>
         </S.LeftSideCol>
 

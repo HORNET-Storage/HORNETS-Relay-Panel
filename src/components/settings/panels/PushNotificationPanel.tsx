@@ -1,28 +1,27 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Input, InputNumber, Switch, Tooltip, Alert, Spin, Divider } from 'antd';
+import { Form, Input, InputNumber, Switch, Tooltip, Alert, Spin, Divider, Button } from 'antd';
 import {
-  QuestionCircleOutlined
+  QuestionCircleOutlined,
+  SaveOutlined
 } from '@ant-design/icons';
 import useGenericSettings from '@app/hooks/useGenericSettings';
 import { SettingsGroupType } from '@app/types/settings.types';
+import { LiquidBlueButton } from '@app/components/common/LiquidBlueButton';
 
 const PushNotificationPanel: React.FC = () => {
-  console.log('PushNotificationPanel - Component rendering');
-  
   const {
     settings,
     loading,
     error,
     updateSettings,
-    // saveSettings is not used in panels - they use the global save
+    saveSettings,
   } = useGenericSettings('push_notifications');
 
   const [form] = Form.useForm();
   const [isUserEditing, setIsUserEditing] = useState(false);
-  
-  console.log('PushNotificationPanel - Hook result:', { settings, loading, error });
+  const [saveLoading, setSaveLoading] = useState(false);
 
-  // Listen for global save event
+  // Listen for global save event and push notification specific save event
   useEffect(() => {
     const handleGlobalSave = () => {
       setTimeout(() => {
@@ -30,35 +29,48 @@ const PushNotificationPanel: React.FC = () => {
       }, 200);
     };
     
+    const handlePushNotificationSave = () => {
+      setTimeout(() => {
+        setIsUserEditing(false);
+      }, 200);
+    };
+    
     document.addEventListener('settings-saved', handleGlobalSave);
+    document.addEventListener('push-notifications-saved', handlePushNotificationSave);
     
     return () => {
       document.removeEventListener('settings-saved', handleGlobalSave);
+      document.removeEventListener('push-notifications-saved', handlePushNotificationSave);
     };
   }, []);
 
   // Update form values when settings change, but only if user isn't actively editing
   useEffect(() => {
     if (settings && !isUserEditing) {
-      console.log('PushNotificationPanel - Received settings:', settings);
-      
       // The useGenericSettings hook returns the settings data
       const settingsObj = settings as Record<string, any>;
       
-      console.log('PushNotificationPanel - Setting form values directly:', settingsObj);
-      
       // Set form values directly
       form.setFieldsValue(settingsObj);
-      console.log('PushNotificationPanel - Form values after set:', form.getFieldsValue());
     }
   }, [settings, form, isUserEditing]);
 
   // Handle form value changes
   const handleValuesChange = (changedValues: Partial<SettingsGroupType<'push_notifications'>>) => {
     setIsUserEditing(true); // Mark that user is currently editing
-    console.log('PushNotificationPanel - changedValues:', changedValues);
-    console.log('PushNotificationPanel - current form values:', form.getFieldsValue());
     updateSettings(changedValues);
+  };
+
+  const handleSave = async () => {
+    setSaveLoading(true);
+    try {
+      await saveSettings();
+      setIsUserEditing(false);
+    } catch (error) {
+      console.error('Error saving push notification settings:', error);
+    } finally {
+      setSaveLoading(false);
+    }
   };
 
   return (
@@ -79,8 +91,7 @@ const PushNotificationPanel: React.FC = () => {
           layout="vertical"
           onValuesChange={handleValuesChange}
           initialValues={settings || {}}
-          onFinish={(values) => {
-            console.log('Form submitted with values:', values);
+          onFinish={() => {
             setIsUserEditing(false);
           }}
           style={{
@@ -343,6 +354,26 @@ const PushNotificationPanel: React.FC = () => {
             <Input
               placeholder="e.g., /path/to/firebase-service-account.json"
             />
+          </Form.Item>
+          
+          {/* Save Button at bottom like other sections */}
+          <Form.Item style={{ marginTop: '2rem', marginBottom: 0 }}>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+              paddingTop: '1rem',
+              borderTop: '1px solid rgba(82, 196, 255, 0.2)'
+            }}>
+              <LiquidBlueButton
+                variant="primary"
+                icon={<SaveOutlined />}
+                onClick={handleSave}
+                loading={saveLoading}
+                disabled={loading}
+              >
+                Save
+              </LiquidBlueButton>
+            </div>
           </Form.Item>
         </Form>
       </Spin>
