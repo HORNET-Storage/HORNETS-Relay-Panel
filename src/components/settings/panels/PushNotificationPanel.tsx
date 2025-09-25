@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Input, InputNumber, Switch, Tooltip, Alert, Spin, Divider, Button } from 'antd';
+import { Form, Input, InputNumber, Tooltip, Alert, Spin, Divider, Button } from 'antd';
 import {
   QuestionCircleOutlined,
   SaveOutlined,
@@ -8,6 +8,7 @@ import {
 import useGenericSettings from '@app/hooks/useGenericSettings';
 import { SettingsGroupType } from '@app/types/settings.types';
 import { LiquidBlueButton } from '@app/components/common/LiquidBlueButton';
+import { LiquidToggle } from '@app/components/common/LiquidToggle';
 import * as S from './PushNotificationPanel.styles';
 import * as UI from '@app/pages/uiComponentsPages/UIComponentsPage.styles';
 
@@ -148,7 +149,7 @@ const PushNotificationPanel: React.FC = () => {
           }
           valuePropName="checked"
         >
-          <Switch />
+          <LiquidToggle />
         </Form.Item>
 
         {/* Service Configuration */}
@@ -294,7 +295,7 @@ const PushNotificationPanel: React.FC = () => {
             }
             valuePropName="checked"
           >
-            <Switch />
+            <LiquidToggle />
           </Form.Item>
 
           <Form.Item
@@ -359,7 +360,7 @@ const PushNotificationPanel: React.FC = () => {
             }
             valuePropName="checked"
           >
-            <Switch />
+            <LiquidToggle />
           </Form.Item>
 
           <Form.Item
