@@ -3,6 +3,13 @@ import styled from 'styled-components';
 export const PanelWrapper = styled.div`
   /* Keep it simple to match other panels */
   background: transparent;
+  width: 100%;
+  
+  /* Remove ant-card default styles since we're inside a Card */
+  .ant-card-body {
+    padding: 0 !important;
+    display: block !important;
+  }
   
   /* Style dividers to match cyan theme */
   .ant-divider {
