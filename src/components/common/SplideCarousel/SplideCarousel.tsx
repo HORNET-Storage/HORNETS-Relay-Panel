@@ -44,15 +44,22 @@ export const SplideCarousel = forwardRef<Splide, PropsWithChildren<BaseCarouselP
       gap: '1rem',
       drag: 'free',
       type: type,
-      autoScroll: {
-        speed: autoSpeed,
-      },
       ...props,
     };
 
+    // Only add autoScroll if explicitly enabled and not false
+    if (props.autoScroll !== false && autoSpeed) {
+      options.autoScroll = {
+        speed: autoSpeed,
+      };
+    }
+
+    // Only add AutoScroll extension if autoScroll is not explicitly disabled
+    const extensions = props.autoScroll !== false ? { AutoScroll } : {};
+
     return (
       //MUST use SlideTtrack around slides to work
-      <Splide options={options} hasTrack={false} extensions={{ AutoScroll }} ref={ref}>
+      <Splide options={options} hasTrack={false} extensions={extensions} ref={ref}>
         {children}
       </Splide>
     );

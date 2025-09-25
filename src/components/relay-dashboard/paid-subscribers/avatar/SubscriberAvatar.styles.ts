@@ -19,6 +19,13 @@ export const CreatorButton = styled.button<StoriesInternalProps>`
   overflow: hidden;
   position: relative;
   border: 3px solid ${(props) => (!props.$viewed ? 'rgba(0, 255, 255, 0.5)' : 'rgba(255, 255, 255, 0.2)')};
+  pointer-events: auto !important;
+  z-index: 10;
+  
+  &:hover {
+    transform: scale(1.05);
+    transition: transform 0.2s ease;
+  }
 `;
 
 export const Avatar = styled.img`

@@ -54,87 +54,8 @@ export const useBitcoinRatesWithRange = (options: BitcoinRatesOptions) => {
   const abortControllerRef = useRef<AbortController | null>(null);
   const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  const fetchBitcoinRates = useCallback(async () => {
-    // Check cache first for this specific range
-    const cached = rangeCache.get(options.timeRange);
-    const now = Date.now();
-    
-    // Always check cache duration
-    const shouldUseFreshData = !cached ||
-      (now - cached.timestamp) > CACHE_DURATION;
-
-    if (!shouldUseFreshData && cached) {
-      console.log(`[useBitcoinRatesWithRange] Using cached data for ${options.timeRange}`);
-      return cached.data;
-    }
-
-    // Cancel any existing request
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
-
-    // Create new abort controller for this request
-    abortControllerRef.current = new AbortController();
-
-    try {
-      const token = readToken();
-      if (!token) {
-        throw new Error('No authentication token found');
-      }
-
-      const params = getApiParams(options.timeRange);
-      
-      // Try range-specific endpoint first, fallback to last-30-days
-      let endpoint = `${config.baseURL}/api/bitcoin-rates/range/${options.timeRange}`;
-      
-      // For now, keep using the last-30-days endpoint until backend is updated
-      // Once backend supports the /range/:range endpoint, remove this line
-      endpoint = `${config.baseURL}/api/bitcoin-rates/last-30-days`;
-
-      console.log(`[useBitcoinRatesWithRange] Fetching ${options.timeRange} data from ${endpoint}`);
-      
-      const response = await fetch(endpoint, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        signal: abortControllerRef.current.signal,
-      });
-
-      if (!response.ok) {
-        if (response.status === 401) {
-          handleLogout();
-          throw new Error('Authentication failed. You have been logged out.');
-        }
-        
-        throw new Error(`Network response was not ok (status: ${response.status})`);
-      }
-
-      const data = await response.json();
-      console.log(`[useBitcoinRatesWithRange] Data received for ${options.timeRange}`);
-      
-      const processedData = processBitcoinData(data, options.timeRange);
-      
-      // Cache the result
-      rangeCache.set(options.timeRange, {
-        data: processedData,
-        timestamp: now,
-      });
-
-      setLastUpdate(new Date());
-      return processedData;
-    } catch (err: any) {
-      if (err.name === 'AbortError') {
-        console.log('[useBitcoinRatesWithRange] Request was aborted');
-        return [];
-      }
-      throw err;
-    }
-  }, [options.timeRange, handleLogout]);
-
   // Process and filter data based on time range
-  const processBitcoinData = (data: any[], range: TimeRange): Earning[] => {
+  const processBitcoinData = useCallback((data: any[], range: TimeRange): Earning[] => {
     console.log(`[processBitcoinData] Processing ${data.length} data points for range: ${range}`);
     
     if (data.length === 0) {
@@ -266,7 +187,87 @@ export const useBitcoinRatesWithRange = (options: BitcoinRatesOptions) => {
     console.log(`[processBitcoinData] Final: ${aggregated.length} points for ${range} view`);
     
     return aggregated;
-  };
+  }, []);
+
+  // Smart aggregation that maintains data shape while reducing points
+  const fetchBitcoinRates = useCallback(async () => {
+    // Check cache first for this specific range
+    const cached = rangeCache.get(options.timeRange);
+    const now = Date.now();
+    
+    // Always check cache duration
+    const shouldUseFreshData = !cached ||
+      (now - cached.timestamp) > CACHE_DURATION;
+
+    if (!shouldUseFreshData && cached) {
+      console.log(`[useBitcoinRatesWithRange] Using cached data for ${options.timeRange}`);
+      return cached.data;
+    }
+
+    // Cancel any existing request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    // Create new abort controller for this request
+    abortControllerRef.current = new AbortController();
+
+    try {
+      const token = readToken();
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      const params = getApiParams(options.timeRange);
+      
+      // Try range-specific endpoint first, fallback to last-30-days
+      let endpoint = `${config.baseURL}/api/bitcoin-rates/range/${options.timeRange}`;
+      
+      // For now, keep using the last-30-days endpoint until backend is updated
+      // Once backend supports the /range/:range endpoint, remove this line
+      endpoint = `${config.baseURL}/api/bitcoin-rates/last-30-days`;
+
+      console.log(`[useBitcoinRatesWithRange] Fetching ${options.timeRange} data from ${endpoint}`);
+      
+      const response = await fetch(endpoint, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        signal: abortControllerRef.current.signal,
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          handleLogout();
+          throw new Error('Authentication failed. You have been logged out.');
+        }
+        
+        throw new Error(`Network response was not ok (status: ${response.status})`);
+      }
+
+      const data = await response.json();
+      console.log(`[useBitcoinRatesWithRange] Data received for ${options.timeRange}`);
+      
+      const processedData = processBitcoinData(data, options.timeRange);
+      
+      // Cache the result
+      rangeCache.set(options.timeRange, {
+        data: processedData,
+        timestamp: now,
+      });
+
+      setLastUpdate(new Date());
+      return processedData;
+    } catch (err: any) {
+      if (err.name === 'AbortError') {
+        console.log('[useBitcoinRatesWithRange] Request was aborted');
+        return [];
+      }
+      throw err;
+    }
+  }, [options.timeRange, handleLogout, processBitcoinData]);
 
   // Smart aggregation that maintains data shape while reducing points
   const smartAggregateData = (data: Earning[], targetPoints: number): Earning[] => {

@@ -380,7 +380,7 @@ export const LineRaceChart: React.FC = () => {
         };
         
         let content = `
-          <div style="padding: 4px; min-width: 145px;">
+          <div style="padding: 6px;">
             <div style="color: rgba(0, 255, 255, 0.9); font-weight: 500; margin-bottom: 8px; border-bottom: 1px solid rgba(0, 255, 255, 0.2); padding-bottom: 6px;">
               ${monthName}
             </div>
@@ -395,10 +395,10 @@ export const LineRaceChart: React.FC = () => {
           const value = param.value[1];
           
           content += `
-            <div style="display: flex; align-items: center; margin-bottom: 4px;">
-              <span style="width: 10px; height: 10px; border-radius: 50%; ${gradientStyle}; display: inline-block; margin-right: 8px;"></span>
-              <span style="color: rgba(255, 255, 255, 0.85); flex: 1;">${param.seriesName}: </span>
-              <span style="color: ${color}; font-weight: 600; margin-left: auto;">${value.toLocaleString()}</span>
+            <div style="display: flex; align-items: center; margin-bottom: 4px; white-space: nowrap;">
+              <span style="width: 10px; height: 10px; border-radius: 50%; ${gradientStyle}; display: inline-block; margin-right: 8px; flex-shrink: 0;"></span>
+              <span style="color: rgba(255, 255, 255, 0.85); margin-right: 8px;">${param.seriesName}:</span>
+              <span style="color: ${color}; font-weight: 600;">${value.toLocaleString()}</span>
             </div>
           `;
         });

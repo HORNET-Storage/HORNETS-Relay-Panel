@@ -1,4 +1,4 @@
-import React, { useRef, useState, useMemo } from 'react';
+import React, { useRef, useState, useMemo, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { Splide, SplideSlide, SplideTrack } from '@splidejs/react-splide';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
@@ -71,6 +71,7 @@ export const PaidSubscribers: React.FC = () => {
   };
 
   const sliderRef = useRef<Splide>(null);
+  const carouselContainerRef = useRef<HTMLDivElement>(null);
   const { isTablet: isTabletOrHigher } = useResponsive();
   const { t } = useTranslation();
 
@@ -85,6 +86,32 @@ export const PaidSubscribers: React.FC = () => {
       sliderRef.current.splide.go('+1');
     }
   };
+
+  // Add mouse wheel scrolling support
+  useEffect(() => {
+    const handleWheel = (e: WheelEvent) => {
+      if (!sliderRef.current?.splide) return;
+      
+      e.preventDefault();
+      
+      if (e.deltaY > 0) {
+        // Scroll down - go next
+        sliderRef.current.splide.go('+1');
+      } else if (e.deltaY < 0) {
+        // Scroll up - go previous
+        sliderRef.current.splide.go('-1');
+      }
+    };
+
+    const container = carouselContainerRef.current;
+    if (container) {
+      container.addEventListener('wheel', handleWheel, { passive: false });
+      
+      return () => {
+        container.removeEventListener('wheel', handleWheel);
+      };
+    }
+  }, []);
 
   // Determine whether to use carousel with looping based on count
   const shouldUseLoop = subscribers.length >= 7;
@@ -268,15 +295,12 @@ export const PaidSubscribers: React.FC = () => {
 
   // Carousel view for 7+ subscribers
   return (
-    <S.ComponentWrapper>
+    <S.ComponentWrapper ref={carouselContainerRef}>
       <SplideCarousel
         ref={sliderRef}
         type={shouldUseLoop ? 'loop' : undefined}
-        drag="free"
+        drag={false}
         gap=".2rem"
-        snap="false"
-        autoSpeed={isTabletOrHigher ? 0.7 : 0.8}
-        flickPower="500"
         breakpoints={{
           8000: {
             perPage: 10,
