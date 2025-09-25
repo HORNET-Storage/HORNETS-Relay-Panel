@@ -380,7 +380,7 @@ export const LineRaceChart: React.FC = () => {
         };
         
         let content = `
-          <div style="padding: 4px;">
+          <div style="padding: 4px; min-width: 145px;">
             <div style="color: rgba(0, 255, 255, 0.9); font-weight: 500; margin-bottom: 8px; border-bottom: 1px solid rgba(0, 255, 255, 0.2); padding-bottom: 6px;">
               ${monthName}
             </div>
