@@ -13,11 +13,24 @@ export const BaseColRoot = styled(BaseCol)`
 export const TableContainer = styled.div`
   border-radius: 12px;
   margin: 0 2px;
-  padding-top: 0.4rem;
-  padding-bottom: 2rem;
-  background-color: var(--secondary-background-color);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  border: 1px solid var(--border-base-color);
+  padding: 0.4rem;
+  background: rgba(0, 255, 255, 0.05) !important;
+  border: 1px solid rgba(0, 255, 255, 0.2) !important;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    border-color: rgba(0, 255, 255, 0.5) !important;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.2) !important;
+  }
+  
+  /* Round the table corners to match */
+  & .ant-table {
+    border-radius: 8px !important;
+    overflow: hidden;
+    background: transparent !important;
+  }
 `;
 export const CardRoot = styled(Card)`
   border: none;
@@ -48,7 +61,6 @@ export const TitleWrapper = styled.div`
 export const NavContainer = styled.div`
   display: flex;
   margin-bottom: 1rem;
-  border-bottom: 1px solid var(--border-color);
 `;
 
 export const NavLink = styled.div<{ active: boolean }>`
@@ -83,11 +95,15 @@ export const CircularBadge = styled.div<{ color: string }>`
   font-weight: bold;
   margin-right: 8px;
 `;
+
 export const EmptyList = styled.div`
   min-height: 4rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-light-color);
+  color: rgba(255, 255, 255, 0.5);
   border-bottom: none;
+  padding: 2rem;
+  background: transparent;
+  border-radius: 8px;
 `;

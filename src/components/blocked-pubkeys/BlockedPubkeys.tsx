@@ -24,21 +24,38 @@ export function createStyledTable<T extends object = any>() {
   const GenericTable: FC<TableProps<T>> = (props) => <Table {...props} />;
 
   const StyledTable = styled(GenericTable)`
-    border-radius: 12px;
+    border-radius: 8px !important;
+    overflow: hidden;
 
-    & .ant-table-thead .ant-table-cell {
-      background-color: var(--secondary-background-color);
+    & .ant-table {
+      background: transparent;
     }
 
-    .ant-table-tbody {
-      background-color: var(--layout-sider-bg-color);
+    & .ant-table-thead > tr > th {
+      background: transparent;
+      border-bottom: none;
     }
+    
+    & .ant-table-thead > tr > th:first-child {
+      border-top-left-radius: 8px !important;
+    }
+    
+    & .ant-table-thead > tr > th:last-child {
+      border-top-right-radius: 8px !important;
+    }
+
+    & .ant-table-tbody > tr > td {
+      border-bottom: none;
+      background: transparent;
+    }
+
+    & .ant-table-tbody > tr:hover > td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
     .ant-table-placeholder .ant-table-cell {
-      background-color: var(--layout-sider-bg-color);
-      transition: none;
-    }
-    .ant-table-placeholder .ant-table-cell:hover {
-      background-color: var(--layout-sider-bg-color);
+      background: transparent;
+      border-bottom: none;
     }
   `;
   return StyledTable;

@@ -12,24 +12,47 @@ interface BlockPubkeyFormProps {
 const CardRoot = styled(Card)`
   border-color: var(--border-base-color) !important;
   border-width: 1px;
+  border-radius: 12px !important;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
   background-color: var(--secondary-background-color) !important;
 
   & .ant-card-head {
     border-bottom-color: var(--border-base-color) !important;
+    border-radius: 12px 12px 0 0 !important;
   }
   
   /* Remove the card body padding and background */
   & .ant-card-body {
     padding: 0 !important;
     background: transparent !important;
+    border-radius: 0 0 12px 12px !important;
   }
 `;
 const TextArea = styled(Input.TextArea)`
-  background-color: var(--layout-sider-bg-color) !important;
+  background: rgba(0, 255, 255, 0.05) !important;
+  border: 1px solid rgba(0, 255, 255, 0.2) !important;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border-radius: 8px !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  
+  &:hover, &:focus {
+    border-color: rgba(0, 255, 255, 0.5) !important;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.2) !important;
+  }
 `;
 const InputArea = styled(Input)`
-  background-color: var(--layout-sider-bg-color) !important;
+  background: rgba(0, 255, 255, 0.05) !important;
+  border: 1px solid rgba(0, 255, 255, 0.2) !important;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border-radius: 8px !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  
+  &:hover, &:focus {
+    border-color: rgba(0, 255, 255, 0.5) !important;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.2) !important;
+  }
 `;
 
 export const BlockPubkeyForm: React.FC<BlockPubkeyFormProps> = ({ onSubmit, disabled }) => {
