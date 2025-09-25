@@ -2,11 +2,26 @@ import React, { useEffect, useState } from 'react';
 import { Form, Input, InputNumber, Switch, Tooltip, Alert, Spin, Divider, Button } from 'antd';
 import {
   QuestionCircleOutlined,
-  SaveOutlined
+  SaveOutlined,
+  RedoOutlined
 } from '@ant-design/icons';
 import useGenericSettings from '@app/hooks/useGenericSettings';
 import { SettingsGroupType } from '@app/types/settings.types';
 import { LiquidBlueButton } from '@app/components/common/LiquidBlueButton';
+
+const defaultPushSettings = {
+  enabled: false,
+  service_worker_count: 10,
+  service_queue_size: 1000,
+  service_retry_attempts: 3,
+  service_retry_delay: '1s',
+  service_batch_size: 100,
+  apns_enabled: false,
+  apns_key_path: '',
+  apns_bundle_id: '',
+  fcm_enabled: false,
+  fcm_credentials_path: ''
+};
 
 const PushNotificationPanel: React.FC = () => {
   const {
@@ -71,6 +86,12 @@ const PushNotificationPanel: React.FC = () => {
     } finally {
       setSaveLoading(false);
     }
+  };
+
+  const handleReset = () => {
+    form.setFieldsValue(defaultPushSettings);
+    updateSettings(defaultPushSettings);
+    setIsUserEditing(true);
   };
 
   return (
@@ -356,14 +377,27 @@ const PushNotificationPanel: React.FC = () => {
             />
           </Form.Item>
           
-          {/* Save Button at bottom like other sections */}
+          {/* Reset and Save Buttons at bottom */}
           <Form.Item style={{ marginTop: '2rem', marginBottom: 0 }}>
             <div style={{
               display: 'flex',
               justifyContent: 'flex-end',
+              gap: '0.5rem',
               paddingTop: '1rem',
               borderTop: '1px solid rgba(82, 196, 255, 0.2)'
             }}>
+              <Button
+                icon={<RedoOutlined />}
+                onClick={handleReset}
+                disabled={loading || saveLoading}
+                style={{
+                  background: 'transparent',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  color: '#ffffff'
+                }}
+              >
+                Reset
+              </Button>
               <LiquidBlueButton
                 variant="primary"
                 icon={<SaveOutlined />}
