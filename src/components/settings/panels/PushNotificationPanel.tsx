@@ -8,6 +8,7 @@ import {
 import useGenericSettings from '@app/hooks/useGenericSettings';
 import { SettingsGroupType } from '@app/types/settings.types';
 import { LiquidBlueButton } from '@app/components/common/LiquidBlueButton';
+import * as S from './PushNotificationPanel.styles';
 
 const defaultPushSettings = {
   enabled: false,
@@ -107,22 +108,23 @@ const PushNotificationPanel: React.FC = () => {
       )}
       
       <Spin spinning={loading}>
-        <Form
-          form={form}
-          layout="vertical"
-          onValuesChange={handleValuesChange}
-          initialValues={settings || {}}
-          onFinish={() => {
-            setIsUserEditing(false);
-          }}
-          style={{
-            padding: 0,
-            margin: 0,
-            background: 'transparent',
-            border: 'none'
-          }}
-          colon={false}
-        >
+        <S.PanelWrapper>
+          <Form
+            form={form}
+            layout="vertical"
+            onValuesChange={handleValuesChange}
+            initialValues={settings || {}}
+            onFinish={() => {
+              setIsUserEditing(false);
+            }}
+            style={{
+              padding: 0,
+              margin: 0,
+              background: 'transparent',
+              border: 'none'
+            }}
+            colon={false}
+          >
         {/* Main Configuration */}
         <Divider orientation="left" style={{
           borderColor: 'rgba(82, 196, 255, 0.3)',
@@ -409,7 +411,8 @@ const PushNotificationPanel: React.FC = () => {
               </LiquidBlueButton>
             </div>
           </Form.Item>
-        </Form>
+          </Form>
+        </S.PanelWrapper>
       </Spin>
     </>
   );

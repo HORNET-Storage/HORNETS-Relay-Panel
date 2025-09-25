@@ -16,6 +16,17 @@ export const StyledCollapse = styled(Collapse)`
   overflow: hidden;
   box-shadow: 0 8px 32px 0 rgba(0, 255, 255, 0.1) !important;
   animation: dropdownGlowFadeIn 0.8s ease-out forwards;
+  transition: all 0.3s ease;
+
+  /* Hover effect for the entire collapsible section */
+  &:hover {
+    border-color: rgba(0, 255, 255, 0.3) !important;
+    box-shadow:
+      0 12px 40px 0 rgba(0, 255, 255, 0.2),
+      0 0 20px rgba(0, 255, 255, 0.15) !important;
+    background: rgba(0, 255, 255, 0.05) !important;
+    transform: translateY(-2px);
+  }
 
   .ant-collapse-item {
     border: none !important;
