@@ -1,8 +1,5 @@
 import { NotificationType } from '@app/components/common/BaseNotification/BaseNotification';
 import { Priority } from '@app//constants/enums/priorities';
-import visa from '@app/assets/images/card-issuers/visa.png';
-import mastercard from '@app/assets/images/card-issuers/mastercard.png';
-import maestro from '@app/assets/images/card-issuers/maestro.png';
 import { CurrencyTypeEnum, Severity } from '@app/interfaces/interfaces';
 import { BaseBadgeProps } from '@app/components/common/BaseBadge/BaseBadge';
 import { currencies } from '@app/constants/config/currencies';
@@ -185,26 +182,8 @@ export const truncateString = (str: string | null | undefined, num: number): str
 };
 
 export const getPaymentCardTypeIcon = (type: string): string | null => {
-  switch (type) {
-    case 'visa':
-      return visa;
-    case 'mastercard':
-      return mastercard;
-    case 'maestro':
-      return maestro;
-    case 'amex':
-      return 'amex';
-    case 'discover':
-      return 'discover';
-    case 'diners':
-      return 'diners';
-    case 'jcb':
-      return 'jcb';
-    case 'unionpay':
-      return 'unionpay';
-    default:
-      return null;
-  }
+  // Card issuer images removed - returning null for all types
+  return null;
 };
 
 export const mapBadgeStatus = (status: BaseBadgeProps['status']): Severity => {

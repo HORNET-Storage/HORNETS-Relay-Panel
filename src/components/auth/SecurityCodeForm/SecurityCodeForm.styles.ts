@@ -1,10 +1,6 @@
 import { FONT_SIZE, FONT_WEIGHT, media } from '@app/styles/themes/constants';
 import styled from 'styled-components';
 
-export const ImageWrapper = styled.div`
-  margin-bottom: 1.875rem;
-`;
-
 export const VerifyEmailDescription = styled.div`
   margin-bottom: 1.875rem;
   color: var(--text-main-color);
