@@ -17,9 +17,9 @@ import profile6 from '@app/assets/images/profile6.jpg';
 import profile7 from '@app/assets/images/profile7.jpg';
 import profile8 from '@app/assets/images/profile8.gif';
 import profile9 from '@app/assets/images/profile9.gif';
-import profile11 from '@app/assets/images/profile11.png';
+import profile11 from '@app/assets/images/profile11.jpg';
 import profile12 from '@app/assets/images/profile12.webp';
-import profile13 from '@app/assets/images/profile13.webp';
+import profile13 from '@app/assets/images/profile13.png';
 
 export interface SubscriberProfile {
   pubkey: string;
