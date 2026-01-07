@@ -56,12 +56,13 @@ The panel uses **NIP-07** ([window.nostr capability](https://nostr-nips.com/nip-
 
 ## Previews
 *All preview images are taken from the live demo*
-<img width="1920" height="1080" alt="chrome_v28q2YhoVn" src="https://github.com/user-attachments/assets/cfa13048-4f15-443b-af88-8cfc86133dcc" />
-<img width="1920" height="1080" alt="chrome_wFoydaWYuo" src="https://github.com/user-attachments/assets/c828ea60-55c7-4d9c-957a-f7a52d4430be" />
-<img width="1920" height="1080" alt="chrome_mO4QySaRXA" src="https://github.com/user-attachments/assets/ab6651d7-420b-4275-a168-8d8be14e1baf" />
-<img width="1920" height="1080" alt="chrome_6chvJFlf28" src="https://github.com/user-attachments/assets/bba63458-4744-427b-bd4b-70a24f46fe90" />
-<img width="1920" height="1080" alt="chrome_QnRXAX6Tmx" src="https://github.com/user-attachments/assets/7575b13e-45b1-4515-b36c-b34815c40245" />
-<img width="1920" height="1080" alt="chrome_oNSgxeKxvQ" src="https://github.com/user-attachments/assets/f655b7de-d01f-4e42-9ecc-2fccab7b5e7c" />
+<img width="1920" height="1080" alt="chrome_p5XlOEKb00" src="https://github.com/user-attachments/assets/3d542e0a-eeaf-4a8c-b0d8-db08d3db2a19" />
+<img width="1920" height="1080" alt="chrome_z3VAUA75bj" src="https://github.com/user-attachments/assets/de9359ad-1cd7-4b6d-9293-febb1d68e9cf" />
+<img width="1920" height="1080" alt="chrome_fTbkriaS8U" src="https://github.com/user-attachments/assets/fa84359a-c9fc-4dd4-9929-d937c3f3729f" />
+<img width="1920" height="1080" alt="chrome_ZE5YBqXe7F" src="https://github.com/user-attachments/assets/c9199cf4-d4fe-4aaa-bc9d-732cfd59be85" />
+<img width="1920" height="1080" alt="chrome_z3k8itABHU" src="https://github.com/user-attachments/assets/fad62f6f-8b40-4c60-938c-88f4a7342ae1" />
+<img width="1920" height="1080" alt="chrome_YTqQuleVha" src="https://github.com/user-attachments/assets/f527d44d-fdb0-49b8-9b04-b219a11a5693" />
+
 
 
 ---
