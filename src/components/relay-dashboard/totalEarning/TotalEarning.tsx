@@ -29,9 +29,9 @@ export const TotalEarning: React.FC = () => {
   }, [bitcoinRates]);
 
   const latestRate = bitcoinRates.length > 0 ? Number(bitcoinRates[bitcoinRates.length - 1]?.usd_value) : undefined;
-  const previousRate = bitcoinRates.length > 1 ? Number(bitcoinRates[bitcoinRates.length - 2]?.usd_value) : undefined;
-  const isIncreased = latestRate && previousRate ? latestRate > previousRate : false;
-  const rateDifference = latestRate && previousRate ? ((latestRate - previousRate) / previousRate) * 100 : 0;
+  const firstRate = bitcoinRates.length > 1 ? Number(bitcoinRates[0]?.usd_value) : undefined;
+  const isIncreased = latestRate && firstRate ? latestRate > firstRate : false;
+  const rateDifference = latestRate && firstRate ? ((latestRate - firstRate) / firstRate) * 100 : 0;
 
 
   if (isLoading) {

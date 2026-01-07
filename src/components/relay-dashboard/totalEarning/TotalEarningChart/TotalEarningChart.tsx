@@ -39,7 +39,7 @@ export const TotalEarningChart: React.FC<TotalEarningChartProps> = ({ xAxisData,
     {
       name: t('nft.earnings'),
       type: 'line',
-      data: earningData.data.map((value, index) => [xAxisData[index], value]),
+      data: earningData.data,
       showSymbol: false,
       smooth: true,
       lineStyle: {
@@ -68,13 +68,6 @@ export const TotalEarningChart: React.FC<TotalEarningChartProps> = ({ xAxisData,
           width: 4,
         },
       },
-      encode: {
-        x: 'date',
-        y: 'usd_value',
-        label: ['date', 'usd_value'],
-        itemName: 'date',
-        tooltip: ['usd_value'],
-      },
     },
   ];
 
@@ -85,7 +78,7 @@ export const TotalEarningChart: React.FC<TotalEarningChartProps> = ({ xAxisData,
       confine: true,
       formatter: (data: any) => {
         const currentSeries = data[0];
-        const roundedValue = Math.round(currentSeries.value[1]); // Round to nearest dollar
+        const roundedValue = Math.round(currentSeries.value); // Round to nearest dollar
         return `${currentSeries.name} - ${getCurrencyPrice(
           formatNumberWithCommas(roundedValue),
           CurrencyTypeEnum.USD,
