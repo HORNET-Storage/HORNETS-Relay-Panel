@@ -1,20 +1,20 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CaretDownOutlined, CaretUpOutlined } from '@ant-design/icons';
 import { NFTCard } from '@app/components/relay-dashboard/common/NFTCard/NFTCard';
-import { TotalEarningChart } from '@app/components/relay-dashboard/totalEarning/TotalEarningChart/TotalEarningChart';
-import { useAppSelector } from '@app/hooks/reduxHooks';
-import { Dates } from '@app/constants/Dates';
-import { formatNumberWithCommas, getCurrencyPrice } from '@app/utils/utils';
-import { CurrencyTypeEnum } from '@app/interfaces/interfaces';
-import * as S from './TotalEarning.styles';
+import { TotalEarningChart } from './TotalEarningChart/TotalEarningChart';
+import { useBitcoinRatesWithRange } from '@app/hooks/useBitcoinRatesWithRange';
+import { TimeRangeSelector, TimeRange } from './TimeRangeSelector';
 import { BaseRow } from '@app/components/common/BaseRow/BaseRow';
 import { BaseCol } from '@app/components/common/BaseCol/BaseCol';
-import { useBitcoinRates } from '@app/hooks/useBitcoinRates';
-
+import { formatNumberWithCommas, getCurrencyPrice } from '@app/utils/utils';
+import { CurrencyTypeEnum } from '@app/interfaces/interfaces';
+import { Dates } from '@app/constants/Dates';
+import * as S from './TotalEarning.styles';
 export const TotalEarning: React.FC = () => {
   const { t } = useTranslation();
-  const { rates: bitcoinRates, isLoading, error } = useBitcoinRates();
+  const [timeRange, setTimeRange] = useState<TimeRange>('1month');
+  const { rates: bitcoinRates, isLoading, error } = useBitcoinRatesWithRange({ timeRange });
 
   const { totalEarningData, days } = useMemo(() => {
     const earningData = {
@@ -85,6 +85,10 @@ export const TotalEarning: React.FC = () => {
               </div>
             </BaseCol>
           </BaseRow>
+        </BaseCol>
+
+        <BaseCol span={24}>
+          <TimeRangeSelector value={timeRange} onChange={setTimeRange} />
         </BaseCol>
       </BaseRow>
     </NFTCard>

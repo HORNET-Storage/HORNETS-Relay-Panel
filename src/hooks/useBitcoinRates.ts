@@ -12,7 +12,6 @@ interface Earning {
 let globalRatesCache: { data: Earning[]; timestamp: number } | null = null;
 let globalPromise: Promise<Earning[]> | null = null;
 const CACHE_DURATION = 480000; // 8 minutes (backend updates every 10 minutes)
-
 export const useBitcoinRates = () => {
   const [rates, setRates] = useState<Earning[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -64,9 +63,9 @@ export const useBitcoinRates = () => {
 
           const data = await response.json();
           console.log('[useBitcoinRates] Data received successfully');
-          const processedData = data.map((item: { Rate: number; TimestampHornets: string }) => ({
+          const processedData = data.map((item: { Rate: string | number; TimestampHornets: string }) => ({
             date: new Date(item.TimestampHornets).getTime(),
-            usd_value: item.Rate,
+            usd_value: typeof item.Rate === 'string' ? parseFloat(item.Rate) : item.Rate,
           }));
 
           // Cache the result
@@ -115,44 +114,3 @@ export const useBitcoinRates = () => {
 
   return { rates, isLoading, error };
 };
-
-
-// import { useState, useEffect } from 'react';
-// import config from '@app/config/config';
-
-// interface Earning {
-//   date: number;
-//   usd_value: number;
-// }
-
-// export const useBitcoinRates = () => {
-//   const [rates, setRates] = useState<Earning[]>([]);
-//   const [isLoading, setIsLoading] = useState(true);
-//   const [error, setError] = useState<string | null>(null);
-
-//   useEffect(() => {
-//     const fetchBitcoinRates = async () => {
-//       try {
-//         const response = await fetch(`${config.baseURL}/api/bitcoin-rates/last-30-days`);
-//         if (!response.ok) {
-//           throw new Error(`Network response was not ok (status: ${response.status})`);
-//         }
-//         const data = await response.json();
-//         setRates(
-//           data.map((item: { Rate: number; Timestamp: string }) => ({
-//             date: new Date(item.Timestamp).getTime(),
-//             usd_value: item.Rate,
-//           })),
-//         );
-//         setIsLoading(false);
-//       } catch (err: any) {
-//         setError(err.message);
-//         setIsLoading(false);
-//       }
-//     };
-
-//     fetchBitcoinRates();
-//   }, []);
-
-//   return { rates, isLoading, error };
-// };
