@@ -12,7 +12,8 @@ interface TimeRangeSelectorProps {
 const Container = styled.div`
   display: flex;
   justify-content: center;
-  margin-top: 0.5rem;
+  margin-top: 0.05rem;
+  margin-bottom: 0;
 `;
 
 const StyledRadioGroup = styled(Radio.Group)`
@@ -22,11 +23,17 @@ const StyledRadioGroup = styled(Radio.Group)`
   .ant-radio-button-wrapper {
     background: rgba(0, 255, 255, 0.05);
     border: 1px solid rgba(0, 255, 255, 0.2);
+    border-radius: 6px;
     color: rgba(0, 255, 255, 0.8);
     font-size: 0.75rem;
     padding: 0.25rem 0.75rem;
+    min-width: 2rem;
     height: auto;
     line-height: 1.2;
+    text-align: center;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
     transition: all 0.3s ease;
 
     &:hover {
@@ -44,10 +51,20 @@ const StyledRadioGroup = styled(Radio.Group)`
       &::before {
         background-color: rgba(0, 255, 255, 0.6);
       }
+
+      &:hover {
+        background: rgba(0, 255, 255, 0.15);
+        border-color: rgba(0, 255, 255, 0.6);
+        color: #00ffff;
+      }
     }
 
     &:not(:first-child)::before {
-      background-color: rgba(0, 255, 255, 0.2);
+      display: none;
+    }
+
+    &:nth-child(1) {
+      min-width: 1.5rem;
     }
   }
 

@@ -62,10 +62,19 @@ export const TotalEarning: React.FC = () => {
               <S.Title level={3} className="liquid-glow-text">{t('nft.bitcoinPrice')}</S.Title>
             </BaseCol>
             <BaseCol>
-              <div className={`liquid-rate-indicator ${isIncreased ? 'success' : 'error'}`}>
-                {isIncreased ? <CaretUpOutlined /> : <CaretDownOutlined />}
-                <span>{rateDifference.toFixed(2)}</span>
-                <span className="percentage-symbol">%</span>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  fontWeight: 600,
+                  fontSize: '0.9rem',
+                }}
+              >
+                <span style={{ color: isIncreased ? '#34D399' : '#E94B2F' }}>
+                  {isIncreased ? <CaretUpOutlined /> : <CaretDownOutlined />}
+                </span>
+                <span>{rateDifference.toFixed(2)}%</span>
               </div>
             </BaseCol>
           </BaseRow>
@@ -78,16 +87,9 @@ export const TotalEarning: React.FC = () => {
         </BaseCol>
 
         <BaseCol span={24}>
-          <BaseRow wrap={false} justify="space-between" gutter={[20, 20]}>
-            <BaseCol flex={1}>
-              <div className="liquid-chart-container">
-                <TotalEarningChart xAxisData={days} earningData={totalEarningData} />
-              </div>
-            </BaseCol>
-          </BaseRow>
-        </BaseCol>
-
-        <BaseCol span={24}>
+          <div className="liquid-chart-container">
+            <TotalEarningChart xAxisData={days} earningData={totalEarningData} />
+          </div>
           <TimeRangeSelector value={timeRange} onChange={setTimeRange} />
         </BaseCol>
       </BaseRow>
